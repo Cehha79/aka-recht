@@ -135,14 +135,36 @@ im Journal.
 | fassung | 1, 2, 3 … | ganze Zahl ab 1 |
 | status | in Arbeit, geprüft, versandt, verworfen | fest |
 | versandt_als | D-Kennung des Versandbelegs | Pflicht bei versandt |
+| fassungen | Liste je erfasster Fassung: fassung, datei, sha256 (Prüfsumme der Datei zu diesem Zeitpunkt), zeit, status, bei geprüft und versandt dazu kopien (Pfade der eingefrorenen Kopien) und kopie_dokument (D-Kennung der Kopie) | optional; kopie_dokument ist ein Verweis |
 
-## kosten, notizen, quellen
+Eingefrorene Fassungen (seit 17.09.2026, Prüfbericht F28): Erfasst
+`entwurf_erfassen` einen Entwurf mit Status „geprüft“ oder „versandt“, kopiert
+der Dienst die Datei und eine gleichnamige .docx nach
+`06 Entwürfe/Fassungen/<Name>_FassungNN_<status>.<ext>`, setzt die Kopie auf
+nur lesbar, registriert sie im Bestand mit eigener D-Kennung (Stand
+„Entwurf“ oder „Versandt“) und merkt Prüfsumme und Kennung in `fassungen`.
+Die Arbeitsdatei darf danach weiter geändert werden, die Kopie nie; eine
+vorhandene Kopie mit anderem Inhalt wird nicht überschrieben. Weicht der
+Sendetext beim Status „versandt“ von der zuletzt geprüften Fassung ab,
+meldet das Werkzeug es. `versandt_als` bleibt der Versandbeleg (E-Mail,
+Einlieferungsbeleg); der Zugang ist ein eigenes Ereignis.
+
+## kosten, notizen, quellen, zaehler
 
 | Block | Felder |
 |---|---|
 | kosten | datum, posten, betrag (Zahl in Euro), beleg (D-Kennung) |
 | notizen | id N01, titel, text, datum |
 | quellen | titel, url, geprueft (Datum), verwendung |
+| zaehler | je Kennungsart (P, V, E, F, A, W, N) die höchste je vergebene Nummer, etwa `{"A": 21, "F": 20}`; optional in älteren Akten, dann gilt die höchste vorhandene Kennung |
+
+`zaehler` sorgt dafür, dass eine entfernte Kennung nie neu vergeben wird
+(seit 17.09.2026, Prüfbericht F11): Werkzeuge und Oberfläche bilden die
+nächste Kennung aus dem Größeren von Zähler und höchster vorhandener Nummer
+plus eins und schreiben den Zähler fort. Das Schema weist eine Akte ab,
+deren Zähler kleiner ist als eine vorhandene Kennung. Journal-Verweise wie
+„A02“ meinen damit immer denselben Eintrag, auch wenn er entfernt wurde.
+D-Kennungen führt `bestand.json`, dort wird nie ein Eintrag entfernt.
 
 `quellen` sind fallbezogene Rechtsquellen mit Abrufdatum. Der gemeinsame
 Zugangskatalog bleibt in `04 Rechtsquellen/Quellen.md`.

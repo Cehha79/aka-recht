@@ -7,7 +7,7 @@ Werkzeuge. Schreibende Werkzeuge laufen für Assistenten nur mit Bestätigung. W
 Löschen oder Ändern von Originalen gibt es absichtlich nicht.
 Nur Standardbibliothek.
 """
-import json, re, sys
+import json, re, shutil, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import akte_schema, bestand, dokumente, fristen, sicherung, store
@@ -221,9 +221,9 @@ def _quelle(fall, quelle, detail=''):
         raise ValueError(f'Dokumentkennung {quelle} gibt es in diesem Fall nicht.')
     return '', (detail + ' ' if detail else '') + f'[Quelle laut Angabe: {quelle}; keine Dokumentkennung]'
 
-def _naechste(liste, buchstabe, breite=2):
-    n = max([int(x['id'][1:]) for x in liste if re.fullmatch(buchstabe + r'\d+', x.get('id', ''))], default=0) + 1
-    return f'{buchstabe}{n:0{breite}d}'
+def _naechste(akte, block):
+    """Nächste Kennung über den Zähler der Akte (akte_schema.naechste_kennung): entfernte Kennungen kommen nie wieder (F11)."""
+    return akte_schema.naechste_kennung(akte, block)
 
 @werkzeug('aufgabe_anlegen', 'Aufgabe in einem Fall anlegen.',
           {'fall': {'type': 'string'}, 'titel': {'type': 'string'}, 'detail': {'type': 'string'},
@@ -232,7 +232,7 @@ def _naechste(liste, buchstabe, breite=2):
 def aufgabe_anlegen(fall, titel, detail='', faellig='', quelle=''):
     quelle, detail = _quelle(fall, quelle, detail)
     akte, rev = store.lese_akte(fall)
-    eintrag = {'id': _naechste(akte['aufgaben'], 'A'), 'titel': titel, 'detail': detail, 'faellig': faellig, 'erledigt': False, 'quelle': quelle}
+    eintrag = {'id': _naechste(akte, 'aufgaben'), 'titel': titel, 'detail': detail, 'faellig': faellig, 'erledigt': False, 'quelle': quelle}
     akte['aufgaben'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
     return {'aufgabe': eintrag, 'revision': rev}
 
@@ -257,7 +257,7 @@ def aufgabe_setzen(fall, aufgabe, erledigt=None, faellig=None, detail=None):
 def frist_eintragen(fall, datum, titel, art, ausloeser='', rechtsgrundlage='', berechnung='', pruefstatus='offen', quelle=''):
     quelle, berechnung = _quelle(fall, quelle, berechnung)
     akte, rev = store.lese_akte(fall)
-    eintrag = {'id': _naechste(akte['fristen'], 'F'), 'datum': datum, 'titel': titel, 'art': art, 'ausloeser': ausloeser,
+    eintrag = {'id': _naechste(akte, 'fristen'), 'datum': datum, 'titel': titel, 'art': art, 'ausloeser': ausloeser,
                'rechtsgrundlage': rechtsgrundlage, 'berechnung': berechnung, 'pruefstatus': pruefstatus, 'quelle': quelle}
     akte['fristen'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
     return {'frist': eintrag, 'revision': rev}
@@ -269,7 +269,7 @@ def frist_eintragen(fall, datum, titel, art, ausloeser='', rechtsgrundlage='', b
 def ereignis_eintragen(fall, datum, titel, art='Vermerk', quelle='', detail=''):
     quelle, detail = _quelle(fall, quelle, detail)
     akte, rev = store.lese_akte(fall)
-    eintrag = {'id': _naechste(akte['ereignisse'], 'E'), 'datum': datum, 'titel': titel, 'art': art, 'quelle': quelle, 'detail': detail}
+    eintrag = {'id': _naechste(akte, 'ereignisse'), 'datum': datum, 'titel': titel, 'art': art, 'quelle': quelle, 'detail': detail}
     akte['ereignisse'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
     return {'ereignis': eintrag, 'revision': rev}
 
@@ -278,21 +278,48 @@ def ereignis_eintragen(fall, datum, titel, art='Vermerk', quelle='', detail=''):
 def notiz_anlegen(fall, titel, text):
     from datetime import date
     akte, rev = store.lese_akte(fall)
-    eintrag = {'id': _naechste(akte['notizen'], 'N'), 'titel': titel, 'text': text, 'datum': date.today().isoformat()}
+    eintrag = {'id': _naechste(akte, 'notizen'), 'titel': titel, 'text': text, 'datum': date.today().isoformat()}
     akte['notizen'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
     return {'notiz': eintrag, 'revision': rev}
 
-@werkzeug('entwurf_erfassen', 'Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung.',
+@werkzeug('entwurf_erfassen', 'Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung.',
           {'fall': {'type': 'string'}, 'titel': {'type': 'string'}, 'datei': {'type': 'string', 'description': 'Pfad im Fallordner, z. B. 06 Entwürfe/Einspruch_ENTWURF.md'},
            'status': {'type': 'string', 'enum': akte_schema.ENTWURF_STATUS}, 'versandt_als': {'type': 'string', 'description': 'D-Kennung des Versandbelegs bei Status versandt'}},
           schreibend=True, pflicht=['fall', 'titel', 'datei'])
 def entwurf_erfassen(fall, titel, datei, status='in Arbeit', versandt_als=''):
-    akte, rev = _akte_mit_dokument(fall, versandt_als)
+    from datetime import datetime
+    akte, rev = _akte_mit_dokument(fall, versandt_als); ordner = store.fall_ordner(fall)
+    quelle = store.sicher(datei, ordner)
+    if not quelle.is_file(): raise ValueError(f'Entwurfsdatei fehlt: {datei}')
     e = next((x for x in akte['entwuerfe'] if x['titel'] == titel), None)
     if e: e.update({'datei': datei, 'fassung': e.get('fassung', 1) + 1, 'status': status, 'versandt_als': versandt_als})
-    else: e = {'id': _naechste(akte['entwuerfe'], 'W'), 'titel': titel, 'datei': datei, 'fassung': 1, 'status': status, 'versandt_als': versandt_als}; akte['entwuerfe'].append(e)
+    else: e = {'id': _naechste(akte, 'entwuerfe'), 'titel': titel, 'datei': datei, 'fassung': 1, 'status': status, 'versandt_als': versandt_als}; akte['entwuerfe'].append(e)
+    # Jede erfasste Fassung mit Prüfsumme; freigegebene und versandte Fassungen als Kopie einfrieren (Prüfbericht F28)
+    sha = bestand.sha_datei(quelle); fassungen = e.setdefault('fassungen', []); hinweise = []
+    stand = {'fassung': e['fassung'], 'datei': datei, 'sha256': sha, 'zeit': datetime.now().isoformat(timespec='seconds'), 'status': status}
+    if status == 'versandt':
+        geprueft = [x for x in fassungen if x.get('status') == 'geprüft']
+        if not geprueft: hinweise.append('Vor dem Versand wurde keine Fassung als „geprüft“ erfasst.')
+        elif geprueft[-1]['sha256'] != sha: hinweise.append(f'Der Sendetext weicht von der zuletzt geprüften Fassung {geprueft[-1]["fassung"]} ab; die versandte Fassung wird trotzdem eingefroren.')
+    if status in ('geprüft', 'versandt'):
+        kopien = {}; zielordner = ordner / '06 Entwürfe' / 'Fassungen'; zielordner.mkdir(parents=True, exist_ok=True)
+        dateien = [quelle] + ([quelle.with_suffix('.docx')] if quelle.suffix.lower() != '.docx' and quelle.with_suffix('.docx').is_file() else [])
+        for q in dateien:
+            ziel = zielordner / f'{q.stem}_Fassung{e["fassung"]:02d}_{status}{q.suffix}'
+            if ziel.exists():
+                if bestand.sha_datei(ziel) != bestand.sha_datei(q): raise ValueError(f'Eingefrorene Kopie {ziel.name} gibt es schon mit anderem Inhalt. Nichts wird überschrieben.')
+            else: shutil.copyfile(q, ziel); ziel.chmod(0o444)   # nur lesbar: die Kopie ist das Original dieser Fassung
+            kopien[q.suffix.lower().lstrip('.')] = str(ziel.relative_to(ordner))
+        stand['kopien'] = kopien
+        bestand.abgleichen(ordner, weg='Fassung eingefroren'); dokumente.katalog(fall, akte)
+        pfad_zu_id = {d['pfad']: k for k, d in akte['dokumente'].items()}
+        for rel in kopien.values():
+            k = pfad_zu_id.get(rel)
+            if k: akte['dokumente'][k].update({'titel': f'{titel}, Fassung {e["fassung"]} ({status})', 'art': 'Entwurf', 'stand': 'Versandt' if status == 'versandt' else 'Entwurf', 'notiz': f'Eingefrorene Kopie von {datei}, Prüfsumme in {e["id"]}.'})
+        stand['kopie_dokument'] = pfad_zu_id.get(kopien.get(quelle.suffix.lower().lstrip('.')), '')
+    fassungen.append(stand)
     rev = store.speichere_akte(fall, akte, rev)
-    return {'entwurf': e, 'revision': rev}
+    return {'entwurf': e, 'revision': rev, 'hinweise': hinweise}
 
 def _akte_mit_dokument(fall, dokument=''):
     """Akte lesen, nur für schreibende Werkzeuge. Ist die Dokumentkennung unbekannt, den Bestand abgleichen
@@ -352,6 +379,11 @@ def journal_schreiben(fall, art, titel, text):
 @werkzeug('sicherung_erstellen', 'Geprüfte ZIP-Sicherung des ganzen Projekts erstellen, mit Kopie an das zweite Ziel.', {}, schreibend=True)
 def sicherung_erstellen():
     return sicherung.erstellen()
+
+@werkzeug('sicherung_probe', 'Wiederherstellungsprobe: die letzte Sicherung in einem Zwischenordner entpacken, Akten gegen das Schema und alle Dateien gegen die Prüfsummen prüfen, Zwischenordner wieder entfernen. Die Mappe bleibt unberührt.',
+          {'archiv': {'type': 'string', 'description': 'Pfad eines Archivs; leer: die letzte Sicherung'}}, schreibend=True)
+def sicherung_probe(archiv=''):
+    return sicherung.probe(archiv or None)
 
 def fuer_agenten():
     """Werkzeuge, die eine angebundene KI sehen soll (ohne die großen Ganz-Akte-Werkzeuge)."""

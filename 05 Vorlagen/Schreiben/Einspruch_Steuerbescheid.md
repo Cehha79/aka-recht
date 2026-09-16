@@ -1,6 +1,6 @@
-Interne Hinweise (nicht im Sendetext): Merkblatt `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` lesen (Stand 16.09.2026).
-Frist ein Monat nach Bekanntgabe, § 355 Abs. 1 Satz 1 AO; Bekanntgabe bei Post am vierten Tag nach Aufgabe, § 122 Abs. 2 Nr. 1 AO; Berechnung § 108 AO mit §§ 187 bis 193 BGB [QUELLE: Fassung der AO am Tag der Bekanntgabe prüfen].
-Bekanntgabe belegen (Umschlag, ELSTER-Datum), Frist mit dem Rechner prüfen und in der Akte eintragen (Auslöser, Grundlage, Rechnung, Quelle).
+Interne Hinweise (nicht im Sendetext): Merkblatt `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` lesen (Stand 17.09.2026).
+Frist ein Monat nach Bekanntgabe, § 355 Abs. 1 Satz 1 AO; Übermittlungsweg zuerst klären: Post am vierten Tag nach Aufgabe (§ 122 Abs. 2 Nr. 1 AO), elektronische Übermittlung am vierten Tag nach Absendung (§ 122 Abs. 2a AO), Bereitstellung zum Abruf in Mein ELSTER am vierten Tag nach Bereitstellung (§ 122a Abs. 4 AO, für Bescheide ab 2026); Berechnung § 108 AO mit §§ 187 bis 193 BGB [QUELLE: Fassung der AO am Tag der Bekanntgabe prüfen].
+Bekanntgabe je Weg belegen (Umschlag, Absendedatum, Benachrichtigung und Bereitstellungsdatum), Frist mit dem Rechner prüfen und in der Akte eintragen (Auslöser, Grundlage, Rechnung, Quelle).
 Pflichtinhalt: Einspruchsführer erkennbar, Bescheid bezeichnet (§ 357 Abs. 1 und 3 AO). Begründung darf nachgereicht werden; der Einspruch wahrt die Frist auch ohne Begründung.
 Der Einspruch stoppt die Zahlung nicht (§ 361 Abs. 1 AO). Aussetzung der Vollziehung nur auf Antrag, nur wenn sie gewollt ist; Zinsen bei Unterliegen beachten [QUELLE: § 237 AO].
 Adressat ist das Finanzamt, das den Bescheid erlassen hat (§ 357 Abs. 2 AO). Elektronisch ist eine eigene Form (§ 357 Abs. 1 AO), sofern die Behörde einen Zugang eröffnet hat (§ 87a Abs. 1 AO); ELSTER mit Protokoll ist der sichere Weg.

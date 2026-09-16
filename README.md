@@ -24,7 +24,7 @@ es zu ordnen, zu prüfen und zu formulieren.
   Rechenweg nach §§ 187, 188, 193 BGB, mit den Feiertagen deines Bundeslands.
 - **Deine KI arbeitet mit:** Claude Code, Claude Desktop, Codex oder jede andere,
   die MCP (Model Context Protocol) oder Befehle ausführen kann. 7 Anleitungen
-  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 22 Werkzeuge
+  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 23 Werkzeuge
   lassen sie in der Akte lesen und, nach deiner Bestätigung, schreiben.
 - **Alles bleibt bei dir:** keine KI in der App, kein Konto, kein Schlüssel,
   kein Netz. Der Dienst läuft nur auf deinem Rechner.
@@ -36,7 +36,7 @@ es zu ordnen, zu prüfen und zu formulieren.
 
 Version 0.1 · Stand 17.09.2026 · Autor: Hasan Tepegöz
 
-**Inhalt:** [So sieht es aus](#so-sieht-es-aus) · [So arbeitet deine KI mit der Mappe](#so-arbeitet-deine-ki-mit-der-mappe) · [Was in der Mappe steckt](#was-in-der-mappe-steckt) · [Geltungsbereich](#geltungsbereich) · [Voraussetzungen](#voraussetzungen) · [Erster Start](#erster-start) · [KI anbinden](#ki-anbinden) · [Grenzen](#grenzen) · [Sicherung](#sicherung) · [Lizenz](#lizenz) · [Mitmachen](#mitmachen-und-unterstützen) · [Impressum](#impressum)
+**Inhalt:** [So sieht es aus](#so-sieht-es-aus) · [So arbeitet deine KI mit der Mappe](#so-arbeitet-deine-ki-mit-der-mappe) · [Was in der Mappe steckt](#was-in-der-mappe-steckt) · [Worauf du dich verlassen kannst](#worauf-du-dich-verlassen-kannst) · [Geltungsbereich](#geltungsbereich) · [Voraussetzungen](#voraussetzungen) · [Erster Start](#erster-start) · [KI anbinden](#ki-anbinden) · [Grenzen](#grenzen) · [Sicherung](#sicherung) · [Lizenz](#lizenz) · [Mitmachen](#mitmachen-und-unterstützen) · [Impressum](#impressum)
 
 ## So sieht es aus
 
@@ -138,14 +138,18 @@ ein Hook sperrt das für die KI. Neue Texte entstehen in 06, Vermerke in 07.
 
 <img src="bilder/kapitel-werkzeuge.svg" alt="Werkzeuge: MCP und Befehlszeile">
 
-Dieselben 22 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+Dieselben 23 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 oder über die Befehlszeile (`python3 "06 Werkzeuge/dienst/cli.py" <werkzeug> feld=wert`).
-Schreibende Werkzeuge laufen über MCP nur mit deiner Bestätigung; über die
-Befehlszeile soll die KI vorher fragen. Jede Änderung an `akte.json` wird
-gegen das Datenmodell geprüft und mit Revision gespeichert.
+Schreibende Werkzeuge laufen über MCP nur mit deiner Bestätigung (es zählt
+allein der JSON-Wert `true`); über die Befehlszeile soll die KI vorher
+fragen. Lesende Werkzeuge ändern keine Datei: Eine neue oder im Finder
+verschobene Datei melden sie nur, ihre Kennung bekommt sie erst durch
+`bestand_abgleichen`; die Oberfläche macht das beim Öffnen eines Falls
+selbst. Jede Änderung an `akte.json` wird gegen das Datenmodell geprüft
+und mit Revision gespeichert.
 
 <details>
-<summary>Alle 22 Werkzeuge anzeigen</summary>
+<summary>Alle 23 Werkzeuge anzeigen</summary>
 
 | Werkzeug | Art | Zweck |
 |---|---|---|
@@ -165,12 +169,13 @@ gegen das Datenmodell geprüft und mit Revision gespeichert.
 | `frist_eintragen` | schreibend | Frist oder Termin in einem Fall eintragen. Bestätigt nur mit Auslöser, Rechtsgrundlage, Rechnung und Quelle. |
 | `ereignis_eintragen` | schreibend | Ereignis in die Chronologie eines Falls eintragen. |
 | `notiz_anlegen` | schreibend | Ordnungsnotiz in einem Fall anlegen. |
-| `entwurf_erfassen` | schreibend | Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung. |
+| `entwurf_erfassen` | schreibend | Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung. |
 | `bestand_abgleichen` | schreibend | Bestand eines Falls mit den Dateien abgleichen: neue Dateien in 01 bis 08 bekommen eine Kennung, im Finder verschobene werden über die Prüfsumme wiedergefunden, fehlende Ordnungsangaben werden in der Akte ergänzt. Der einzige Weg, auf dem neue Dateien registriert werden. |
 | `dokument_ordnen` | schreibend | Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz). Die Datei selbst bleibt unverändert. |
 | `dokument_verschieben` | schreibend | Datei in einen anderen Aktenbereich einsortieren. Kennung und Inhalt bleiben, nichts wird überschrieben. |
 | `journal_schreiben` | schreibend | Eintrag an das Journal eines Falls anhängen. |
 | `sicherung_erstellen` | schreibend | Geprüfte ZIP-Sicherung des ganzen Projekts erstellen, mit Kopie an das zweite Ziel. |
+| `sicherung_probe` | schreibend | Wiederherstellungsprobe: die letzte Sicherung in einem Zwischenordner entpacken, Akten gegen das Schema und alle Dateien gegen die Prüfsummen prüfen, Zwischenordner wieder entfernen. Die Mappe bleibt unberührt. |
 
 </details>
 
@@ -220,7 +225,7 @@ den Pflichtinhalt dagegen.
 | `04 Rechtsquellen/Verfahren/Akteneinsicht.md` | Akteneinsicht und Auskunft | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Dienstaufsichtsbeschwerde.md` | Dienstaufsichtsbeschwerde, Fachaufsichtsbeschwerde, Petition | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Einspruch_Bussgeldbescheid.md` | Einspruch gegen einen Bußgeldbescheid | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Einspruch gegen einen Steuerbescheid | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Einspruch gegen einen Steuerbescheid | 17.09.2026 |
 | `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` | Klage zum Arbeitsgericht | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Mahnverfahren.md` | Mahnverfahren (Mahnbescheid und Vollstreckungsbescheid) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Strafanzeige.md` | Strafanzeige und Strafantrag | 16.09.2026 |
@@ -239,14 +244,42 @@ den Pflichtinhalt dagegen.
 | Befehl (im Ordner der Mappe) | Zweck |
 |---|---|
 | `Start.command`, `Start.sh`, `Start.bat` | Dienst starten und Oberfläche öffnen (macOS, Linux, Windows) |
-| `python3 "06 Werkzeuge/dienst/server.py" --no-open` | Dienst ohne Browser starten; `--check` Bestand aller Fälle prüfen; `--backup` geprüfte Sicherung |
+| `python3 "06 Werkzeuge/dienst/server.py" --no-open` | Dienst ohne Browser starten; `--check` Bestand aller Fälle prüfen; `--backup` geprüfte Sicherung; `--probe` Wiederherstellungsprobe der letzten Sicherung; `--restore <ZIP> <neuer Ordner>` Sicherung in einen neuen Ordner entpacken und prüfen |
 | `python3 "06 Werkzeuge/dienst/cli.py" liste` | alle Werkzeuge mit Parametern; danach `cli.py <werkzeug> feld=wert` |
 | `python3 "06 Werkzeuge/dienst/cli.py" frist_berechnen start=2026-09-11 menge=1 einheit=monate land=BW` | Frist rechnen, mit Rechenweg |
 | `python3 "06 Werkzeuge/akte_schema.py" "02 Fälle/<Fall>/akte.json"` | Akte gegen das Datenmodell prüfen |
 | `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" <Entwurf.md>` | Word-Datei aus einem Entwurf |
-| `python3 ".claude/recht/werkzeuge/uebergabe_paket.py" R-0001 --ziel <Ordner>` | Übergabepaket als ZIP außerhalb der Mappe |
+| `python3 ".claude/recht/werkzeuge/uebergabe_paket.py" R-0001 --empfaenger anwalt --vorschau` | Übergabepaket je Empfänger (anwalt: alles; gericht, behoerde, gegenseite, beratung: nur `--nur D0001,D0002`), erst Vorschau, dann ohne `--vorschau` als geprüfte ZIP mit Manifest außerhalb der Mappe |
 | `python3 "06 Werkzeuge/verteilen.py"` | `AGENTS.md` und `.agents/skills/` aus `CLAUDE.md` und `.claude/skills/` erzeugen; `--pruefen` nur vergleichen |
 | `python3 "06 Werkzeuge/dienst/pruefen.py"` | Funktionstest mit künstlichen Akten in einem Temp-Ordner |
+
+## Worauf du dich verlassen kannst
+
+Eine Rechtsakte braucht mehr als Ordner. Diese Regeln setzt die Mappe
+technisch durch und prüft sie im Funktionstest:
+
+- **Lesen bleibt Lesen.** Kein lesendes Werkzeug fasst `akte.json`,
+  `bestand.json` oder `zentrale.json` an. Neue Dateien registriert nur der
+  Abgleich.
+- **Kennungen kommen nie wieder.** Ein Zähler je Kennungsart merkt sich die
+  höchste je vergebene Nummer; ein entfernter Eintrag wird nie durch einen
+  neuen mit derselben Kennung ersetzt, Journalverweise bleiben eindeutig.
+- **Geprüfte und versandte Fassungen sind eingefroren.** Beim Status
+  „geprüft“ oder „versandt“ legt die Mappe eine nur lesbare Kopie unter
+  `06 Entwürfe/Fassungen/` ab, mit Prüfsumme und eigener Kennung. Die
+  Arbeitsdatei darf sich ändern, die Kopie nie.
+- **Fristen werden nachgerechnet.** §§ 187, 188, 193 BGB mit sichtbarer
+  Rechnung; Monatsende, Schaltjahr und Jahresfristen sind mit 20
+  Grenzfällen geprüft. Ob eine Frist gilt, entscheidet der Rechner nicht.
+- **Übergaben enthalten nur, was hin soll.** Das Paket wird für einen
+  benannten Empfänger gebaut, zeigt vorher jede Datei, bricht bei
+  unbekannten Kennungen ab und wird gegen sein Manifest zurückgelesen.
+- **Sicherungen sind nachweislich brauchbar.** Jede ZIP wird nach dem
+  Schreiben zurückgelesen; „Wiederherstellung prüfen“ entpackt sie in
+  einen Zwischenordner und prüft Akten und Prüfsummen.
+- **Daten bleiben da, wo du sie legst.** Keine KI in der Mappe, kein Netz
+  im Dienst. Was in einen Cloud-Ordner gesichert wird, lädt dein System
+  hoch; was deine KI liest, verarbeitet ihr Anbieter.
 
 ## Geltungsbereich
 
@@ -318,7 +351,19 @@ für Versand, Löschen oder Ändern von Originalen gibt es nicht.
 
 „Geprüfte Sicherung erstellen“ in der Oberfläche schreibt eine ZIP außerhalb
 des Ordners und liest sie zurück. Ziel und zweites Ziel stehen in den
-Einstellungen. Prüfen ohne Oberfläche: `python3 "06 Werkzeuge/dienst/server.py" --check`.
+Einstellungen und werden vor der ersten Sicherung angezeigt.
+„Wiederherstellung prüfen“ entpackt die letzte Sicherung in einen
+Zwischenordner, prüft Akten und Prüfsummen und räumt ihn wieder ab. Echte
+Wiederherstellung immer in einen neuen Ordner, nie über die laufende Mappe:
+`python3 "06 Werkzeuge/dienst/server.py" --restore <ZIP> <neuer Ordner>`.
+Ohne Oberfläche: `--check` prüft den Bestand, `--backup` sichert, `--probe`
+prüft die letzte Sicherung.
+
+Drei Ebenen, die nicht dasselbe sind: Die Mappe liegt auf deinem Rechner.
+Liegt ein Sicherungsziel in iCloud Drive oder einem anderen Cloud-Ordner,
+lädt das Betriebssystem die unverschlüsselte ZIP dorthin hoch. Und was deine
+KI liest, verarbeitet deren Anbieter nach seinen Bedingungen; ein lokaler
+MCP-Server ändert daran nichts.
 
 ## Lizenz
 

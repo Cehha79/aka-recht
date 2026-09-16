@@ -49,7 +49,18 @@ def leer():
         'beteiligte': [], 'dokumente': {}, 'verfahren': [], 'ereignisse': [],
         'fristen': [], 'aufgaben': [], 'entwuerfe': [], 'kosten': [],
         'notizen': [], 'quellen': [],
+        'zaehler': {},   # höchste je vergebene Nummer je Kennungsart (P, V, E, F, A, W, N); entfernte Kennungen kommen nie wieder
     }
+
+ZAEHLER_BUCHSTABEN = {'beteiligte': 'P', 'verfahren': 'V', 'ereignisse': 'E', 'fristen': 'F', 'aufgaben': 'A', 'entwuerfe': 'W', 'notizen': 'N'}
+
+def naechste_kennung(akte, block):
+    """Nächste freie Kennung eines Blocks und Zähler fortschreiben. Der Zähler merkt sich die höchste je
+    vergebene Nummer, damit eine entfernte Kennung nie neu vergeben wird (Prüfbericht 16.09.2026, F11)."""
+    b = ZAEHLER_BUCHSTABEN[block]; z = akte.setdefault('zaehler', {})
+    hoechste = max([int(e['id'][1:]) for e in akte.get(block, []) if isinstance(e, dict) and re.fullmatch(b + r'\d+', str(e.get('id', '')))], default=0)
+    n = max(int(z.get(b, 0) or 0), hoechste) + 1; z[b] = n
+    return f'{b}{n:02d}'
 
 def validate(akte):
     """Gibt (fehler, warnungen) als Listen von Sätzen zurück."""
@@ -71,9 +82,10 @@ def validate(akte):
         if block not in akte: f.append(f'Block „{block}“ fehlt.')
     unbekannt = set(akte) - {'schema', 'fall', 'beteiligte', 'dokumente', 'verfahren',
                              'ereignisse', 'fristen', 'aufgaben', 'entwuerfe', 'kosten',
-                             'notizen', 'quellen'}
+                             'notizen', 'quellen', 'zaehler'}
     if unbekannt: f.append('Unbekannte Blöcke: ' + ', '.join(sorted(unbekannt)) + '.')
     if not isinstance(akte.get('fall'), dict): f.append('fall muss ein Objekt sein.')
+    if 'zaehler' in akte and not isinstance(akte['zaehler'], dict): f.append('zaehler muss ein Objekt sein.')
     if f: return f, w
 
     fall = akte['fall']
@@ -120,6 +132,13 @@ def validate(akte):
         else:
             for i, e in enumerate(akte[block]):
                 if not isinstance(e, dict): f.append(f'{block}[{i}]: kein Objekt.')
+    # Zähler: optional (ältere Akten haben keinen), aber nie kleiner als die höchste vorhandene Kennung
+    for block, b in ZAEHLER_BUCHSTABEN.items():
+        wert = akte.get('zaehler', {}).get(b) if isinstance(akte.get('zaehler'), dict) else None
+        if wert is None: continue
+        if not isinstance(wert, int) or isinstance(wert, bool) or wert < 0: f.append(f'zaehler.{b} muss eine ganze Zahl ab 0 sein.'); continue
+        hoechste = max([int(k[1:]) for k in ids.get(block, set())], default=0)
+        if wert < hoechste: f.append(f'zaehler.{b} ist {wert}, aber {b}{hoechste:02d} existiert. Der Zähler darf nie zurückgehen.')
     if f: return f, w
 
     def verweis(wert, ziel, wo, pflicht=False):
@@ -165,6 +184,15 @@ def validate(akte):
         if e.get('status') not in ENTWURF_STATUS: f.append(f'{e["id"]}: status muss eines von {ENTWURF_STATUS} sein.')
         if e.get('status') == 'versandt': verweis(e.get('versandt_als', ''), 'dokumente', f'{e["id"]}.versandt_als', pflicht=True)
         if not isinstance(e.get('fassung', 1), int) or isinstance(e.get('fassung', 1), bool) or e.get('fassung', 1) < 1: f.append(f'{e["id"]}: fassung muss eine ganze Zahl ab 1 sein.')
+        if 'fassungen' in e:   # eingefrorene Fassungen (seit 17.09.2026, F28)
+            if not isinstance(e['fassungen'], list): f.append(f'{e["id"]}: fassungen muss eine Liste sein.'); continue
+            for i, x in enumerate(e['fassungen']):
+                wo = f'{e["id"]}.fassungen[{i}]'
+                if not isinstance(x, dict): f.append(f'{wo}: kein Objekt.'); continue
+                if not isinstance(x.get('fassung'), int) or isinstance(x.get('fassung'), bool): f.append(f'{wo}: fassung fehlt oder ist keine Zahl.')
+                if not re.fullmatch(r'[0-9a-f]{64}', str(x.get('sha256', ''))): f.append(f'{wo}: sha256 fehlt oder ist keine Prüfsumme.')
+                if x.get('status') not in ENTWURF_STATUS: f.append(f'{wo}: status muss eines von {ENTWURF_STATUS} sein.')
+                verweis(x.get('kopie_dokument', ''), 'dokumente', f'{wo}.kopie_dokument')
     for i, k in enumerate(akte['kosten']):
         datum(k.get('datum', ''), f'kosten[{i}]')
         if not zahl(k.get('betrag', 0)): f.append(f'kosten[{i}]: betrag muss eine Zahl sein.')

@@ -247,6 +247,13 @@ def run():
         r = anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': {'fall': 'R-0001', 'datum': '2026-09-21', 'titel': 'Einspruchsfrist', 'art': 'gesetzlich', 'ausloeser': 'Zustellung 05.09.2026', 'rechtsgrundlage': '§ 67 Abs. 1 OWiG', 'berechnung': '\n'.join(fr['rechnung']), 'pruefstatus': 'offen', 'quelle': 'D0001'}, 'bestaetigt': True})
         assert r['frist']['id'] == 'F01'
         r = anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'Zustellurkunde anfordern', 'quelle': 'D0001'}, 'bestaetigt': True}); assert r['aufgabe']['id'] == 'A01'
+        # F11: die höchste Kennung entfernen (wie der Knopf „Eintrag entfernen“), neu anlegen: A02, nie wieder A01
+        fall = anfrage('/api/fall/R-0001'); ak = fall['akte']; assert ak['zaehler']['A'] == 1 and ak['zaehler']['F'] == 1
+        ak['aufgaben'] = []; anfrage('/api/fall/R-0001', {'akte': ak, 'revision': fall['revision']})
+        r = anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'Zustellurkunde anfordern', 'quelle': 'D0001'}, 'bestaetigt': True}); assert r['aufgabe']['id'] == 'A02', r
+        fall = anfrage('/api/fall/R-0001'); ak = fall['akte']; ak['zaehler']['A'] = 0
+        anfrage('/api/fall/R-0001', {'akte': ak, 'revision': fall['revision']}, erwartet=400)   # Zähler darf nie zurückgehen
+        ok('Kennungen: entfernte höchste Kennung wird nicht neu vergeben (Zähler je Art), rückgesetzter Zähler wird abgewiesen')
         anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'x', 'quelle': 'D9999'}, 'bestaetigt': True}, erwartet=400)
         r = anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'Freitext-Quelle', 'quelle': 'Zustellung laut Bescheid'}, 'bestaetigt': True})
         assert r['aufgabe']['quelle'] == '' and 'Zustellung laut Bescheid' in r['aufgabe']['detail']
@@ -268,17 +275,61 @@ def run():
         ok('Gemeinsamen Eingang einem Fall zugeordnet')
         r = anfrage('/api/werkzeug', {'name': 'dokument_ordnen', 'parameter': {'fall': 'R-0002', 'dokument': 'D0001', 'felder': {'titel': 'Brief', 'stand': 'Zugegangen'}}, 'bestaetigt': True})
         assert r['dokument'] == 'D0001'
+        ent = root / f2['ordner'] / '06 Entwürfe' / 'Antwort_ENTWURF.md'; ent.write_text('Hinweise\n---\nSehr geehrte Damen und Herren, Fassung eins.\n')
+        anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': {'fall': 'R-0002', 'titel': 'Antwort', 'datei': '06 Entwürfe/Fehlt.md'}, 'bestaetigt': True}, erwartet=400)
+        r = anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': {'fall': 'R-0002', 'titel': 'Antwort', 'datei': '06 Entwürfe/Antwort_ENTWURF.md', 'status': 'geprüft'}, 'bestaetigt': True})
+        f1s = r['entwurf']['fassungen']; assert len(f1s) == 1 and f1s[0]['status'] == 'geprüft' and f1s[0]['sha256'] == hashlib.sha256(ent.read_bytes()).hexdigest() and f1s[0]['kopie_dokument']
+        kopie1 = root / f2['ordner'] / f1s[0]['kopien']['md']; assert kopie1.is_file() and kopie1.read_bytes() == ent.read_bytes() and not os.access(kopie1, os.W_OK)
+        a2 = json.loads((root / f2['ordner'] / 'akte.json').read_text()); assert a2['dokumente'][f1s[0]['kopie_dokument']]['stand'] == 'Entwurf' and 'Fassung 1' in a2['dokumente'][f1s[0]['kopie_dokument']]['titel']
+        ent.write_text('Hinweise\n---\nSehr geehrte Damen und Herren, Fassung zwei, nach der Prüfung geändert.\n')
         r = anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': {'fall': 'R-0002', 'titel': 'Antwort', 'datei': '06 Entwürfe/Antwort_ENTWURF.md', 'status': 'versandt', 'versandt_als': 'D0001'}, 'bestaetigt': True})
-        assert r['entwurf']['versandt_als'] == 'D0001'
-        a2 = json.loads((root / f2['ordner'] / 'akte.json').read_text()); assert a2['dokumente']['D0001']['stand'] == 'Zugegangen'
-        ok('Neu zugeordnetes Dokument sofort ordnen und als Versandbeleg verweisen, ohne vorheriges Lesen der Akte')
+        assert r['entwurf']['versandt_als'] == 'D0001' and r['entwurf']['fassung'] == 2 and any('weicht' in h for h in r['hinweise']), r
+        f2s = r['entwurf']['fassungen']; kopie2 = root / f2['ordner'] / f2s[1]['kopien']['md']
+        assert kopie2.is_file() and kopie2 != kopie1 and 'Fassung zwei' in kopie2.read_text() and 'Fassung eins' in kopie1.read_text()
+        a2 = json.loads((root / f2['ordner'] / 'akte.json').read_text()); assert a2['dokumente']['D0001']['stand'] == 'Zugegangen' and a2['dokumente'][f2s[1]['kopie_dokument']]['stand'] == 'Versandt'
+        assert not akte_schema.validate(a2)[0]
+        ok('Neu zugeordnetes Dokument sofort ordnen und als Versandbeleg verweisen; geprüfte und versandte Fassung eingefroren (Kopie nur lesbar, eigene Kennung, Abweichung gemeldet)')
+
+        # 7b Übergabepaket (F08, F27): Empfänger und Umfang, Vorschau, Manifest mit Rücklesen, harte Fehler
+        anfrage('/api/werkzeug', {'name': 'notiz_anlegen', 'parameter': {'fall': 'R-0002', 'titel': 'intern', 'text': 'VERTRAULICH-PROBE'}, 'bestaetigt': True})
+        skript = QUELLE / '.claude/recht/werkzeuge/uebergabe_paket.py'; umgebung = {**os.environ, 'CLAUDE_PROJECT_DIR': str(root), 'PYTHONDONTWRITEBYTECODE': '1'}
+        def paket(*argv): return subprocess.run([sys.executable, str(skript), 'R-0002', *argv], capture_output=True, text=True, env=umgebung, timeout=60)
+        r = paket('--empfaenger', 'gericht', '--nur', 'D0001,D9999', '--ziel', str(base / 'x.zip')); assert r.returncode != 0 and 'D9999' in r.stdout + r.stderr and not (base / 'x.zip').exists()
+        r = paket('--empfaenger', 'gericht', '--ziel', str(base / 'x.zip')); assert r.returncode != 0 and '--nur' in r.stdout + r.stderr
+        r = paket('--empfaenger', 'gericht', '--nur', 'D0001', '--vorschau', '--ziel', str(base / 'g.zip')); assert r.returncode == 0 and 'Vorschau' in r.stdout and not (base / 'g.zip').exists(), r.stdout + r.stderr
+        r = paket('--empfaenger', 'gericht', '--nur', 'D0001', '--ziel', str(base / 'g.zip')); assert r.returncode == 0 and 'geprüft' in r.stdout, r.stdout + r.stderr
+        with zipfile.ZipFile(base / 'g.zip') as zf:
+            namen = zf.namelist(); assert set(namen) == {'00 Manifest.json', '00 Inhaltsverzeichnis.md', 'D0001 Brief.pdf'}, namen
+            m = json.loads(zf.read('00 Manifest.json')); assert m['empfaenger'] == 'gericht' and m['umfang'] == 'dokumente' and not m['journal']
+            assert m['dokumente'][0]['sha256'] == hashlib.sha256((root / f2['ordner'] / '01 Eingang/Brief.pdf').read_bytes()).hexdigest()
+            alles = b''.join(zf.read(n) for n in namen); assert b'VERTRAULICH-PROBE' not in alles and b'Chronologie' not in alles and b'Fristen' not in alles and b'Aufgaben' not in alles
+        r = paket('--empfaenger', 'gericht', '--nur', 'D0001', '--ziel', str(base / 'g.zip')); assert r.returncode != 0 and 'existiert' in r.stdout + r.stderr
+        r = paket('--empfaenger', 'anwalt', '--ziel', str(base / 'a.zip')); assert r.returncode == 0, r.stdout + r.stderr
+        with zipfile.ZipFile(base / 'a.zip') as zf:
+            namen = zf.namelist(); assert '00 Journal.md' in namen and '01 Eingang/Brief.pdf' in namen and not any(n.startswith('06 ') for n in namen), namen
+            inhalt = zf.read('00 Inhaltsverzeichnis.md').decode(); assert '## Chronologie' in inhalt and '## Fristen' in inhalt and 'VERTRAULICH-PROBE' not in inhalt
+            assert zf.testzip() is None
+        ok('Übergabepaket: unbekannte Kennung und fehlendes --nur brechen ab, Vorschau schreibt nichts, Gericht bekommt nur die gewählten Dokumente ohne Journal und interne Angaben, Anwalt alles; Manifest zurückgelesen, nichts überschrieben')
 
         # 8 Sicherung
         s = anfrage('/api/sicherung', {}); zp = Path(s['pfad']); assert zp.is_file() and s['zweites_ziel'] and Path(s['zweites_ziel']).is_file()
         assert hashlib.sha256(zp.read_bytes()).hexdigest() == s['sha256'] == zp.with_suffix('.zip.sha256').read_text().split()[0]
         with zipfile.ZipFile(zp) as zf: assert zf.testzip() is None and f"{f1['ordner']}/akte.json" in zf.namelist()
-        assert anfrage('/api/sicherung/status')['unveraendert']
-        ok('Geprüfte Sicherung mit Prüfsumme und Kopie am zweiten Ziel')
+        st = anfrage('/api/sicherung/status'); assert st['unveraendert'] and st['zweites_ziel_unveraendert'] and st['ziel'] == str(base / 'Sicherungen') and 'iCloud' in st['zweites_ziel_hinweis_cloud']
+        assert oct(Path(s['zweites_ziel']).stat().st_mode & 0o777) == '0o600', 'Kopie am zweiten Ziel ohne 0600'
+        ok('Geprüfte Sicherung mit Prüfsumme und Kopie am zweiten Ziel (Rechte 0600), Status prüft beide Archive und nennt die Ziele')
+        # F19: Wiederherstellungsprobe und echte Wiederherstellung in einen neuen Ordner, Manipulationen fallen auf
+        pr = anfrage('/api/sicherung/probe', {}); assert pr['bestanden'] and pr['dateien'] > 10 and pr['pruefsummendatei'] is True and [c['fall'] for c in pr['faelle']][:2] == ['R-0001', 'R-0002'] and all(not c['schema_fehler'] and not c['fehlend'] for c in pr['faelle']), pr
+        assert not list(Path(tempfile.gettempdir()).glob('aka-recht-wiederherstellung-*')), 'Zwischenordner der Probe nicht abgeräumt'
+        r = subprocess.run([sys.executable, str(root / '06 Werkzeuge/dienst/server.py'), '--root', str(root), '--restore', s['pfad'], str(base / 'Wiederhergestellt')], capture_output=True, text=True, timeout=60)
+        assert r.returncode == 0 and (base / 'Wiederhergestellt' / f1['ordner'] / 'akte.json').is_file() and json.loads(r.stdout)['bestanden'], r.stdout + r.stderr
+        r = subprocess.run([sys.executable, str(root / '06 Werkzeuge/dienst/server.py'), '--root', str(root), '--restore', s['pfad'], str(base / 'Wiederhergestellt')], capture_output=True, text=True, timeout=60); assert r.returncode != 0 and 'nicht leer' in r.stdout + r.stderr
+        r = subprocess.run([sys.executable, str(root / '06 Werkzeuge/dienst/server.py'), '--root', str(root), '--restore', s['pfad'], str(root / 'X')], capture_output=True, text=True, timeout=60); assert r.returncode != 0 and 'außerhalb' in r.stdout + r.stderr
+        kopie = Path(s['zweites_ziel']); kopie.chmod(0o600); kopie.write_bytes(kopie.read_bytes()[:-1] + b'X')   # Kopie am zweiten Ziel manipuliert
+        st = anfrage('/api/sicherung/status'); assert st['unveraendert'] and not st['zweites_ziel_unveraendert']
+        pr = anfrage('/api/sicherung/probe', {'archiv': str(kopie)}); assert not pr['bestanden'] and pr['fehler'], pr
+        kaputt = base / 'kaputt.zip'; kaputt.write_bytes(b'PK\x03\x04 kein archiv'); anfrage('/api/sicherung/probe', {'archiv': str(kaputt)}, erwartet=400)
+        ok('Wiederherstellungsprobe bestanden, echte Wiederherstellung nur in leeren Ordner außerhalb, manipulierte Kopie und kaputtes Archiv fallen auf')
 
         # 9 MCP-Server über die Standardeingabe
         mcp = subprocess.Popen([sys.executable, str(root / '06 Werkzeuge/dienst/mcp_server.py'), '--root', str(root)],
@@ -334,7 +385,10 @@ def run():
         subprocess.run([sys.executable, str(root / '06 Werkzeuge/dienst/server.py'), '--root', str(root), '--no-open'], check=True, capture_output=True, timeout=15)
         assert json.loads(laufzeit.read_text())['pid'] == server.pid; ok('Wiederholter Start verwendet denselben Dienst')
         r = subprocess.run([sys.executable, str(root / '06 Werkzeuge/dienst/server.py'), '--root', str(root), '--check'], capture_output=True, timeout=30)
-        assert r.returncode == 0 and 'R-0002' in r.stdout.decode(); ok('Bestandsprüfung über die Befehlszeile')
+        # Exit 1 ist richtig: die Arbeitsfassung Antwort_ENTWURF.md wurde nach der Registrierung geändert (Abschnitt 7); sonst nichts
+        erg = {c['fall']: c for c in json.loads(r.stdout.decode())['faelle']}
+        assert r.returncode == 1 and [x['pfad'] for x in erg['R-0002']['veraendert']] == ['06 Entwürfe/Antwort_ENTWURF.md'] and not erg['R-0002']['fehlend'] and not erg['R-0001']['veraendert']
+        ok('Bestandsprüfung über die Befehlszeile: nur die geänderte Arbeitsfassung wird gemeldet, eingefrorene Kopien unverändert')
 
         ergebnis = {'bestanden': len(bestanden), 'punkte': bestanden, 'ordner': str(base)}
         (base / 'Ergebnis.json').write_text(json.dumps(ergebnis, ensure_ascii=False, indent=2))

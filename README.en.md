@@ -24,7 +24,7 @@ AI helps you to organise, check and formulate.
   the calculation under §§ 187, 188, 193 BGB with the holidays of your state.
 - **Your AI works with it:** Claude Code, Claude Desktop, Codex or any other
   that speaks MCP (Model Context Protocol) or can run commands. 7 guides
-  take it from case intake to a reviewed draft, 22 tools let it read
+  take it from case intake to a reviewed draft, 23 tools let it read
   the case and, after your confirmation, write to it.
 - **Everything stays with you:** no AI inside the app, no account, no key, no
   network. The service runs only on your machine.
@@ -36,7 +36,7 @@ AI helps you to organise, check and formulate.
 
 Version 0.1 · as of 17.09.2026 · Author: Hasan Tepegöz · Deutsch: [README.md](README.md)
 
-**Contents:** [What it looks like](#what-it-looks-like) · [How your AI works with the folder](#how-your-ai-works-with-the-folder) · [What is inside](#what-is-inside) · [Scope](#scope) · [Requirements](#requirements) · [First start](#first-start) · [Connecting an AI](#connecting-an-ai) · [Limits](#limits) · [Backup](#backup) · [Licence](#licence) · [Contributing](#contributing-and-supporting) · [Legal notice](#legal-notice-impressum)
+**Contents:** [What it looks like](#what-it-looks-like) · [How your AI works with the folder](#how-your-ai-works-with-the-folder) · [What is inside](#what-is-inside) · [What you can rely on](#what-you-can-rely-on) · [Scope](#scope) · [Requirements](#requirements) · [First start](#first-start) · [Connecting an AI](#connecting-an-ai) · [Limits](#limits) · [Backup](#backup) · [Licence](#licence) · [Contributing](#contributing-and-supporting) · [Legal notice](#legal-notice-impressum)
 
 ## What it looks like
 
@@ -129,14 +129,14 @@ blocks that for the AI. New texts go to 06, memos to 07.
 
 <img src="bilder/kapitel-werkzeuge-en.svg" alt="Tools: MCP and command line">
 
-The same 22 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+The same 23 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 and on the command line (`python3 "06 Werkzeuge/dienst/cli.py" <tool> field=value`).
 Over MCP, writing tools run only with your confirmation; on the command line
 the AI is told to ask first. Every change to `akte.json` is validated against
 the data model and saved with a revision.
 
 <details>
-<summary>Show all 22 tools</summary>
+<summary>Show all 23 tools</summary>
 
 | Tool | Kind | Purpose |
 |---|---|---|
@@ -162,6 +162,7 @@ the data model and saved with a revision.
 | `dokument_verschieben` | writes | File a document into another section; id and content stay, nothing is overwritten |
 | `journal_schreiben` | writes | Append an entry to the case journal |
 | `sicherung_erstellen` | writes | Create a verified ZIP backup of the whole folder, with a copy to the second target |
+| `sicherung_probe` | writes | Wiederherstellungsprobe: die letzte Sicherung in einem Zwischenordner entpacken, Akten gegen das Schema und alle Dateien gegen die Prüfsummen prüfen, Zwischenordner wieder entfernen. Die Mappe bleibt unberührt. |
 
 </details>
 
@@ -210,7 +211,7 @@ from them, `/entwurf` checks the mandatory content against them.
 | `04 Rechtsquellen/Verfahren/Akteneinsicht.md` | Access to files and data: which legal basis applies (VwVfG, SGB X, AO, StPO, OWiG, ZPO, BetrVG, GDPR, IFG) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Dienstaufsichtsbeschwerde.md` | Complaint to a supervisor, supervisory complaint, petition (Art. 17 GG, DRiG, BRAO) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Einspruch_Bussgeldbescheid.md` | Objection to an administrative fine notice (OWiG, StVG) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Objection to a tax assessment (Abgabenordnung) | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Objection to a tax assessment (Abgabenordnung) | 17.09.2026 |
 | `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` | Action before the labour court (ArbGG, ZPO, KSchG, GKG) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Mahnverfahren.md` | Order-for-payment procedure: payment order and enforcement order (ZPO, GKG) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Strafanzeige.md` | Criminal complaint and request for prosecution (StPO, StGB) | 16.09.2026 |
@@ -229,14 +230,42 @@ from them, `/entwurf` checks the mandatory content against them.
 | Command (inside the folder) | Purpose |
 |---|---|
 | `Start.command`, `Start.sh`, `Start.bat` | start the service and open the UI (macOS, Linux, Windows) |
-| `python3 "06 Werkzeuge/dienst/server.py" --no-open` | start without a browser; `--check` verify all cases; `--backup` verified backup |
+| `python3 "06 Werkzeuge/dienst/server.py" --no-open` | start without a browser; `--check` verify all cases; `--backup` verified backup; `--probe` restore test of the last backup; `--restore <ZIP> <new folder>` extract a backup into a new folder and verify it |
 | `python3 "06 Werkzeuge/dienst/cli.py" liste` | list all tools with parameters; then `cli.py <tool> field=value` |
 | `python3 "06 Werkzeuge/dienst/cli.py" frist_berechnen start=2026-09-11 menge=1 einheit=monate land=BW` | calculate a deadline, with the calculation shown |
 | `python3 "06 Werkzeuge/akte_schema.py" "02 Fälle/<case>/akte.json"` | validate a case file against the data model |
 | `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" <draft.md>` | Word file from a draft |
-| `python3 ".claude/recht/werkzeuge/uebergabe_paket.py" R-0001 --ziel <folder>` | hand-over package as ZIP outside the folder |
+| `python3 ".claude/recht/werkzeuge/uebergabe_paket.py" R-0001 --empfaenger anwalt --vorschau` | hand-over package per recipient (anwalt: everything; gericht, behoerde, gegenseite, beratung: only `--nur D0001,D0002`), preview first, then without `--vorschau` as a verified ZIP with manifest outside the folder |
 | `python3 "06 Werkzeuge/verteilen.py"` | generate `AGENTS.md` and `.agents/skills/` from `CLAUDE.md` and `.claude/skills/`; `--pruefen` compare only |
 | `python3 "06 Werkzeuge/dienst/pruefen.py"` | functional test with artificial cases in a temp folder |
+
+## What you can rely on
+
+A legal file needs more than folders. The folder enforces these rules in
+code and checks them in the test suite:
+
+- **Reading stays reading.** No reading tool touches `akte.json`,
+  `bestand.json` or `zentrale.json`. New files are registered only by the
+  sync tool.
+- **IDs never come back.** A counter per ID type remembers the highest
+  number ever issued; a removed entry is never replaced by a new one with
+  the same ID, so journal references stay unambiguous.
+- **Reviewed and sent versions are frozen.** With status "geprüft" or
+  "versandt" the folder stores a read-only copy under
+  `06 Entwürfe/Fassungen/` with checksum and its own ID. The working file
+  may change, the copy never does.
+- **Deadlines are recalculated.** §§ 187, 188, 193 BGB with the calculation
+  shown; month ends, leap years and one-year periods are covered by 20 edge
+  cases. Whether a deadline applies is not decided by the calculator.
+- **Hand-overs contain only what should go out.** The package is built for a
+  named recipient, previews every file, aborts on unknown IDs and is read
+  back against its manifest.
+- **Backups are provably usable.** Every ZIP is read back after writing;
+  "Wiederherstellung prüfen" extracts it into a scratch folder and checks
+  case files and checksums.
+- **Data stays where you put it.** No AI inside the folder, no network in
+  the service. What you back up to a cloud folder is uploaded by your
+  system; what your AI reads is processed by its provider.
 
 ## Scope
 
@@ -286,8 +315,10 @@ languages are planned to match the countries.
 | others with MCP | same call in the assistant's configuration file; work profile in `AGENTS.md`. |
 | without MCP, with commands | `python3 "06 Werkzeuge/dienst/cli.py" liste` |
 
-Writing tools only run when you confirm the call. There are no tools for
-sending, deleting or changing originals.
+Writing tools only run when you confirm the call (only the JSON value `true`
+counts). Reading tools never change a file: a new or moved file is only
+reported, it gets its ID through `bestand_abgleichen`; the UI does that when
+you open a case. There are no tools for sending, deleting or changing originals.
 
 ## Limits
 
@@ -305,8 +336,18 @@ sending, deleting or changing originals.
 ## Backup
 
 "Geprüfte Sicherung erstellen" in the UI writes a ZIP outside the folder
-and reads it back. Target and second target are in the settings. Check
-without the UI: `python3 "06 Werkzeuge/dienst/server.py" --check`.
+and reads it back. Target and second target are in the settings and are
+shown before the first backup. "Wiederherstellung prüfen" extracts the last
+backup into a scratch folder, checks case files and checksums, then removes
+the scratch folder. A real restore always goes into a new folder, never over
+the running one: `python3 "06 Werkzeuge/dienst/server.py" --restore <ZIP> <new folder>`.
+Without the UI: `--check` verifies the inventory, `--backup` backs up,
+`--probe` tests the last backup.
+
+Three levels that are not the same: the folder lives on your computer. If a
+backup target is in iCloud Drive or another cloud folder, the operating
+system uploads the unencrypted ZIP there. And whatever your AI reads is
+processed by its provider under its terms; a local MCP server does not change that.
 
 ## Licence
 

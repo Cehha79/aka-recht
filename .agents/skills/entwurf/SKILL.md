@@ -27,12 +27,20 @@ Akte, nicht vorausgesetzt.
    Merkblatt hat ein Prüfdatum; Fassung der Normen für den Fall erneut prüfen.
 3. Datei schreiben: `06 Entwürfe/JJJJ-MM-TT_<Kurzname>_ENTWURF.md` im Fallordner.
    Oben interne Hinweise (Frist, Versandweg, offene Punkte), dann `---`,
-   dann der Sendetext. Neue Fassung: Datei überschreiben.
+   dann der Sendetext. Neue Arbeitsfassung: Datei überschreiben. Die
+   eingefrorenen Kopien unter `06 Entwürfe/Fassungen/` nie anfassen.
 4. In der Akte erfassen (Pfad relativ zum Fallordner):
    `cli.py entwurf_erfassen fall=$fall titel="…" datei="06 Entwürfe/…_ENTWURF.md" status="in Arbeit"`
-   Gleicher Titel = Fassung zählt hoch. Danach `cli.py bestand_abgleichen fall=$fall`
-   (schreibend, nach Freigabe): erst der Abgleich gibt der neuen Datei ihre
-   D-Kennung; Lesen allein registriert nichts.
+   Gleicher Titel = Fassung zählt hoch, jede Fassung mit Prüfsumme. Danach
+   `cli.py bestand_abgleichen fall=$fall` (schreibend, nach Freigabe): erst
+   der Abgleich gibt der neuen Datei ihre D-Kennung; Lesen allein
+   registriert nichts.
+   Freigabe durch den Nutzer: `status=geprüft` friert die Datei und eine
+   gleichnamige .docx als nur lesbare Kopie unter `06 Entwürfe/Fassungen/`
+   ein (eigene D-Kennung, Prüfsumme in der Akte). Nach dem Versand durch
+   den Nutzer: `status=versandt versandt_als=D…` (Versandbeleg); weicht
+   der Sendetext von der geprüften Fassung ab, meldet das Werkzeug es im
+   Feld `hinweise`, das dem Nutzer nennen.
 5. Word-Datei erzeugen (Pfad vom Projektordner aus):
    `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" "02 Fälle/<Fallordner>/06 Entwürfe/<Datei>.md"`
    Die Warnung zu offenen Markern dem Nutzer nennen.

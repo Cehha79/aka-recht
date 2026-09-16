@@ -6,6 +6,8 @@ Aufruf:
   python3 server.py --fall R-0001   direkt eine Fallakte öffnen
   python3 server.py --check         Bestand aller Fälle prüfen (ohne Dienst)
   python3 server.py --backup        geprüfte Sicherung erstellen (ohne Dienst)
+  python3 server.py --probe [ZIP]   Wiederherstellungsprobe der letzten (oder genannten) Sicherung
+  python3 server.py --restore ZIP ORDNER   Sicherung in einen neuen, leeren Ordner außerhalb entpacken und prüfen
   python3 server.py --serve         nur der Dienstprozess (intern)
 
 Zugriff braucht das Sitzungscookie aus dem Startlink; Änderungen zusätzlich die
@@ -133,6 +135,7 @@ class Handler(BaseHTTPRequestHandler):
             if pfad == '/api/fristen/berechnen': self.antwort(200, werkzeuge.frist_berechnen(**daten)); return
             if pfad == '/api/oeffnen': self.antwort(200, werkzeuge.oeffnen(daten.get('fall'), daten.get('dokument'), daten.get('bereich'), bool(daten.get('zeigen')))); return
             if pfad == '/api/sicherung': self.antwort(200, sicherung.erstellen()); return
+            if pfad == '/api/sicherung/probe': self.antwort(200, sicherung.probe(daten.get('archiv') or None)); return
             if pfad == '/api/einstellungen':
                 z = store.lade_zentrale()
                 for k in ('ziel', 'zweites_ziel'):
@@ -209,8 +212,13 @@ if __name__ == '__main__':
     p.add_argument('--serve', action='store_true'); p.add_argument('--port', type=int, default=0)
     p.add_argument('--no-open', action='store_true'); p.add_argument('--fall')
     p.add_argument('--check', action='store_true'); p.add_argument('--backup', action='store_true')
+    p.add_argument('--probe', nargs='?', const='', metavar='ZIP'); p.add_argument('--restore', nargs=2, metavar=('ZIP', 'ORDNER'))
     a = p.parse_args(); store.konfigurieren(a.root)
     if a.serve: dienst(a.port)
+    elif a.probe is not None:
+        b = sicherung.probe(a.probe or None); print(json.dumps(b, ensure_ascii=False, indent=2)); sys.exit(0 if b.get('bestanden') else 1)
+    elif a.restore:
+        b = sicherung.wiederherstellen(a.restore[0], a.restore[1]); print(json.dumps(b, ensure_ascii=False, indent=2)); sys.exit(0 if b.get('bestanden') else 1)
     elif a.check:
         erg = {'faelle': [werkzeuge.bestand_pruefen(f['id']) for f in store.faelle()]}
         print(json.dumps(erg, ensure_ascii=False, indent=2)); sys.exit(0 if all(not f['veraendert'] and not f['fehlend'] for f in erg['faelle']) else 1)

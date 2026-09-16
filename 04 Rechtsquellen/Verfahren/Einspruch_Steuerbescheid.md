@@ -1,6 +1,6 @@
 # Merkblatt: Einspruch gegen einen Steuerbescheid
 
-*Rechtsordnung DE · Bereich Steuern und Abgaben · Stand der Prüfung: 16.09.2026*
+*Rechtsordnung DE · Bereich Steuern und Abgaben · Stand der Prüfung: 17.09.2026*
 
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Jede
 Angabe ist am amtlichen Volltext gelesen (gesetze-im-internet.de, Abgabenordnung
@@ -24,7 +24,10 @@ Fassung erneut prüfen, Bekanntgabe belegen, Frist mit `frist_berechnen` rechnen
 |---|---|---|
 | Dauer | ein Monat nach Bekanntgabe des Verwaltungsakts | § 355 Abs. 1 Satz 1 AO |
 | Bekanntgabe bei Post im Inland | gilt „am vierten Tage nach der Aufgabe zur Post“ als bewirkt, außer der Bescheid ist nicht oder später zugegangen; im Zweifel muss die Behörde Zugang und Zeitpunkt nachweisen | § 122 Abs. 2 Nr. 1 AO |
-| Bekanntgabe elektronisch (etwa ELSTER-Postfach) | „am vierten Tage nach der Absendung“, gleicher Vorbehalt | § 122 Abs. 2a AO |
+| Übermittlungsweg zuerst klären | Drei Wege mit je eigenem Auslöser und Beleg: Post (Aufgabe zur Post, Umschlag), elektronische Übermittlung an den Empfänger (Absendung), Bereitstellung zum Datenabruf in Mein ELSTER oder im Nutzerkonto nach dem Onlinezugangsgesetz (Bereitstellung, Benachrichtigung). Ein einheitliches Feld „elektronisch“ gibt es nicht; welcher Weg vorliegt, steht in der Benachrichtigung oder im Bescheid selbst | § 122 Abs. 2 und 2a, § 122a AO |
+| Bekanntgabe bei elektronischer Übermittlung (der Bescheid wird an den Empfänger gesendet) | „am vierten Tage nach der Absendung“, gleicher Vorbehalt wie bei Post | § 122 Abs. 2a AO |
+| Bekanntgabe durch Bereitstellung zum Datenabruf (Mein ELSTER, Nutzerkonto) | gilt „am vierten Tag nach der Bereitstellung zum Abruf“ als bekannt gegeben; im Zweifel muss die Behörde den Zeitpunkt der Bereitstellung nachweisen. Die abrufberechtigte Person ist am Tag der Bereitstellung elektronisch zu benachrichtigen. Seit 01.01.2026 ohne Einwilligung möglich; wer Papier will, beantragt die postalische Bekanntgabe, der Antrag wirkt erst ab Zugang beim Finanzamt und nur für die Zukunft | § 122a Abs. 1, 2, 4 und 5 AO |
+| Übergangsrecht zur Bereitstellung | § 122a AO in der Fassung ab 01.01.2026 gilt für Bescheide, die nach dem 31.12.2025 erlassen wurden; die Soll-Regel des § 122a Abs. 1 Satz 2 (Bereitstellung bei elektronisch abgegebener Erklärung) erst für Bescheide nach dem 31.12.2026. Für ältere Bescheide gilt die Vorfassung `[QUELLE: § 122a AO in der bis 31.12.2025 geltenden Fassung nicht gelesen; die Frist lief dort nach anderer Regel]` | Art. 97 § 28 Abs. 1 und 2 EGAO |
 | Berechnung | §§ 187 bis 193 BGB entsprechend; Fristende an Sonntag, Feiertag oder Samstag verschiebt auf den nächsten Werktag | § 108 Abs. 1 und 3 AO |
 | Fehlende oder falsche Rechtsbehelfsbelehrung | Frist beginnt nicht; Einspruch dann binnen eines Jahres seit Bekanntgabe | § 356 Abs. 1 und 2 AO |
 | Frist versäumt | Wiedereinsetzung auf Antrag, wenn ohne Verschulden; Antrag binnen eines Monats nach Wegfall des Hindernisses, Handlung nachholen, Gründe glaubhaft machen; nach einem Jahr ausgeschlossen | § 110 Abs. 1 bis 3 AO |
@@ -36,7 +39,10 @@ Montag, 12.10.2026 (§ 108 Abs. 1 AO, § 188 Abs. 2 BGB). Fällt das Ende auf
 Samstag, Sonntag oder einen Feiertag, gilt der nächste Werktag (§ 108 Abs. 3 AO).
 Rechnen mit `frist_berechnen start=2026-09-11 menge=1 einheit=monate land=…`.
 Der Tag der Aufgabe zur Post steht nicht immer im Bescheid; das Bescheiddatum
-ist ein Anhaltspunkt, kein Beleg. Umschlag aufheben.
+ist ein Anhaltspunkt, kein Beleg. Umschlag aufheben. Bei Bereitstellung zum
+Abruf ist der Auslöser der Tag der Bereitstellung (Benachrichtigungs-E-Mail
+und Datum im Postfach sichern), nicht der Tag des Abrufs und nicht das
+Bescheiddatum.
 
 ## 3. Form, Inhalt, Adressat
 
@@ -73,8 +79,10 @@ schließt die schlichte Änderung nicht aus.
 ## 6. Anlagen und Belege für die Akte
 
 - Bescheid vollständig (alle Seiten, Rechtsbehelfsbelehrung) als Original in
-  02 Grundlagen; Umschlag mit Poststempel oder ELSTER-Bereitstellungsdatum als
-  Beleg der Bekanntgabe.
+  02 Grundlagen; als Beleg der Bekanntgabe je nach Weg: Umschlag mit
+  Poststempel, bei elektronischer Übermittlung das Absendedatum, bei
+  Bereitstellung zum Abruf die Benachrichtigung und das Bereitstellungsdatum
+  aus dem Postfach.
 - Steuererklärung und eingereichte Belege, auf die sich die Abweichung bezieht.
 - Nachweise für die Begründung (Rechnungen, Bescheinigungen, Fahrtenbuch).
 - Versandbeleg des Einspruchs (Einschreiben, ELSTER-Übertragungsprotokoll,
@@ -94,15 +102,18 @@ schließt die schlichte Änderung nicht aus.
 | § 367 AO Entscheidung über den Einspruch (Abs. 2) | https://www.gesetze-im-internet.de/ao_1977/__367.html | 16.09.2026 | wie oben |
 | § 108 AO Fristen und Termine | https://www.gesetze-im-internet.de/ao_1977/__108.html | 16.09.2026 | wie oben |
 | § 110 AO Wiedereinsetzung | https://www.gesetze-im-internet.de/ao_1977/__110.html | 16.09.2026 | wie oben |
-| § 122 AO Bekanntgabe (Abs. 2 und 2a) | https://www.gesetze-im-internet.de/ao_1977/__122.html | 16.09.2026 | wie oben |
+| § 122 AO Bekanntgabe (Abs. 2, 2a und 7) | https://www.gesetze-im-internet.de/ao_1977/__122.html | 17.09.2026 am Rohtext | wie oben |
+| § 122a AO Bekanntgabe durch Bereitstellung zum Datenabruf (Abs. 1 bis 5) | https://www.gesetze-im-internet.de/ao_1977/__122a.html | 17.09.2026 am Rohtext | wie oben; Fußnote verweist auf Art. 97 §§ 1 und 28 EGAO |
+| Art. 97 § 28 EGAO Elektronische Bekanntgabe, Übergangsrecht (Abs. 1 und 2) | https://www.gesetze-im-internet.de/aoeg_1977/art_97__28.html | 17.09.2026 am Rohtext | EGAO, Fassung laut Seite `[PRÜFEN: Stand des EGAO auf der Gesetzesseite]` |
 | § 172 AO Aufhebung und Änderung (Abs. 1 Satz 1 Nr. 2 Buchst. a) | https://www.gesetze-im-internet.de/ao_1977/__172.html | 16.09.2026 | wie oben |
 | § 87a AO Elektronische Kommunikation (Abs. 1 Satz 1 und 2, Abs. 3 Satz 1 und 2) | https://www.gesetze-im-internet.de/ao_1977/__87a.html | 16.09.2026 | wie oben |
 | § 47 FGO Klagefrist | https://www.gesetze-im-internet.de/fgo/__47.html | 16.09.2026 | FGO, Fassung laut Seite `[PRÜFEN: Stand der FGO auf der Gesetzesseite]` |
 | Stand der AO | https://www.gesetze-im-internet.de/ao_1977/BJNR006130976.html | 16.09.2026 | Neugefasst durch Bek. v. 23.01.2025 I Nr. 24; zuletzt geändert durch Art. 15 Abs. 6 G v. 03.07.2026 I Nr. 199 |
 | AEAO zu § 357 (E-Mail ohne Signatur) | https://ao.bundesfinanzministerium.de/ao/2025/Abgabenordnung/Siebenter-Teil/Zweiter-Abschnitt/Paragraf-357/inhalt.html | nicht gelesen (Abruf am 16.09.2026 blockiert) | AO-Handbuch 2025 |
 
-Nicht gelesen: Rechtsprechung zur Unterschrift, zur Kostenerstattung und zur
-Beschwer bei Null-Bescheiden. Für Bescheide von Gemeinden (Grundsteuer,
+Nicht gelesen: § 87a Abs. 6 bis 8 AO (Nutzerkonto, Authentisierung), § 122a
+AO in der bis 31.12.2025 geltenden Fassung, Rechtsprechung zur Unterschrift,
+zur Kostenerstattung und zur Beschwer bei Null-Bescheiden. Für Bescheide von Gemeinden (Grundsteuer,
 Gewerbesteuer als Kommunalabgabe) gelten je nach Land Kommunalabgabengesetze
 mit eigener Rechtsbehelfsregel `[QUELLE: KAG des Landes, Widerspruch statt
 Einspruch möglich]`.

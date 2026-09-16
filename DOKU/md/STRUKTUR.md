@@ -75,7 +75,7 @@ sind fest, damit Verweise stabil bleiben.
 ├─ 03 Schriftverkehr/ je Beteiligter ein Unterordner, dazu Versandnachweise/
 ├─ 04 Verfahren/      je Verfahren ein nummerierter Unterordner
 ├─ 05 Beweise/        Fotos, Zeugenlisten, Dienstpläne, Quittungen
-├─ 06 Entwürfe/       noch nicht versandte Texte, Dateiname endet auf _ENTWURF
+├─ 06 Entwürfe/       noch nicht versandte Texte, Dateiname endet auf _ENTWURF; Fassungen/ mit eingefrorenen Kopien geprüfter und versandter Fassungen
 ├─ 07 Recherche/      Prüfvermerke (md plus html), Gesetzessammlung des Falls
 └─ 08 Archiv/         alte Übersichten, frühere Arbeitsumgebung, unverändert
 ```
@@ -163,7 +163,7 @@ Sicherungsziel iCloud Drive wird nur vorgeschlagen, wo es den Ordner gibt. Texta
 | `dokumente.py` | Dateien auflisten, Textauszug (txt, md, html, docx, eml, pdf), Suche |
 | `fristen.py` | Fristen rechnen nach §§ 187, 188, 193 BGB, landesweite Feiertage aller 16 Bundesländer (Kürzel, Einstellung `feiertagsland` in zentrale.json, Standard BW), Rechnung als Text |
 | `bestand.py` | Prüfsummen, Verschiebungen erkennen, Bestand prüfen |
-| `sicherung.py` | geprüfte ZIP-Sicherung außerhalb des Projekts, SHA-256, Kopie nach iCloud Drive |
+| `sicherung.py` | geprüfte ZIP-Sicherung außerhalb des Projekts, SHA-256, Kopie an das zweite Ziel (Rechte 0600); Status prüft beide Archive und nennt die Ziele mit Cloud-Hinweis; `wiederherstellen()` entpackt in einen neuen, leeren Ordner außerhalb und prüft Schema und Prüfsummen, `probe()` dasselbe in einem Zwischenordner (seit 17.09.2026, F19, F20) |
 | `werkzeuge.py` | Katalog aller Funktionen als beschriebene Werkzeuge (Name, Zweck, Parameter, lesend oder schreibend); Oberfläche und KI rufen dieselben Werkzeuge |
 | `cli.py` | alle Werkzeuge über die Befehlszeile, für Claude Code, Codex und andere Assistenten |
 | `mcp_server.py` | dieselben Werkzeuge als MCP-Server über die Standardeingabe (JSON-RPC 2.0), für Claude Code, Claude Desktop, Codex, Cursor, Gemini; schreibende nur mit `bestaetigt` |
@@ -182,6 +182,7 @@ POST /api/eingang/zuordnen            gemeinsame Post einem Fall zuordnen
 POST /api/fristen/berechnen           Frist rechnen, Ergebnis mit Rechnung
 GET  /api/bestand                     Prüfsummen aller Fälle prüfen
 POST /api/sicherung                   geprüfte ZIP erstellen
+POST /api/sicherung/probe             Wiederherstellungsprobe der letzten (oder genannten) Sicherung
 GET  /api/werkzeuge                   Werkzeugkatalog (für Oberfläche und KI)
 GET  /api/einstellungen               Sicherungsziele, Bundesland für Feiertage, Länderliste
 POST /api/einstellungen               Sicherungsziele und Bundesland ändern
@@ -288,7 +289,7 @@ Arbeitsbereichs; Hook-Änderungen wirken nach Neustart der Sitzung.
 | `.claude/settings.json` | SessionStart: Eingang, nahe Fristen, offene Aufgaben je Fall. PreToolUse (Write, Edit): Schreiben in 02, 03, 04, 05, 08 und bestand.json gesperrt. PostToolUse (Read, Bash, WebFetch, WebSearch): Fremdtext-Wächter meldet Sätze, die wie Anweisungen an die KI klingen (REGELN Nr. 17), blockiert nicht. Stop: Doku-Abgleich anmahnen |
 | `05 Vorlagen/Schreiben/` | Briefkopf, Einspruch Bußgeld, Widerspruch Bescheid, Fristsetzung, Auskunft DSGVO, Klage Arbeitsgericht; interne Hinweise über der Trennlinie, Platzhalter 【 】, Marker |
 | `.claude/recht/werkzeuge/docx_erzeugen.py` | Markdown oder Text nach Word ohne Fremdpaket; warnt vor offenen Markern |
-| `.claude/recht/werkzeuge/uebergabe_paket.py` | ZIP mit Inhaltsverzeichnis, Chronologie, Fristen, Anlagen, Journal, Originalen |
+| `.claude/recht/werkzeuge/uebergabe_paket.py` | ZIP für einen benannten Empfänger: `--empfaenger anwalt` voll (Verzeichnis mit Chronologie, Fristen, Aufgaben, Journal, Originale 01 bis 05), `behoerde`, `gericht`, `gegenseite`, `beratung` nur die mit `--nur` gewählten Dokumente; `--vorschau`; unbekannte Kennungen brechen ab; Paket wird zurückgelesen und gegen `00 Manifest.json` geprüft (seit 17.09.2026, F08, F27) |
 
 Claude arbeitet in der Sitzung mit denselben Werkzeugen wie die App, über
 `06 Werkzeuge/dienst/cli.py` (Schema, Revision, Sperre inklusive). Das
