@@ -19,7 +19,7 @@ BEREICHE = ['Arbeit', 'Verkehr und Bußgeld', 'Steuern und Abgaben', 'Behörden 
             'Sozialleistungen und Rente', 'Gesundheit und Pflege', 'Wohnen und Miete', 'Bauen und Nachbarn',
             'Verträge und Verbraucher', 'Forderungen und Inkasso', 'Versicherungen', 'Familie und Unterhalt',
             'Erbe und Vorsorge', 'Strafsachen und Anzeigen', 'Schule, Ausbildung und Studium', 'Aufenthalt und Staatsangehörigkeit',
-            'Geschäft, Datenschutz und Internet', 'Vereine und Ehrenamt', 'Allgemein']   # 18 Bereiche plus Allgemein (Hasan 16.09.2026)
+            'Geschäft, Datenschutz und Internet', 'Vereine und Ehrenamt', 'Allgemein']   # 18 Bereiche plus Allgemein (seit 16.09.2026)
 DOKUMENT_STAND = ['Original', 'Entwurf', 'Versandt', 'Zugegangen', 'Historisch', 'Vermerk']
 DOKUMENT_ART_VORSCHLAG = ['Schreiben', 'E-Mail', 'Foto', 'Vertrag', 'Bescheid',
                           'Urteil', 'Entwurf', 'Beleg', 'Übersicht', 'Gesetz', 'Sonstiges']
