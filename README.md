@@ -92,6 +92,7 @@ Die Mappe ist kostenlos und wird offen entwickelt. Fehler, Vorschläge,
 Feiertage anderer Bundesländer, Übersetzungen, Vorlagen und später ganze
 Länderpakete sind willkommen. Bitte keine echten Akten, Namen oder
 Aktenzeichen einreichen. Beiträge stehen unter derselben Lizenz (AGPL-3.0).
+Wie ein Beitrag abläuft, steht in `CONTRIBUTING.md`.
 
 Issues und Diskussionen sind nur für die Software da. Fragen zu einem echten
 Fall („Gilt bei mir die Frist?“) werden dort nicht beantwortet; das wäre
