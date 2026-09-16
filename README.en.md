@@ -257,6 +257,10 @@ code and checks them in the test suite:
 - **Deadlines are recalculated.** §§ 187, 188, 193 BGB with the calculation
   shown; month ends, leap years and one-year periods are covered by 20 edge
   cases. Whether a deadline applies is not decided by the calculator.
+- **Confirmed means checked.** A deadline is only "bestätigt" when the
+  calculation names the end date, evidence and trigger are present and no
+  `[PRÜFEN]`, `[QUELLE]` or `[BELEG]` marker is open; the confirmation carries
+  review date and reviewer, and an appointment needs the summons as source.
 - **Hand-overs contain only what should go out.** The package is built for a
   named recipient, previews every file, aborts on unknown IDs and is read
   back against its manifest.

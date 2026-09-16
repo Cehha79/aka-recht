@@ -105,9 +105,22 @@ Ordnungsangaben sind optional.
 | berechnung | Rechnung als Text, sichtbar | Pflicht bei bestätigt |
 | pruefstatus | offen, bestätigt, abgelaufen, erledigt | fest |
 | quelle | D-Kennung | Verweis, Pflicht bei bestätigt |
+| geprueft_am | Datum der Bestätigung | Datum; setzt `frist_eintragen` und die Oberfläche bei bestätigt; fehlt es, nur Warnung (ältere Akten) |
+| geprueft_von | wer geprüft hat (Name oder Assistent) | Text, frei |
 
 Regel: `bestätigt` nur mit Auslöser, Rechtsgrundlage, Berechnung und Quelle.
-Bei `art` Termin genügt ein Datum mit Quelle. Bei Kalenderfristen aus einem
+Seit 17.09.2026 (Prüfbericht F12) prüft das Schema dazu drei unterscheidbare
+Eigenschaften, die `akte_schema.frist_eigenschaften()` aus den Feldern
+ableitet und die Werkzeuge und Oberfläche anzeigen: `gerechnet` (die Rechnung
+nennt das Fristende, als `JJJJ-MM-TT` oder `TT.MM.JJJJ`; bei Terminen nicht
+anwendbar), `belegt` (Quelle ist eine D-Kennung und der Auslöser ist benannt;
+bei Terminen genügt die Quelle), `geprueft` (bestätigt mit Prüfdatum). Eine
+bestätigte Frist, deren Rechnung das Fristende nicht nennt, und jede
+bestätigte Frist mit einem offenen Marker `[PRÜFEN …]`, `[QUELLE …]` oder
+`[BELEG …]` in Titel, Auslöser, Grundlage oder Rechnung ist ein Fehler: erst
+auflösen oder als Aufgabe auslagern, dann bestätigen. Ein bestätigter Termin
+braucht die Ladung, Einladung oder Terminbestätigung als Quelle.
+Bei `art` Termin genügt sonst ein Datum mit Quelle. Bei Kalenderfristen aus einem
 Schreiben (von Gegenseite oder selbst gesetzt) ist das Schreiben die Quelle,
 die Rechtsgrundlage lautet „Datum laut Schreiben“. `abgelaufen` ist vorbei,
 bleibt aber sichtbar (etwa ein Zahlungsziel für die Verzugsfrage). `erledigt`

@@ -27,8 +27,16 @@ Lies `CLAUDE.md` und die Akte (`python3 "06 Werkzeuge/dienst/cli.py" fall_lesen 
    (Verschiebung auf den nächsten Werktag) auf diese Frist anwendbar ist,
    gesondert prüfen und im Text sagen; bei Zweifel den rechnerischen Tag als
    sicheren Tag nennen.
-4. Eintragen: `cli.py frist_eintragen fall=$fall datum=… titel=… art=gesetzlich|"selbst gesetzt"|"von Gegenseite gesetzt"|vorsorglich|Termin ausloeser=… rechtsgrundlage=… berechnung=… pruefstatus=offen|bestätigt|abgelaufen quelle=D…`
+4. Eintragen: `cli.py frist_eintragen fall=$fall datum=… titel=… art=gesetzlich|"selbst gesetzt"|"von Gegenseite gesetzt"|vorsorglich|Termin ausloeser=… rechtsgrundlage=… berechnung=… pruefstatus=offen|bestätigt|abgelaufen quelle=D… geprueft_von=…`
    - Gesetzliche Frist `bestätigt` nur, wenn Auslöser, Zugang und Grundlage belegt sind.
+   - Drei Eigenschaften, die das Werkzeug zurückgibt und das Schema bei
+     `bestätigt` verlangt: `gerechnet` (die Rechnung nennt das Fristende),
+     `belegt` (Quelle ist eine D-Kennung, Auslöser benannt), `geprueft`
+     (Prüfdatum, bei bestätigt vom Werkzeug gesetzt; `geprueft_von` mit dem
+     eigenen Namen als Assistent angeben). Ein bestätigter Termin braucht die
+     Ladung oder Einladung als Quelle. Offene Marker `[PRÜFEN]`, `[QUELLE]`,
+     `[BELEG]` in einer bestätigten Frist weist das Schema ab: erst auflösen
+     oder als Aufgabe auslagern, dann bestätigen.
    - Kalenderfrist aus einem Schreiben (Gegenseite oder eigene): `art` „von
      Gegenseite gesetzt“ oder „selbst gesetzt“, `quelle` das Schreiben,
      `ausloeser` „Fristsetzung im Schreiben vom …“, `rechtsgrundlage` „Datum

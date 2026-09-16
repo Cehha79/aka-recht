@@ -8,6 +8,7 @@ Löschen oder Ändern von Originalen gibt es absichtlich nicht.
 Nur Standardbibliothek.
 """
 import json, re, shutil, sys
+from datetime import date
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import akte_schema, bestand, dokumente, fristen, sicherung, store
@@ -79,7 +80,7 @@ def faelle_auflisten():
             zeilen.append({'id': e['id'], 'titel': f['titel'], 'bereich': f['bereich'], 'status': f['status'], 'rolle': f['rolle'],
                            'dokumente': len(vorhanden), 'nicht_erfasst': len(abweichungen['nicht_erfasst']), 'offene_aufgaben': sum(not a['erledigt'] for a in akte['aufgaben']),
                            'fristen_offen': sum(fr['pruefstatus'] != 'erledigt' for fr in akte['fristen']),
-                           'fristen': [{'id': fr['id'], 'datum': fr['datum'], 'titel': fr['titel'], 'art': fr['art'], 'pruefstatus': fr['pruefstatus']} for fr in akte['fristen'] if fr['pruefstatus'] != 'erledigt']})
+                           'fristen': [{'id': fr['id'], 'datum': fr['datum'], 'titel': fr['titel'], 'art': fr['art'], 'pruefstatus': fr['pruefstatus'], 'eigenschaften': akte_schema.frist_eigenschaften(fr)} for fr in akte['fristen'] if fr['pruefstatus'] != 'erledigt']})
         except Exception as ex:
             zeilen.append({'id': e['id'], 'titel': e['id'], 'fehler': str(ex)})
     return zeilen
@@ -100,7 +101,7 @@ def fall_uebersicht(fall):
     return {'fall': {k: akte['fall'].get(k, '') for k in ('id', 'titel', 'bereich', 'rolle', 'ziel', 'status', 'themen')},
             'beteiligte': [{'id': b['id'], 'name': b['name'], 'rolle': b.get('rolle', ''), 'aktenzeichen': b.get('aktenzeichen', '')} for b in akte['beteiligte']],
             'verfahren': [{'id': v['id'], 'art': v['art'], 'stelle': v.get('stelle', ''), 'aktenzeichen': v.get('aktenzeichen', ''), 'stand': kurz(v.get('stand'))} for v in akte['verfahren']],
-            'fristen': [{'id': f['id'], 'datum': f['datum'], 'titel': f['titel'], 'art': f['art'], 'pruefstatus': f['pruefstatus'], 'quelle': f.get('quelle', '')} for f in sorted(akte['fristen'], key=lambda x: x['datum']) if f['pruefstatus'] != 'erledigt'],
+            'fristen': [{'id': f['id'], 'datum': f['datum'], 'titel': f['titel'], 'art': f['art'], 'pruefstatus': f['pruefstatus'], 'quelle': f.get('quelle', ''), 'geprueft_am': f.get('geprueft_am', ''), 'eigenschaften': akte_schema.frist_eigenschaften(f)} for f in sorted(akte['fristen'], key=lambda x: x['datum']) if f['pruefstatus'] != 'erledigt'],
             'aufgaben_offen': [{'id': a['id'], 'titel': a['titel'], 'faellig': a.get('faellig', ''), 'quelle': a.get('quelle', '')} for a in akte['aufgaben'] if not a['erledigt']],
             'ereignisse': [{'id': e['id'], 'datum': e['datum'], 'titel': e['titel'], 'art': e.get('art', ''), 'quelle': e.get('quelle', '')} for e in sorted(akte['ereignisse'], key=lambda x: x['datum'])],
             'entwuerfe': [{'id': w['id'], 'titel': w['titel'], 'fassung': w.get('fassung', 1), 'status': w.get('status', '')} for w in akte['entwuerfe']],
@@ -249,18 +250,21 @@ def aufgabe_setzen(fall, aufgabe, erledigt=None, faellig=None, detail=None):
     rev = store.speichere_akte(fall, akte, rev)
     return {'aufgabe': a, 'revision': rev}
 
-@werkzeug('frist_eintragen', 'Frist oder Termin in einem Fall eintragen. Bestätigt nur mit Auslöser, Rechtsgrundlage, Rechnung und Quelle.',
+@werkzeug('frist_eintragen', 'Frist oder Termin in einem Fall eintragen. Bestätigt nur, wenn die Rechnung das Fristende nennt, Auslöser, Rechtsgrundlage und Quelle da sind und kein Marker [PRÜFEN], [QUELLE], [BELEG] offen ist; die Bestätigung bekommt Prüfdatum und Prüfer.',
           {'fall': {'type': 'string'}, 'datum': {'type': 'string'}, 'titel': {'type': 'string'},
            'art': {'type': 'string', 'enum': akte_schema.FRIST_ART}, 'ausloeser': {'type': 'string'}, 'rechtsgrundlage': {'type': 'string'},
-           'berechnung': {'type': 'string'}, 'pruefstatus': {'type': 'string', 'enum': akte_schema.FRIST_STATUS}, 'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'}},
+           'berechnung': {'type': 'string'}, 'pruefstatus': {'type': 'string', 'enum': akte_schema.FRIST_STATUS}, 'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'},
+           'geprueft_von': {'type': 'string', 'description': 'Wer die Bestätigung geprüft hat (Name oder Assistent); nur bei pruefstatus bestätigt'}},
           schreibend=True, pflicht=['fall', 'datum', 'titel', 'art'])
-def frist_eintragen(fall, datum, titel, art, ausloeser='', rechtsgrundlage='', berechnung='', pruefstatus='offen', quelle=''):
+def frist_eintragen(fall, datum, titel, art, ausloeser='', rechtsgrundlage='', berechnung='', pruefstatus='offen', quelle='', geprueft_von=''):
     quelle, berechnung = _quelle(fall, quelle, berechnung)
     akte, rev = store.lese_akte(fall)
     eintrag = {'id': _naechste(akte, 'fristen'), 'datum': datum, 'titel': titel, 'art': art, 'ausloeser': ausloeser,
                'rechtsgrundlage': rechtsgrundlage, 'berechnung': berechnung, 'pruefstatus': pruefstatus, 'quelle': quelle}
+    if pruefstatus == 'bestätigt':   # F12: eine Bestätigung trägt Prüfdatum und Prüfer; das Schema prüft Rechnung, Beleg und Marker
+        eintrag['geprueft_am'] = date.today().isoformat(); eintrag['geprueft_von'] = (geprueft_von or '').strip()
     akte['fristen'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
-    return {'frist': eintrag, 'revision': rev}
+    return {'frist': eintrag, 'eigenschaften': akte_schema.frist_eigenschaften(eintrag), 'revision': rev}
 
 @werkzeug('ereignis_eintragen', 'Ereignis in die Chronologie eines Falls eintragen.',
           {'fall': {'type': 'string'}, 'datum': {'type': 'string'}, 'titel': {'type': 'string'},

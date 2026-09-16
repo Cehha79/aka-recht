@@ -25,7 +25,7 @@ def main():
             teile = [f'{f["id"]} {f["titel"]} ({f["bereich"]}, {f["status"]})']
             teile.append('neue Post: ' + (', '.join(post) if post else 'keine'))
             if f.get('nicht_erfasst'): teile.append(f'{f["nicht_erfasst"]} Datei(en) ohne Kennung (bestand_abgleichen nach Freigabe)')
-            if nah: teile.append('Fristen: ' + '; '.join(f'{x["datum"]} {x["titel"]} [{x["pruefstatus"]}]' + (' ÜBERSCHRITTEN' if x['datum'] < heute else '') for x in nah))
+            if nah: teile.append('Fristen: ' + '; '.join(f'{x["datum"]} {x["titel"]} [{x["pruefstatus"]}' + (', ohne Prüfdatum' if x['pruefstatus'] == 'bestätigt' and not x.get('eigenschaften', {}).get('geprueft') else '') + (', offener Marker' if x.get('eigenschaften', {}).get('offene_marker') else '') + ']' + (' ÜBERSCHRITTEN' if x['datum'] < heute else '') for x in nah))
             teile.append(f'offene Aufgaben: {f["offene_aufgaben"]}')
             zeilen.append(' · '.join(teile))
         if not werkzeuge.faelle_auflisten(): zeilen.append('Noch kein Fall im neuen Format eingetragen (zentrale.json).')

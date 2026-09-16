@@ -190,6 +190,28 @@ def run():
         assert '2026-02-31' not in (root / f1['ordner'] / 'akte.json').read_text()
         ok('Schema: 31. Februar, Monat 13, fall=null, Liste statt Objekt, Zahl statt Eintrag, true statt Zahl geben Fehler statt Absturz; Schalttag gilt')
         ok('Bestätigte Frist ohne Grundlage wird nicht gespeichert')
+        # F12: „bestätigt“ heißt gerechnet (Rechnung nennt das Fristende), belegt (D-Kennung, Auslöser), ohne offenen Marker, mit Prüfdatum
+        voll = {'id': 'F01', 'datum': '2026-09-21', 'titel': 'Einspruch', 'art': 'gesetzlich', 'ausloeser': 'Zustellung 05.09.2026', 'rechtsgrundlage': '§ 67 Abs. 1 OWiG',
+                'berechnung': 'Ende Montag, 21.09.2026', 'pruefstatus': 'bestätigt', 'quelle': 'D0001', 'geprueft_am': '2026-09-17', 'geprueft_von': 'Prüflauf'}
+        assert not akte_schema.validate(kaputte(lambda k: k['fristen'].append(dict(voll))))[0]
+        f12 = [
+            ('Rechnung ohne Fristende', dict(voll, berechnung='zwei Wochen ab Zustellung'), 'Fristende'),
+            ('offener Marker', dict(voll, rechtsgrundlage='§ 67 Abs. 1 OWiG [PRÜFEN: Fassung]'), 'Marker'),
+            ('Termin ohne Quelle', dict(voll, art='Termin', quelle='', berechnung=''), 'Ladung'),
+            ('Prüfdatum kaputt', dict(voll, geprueft_am='2026-02-31'), 'Kalender'),
+            ('Prüfer keine Zeichenkette', dict(voll, geprueft_von=5), 'geprueft_von'),
+        ]
+        for name, probe, erwartet in f12:
+            fehler, _ = akte_schema.validate(kaputte(lambda k, pr=probe: k['fristen'].append(pr)))
+            assert fehler and any(erwartet in s for s in fehler), (name, fehler)
+        fehler, warn = akte_schema.validate(kaputte(lambda k: k['fristen'].append(dict(voll, geprueft_am=''))))
+        assert not fehler and any('Prüfdatum' in s for s in warn), (fehler, warn)
+        assert akte_schema.frist_eigenschaften(voll) == {'gerechnet': True, 'belegt': True, 'geprueft': True, 'offene_marker': []}
+        assert akte_schema.frist_eigenschaften(dict(voll, art='Termin'))['gerechnet'] is None
+        assert akte_schema.frist_eigenschaften(dict(voll, berechnung='Fristende 2026-09-21'))['gerechnet'] is True
+        assert akte_schema.frist_eigenschaften(f12[1][1])['offene_marker'] == ['[PRÜFEN: Fassung]']
+        anfrage('/api/fall/R-0001', {'akte': kaputte(lambda k: k['fristen'].append(f12[1][1])), 'revision': rev2}, erwartet=400)
+        ok('Frist-Eigenschaften (F12): bestätigt nur mit Fristende in der Rechnung, Beleg und ohne offenen Marker; Termin braucht Ladung; Prüfdatum und Prüfer werden geprüft')
         staende = sorted((base / 'Sicherungen' / 'Ordnungsstände' / 'R-0001').glob('*_akte.json')); assert staende
         ok('Vorfassung der Ordnungsdaten außerhalb des Projekts gesichert')
 
@@ -254,6 +276,18 @@ def run():
         fall = anfrage('/api/fall/R-0001'); ak = fall['akte']; ak['zaehler']['A'] = 0
         anfrage('/api/fall/R-0001', {'akte': ak, 'revision': fall['revision']}, erwartet=400)   # Zähler darf nie zurückgehen
         ok('Kennungen: entfernte höchste Kennung wird nicht neu vergeben (Zähler je Art), rückgesetzter Zähler wird abgewiesen')
+        # F12 über das Werkzeug: die Bestätigung bekommt Prüfdatum und Prüfer, die Fallübersicht zeigt die Eigenschaften
+        bestaetigt = {'fall': 'R-0001', 'datum': fr['ende'], 'titel': 'Widerspruchsfrist', 'art': 'gesetzlich', 'ausloeser': 'Zustellung 30.10.2026', 'rechtsgrundlage': '§ 70 Abs. 1 VwGO',
+                      'berechnung': '\n'.join(fr['rechnung']), 'pruefstatus': 'bestätigt', 'quelle': 'D0001', 'geprueft_von': 'Prüflauf'}
+        r = anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': bestaetigt, 'bestaetigt': True})
+        assert r['frist']['id'] == 'F02' and r['frist']['geprueft_am'] == time.strftime('%Y-%m-%d') and r['frist']['geprueft_von'] == 'Prüflauf', r
+        assert r['eigenschaften'] == {'gerechnet': True, 'belegt': True, 'geprueft': True, 'offene_marker': []}, r
+        anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': dict(bestaetigt, berechnung='zwei Wochen [PRÜFEN: Zugang]'), 'bestaetigt': True}, erwartet=400)
+        anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': dict(bestaetigt, berechnung='zwei Wochen ab Zustellung'), 'bestaetigt': True}, erwartet=400)
+        u = anfrage('/api/werkzeug', {'name': 'fall_uebersicht', 'parameter': {'fall': 'R-0001'}})
+        assert next(x for x in u['fristen'] if x['id'] == 'F02')['eigenschaften']['geprueft'] and not next(x for x in u['fristen'] if x['id'] == 'F01')['eigenschaften']['geprueft']
+        assert len(anfrage('/api/fall/R-0001')['akte']['fristen']) == 2
+        ok('frist_eintragen: Bestätigung bekommt Prüfdatum und Prüfer, Eigenschaften in der Fallübersicht; Marker oder fehlendes Fristende in bestätigter Frist abgewiesen')
         anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'x', 'quelle': 'D9999'}, 'bestaetigt': True}, erwartet=400)
         r = anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'Freitext-Quelle', 'quelle': 'Zustellung laut Bescheid'}, 'bestaetigt': True})
         assert r['aufgabe']['quelle'] == '' and 'Zustellung laut Bescheid' in r['aufgabe']['detail']

@@ -135,7 +135,9 @@ werden nie wiederverwendet.
 | `quellen` | | titel, url, geprueft, verwendung (fallbezogene Rechtsquellen) |
 
 Regeln im Modell: Eine Frist ohne Auslöser, Rechtsgrundlage und Prüfstatus
-darf nicht als bestätigt gespeichert werden. Ein Entwurf wird beim Versand
+darf nicht als bestätigt gespeichert werden; „bestätigt“ verlangt zudem, dass
+die Rechnung das Fristende nennt, kein Marker offen ist und ein Prüfdatum
+gesetzt wird (drei Eigenschaften gerechnet, belegt, geprüft; Datenmodell.md). Ein Entwurf wird beim Versand
 nicht gelöscht, sondern bekommt den Status versandt und einen Verweis auf den
 Versandbeleg. Ein Dokument beweist zunächst nur seinen Inhalt.
 

@@ -166,7 +166,7 @@ und mit Revision gespeichert.
 | `fall_status_setzen` | schreibend | Fallstatus auf offen, ruhend oder abgeschlossen setzen. Der Fall bleibt am gleichen Ort. |
 | `aufgabe_anlegen` | schreibend | Aufgabe in einem Fall anlegen. |
 | `aufgabe_setzen` | schreibend | Aufgabe als erledigt oder wieder offen setzen, optional Fälligkeit oder Detail ändern. |
-| `frist_eintragen` | schreibend | Frist oder Termin in einem Fall eintragen. Bestätigt nur mit Auslöser, Rechtsgrundlage, Rechnung und Quelle. |
+| `frist_eintragen` | schreibend | Frist oder Termin in einem Fall eintragen. Bestätigt nur, wenn die Rechnung das Fristende nennt, Auslöser, Rechtsgrundlage und Quelle da sind und kein Marker [PRÜFEN], [QUELLE], [BELEG] offen ist; die Bestätigung bekommt Prüfdatum und Prüfer. |
 | `ereignis_eintragen` | schreibend | Ereignis in die Chronologie eines Falls eintragen. |
 | `notiz_anlegen` | schreibend | Ordnungsnotiz in einem Fall anlegen. |
 | `entwurf_erfassen` | schreibend | Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung. |
@@ -271,6 +271,10 @@ technisch durch und prüft sie im Funktionstest:
 - **Fristen werden nachgerechnet.** §§ 187, 188, 193 BGB mit sichtbarer
   Rechnung; Monatsende, Schaltjahr und Jahresfristen sind mit 20
   Grenzfällen geprüft. Ob eine Frist gilt, entscheidet der Rechner nicht.
+- **Bestätigt heißt geprüft.** Eine Frist wird nur „bestätigt“, wenn die
+  Rechnung das Fristende nennt, Beleg und Auslöser da sind und kein Marker
+  `[PRÜFEN]`, `[QUELLE]` oder `[BELEG]` offen ist; die Bestätigung trägt
+  Prüfdatum und Prüfer, ein Termin braucht die Ladung als Quelle.
 - **Übergaben enthalten nur, was hin soll.** Das Paket wird für einen
   benannten Empfänger gebaut, zeigt vorher jede Datei, bricht bei
   unbekannten Kennungen ab und wird gegen sein Manifest zurückgelesen.

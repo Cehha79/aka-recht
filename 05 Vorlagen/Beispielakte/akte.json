@@ -178,7 +178,9 @@
       "rechtsgrundlage": "§ 4 Satz 1 KSchG: drei Wochen nach Zugang der schriftlichen Kündigung; §§ 187 Abs. 1, 188 Abs. 2 BGB",
       "berechnung": "Ereignis am Freitag, 04.09.2026. Der Ereignistag wird nicht mitgerechnet (§ 187 Abs. 1 BGB). Frist von 3 Wochen endet mit Ablauf des Tages der letzten Woche, der dem Ereignistag nach Benennung entspricht (§ 188 Abs. 2 BGB): Freitag, 25.09.2026. Kein Samstag, Sonntag oder Feiertag, § 193 BGB greift nicht. Eingang bei Gericht bis 25.09.2026, 24 Uhr; geplant bis 23.09.2026.",
       "pruefstatus": "bestätigt",
-      "quelle": "D0002"
+      "quelle": "D0002",
+      "geprueft_am": "2026-09-04",
+      "geprueft_von": "Beispiel (erfundener Fall)"
     },
     {
       "id": "F02",

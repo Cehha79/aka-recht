@@ -42,7 +42,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}
 </aside>
 <main>
 <article>
-<div class="stamp">aus md/STRUKTUR.md, Stand 17.09.2026 00:38</div>
+<div class="stamp">aus md/STRUKTUR.md, Stand 17.09.2026 01:01</div>
 <h1>STRUKTUR</h1>
 <p><em>Stand: 16.09.2026</em></p>
 <h2 id="aufgabe-dieser-datei">Aufgabe dieser Datei</h2>
@@ -105,7 +105,7 @@ Schicht 1  Aktenkern           02 Fälle/R-XXXX …/  festes Datenformat
 <h2 id="datenmodell-aktejson">Datenmodell: akte.json</h2>
 <p>Eine Datei je Fall, UTF-8, lesbar eingerückt. Kennungen sind stabil und werden nie wiederverwendet.</p>
 <table><thead><tr><th>Block</th><th>Kennung</th><th>Felder (Auswahl)</th></tr></thead><tbody><tr><td><code>fall</code></td><td>R-0001</td><td>titel, bereich, themen, rolle, ziel, rechtsordnung, status (offen, ruhend, abgeschlossen), angelegt</td></tr><tr><td><code>beteiligte</code></td><td>P01 …</td><td>name, rolle (Gegner, Gericht, Behörde, Anwalt, Zeuge, Stelle), anschrift, kontakt, aktenzeichen</td></tr><tr><td><code>dokumente</code></td><td>D0001 …</td><td>pfad, titel, datum, art (Schreiben, E-Mail, Foto, Vertrag, Bescheid, Urteil, Entwurf), status (Original, Entwurf, Versandt, Zugegangen), themen, anlage (K 1), personen, verweise, notiz</td></tr><tr><td><code>verfahren</code></td><td>V01 …</td><td>art, stelle (P-Kennung), aktenzeichen, stand, ordner</td></tr><tr><td><code>ereignisse</code></td><td>E01 …</td><td>datum, titel, art (Zugang, Versand, Termin, Gespräch, Vorfall), quelle (D-Kennung), detail</td></tr><tr><td><code>fristen</code></td><td>F01 …</td><td>datum, titel, art (gesetzlich, selbst gesetzt, vorsorglich, Termin), ausloeser (E-Kennung), rechtsgrundlage, berechnung, pruefstatus (offen, bestätigt, erledigt), quelle</td></tr><tr><td><code>aufgaben</code></td><td>A01 …</td><td>titel, detail, faellig, erledigt, quelle</td></tr><tr><td><code>entwuerfe</code></td><td>W01 …</td><td>titel, datei, fassung, status (in Arbeit, geprüft, versandt), versandt_als (D-Kennung)</td></tr><tr><td><code>kosten</code></td><td></td><td>datum, posten, betrag, beleg</td></tr><tr><td><code>notizen</code></td><td>N01 …</td><td>titel, text, datum</td></tr><tr><td><code>quellen</code></td><td></td><td>titel, url, geprueft, verwendung (fallbezogene Rechtsquellen)</td></tr></tbody></table>
-<p>Regeln im Modell: Eine Frist ohne Auslöser, Rechtsgrundlage und Prüfstatus darf nicht als bestätigt gespeichert werden. Ein Entwurf wird beim Versand nicht gelöscht, sondern bekommt den Status versandt und einen Verweis auf den Versandbeleg. Ein Dokument beweist zunächst nur seinen Inhalt.</p>
+<p>Regeln im Modell: Eine Frist ohne Auslöser, Rechtsgrundlage und Prüfstatus darf nicht als bestätigt gespeichert werden; „bestätigt“ verlangt zudem, dass die Rechnung das Fristende nennt, kein Marker offen ist und ein Prüfdatum gesetzt wird (drei Eigenschaften gerechnet, belegt, geprüft; Datenmodell.md). Ein Entwurf wird beim Versand nicht gelöscht, sondern bekommt den Status versandt und einen Verweis auf den Versandbeleg. Ein Dokument beweist zunächst nur seinen Inhalt.</p>
 <p>Die feldgenaue Beschreibung steht in Datenmodell.md.</p>
 <p><code>bestand.json</code> führt je D-Kennung den Pfad, die erste Prüfsumme (SHA-256) und jede Verschiebung mit Zeitpunkt. Das schreibt nur der Dienst, und nur über schreibende Wege (Import, Zuordnung, Einsortieren, <code>bestand_abgleichen</code>). Lesende Werkzeuge melden neue oder verschobene Dateien als Abweichung und ändern nichts (seit 17.09.2026, Prüfbericht F03).</p>
 <h2 id="dienst-stufe-3">Dienst (Stufe 3)</h2>

@@ -38,6 +38,24 @@ KENNUNG = {
     'entwuerfe': r'W\d{2,}', 'notizen': r'N\d{2,}',
 }
 DATUM = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+MARKER = re.compile(r'\[(PRÜFEN|QUELLE|BELEG)\b[^\]]*\]?')   # offene Marker in Texten (REGELN Nr. 14)
+
+def frist_eigenschaften(fr):
+    """Drei unterscheidbare Eigenschaften einer Frist (Prüfbericht 16.09.2026, F12), aus den Feldern abgeleitet:
+    gerechnet  die Rechnung nennt das Fristende (bei Terminen nicht anwendbar, None)
+    belegt     Quelle ist eine D-Kennung und der Auslöser ist benannt (Termin: Quelle genügt)
+    geprueft   Prüfstatus bestätigt mit Prüfdatum (geprueft_am)
+    offene_marker  Marker [PRÜFEN …], [QUELLE …], [BELEG …] in Titel, Auslöser, Grundlage oder Rechnung."""
+    if not isinstance(fr, dict): return {'gerechnet': None, 'belegt': False, 'geprueft': False, 'offene_marker': []}
+    d = str(fr.get('datum', '')); termin = fr.get('art') == 'Termin'
+    deutsch = f'{d[8:10]}.{d[5:7]}.{d[0:4]}' if DATUM.match(d) else ''
+    rechnung = str(fr.get('berechnung', '') or '')
+    gerechnet = None if termin else bool(d and (d in rechnung or (deutsch and deutsch in rechnung)))
+    quelle = re.fullmatch(KENNUNG['dokumente'], str(fr.get('quelle', '') or '')) is not None
+    belegt = quelle and (termin or bool(str(fr.get('ausloeser', '') or '').strip()))
+    geprueft = fr.get('pruefstatus') == 'bestätigt' and bool(str(fr.get('geprueft_am', '') or '').strip())
+    marker = [m.group(0) for feld in ('titel', 'ausloeser', 'rechtsgrundlage', 'berechnung') for m in MARKER.finditer(str(fr.get(feld, '') or ''))]
+    return {'gerechnet': gerechnet, 'belegt': belegt, 'geprueft': geprueft, 'offene_marker': marker}
 
 def leer():
     """Leere, gültige Akte für neue Fälle."""
@@ -167,10 +185,21 @@ def validate(akte):
         if fr.get('art') not in FRIST_ART: f.append(f'{fr["id"]}: art muss eines von {FRIST_ART} sein.')
         if fr.get('pruefstatus') not in FRIST_STATUS: f.append(f'{fr["id"]}: pruefstatus muss eines von {FRIST_STATUS} sein.')
         verweis(fr.get('quelle', ''), 'dokumente', f'{fr["id"]}.quelle')
-        if fr.get('pruefstatus') == 'bestätigt' and fr.get('art') != 'Termin':
-            for feld in ('ausloeser', 'rechtsgrundlage', 'berechnung', 'quelle'):
-                if not str(fr.get(feld, '')).strip():
-                    f.append(f'{fr["id"]}: bestätigte Frist ohne {feld}. Erst Nachweis, dann Bestätigung.')
+        datum(fr.get('geprueft_am', ''), f'{fr["id"]}.geprueft_am')
+        if 'geprueft_von' in fr and not isinstance(fr['geprueft_von'], str): f.append(f'{fr["id"]}: geprueft_von muss Text sein.')
+        if fr.get('pruefstatus') == 'bestätigt':
+            # F12: „bestätigt“ heißt gerechnet, belegt und ohne offene Marker; Prüfdatum fehlt nur als Warnung (ältere Akten)
+            eig = frist_eigenschaften(fr)
+            if fr.get('art') == 'Termin':
+                if not str(fr.get('quelle', '')).strip(): f.append(f'{fr["id"]}: bestätigter Termin ohne quelle (Ladung, Einladung oder Terminbestätigung). Erst Nachweis, dann Bestätigung.')
+            else:
+                for feld in ('ausloeser', 'rechtsgrundlage', 'berechnung', 'quelle'):
+                    if not str(fr.get(feld, '')).strip():
+                        f.append(f'{fr["id"]}: bestätigte Frist ohne {feld}. Erst Nachweis, dann Bestätigung.')
+                if str(fr.get('berechnung', '')).strip() and eig['gerechnet'] is False:
+                    f.append(f'{fr["id"]}: bestätigte Frist, aber die Rechnung nennt das Fristende {fr.get("datum")} nicht.')
+            if eig['offene_marker']: f.append(f'{fr["id"]}: bestätigte Frist mit offenem Marker {eig["offene_marker"][0]}. Erst auflösen, dann bestätigen.')
+            if not eig['geprueft']: w.append(f'{fr["id"]}: bestätigt ohne Prüfdatum (geprueft_am).')
         elif fr.get('pruefstatus') == 'offen':
             for feld in ('ausloeser', 'rechtsgrundlage'):
                 if not str(fr.get(feld, '')).strip(): w.append(f'{fr["id"]}: {feld} fehlt noch.')
