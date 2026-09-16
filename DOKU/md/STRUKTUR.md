@@ -90,17 +90,30 @@ bekommen getrennte Unterordner und getrennte Fristen.
 Ein Fall hat einen Hauptbereich und beliebig viele Themen. Die Bereiche sind
 Filter und Vorlagen, keine Ordner.
 
+Seit 16.09.2026 abends 18 Bereiche plus „Allgemein“;
+ältere Bereichsnamen in bestehenden Akten bleiben gültig, das Schema warnt nur.
+
 | Bereich | Beispiele |
 |---|---|
-| Arbeit | Vertrag, Entgelt, Kündigung, Zeugnis, Arbeitsgericht |
-| Verkehr und Bußgeld | Parkverstoß, Anhörung, Bußgeldbescheid, Unfall, Fahrerlaubnis |
-| Verträge und Verbraucher | Kauf, Reparatur, Abo, Reise, Reklamation, Rückforderung |
-| Wohnen und Eigentum | Miete, Nebenkosten, Kaution, Nachbarschaft, Handwerker |
-| Behörden und Soziales | Bescheid, Antrag, Leistungen, Krankenkasse, Rente |
-| Forderungen und Versicherungen | Rechnung, Mahnung, Inkasso, Schaden, Deckung |
-| Familie, Vorsorge und Erbe | Vollmacht, Nachlass, Unterhalt, Verfügung |
-| Strafsachen | Anzeige, Vorladung, Strafbefehl, eigene Rolle zuerst klären |
-| Geschäftliches und Datenschutz | Geschäftsvertrag, Haftung, Auskunft, DSGVO |
+| Arbeit | Kündigung, Lohn, Zeugnis, Abmahnung, Arbeitsgericht |
+| Verkehr und Bußgeld | Blitzer, Parken, Fahrverbot, Unfall, Führerschein |
+| Steuern und Abgaben | Steuerbescheid, Einspruch, Finanzamt, Gebühren, Rundfunkbeitrag |
+| Behörden und Bescheide | Verwaltungsakt, Widerspruch, Antrag, Gemeinde, Zulassung |
+| Sozialleistungen und Rente | Bürgergeld, Arbeitslosengeld, Rente, Kindergeld, Wohngeld |
+| Gesundheit und Pflege | Krankenkasse, Pflegegrad, Behandlungsfehler, Reha, Betreuung |
+| Wohnen und Miete | Mietvertrag, Nebenkosten, Kaution, Wohnungskündigung, Eigentum |
+| Bauen und Nachbarn | Bauantrag, Handwerker, Lärm, Grenze, Grundstück |
+| Verträge und Verbraucher | Kauf, Reparatur, Abo, Reise, Handy, Internet, Widerruf |
+| Forderungen und Inkasso | Rechnung, Mahnung, Mahnbescheid, Schulden, Vollstreckung |
+| Versicherungen | Haftpflicht, Kfz, Hausrat, Unfall, Berufsunfähigkeit, Deckung |
+| Familie und Unterhalt | Trennung, Scheidung, Unterhalt, Sorgerecht, Umgang |
+| Erbe und Vorsorge | Testament, Nachlass, Vollmacht, Patientenverfügung |
+| Strafsachen und Anzeigen | Anzeige, Vorladung, Strafbefehl, eigene Rolle zuerst klären |
+| Schule, Ausbildung und Studium | Zeugnis, BAföG, Prüfung, Ausbildungsvertrag |
+| Aufenthalt und Staatsangehörigkeit | Aufenthaltstitel, Einbürgerung, Visum, Ausländerbehörde |
+| Geschäft, Datenschutz und Internet | Geschäftsvertrag, Abmahnung, Urheberrecht, DSGVO, Marke |
+| Vereine und Ehrenamt | Satzung, Mitgliedschaft, Vorstand |
+| Allgemein | passt nirgends |
 
 ## Datenmodell: akte.json
 

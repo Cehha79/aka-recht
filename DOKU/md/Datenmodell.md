@@ -30,7 +30,7 @@ Prüfbar mit `python3 "06 Werkzeuge/akte_schema.py" <akte.json>`.
 | id | R-0001 | fest: `R-` und mindestens vier Ziffern |
 | titel | Kurzbezeichnung | Pflicht |
 | untertitel | Beteiligte oder Zusatz | frei |
-| bereich | Hauptbereich | vorgeschlagen: die neun Bereiche aus STRUKTUR.md plus Allgemein |
+| bereich | Hauptbereich | vorgeschlagen: die 18 Bereiche aus STRUKTUR.md plus Allgemein (seit 16.09.2026; ältere Namen bleiben gültig, nur Warnung) |
 | themen | Liste von Stichworten | frei, wird aus den Dokumenten gesammelt |
 | rolle | eigene Rolle, z. B. Arbeitnehmer, Betroffener, Mieter | Warnung wenn leer |
 | ziel | was erreicht werden soll | Warnung wenn leer |

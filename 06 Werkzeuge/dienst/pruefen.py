@@ -70,7 +70,7 @@ def run():
 
         # 2 Fälle
         f1 = anfrage('/api/fall', {'titel': 'Bußgeld Parkverstoß', 'bereich': 'Verkehr und Bußgeld', 'rolle': 'Betroffener', 'ziel': 'Einspruch prüfen'})
-        f2 = anfrage('/api/fall', {'titel': 'Miete Nebenkosten 2025', 'bereich': 'Wohnen und Eigentum'})
+        f2 = anfrage('/api/fall', {'titel': 'Miete Nebenkosten 2025', 'bereich': 'Wohnen und Miete'})
         assert f1['id'] == 'R-0001' and f2['id'] == 'R-0002'
         for g in ['01 Eingang', '08 Archiv']: assert (root / f1['ordner'] / g).is_dir()
         assert 'Fall angelegt' in (root / f1['ordner'] / 'JOURNAL.md').read_text()

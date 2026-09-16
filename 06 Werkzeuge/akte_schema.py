@@ -15,10 +15,11 @@ SCHEMA_VERSION = 1
 
 # Feste Werte. "Vorgeschlagen" = frei erweiterbar, nur Warnung bei Abweichung.
 FALL_STATUS = ['offen', 'ruhend', 'abgeschlossen']
-BEREICHE = ['Arbeit', 'Verkehr und Bußgeld', 'Verträge und Verbraucher',
-            'Wohnen und Eigentum', 'Behörden und Soziales',
-            'Forderungen und Versicherungen', 'Familie, Vorsorge und Erbe',
-            'Strafsachen', 'Geschäftliches und Datenschutz', 'Allgemein']
+BEREICHE = ['Arbeit', 'Verkehr und Bußgeld', 'Steuern und Abgaben', 'Behörden und Bescheide',
+            'Sozialleistungen und Rente', 'Gesundheit und Pflege', 'Wohnen und Miete', 'Bauen und Nachbarn',
+            'Verträge und Verbraucher', 'Forderungen und Inkasso', 'Versicherungen', 'Familie und Unterhalt',
+            'Erbe und Vorsorge', 'Strafsachen und Anzeigen', 'Schule, Ausbildung und Studium', 'Aufenthalt und Staatsangehörigkeit',
+            'Geschäft, Datenschutz und Internet', 'Vereine und Ehrenamt', 'Allgemein']   # 18 Bereiche plus Allgemein (Hasan 16.09.2026)
 DOKUMENT_STAND = ['Original', 'Entwurf', 'Versandt', 'Zugegangen', 'Historisch', 'Vermerk']
 DOKUMENT_ART_VORSCHLAG = ['Schreiben', 'E-Mail', 'Foto', 'Vertrag', 'Bescheid',
                           'Urteil', 'Entwurf', 'Beleg', 'Übersicht', 'Gesetz', 'Sonstiges']
