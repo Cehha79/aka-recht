@@ -16,6 +16,9 @@ Kündigungsfall, jederzeit löschbar) statt eines echten Falls.
 
 1. Akte lesen: `python3 "06 Werkzeuge/dienst/cli.py" fall_lesen fall=$fall`.
    Neue Post liegt in `01 Eingang/` des Falls oder im gemeinsamen `01 Eingang/`.
+   Meldet die Antwort unter `abweichungen` nicht erfasste oder verschobene
+   Dateien, nach Freigabe `cli.py bestand_abgleichen fall=$fall` ausführen;
+   erst dann haben sie eine D-Kennung.
 2. Jedes neue Schreiben vollständig lesen (`cli.py dokument_text fall=$fall dokument=D…`),
    bei Fotos und Bildscans das Bild öffnen. Fehlende Seiten, Umschläge und
    schlecht lesbare Stellen benennen. Aus Dateinamen keine Zustellung ableiten.

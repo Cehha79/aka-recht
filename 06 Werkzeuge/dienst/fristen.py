@@ -114,27 +114,40 @@ def berechne(start, menge, einheit, ereignisfrist=True, werktagsregel=True, land
     else:
         rechnung.append(f'Fristbeginn mit Anfang des {fmt(d0)}; dieser Tag wird mitgerechnet (§ 187 Abs. 2 BGB).')
         grundlagen.append('§ 187 Abs. 2 BGB')
-    gekuerzt = False
     if einheit == 'tag':
         ende = d0 + timedelta(days=menge - (0 if ereignisfrist else 1))
         rechnung.append(f'Frist von {menge} Tagen endet mit Ablauf des letzten Tages (§ 188 Abs. 1 BGB): {fmt(ende)}.')
         grundlagen.append('§ 188 Abs. 1 BGB')
-    else:
-        if einheit == 'woche':
-            ende = d0 + timedelta(days=7 * menge); wort = f'{menge} Woche{"n" if menge > 1 else ""}'
-        elif einheit == 'monat':
-            ende, gekuerzt = _monate_addieren(d0, menge); wort = f'{menge} Monat{"e" if menge > 1 else ""}'
-        else:
-            ende, gekuerzt = _monate_addieren(d0, 12 * menge); wort = f'{menge} Jahr{"e" if menge > 1 else ""}'
+    elif einheit == 'woche':
+        wort = f'{menge} Woche{"n" if menge > 1 else ""}'
         if ereignisfrist:
-            rechnung.append(f'Frist von {wort} endet mit Ablauf des Tages der letzten Woche oder des letzten Monats, der dem Ereignistag nach Benennung oder Zahl entspricht (§ 188 Abs. 2 BGB): {fmt(ende)}.')
+            ende = d0 + timedelta(days=7 * menge)
+            rechnung.append(f'Frist von {wort} endet mit Ablauf des Tages der letzten Woche, der dem Ereignistag nach seiner Benennung entspricht (§ 188 Abs. 2 BGB): {fmt(ende)}.')
         else:
-            ende -= timedelta(days=1)
-            rechnung.append(f'Frist von {wort} endet mit Ablauf des Tages, der dem Beginntag vorangeht (§ 188 Abs. 2 BGB): {fmt(ende)}.')
+            ende = d0 + timedelta(days=7 * menge - 1)
+            rechnung.append(f'Frist von {wort} endet mit Ablauf des Tages der letzten Woche, der dem Beginntag nach seiner Benennung vorangeht (§ 188 Abs. 2 BGB): {fmt(ende)}.')
         grundlagen.append('§ 188 Abs. 2 BGB')
-        if gekuerzt:
-            rechnung.append('Der entsprechende Tag fehlt im letzten Monat, daher gilt dessen letzter Tag (§ 188 Abs. 3 BGB).')
+    else:
+        monate = menge if einheit == 'monat' else 12 * menge
+        wort = f'{menge} Monat{"e" if menge > 1 else ""}' if einheit == 'monat' else f'{menge} Jahr{"e" if menge > 1 else ""}'
+        # Der Tag des letzten Monats, der dem Start nach seiner Zahl entspricht; fehlt er, gilt der letzte Tag des Monats.
+        entsprechend, gekuerzt = _monate_addieren(d0, monate)
+        grundlagen.append('§ 188 Abs. 2 BGB')
+        if ereignisfrist:
+            ende = entsprechend
+            rechnung.append(f'Frist von {wort} endet mit Ablauf des Tages des letzten Monats, der dem Ereignistag nach seiner Zahl entspricht (§ 188 Abs. 2 BGB): {fmt(ende)}.')
+            if gekuerzt:
+                rechnung.append(f'Den {d0.day}. gibt es im letzten Monat nicht, daher gilt dessen letzter Tag (§ 188 Abs. 3 BGB).')
+                grundlagen.append('§ 188 Abs. 3 BGB')
+        elif gekuerzt:
+            # Beginnfrist: maßgebend wäre der Tag vor dem entsprechenden Tag. Fehlt der entsprechende Tag
+            # (etwa 31.02.), fehlt auch dieser, und die Frist endet mit dem letzten Tag des Monats (§ 188 Abs. 3 BGB).
+            ende = entsprechend
+            rechnung.append(f'Frist von {wort} endet mit Ablauf des Tages, der dem Beginntag nach seiner Zahl vorangeht (§ 188 Abs. 2 BGB). Den {d0.day}. gibt es im letzten Monat nicht, daher gilt dessen letzter Tag (§ 188 Abs. 3 BGB): {fmt(ende)}.')
             grundlagen.append('§ 188 Abs. 3 BGB')
+        else:
+            ende = entsprechend - timedelta(days=1)
+            rechnung.append(f'Frist von {wort} endet mit Ablauf des Tages, der dem Beginntag nach seiner Zahl ({fmt(entsprechend)}) vorangeht (§ 188 Abs. 2 BGB): {fmt(ende)}.')
     rechnerisch = ende; verschoben = False
     if werktagsregel and not ist_werktag(ende, land):
         grund = feiertage(ende.year, land).get(ende) or WOCHENTAGE[ende.weekday()]

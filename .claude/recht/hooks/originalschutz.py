@@ -16,7 +16,7 @@ def main():
     if m:
         print(f'AKA Recht, Originalschutz: Schreiben in „{m[1]}“ ist gesperrt. Originale werden nie verändert. Neue Fassungen gehören nach 06 Entwürfe, Vermerke nach 07 Recherche.', file=sys.stderr); return 2
     if pfad.endswith('/bestand.json'):
-        print('AKA Recht: bestand.json schreibt nur der Dienst. Bestand mit cli.py bestand_pruefen oder über die Oberfläche neu einlesen.', file=sys.stderr); return 2
+        print('AKA Recht: bestand.json schreibt nur der Dienst. Neue oder verschobene Dateien mit cli.py bestand_abgleichen (nach Freigabe) registrieren.', file=sys.stderr); return 2
     return 0
 
 if __name__ == '__main__':

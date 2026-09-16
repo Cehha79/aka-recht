@@ -51,8 +51,13 @@ def _pruefe_parameter(w, args):
         if 'enum' in erlaubt[p] and wert not in erlaubt[p]['enum']: raise ValueError(f'„{p}“ muss eines von {erlaubt[p]["enum"]} sein.')
 
 def ausfuehren(name, args, bestaetigt=False):
-    """Führt ein Werkzeug aus. Schreibende Werkzeuge nur mit bestaetigt=True."""
+    """Führt ein Werkzeug aus. Schreibende Werkzeuge nur mit bestaetigt=True.
+
+    Als Bestätigung zählt allein der JSON-Wahrheitswert true. Text („true“, „false“), Zahlen oder null
+    werden abgewiesen, denn bool("false") wäre wahr (Prüfbericht 16.09.2026, F05)."""
     w = finde(name); args = dict(args or {})
+    if not isinstance(bestaetigt, bool):
+        raise ValueError(f'„bestaetigt“ muss der JSON-Wahrheitswert true oder false sein, kein Text und keine Zahl. Erhalten: {json.dumps(bestaetigt, ensure_ascii=False)}.')
     _pruefe_parameter(w, args)
     if w['schreibend'] and not bestaetigt:
         return {'bestaetigung_noetig': True, 'werkzeug': name, 'parameter': args,
@@ -60,14 +65,19 @@ def ausfuehren(name, args, bestaetigt=False):
     return w['fn'](**args)
 
 # ---------------------------------------------------------------- lesend
-@werkzeug('faelle_auflisten', 'Alle Fälle mit Kennung, Titel, Bereich, Status, Zahl der Dokumente und offenen Aufgaben.', {})
+# Lesende Werkzeuge schreiben nichts: weder akte.json noch bestand.json noch zentrale.json (Prüfbericht 16.09.2026, F03).
+# Neue oder verschobene Dateien melden sie als Abweichung; registriert werden sie erst durch bestand_abgleichen.
+ABGLEICH_HINWEIS = 'Nicht erfasste Dateien bekommen ihre Kennung erst durch das schreibende Werkzeug bestand_abgleichen.'
+
+@werkzeug('faelle_auflisten', 'Alle Fälle mit Kennung, Titel, Bereich, Status, Zahl der Dokumente, nicht erfassten Dateien und offenen Aufgaben.', {})
 def faelle_auflisten():
     zeilen = []
     for e in store.faelle():
         try:
             akte, _ = store.lese_akte(e['id']); f = akte['fall']
+            vorhanden, abweichungen = bestand.abgleich(store.fall_ordner(e['id']))
             zeilen.append({'id': e['id'], 'titel': f['titel'], 'bereich': f['bereich'], 'status': f['status'], 'rolle': f['rolle'],
-                           'dokumente': len(bestand.aktualisieren(store.fall_ordner(e['id']))), 'offene_aufgaben': sum(not a['erledigt'] for a in akte['aufgaben']),
+                           'dokumente': len(vorhanden), 'nicht_erfasst': len(abweichungen['nicht_erfasst']), 'offene_aufgaben': sum(not a['erledigt'] for a in akte['aufgaben']),
                            'fristen_offen': sum(fr['pruefstatus'] != 'erledigt' for fr in akte['fristen']),
                            'fristen': [{'id': fr['id'], 'datum': fr['datum'], 'titel': fr['titel'], 'art': fr['art'], 'pruefstatus': fr['pruefstatus']} for fr in akte['fristen'] if fr['pruefstatus'] != 'erledigt']})
         except Exception as ex:
@@ -78,14 +88,14 @@ def faelle_auflisten():
           {'fall': {'type': 'string', 'description': 'Fallkennung wie R-0001'}}, pflicht=['fall'], ki=False)
 def fall_lesen(fall):
     akte, rev = store.lese_akte(fall)
-    liste, ergaenzt = dokumente.katalog(fall, akte)
-    if ergaenzt: rev = store.speichere_akte(fall, akte, rev, ohne_sicherung=True)
-    return {'akte': akte, 'revision': rev, 'dokumente': liste, 'journal': store.journal_lesen(fall), 'ordner': store.fall_eintrag(fall)['ordner']}
+    liste, ergaenzt, abweichungen = dokumente.katalog(fall, akte)
+    return {'akte': akte, 'revision': rev, 'dokumente': liste, 'ergaenzt': ergaenzt, 'abweichungen': abweichungen,
+            'journal': store.journal_lesen(fall), 'ordner': store.fall_eintrag(fall)['ordner']}
 
-@werkzeug('fall_uebersicht', 'Kompakte Übersicht eines Falls: Fall, Beteiligte, Verfahren, offene Fristen und Aufgaben, Ereignisse, Dokumentliste mit Kennung, Titel, Datum, Stand. Dokumentinhalte über dokument_text.',
+@werkzeug('fall_uebersicht', 'Kompakte Übersicht eines Falls: Fall, Beteiligte, Verfahren, offene Fristen und Aufgaben, Ereignisse, Dokumentliste mit Kennung, Titel, Datum, Stand, dazu nicht erfasste Dateien. Dokumentinhalte über dokument_text.',
           {'fall': {'type': 'string', 'description': 'Fallkennung wie R-0001'}}, pflicht=['fall'])
 def fall_uebersicht(fall):
-    akte, _ = store.lese_akte(fall); liste, _ = dokumente.katalog(fall, akte)
+    akte, _ = store.lese_akte(fall); liste, _, abweichungen = dokumente.katalog(fall, akte)
     kurz = lambda s, n=160: (s or '')[:n]
     return {'fall': {k: akte['fall'].get(k, '') for k in ('id', 'titel', 'bereich', 'rolle', 'ziel', 'status', 'themen')},
             'beteiligte': [{'id': b['id'], 'name': b['name'], 'rolle': b.get('rolle', ''), 'aktenzeichen': b.get('aktenzeichen', '')} for b in akte['beteiligte']],
@@ -95,16 +105,17 @@ def fall_uebersicht(fall):
             'ereignisse': [{'id': e['id'], 'datum': e['datum'], 'titel': e['titel'], 'art': e.get('art', ''), 'quelle': e.get('quelle', '')} for e in sorted(akte['ereignisse'], key=lambda x: x['datum'])],
             'entwuerfe': [{'id': w['id'], 'titel': w['titel'], 'fassung': w.get('fassung', 1), 'status': w.get('status', '')} for w in akte['entwuerfe']],
             'dokumente': [{'id': d['id'], 'titel': kurz(d['titel'], 90), 'datum': d.get('datum', ''), 'stand': d.get('stand', ''), 'anlage': d.get('anlage', ''), 'bereich': d.get('gruppe', '')} for d in liste],
-            'hinweis': 'Dokumentdatum ist kein Zugangsnachweis. Inhalte mit dokument_text lesen.'}
+            'nicht_erfasst': abweichungen['nicht_erfasst'], 'verschoben': abweichungen['verschoben'],
+            'hinweis': 'Dokumentdatum ist kein Zugangsnachweis. Inhalte mit dokument_text lesen. ' + ABGLEICH_HINWEIS}
 
 @werkzeug('dokument_text', 'Textauszug eines Dokuments (Word, E-Mail, PDF, Text, HTML). Fotos haben keinen Text.',
           {'fall': {'type': 'string'}, 'dokument': {'type': 'string', 'description': 'D-Kennung wie D0038'}}, pflicht=['fall', 'dokument'])
 def dokument_text(fall, dokument):
-    akte, _ = _akte_mit_dokument(fall, dokument); ordner = store.fall_ordner(fall)
+    akte, _ = store.lese_akte(fall); ordner = store.fall_ordner(fall); dokument = (dokument or '').strip().upper()
     d = akte['dokumente'].get(dokument)
-    if not d: raise ValueError('Unbekannte Dokumentkennung.')
+    if not d: raise ValueError('Unbekannte Dokumentkennung. ' + ABGLEICH_HINWEIS)
     p = store.sicher(d['pfad'], ordner)
-    if not p.is_file(): raise ValueError('Datei fehlt am registrierten Ort.')
+    if not p.is_file(): raise ValueError('Datei fehlt am registrierten Ort. Falls sie verschoben wurde: bestand_abgleichen ausführen.')
     t, hinweis = dokumente.text(p)
     return {'dokument': dokument, 'titel': d['titel'], 'pfad': d['pfad'], 'text': t, 'hinweis': hinweis}
 
@@ -128,11 +139,11 @@ def frist_berechnen(start, menge, einheit, ereignisfrist=True, werktagsregel=Tru
 def beispiel_laden():
     return store.beispiel_laden()
 
-@werkzeug('bestand_pruefen', 'Prüfsummen aller registrierten Dateien eines Falls mit dem ersten Stand vergleichen.',
+@werkzeug('bestand_pruefen', 'Prüfsummen aller registrierten Dateien eines Falls mit dem ersten Stand vergleichen; meldet auch nicht erfasste und verschobene Dateien. Schreibt nichts.',
           {'fall': {'type': 'string'}}, pflicht=['fall'])
 def bestand_pruefen(fall):
-    ordner = store.fall_ordner(fall); bestand.aktualisieren(ordner)
-    return {'fall': fall, **bestand.pruefen(ordner)}
+    ordner = store.fall_ordner(fall); _, abweichungen = bestand.abgleich(ordner)
+    return {'fall': fall, **bestand.pruefen(ordner), 'nicht_erfasst': abweichungen['nicht_erfasst'], 'verschoben_erkannt': abweichungen['verschoben']}
 
 @werkzeug('journal_lesen', 'Verlauf eines Falls aus JOURNAL.md, neueste Einträge zuletzt.',
           {'fall': {'type': 'string'}}, pflicht=['fall'])
@@ -159,11 +170,11 @@ def _oeffnen_befehl(p, zeigen):
     return ['xdg-open', str(p.parent if zeigen else p)]
 
 def oeffnen(fall=None, dokument=None, bereich=None, zeigen=False):
-    """Datei oder Ordner mit dem Dateimanager öffnen. Nicht für die KI, nur für die Oberfläche."""
+    """Datei oder Ordner mit dem Dateimanager öffnen. Nicht für die KI, nur für die Oberfläche. Schreibt nichts."""
     import subprocess
     if fall and dokument:
-        akte, _ = _akte_mit_dokument(fall, dokument); d = akte['dokumente'].get(dokument)
-        if not d: raise ValueError('Unbekannte Dokumentkennung.')
+        akte, _ = store.lese_akte(fall); d = akte['dokumente'].get(dokument)
+        if not d: raise ValueError('Unbekannte Dokumentkennung. ' + ABGLEICH_HINWEIS)
         p = store.sicher(d['pfad'], store.fall_ordner(fall))
         if not p.exists(): raise ValueError('Datei fehlt am registrierten Ort.')
         if not zeigen and p.suffix.lower() in ('.py', '.sh', '.json', '.html'): zeigen = True
@@ -284,14 +295,27 @@ def entwurf_erfassen(fall, titel, datei, status='in Arbeit', versandt_als=''):
     return {'entwurf': e, 'revision': rev}
 
 def _akte_mit_dokument(fall, dokument=''):
-    """Akte lesen. Ist die Dokumentkennung unbekannt, den Katalog nachziehen (neu zugeordnete oder im
-    Finder abgelegte Dateien bekommen so sofort ihren Eintrag), erst dann gilt sie als unbekannt."""
+    """Akte lesen, nur für schreibende Werkzeuge. Ist die Dokumentkennung unbekannt, den Bestand abgleichen
+    und den Katalog nachziehen (neu zugeordnete oder im Finder abgelegte Dateien bekommen so ihren
+    Eintrag), erst dann gilt sie als unbekannt."""
     akte, rev = store.lese_akte(fall)
     dokument = (dokument or '').strip().upper()
     if dokument and dokument not in akte['dokumente']:
-        _, ergaenzt = dokumente.katalog(fall, akte)
+        bestand.abgleichen(store.fall_ordner(fall), weg='Abgleich vor Änderung')
+        _, ergaenzt, _ = dokumente.katalog(fall, akte)
         if ergaenzt: rev = store.speichere_akte(fall, akte, rev, ohne_sicherung=True)
     return akte, rev
+
+@werkzeug('bestand_abgleichen', 'Bestand eines Falls mit den Dateien abgleichen: neue Dateien in 01 bis 08 bekommen eine Kennung, im Finder verschobene werden über die Prüfsumme wiedergefunden, fehlende Ordnungsangaben werden in der Akte ergänzt. Der einzige Weg, auf dem neue Dateien registriert werden.',
+          {'fall': {'type': 'string'}}, schreibend=True, pflicht=['fall'])
+def bestand_abgleichen(fall):
+    ordner = store.fall_ordner(fall)
+    _, bericht = bestand.abgleichen(ordner)
+    akte, rev = store.lese_akte(fall)
+    _, ergaenzt, _ = dokumente.katalog(fall, akte)
+    if ergaenzt: rev = store.speichere_akte(fall, akte, rev, ohne_sicherung=True)
+    return {'fall': fall, 'neu': bericht['neu'], 'verschoben': bericht['verschoben'], 'fehlend': bericht['fehlend'],
+            'in_akte_ergaenzt': ergaenzt, 'revision': rev}
 
 
 @werkzeug('dokument_ordnen', 'Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz). Die Datei selbst bleibt unverändert.',

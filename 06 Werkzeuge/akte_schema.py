@@ -9,6 +9,7 @@ Nur Standardbibliothek. Der Dienst (Stufe 3) nutzt validate() vor dem Speichern.
 import sys
 sys.dont_write_bytecode = True
 import json, re, sys
+from datetime import date
 from pathlib import Path
 
 SCHEMA_VERSION = 1
@@ -58,7 +59,10 @@ def validate(akte):
             if pflicht: f.append(f'{wo}: Datum fehlt.')
             return
         if not isinstance(wert, str) or not DATUM.match(wert):
-            f.append(f'{wo}: Datum „{wert}“ nicht im Format JJJJ-MM-TT.')
+            f.append(f'{wo}: Datum „{wert}“ nicht im Format JJJJ-MM-TT.'); return
+        try: date.fromisoformat(wert)   # echter Kalendertag: 2026-02-31 oder Monat 13 fallen hier durch (Prüfbericht F10)
+        except ValueError: f.append(f'{wo}: Datum „{wert}“ gibt es im Kalender nicht.')
+    def zahl(wert): return isinstance(wert, (int, float)) and not isinstance(wert, bool)   # true zählt in Python als 1, hier nicht
     if not isinstance(akte, dict): return ['Akte ist kein Objekt.'], []
     if akte.get('schema') != SCHEMA_VERSION:
         f.append(f'schema muss {SCHEMA_VERSION} sein, ist {akte.get("schema")!r}.')
@@ -69,6 +73,7 @@ def validate(akte):
                              'ereignisse', 'fristen', 'aufgaben', 'entwuerfe', 'kosten',
                              'notizen', 'quellen'}
     if unbekannt: f.append('Unbekannte Blöcke: ' + ', '.join(sorted(unbekannt)) + '.')
+    if not isinstance(akte.get('fall'), dict): f.append('fall muss ein Objekt sein.')
     if f: return f, w
 
     fall = akte['fall']
@@ -77,6 +82,7 @@ def validate(akte):
     if fall.get('status') not in FALL_STATUS: f.append(f'fall.status muss eines von {FALL_STATUS} sein.')
     if fall.get('bereich') not in BEREICHE: w.append(f'fall.bereich „{fall.get("bereich")}“ ist kein bekannter Bereich.')
     if not isinstance(fall.get('themen', []), list): f.append('fall.themen muss eine Liste sein.')
+    if not isinstance(fall.get('angeheftet', []), list): f.append('fall.angeheftet muss eine Liste sein.')
     datum(fall.get('angelegt', ''), 'fall.angelegt')
     if not str(fall.get('rolle', '')).strip(): w.append('fall.rolle ist leer (eigene Rolle noch klären).')
     if not str(fall.get('ziel', '')).strip(): w.append('fall.ziel ist leer.')
@@ -111,6 +117,9 @@ def validate(akte):
         else: kennungen(block, akte[block])
     for block in ['kosten', 'quellen']:
         if not isinstance(akte[block], list): f.append(f'{block} muss eine Liste sein.')
+        else:
+            for i, e in enumerate(akte[block]):
+                if not isinstance(e, dict): f.append(f'{block}[{i}]: kein Objekt.')
     if f: return f, w
 
     def verweis(wert, ziel, wo, pflicht=False):
@@ -155,10 +164,10 @@ def validate(akte):
         if not str(e.get('titel', '')).strip(): f.append(f'{e["id"]}: titel fehlt.')
         if e.get('status') not in ENTWURF_STATUS: f.append(f'{e["id"]}: status muss eines von {ENTWURF_STATUS} sein.')
         if e.get('status') == 'versandt': verweis(e.get('versandt_als', ''), 'dokumente', f'{e["id"]}.versandt_als', pflicht=True)
-        if not isinstance(e.get('fassung', 1), int) or e.get('fassung', 1) < 1: f.append(f'{e["id"]}: fassung muss eine ganze Zahl ab 1 sein.')
+        if not isinstance(e.get('fassung', 1), int) or isinstance(e.get('fassung', 1), bool) or e.get('fassung', 1) < 1: f.append(f'{e["id"]}: fassung muss eine ganze Zahl ab 1 sein.')
     for i, k in enumerate(akte['kosten']):
         datum(k.get('datum', ''), f'kosten[{i}]')
-        if not isinstance(k.get('betrag', 0), (int, float)): f.append(f'kosten[{i}]: betrag muss eine Zahl sein.')
+        if not zahl(k.get('betrag', 0)): f.append(f'kosten[{i}]: betrag muss eine Zahl sein.')
         verweis(k.get('beleg', ''), 'dokumente', f'kosten[{i}].beleg')
     for n in akte['notizen']:
         if not str(n.get('titel', '')).strip() and not str(n.get('text', '')).strip(): f.append(f'{n["id"]}: leer.')
@@ -172,7 +181,9 @@ def validate(akte):
 def main(argv):
     if len(argv) != 2:
         print(__doc__); return 2
-    akte = json.loads(Path(argv[1]).read_text('utf-8'))
+    try: akte = json.loads(Path(argv[1]).read_text('utf-8'))
+    except FileNotFoundError: print('FEHLER    Datei nicht gefunden:', argv[1]); return 1
+    except json.JSONDecodeError as e: print(f'FEHLER    Kein gültiges JSON (Zeile {e.lineno}, Spalte {e.colno}): {e.msg}.'); return 1
     fehler, warnungen = validate(akte)
     for s in fehler: print('FEHLER   ', s)
     for s in warnungen: print('Warnung  ', s)

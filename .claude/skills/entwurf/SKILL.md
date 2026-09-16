@@ -27,8 +27,9 @@ Akte, nicht vorausgesetzt.
    dann der Sendetext. Neue Fassung: Datei überschreiben.
 4. In der Akte erfassen (Pfad relativ zum Fallordner):
    `cli.py entwurf_erfassen fall=$fall titel="…" datei="06 Entwürfe/…_ENTWURF.md" status="in Arbeit"`
-   Gleicher Titel = Fassung zählt hoch. Danach `cli.py fall_lesen fall=$fall`:
-   der Bestand hat der Datei jetzt eine D-Kennung gegeben.
+   Gleicher Titel = Fassung zählt hoch. Danach `cli.py bestand_abgleichen fall=$fall`
+   (schreibend, nach Freigabe): erst der Abgleich gibt der neuen Datei ihre
+   D-Kennung; Lesen allein registriert nichts.
 5. Word-Datei erzeugen (Pfad vom Projektordner aus):
    `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" "02 Fälle/<Fallordner>/06 Entwürfe/<Datei>.md"`
    Die Warnung zu offenen Markern dem Nutzer nennen.

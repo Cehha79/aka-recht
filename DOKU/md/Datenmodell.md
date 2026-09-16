@@ -11,7 +11,10 @@ Prüfbar mit `python3 "06 Werkzeuge/akte_schema.py" <akte.json>`.
 ## Grundsätze
 
 - Eine `akte.json` je Fall, UTF-8, eingerückt, lesbar im Editor.
-- Datumsfelder immer `JJJJ-MM-TT`. Die Oberfläche zeigt `TT.MM.JJJJ`.
+- Datumsfelder immer `JJJJ-MM-TT` und ein echter Kalendertag (31.02. ist ein
+  Fehler, 29.02.2028 gilt). Die Oberfläche zeigt `TT.MM.JJJJ`.
+- Jeder Block wird auf seinen Typ geprüft, bevor Felder gelesen werden; eine
+  fehlerhafte Akte liefert eine Fehlerliste, keinen Absturz (seit 17.09.2026).
 - Kennungen sind stabil und werden nie neu vergeben: D0001 (Dokument),
   P01 (Beteiligter), V01 (Verfahren), E01 (Ereignis), F01 (Frist),
   A01 (Aufgabe), W01 (Entwurf), N01 (Notiz). Anlagenkennungen wie `K 13`
@@ -160,9 +163,15 @@ Technische Datei, schreibt nur der Dienst.
 }
 ```
 
-Beim ersten Einlesen eines Falls, dessen `akte.json` schon Dokumente mit
-Pfaden nennt (etwa die Beispielakte), übernimmt der Bestand diese Kennungen
-für die passenden Pfade, statt neue zu vergeben (seit 16.09.2026).
+Kennungen vergibt nur der schreibende Abgleich (`bestand_abgleichen`,
+außerdem Import, Zuordnung aus dem Eingang und Einsortieren). Lesende
+Werkzeuge (`fall_lesen`, `fall_uebersicht`, `bestand_pruefen`, Sitzungsstart)
+rechnen denselben Abgleich nur im Speicher und melden das Ergebnis als
+`abweichungen`: `nicht_erfasst` (Dateien ohne Kennung), `verschoben` (über
+die Prüfsumme wiedergefunden), `fehlend`. Sie schreiben weder bestand.json
+noch akte.json (seit 17.09.2026, Prüfbericht F03). Nennt `akte.json` beim
+Abgleich schon Dokumente mit Pfaden (etwa die Beispielakte), übernimmt der
+Bestand diese Kennungen für die passenden Pfade, statt neue zu vergeben.
 
 `sha256_erst` ist die Prüfsumme beim ersten Einlesen und bleibt. `sha256` ist
 der zuletzt gesehene Stand. Weichen beide ab, meldet die Bestandsprüfung eine

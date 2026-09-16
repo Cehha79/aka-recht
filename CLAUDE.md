@@ -6,7 +6,7 @@ Strafsachen und mehr). Die Regeln aus `~/.claude/CLAUDE.md` gelten weiter.
 
 ## Einstieg
 
-1. `DOKU/md/Live-Dokumentation.md`, Abschnitt „Übergabe / Nächster Schritt“.
+1. `README.md` (Einstieg, Werkzeuge, Skills, Grenzen).
 2. `DOKU/md/REGELN.md` (23 Regeln), `STRUKTUR.md` (Aufbau), `Datenmodell.md`.
 3. Der SessionStart-Hook meldet Eingang und Fristen der Fälle.
 
@@ -19,8 +19,11 @@ Strafsachen und mehr). Die Regeln aus `~/.claude/CLAUDE.md` gelten weiter.
   Vermerke nach 07 Recherche.
 - Änderungen an der Akte über die Werkzeuge, nie akte.json von Hand:
   `python3 "06 Werkzeuge/dienst/cli.py" liste` zeigt alle.
-  Lesen: `fall_lesen`, `dokument_text`, `dokumente_suchen`, `frist_berechnen`.
-  Schreiben: `aufgabe_anlegen`, `frist_eintragen`, `ereignis_eintragen`,
+  Lesen: `fall_lesen`, `dokument_text`, `dokumente_suchen`, `frist_berechnen`
+  (lesende Werkzeuge schreiben nichts; neue oder verschobene Dateien melden
+  sie nur als Abweichung).
+  Schreiben: `bestand_abgleichen` (registriert neue und verschobene Dateien),
+  `aufgabe_anlegen`, `frist_eintragen`, `ereignis_eintragen`,
   `notiz_anlegen`, `dokument_ordnen`, `dokument_verschieben`,
   `journal_schreiben`, `entwurf_erfassen`, `akte_speichern` (mit Revision).
 - Kennungen (D, P, V, E, F, A, W, N, K) sind stabil; Verweise gehen auf
@@ -60,8 +63,8 @@ SessionStart (Eingang, Fristen), PreToolUse (Originalschutz), Stop
 `Start.command` startet den Dienst (`06 Werkzeuge/dienst/server.py`) und die
 Oberfläche (`06 Werkzeuge/oberflaeche/`). Nur Python-Standardbibliothek,
 nur 127.0.0.1, kein Netz, keine KI in der App: Die Mappe ist für jede KI
-des Nutzers gedacht (Skills, cli.py, künftig MCP). Prüfungen:
-`DOKU/md/Tests-Qualitaet.md`.
+des Nutzers gedacht (Skills, cli.py, MCP-Server). Prüfung: `python3 "06 Werkzeuge/dienst/pruefen.py"` (Funktionstest mit
+künstlichen Akten).
 Nach CSS- oder JS-Änderung die Versionsnummer im HTML-Link erhöhen.
 Doku: `.md` in `DOKU/md/` ist Quelle, `python3 DOKU/ansicht_bauen.py` baut die HTML.
 Sicherung: `python3 "06 Werkzeuge/dienst/server.py" --backup`.

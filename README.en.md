@@ -24,7 +24,7 @@ AI helps you to organise, check and formulate.
   the calculation under §§ 187, 188, 193 BGB with the holidays of your state.
 - **Your AI works with it:** Claude Code, Claude Desktop, Codex or any other
   that speaks MCP (Model Context Protocol) or can run commands. 7 guides
-  take it from case intake to a reviewed draft, 21 tools let it read
+  take it from case intake to a reviewed draft, 22 tools let it read
   the case and, after your confirmation, write to it.
 - **Everything stays with you:** no AI inside the app, no account, no key, no
   network. The service runs only on your machine.
@@ -34,7 +34,7 @@ AI helps you to organise, check and formulate.
 > Click **"Beispielfall laden"** in the UI, then browse case, documents,
 > deadlines and draft. Delete it whenever you like.
 
-Version 0.1 · as of 16.09.2026 · Author: Hasan Tepegöz · Deutsch: [README.md](README.md)
+Version 0.1 · as of 17.09.2026 · Author: Hasan Tepegöz · Deutsch: [README.md](README.md)
 
 **Contents:** [What it looks like](#what-it-looks-like) · [How your AI works with the folder](#how-your-ai-works-with-the-folder) · [What is inside](#what-is-inside) · [Scope](#scope) · [Requirements](#requirements) · [First start](#first-start) · [Connecting an AI](#connecting-an-ai) · [Limits](#limits) · [Backup](#backup) · [Licence](#licence) · [Contributing](#contributing-and-supporting) · [Legal notice](#legal-notice-impressum)
 
@@ -129,14 +129,14 @@ blocks that for the AI. New texts go to 06, memos to 07.
 
 <img src="bilder/kapitel-werkzeuge-en.svg" alt="Tools: MCP and command line">
 
-The same 21 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+The same 22 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 and on the command line (`python3 "06 Werkzeuge/dienst/cli.py" <tool> field=value`).
 Over MCP, writing tools run only with your confirmation; on the command line
 the AI is told to ask first. Every change to `akte.json` is validated against
 the data model and saved with a revision.
 
 <details>
-<summary>Show all 21 tools</summary>
+<summary>Show all 22 tools</summary>
 
 | Tool | Kind | Purpose |
 |---|---|---|
@@ -157,6 +157,7 @@ the data model and saved with a revision.
 | `ereignis_eintragen` | writes | Add an event to the case timeline |
 | `notiz_anlegen` | writes | Add a note to a case |
 | `entwurf_erfassen` | writes | Register a draft or a new version (title, file, version, status) |
+| `bestand_abgleichen` | writes | Bestand eines Falls mit den Dateien abgleichen: neue Dateien in 01 bis 08 bekommen eine Kennung, im Finder verschobene werden über die Prüfsumme wiedergefunden, fehlende Ordnungsangaben werden in der Akte ergänzt. Der einzige Weg, auf dem neue Dateien registriert werden. |
 | `dokument_ordnen` | writes | Change metadata of a document (title, date, kind, state, topics, exhibit, persons, references, note); the file stays untouched |
 | `dokument_verschieben` | writes | File a document into another section; id and content stay, nothing is overwritten |
 | `journal_schreiben` | writes | Append an entry to the case journal |

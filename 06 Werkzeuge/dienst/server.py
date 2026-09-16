@@ -112,7 +112,7 @@ class Handler(BaseHTTPRequestHandler):
             if not 0 < laenge <= 40 * 1024 * 1024: raise ValueError('Ungültige Anfragegröße.')
             daten = json.loads(self.rfile.read(laenge)); pfad = urlparse(self.path).path
             if pfad == '/api/werkzeug':
-                self.antwort(200, werkzeuge.ausfuehren(daten['name'], daten.get('parameter', {}), bestaetigt=bool(daten.get('bestaetigt')))); return
+                self.antwort(200, werkzeuge.ausfuehren(daten['name'], daten.get('parameter', {}), bestaetigt=daten.get('bestaetigt', False))); return   # nur JSON true zählt (F05)
             if pfad == '/api/fall': self.antwort(200, werkzeuge.fall_anlegen(**{k: daten.get(k, '') for k in ('titel', 'bereich', 'rolle', 'ziel') if daten.get(k)})); return
             m = re.fullmatch(r'/api/fall/(R-\d{4,})', pfad)
             if m: self.antwort(200, werkzeuge.akte_speichern(m[1], daten['akte'], daten['revision'])); return
@@ -174,6 +174,7 @@ def laeuft():
     except Exception: pass
 
 def dienst(port):
+    if store.einrichten(): print('zentrale.json angelegt (erste Einrichtung).', flush=True)
     server = ThreadingHTTPServer(('127.0.0.1', port), Handler); server.daemon_threads = True
     server.key = secrets.token_urlsafe(32); server.csrf = secrets.token_urlsafe(32)
     store.atomar(laufzeitdatei(), json.dumps({'port': server.server_port, 'key': server.key, 'csrf': server.csrf, 'pid': os.getpid(), 'instanz': store.instanz()}))

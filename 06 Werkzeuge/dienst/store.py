@@ -73,11 +73,19 @@ def zentrale_standard():
 
 def zentrale_pfad(): return ROOT / 'zentrale.json'
 
-def lade_zentrale():
+def eingerichtet(): return zentrale_pfad().exists()
+
+def einrichten():
+    """Legt zentrale.json an, wenn sie fehlt. Nur beim Start des Dienstes (Einrichtung durch den Nutzer),
+    nie beim bloßen Lesen. Liefert True, wenn die Datei neu angelegt wurde."""
     p = zentrale_pfad()
-    if not p.exists():
-        atomar(p, json.dumps(zentrale_standard(), ensure_ascii=False, indent=2) + '\n')
-    z = json.loads(p.read_text('utf-8'))
+    if p.exists(): return False
+    atomar(p, json.dumps(zentrale_standard(), ensure_ascii=False, indent=2) + '\n'); return True
+
+def lade_zentrale():
+    """Liest zentrale.json; fehlt sie, den Standard nur im Speicher (schreibt nichts, Prüfbericht F03)."""
+    p = zentrale_pfad()
+    z = json.loads(p.read_text('utf-8')) if p.exists() else zentrale_standard()
     z.setdefault('einstellungen', {}).setdefault('feiertagsland', 'BW')   # ältere zentrale.json
     return z
 
@@ -136,9 +144,8 @@ def neuer_fall(titel, bereich='Allgemein', rolle='', ziel=''):
         rel = f'02 Fälle/{kennung} {name}'; ziel_ordner = sicher(rel)
         vorlage = sicher(VORLAGE)
         if vorlage.exists(): shutil.copytree(vorlage, ziel_ordner, ignore=shutil.ignore_patterns('.DS_Store'))
-        else:
-            ziel_ordner.mkdir()
-            for g in GRUPPEN: (ziel_ordner / g).mkdir()
+        else: ziel_ordner.mkdir()
+        for g in GRUPPEN: (ziel_ordner / g).mkdir(exist_ok=True)   # immer, auch wenn die Vorlage ohne leere Ordner kam (git überträgt keine, Prüfbericht F09)
         akte = akte_schema.leer()
         akte['fall'].update({'id': kennung, 'titel': titel, 'bereich': bereich or 'Allgemein', 'rolle': rolle or '',
                              'ziel': ziel or '', 'angelegt': datetime.now().date().isoformat()})

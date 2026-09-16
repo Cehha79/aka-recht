@@ -110,8 +110,7 @@ Mappe nutzt, prüft die Norm für seinen Fall selbst (README „Grenzen“).
 4. Funktionstest laufen lassen (`pruefen.py`); Feiertage haben eigene
    Prüfpunkte (Fronleichnam BW und BE, 08.05.2025 BE gegen BB).
 5. Diese Datei fortschreiben (Tabelle in Abschnitt 2), dann
-   `python3 DOKU/ansicht_bauen.py`, dann Produkt neu bauen
-   (`produkt_bauen.py --ersetzen`), Commit nach Freigabe.
+   `python3 DOKU/ansicht_bauen.py`.
 6. Was nicht am Volltext gelesen wurde, bleibt mit `[QUELLE: …]` markiert,
    auch wenn es „allgemein bekannt“ ist.
 

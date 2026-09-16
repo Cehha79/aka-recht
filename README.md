@@ -24,7 +24,7 @@ es zu ordnen, zu prüfen und zu formulieren.
   Rechenweg nach §§ 187, 188, 193 BGB, mit den Feiertagen deines Bundeslands.
 - **Deine KI arbeitet mit:** Claude Code, Claude Desktop, Codex oder jede andere,
   die MCP (Model Context Protocol) oder Befehle ausführen kann. 7 Anleitungen
-  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 21 Werkzeuge
+  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 22 Werkzeuge
   lassen sie in der Akte lesen und, nach deiner Bestätigung, schreiben.
 - **Alles bleibt bei dir:** keine KI in der App, kein Konto, kein Schlüssel,
   kein Netz. Der Dienst läuft nur auf deinem Rechner.
@@ -34,7 +34,7 @@ es zu ordnen, zu prüfen und zu formulieren.
 > Arbeitgeber). In der Oberfläche auf **„Beispielfall laden“** klicken, dann
 > durch Akte, Dokumente, Fristen und Entwurf klicken. Jederzeit löschbar.
 
-Version 0.1 · Stand 16.09.2026 · Autor: Hasan Tepegöz
+Version 0.1 · Stand 17.09.2026 · Autor: Hasan Tepegöz
 
 **Inhalt:** [So sieht es aus](#so-sieht-es-aus) · [So arbeitet deine KI mit der Mappe](#so-arbeitet-deine-ki-mit-der-mappe) · [Was in der Mappe steckt](#was-in-der-mappe-steckt) · [Geltungsbereich](#geltungsbereich) · [Voraussetzungen](#voraussetzungen) · [Erster Start](#erster-start) · [KI anbinden](#ki-anbinden) · [Grenzen](#grenzen) · [Sicherung](#sicherung) · [Lizenz](#lizenz) · [Mitmachen](#mitmachen-und-unterstützen) · [Impressum](#impressum)
 
@@ -138,24 +138,24 @@ ein Hook sperrt das für die KI. Neue Texte entstehen in 06, Vermerke in 07.
 
 <img src="bilder/kapitel-werkzeuge.svg" alt="Werkzeuge: MCP und Befehlszeile">
 
-Dieselben 21 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+Dieselben 22 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 oder über die Befehlszeile (`python3 "06 Werkzeuge/dienst/cli.py" <werkzeug> feld=wert`).
 Schreibende Werkzeuge laufen über MCP nur mit deiner Bestätigung; über die
 Befehlszeile soll die KI vorher fragen. Jede Änderung an `akte.json` wird
 gegen das Datenmodell geprüft und mit Revision gespeichert.
 
 <details>
-<summary>Alle 21 Werkzeuge anzeigen</summary>
+<summary>Alle 22 Werkzeuge anzeigen</summary>
 
 | Werkzeug | Art | Zweck |
 |---|---|---|
-| `faelle_auflisten` | lesend | Alle Fälle mit Kennung, Titel, Bereich, Status, Zahl der Dokumente und offenen Aufgaben. |
-| `fall_uebersicht` | lesend | Kompakte Übersicht eines Falls: Fall, Beteiligte, Verfahren, offene Fristen und Aufgaben, Ereignisse, Dokumentliste mit Kennung, Titel, Datum, Stand. Dokumentinhalte über dokument_text. |
+| `faelle_auflisten` | lesend | Alle Fälle mit Kennung, Titel, Bereich, Status, Zahl der Dokumente, nicht erfassten Dateien und offenen Aufgaben. |
+| `fall_uebersicht` | lesend | Kompakte Übersicht eines Falls: Fall, Beteiligte, Verfahren, offene Fristen und Aufgaben, Ereignisse, Dokumentliste mit Kennung, Titel, Datum, Stand, dazu nicht erfasste Dateien. Dokumentinhalte über dokument_text. |
 | `dokument_text` | lesend | Textauszug eines Dokuments (Word, E-Mail, PDF, Text, HTML). Fotos haben keinen Text. |
 | `dokumente_suchen` | lesend | Volltextsuche in Titeln, Ordnungsangaben und Dokumentinhalten eines Falls. |
 | `frist_berechnen` | lesend | Fristende nach §§ 187, 188, 193 BGB mit den landesweiten Feiertagen eines Bundeslands berechnen (Standard: Einstellung der Mappe). Liefert die Rechnung als Text. Entscheidet nicht, welche Frist gilt. |
 | `beispiel_laden` | schreibend | Die mitgelieferte Beispielakte (erfundener Fall) als neuen Fall anlegen, zum Ausprobieren. Der Fall bekommt die nächste freie Kennung. |
-| `bestand_pruefen` | lesend | Prüfsummen aller registrierten Dateien eines Falls mit dem ersten Stand vergleichen. |
+| `bestand_pruefen` | lesend | Prüfsummen aller registrierten Dateien eines Falls mit dem ersten Stand vergleichen; meldet auch nicht erfasste und verschobene Dateien. Schreibt nichts. |
 | `journal_lesen` | lesend | Verlauf eines Falls aus JOURNAL.md, neueste Einträge zuletzt. |
 | `quellen_katalog` | lesend | Gemeinsamer Zugangskatalog amtlicher Rechtsquellen aus 04 Rechtsquellen/Quellen.md. |
 | `fall_anlegen` | schreibend | Neuen Fall mit fester Kennung und Ordnerstruktur anlegen. |
@@ -166,6 +166,7 @@ gegen das Datenmodell geprüft und mit Revision gespeichert.
 | `ereignis_eintragen` | schreibend | Ereignis in die Chronologie eines Falls eintragen. |
 | `notiz_anlegen` | schreibend | Ordnungsnotiz in einem Fall anlegen. |
 | `entwurf_erfassen` | schreibend | Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung. |
+| `bestand_abgleichen` | schreibend | Bestand eines Falls mit den Dateien abgleichen: neue Dateien in 01 bis 08 bekommen eine Kennung, im Finder verschobene werden über die Prüfsumme wiedergefunden, fehlende Ordnungsangaben werden in der Akte ergänzt. Der einzige Weg, auf dem neue Dateien registriert werden. |
 | `dokument_ordnen` | schreibend | Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz). Die Datei selbst bleibt unverändert. |
 | `dokument_verschieben` | schreibend | Datei in einen anderen Aktenbereich einsortieren. Kennung und Inhalt bleiben, nichts wird überschrieben. |
 | `journal_schreiben` | schreibend | Eintrag an das Journal eines Falls anhängen. |

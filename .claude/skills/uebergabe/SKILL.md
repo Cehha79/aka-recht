@@ -13,8 +13,10 @@ Lies `CLAUDE.md` und die Akte (`cli.py fall_lesen fall=$fall`).
 1. Mit dem Nutzer klären, was der Empfänger braucht: alles, nur Originale,
    nur bestimmte Dokumente (D-Kennungen), mit oder ohne Entwürfe.
    Vertrauliches, das nicht hin soll (Notizen, interne Bewertungen), bleibt draußen.
-2. Bestand prüfen: `cli.py bestand_pruefen fall=$fall`. Fehlende oder
-   veränderte Dateien dem Nutzer nennen, bevor etwas verschickt wird.
+2. Bestand prüfen: `cli.py bestand_pruefen fall=$fall` (liest nur). Fehlende,
+   veränderte oder nicht erfasste Dateien dem Nutzer nennen, bevor etwas
+   verschickt wird; nicht erfasste erst nach Freigabe mit
+   `cli.py bestand_abgleichen fall=$fall` registrieren.
 3. Paket erzeugen:
    `python3 ".claude/recht/werkzeuge/uebergabe_paket.py" $fall [--nur D0001,D0002] [--mit-entwuerfen] [--ziel "~/Desktop/…zip"]`
    Standardziel: Schreibtisch, Name mit Fall und Datum.

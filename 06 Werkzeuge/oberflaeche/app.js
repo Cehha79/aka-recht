@@ -50,7 +50,16 @@ function gehe(teile) { const p = new URLSearchParams(); for (const [k, v] of Obj
 const fallLink = (id, seite = 'uebersicht', dok = '') => '#' + new URLSearchParams(Object.assign({seite, fall: id}, dok ? {dok} : {})).toString();
 
 async function ladeZentrale() { S.zentrale = await api.get('/api/zentrale'); api.csrf = S.zentrale.csrf; }
-async function ladeFall(id) { S.fall = await api.get('/api/fall/' + id); }
+async function ladeFall(id) {
+  S.fall = await api.get('/api/fall/' + id);
+  // Lesen schreibt nichts mehr (Prüfbericht F03). Neue oder verschobene Dateien registriert die
+  // Oberfläche ausdrücklich über das schreibende Werkzeug und liest den Fall danach neu.
+  const a = S.fall.abweichungen || {};
+  if (api.csrf && ((a.nicht_erfasst || []).length || (a.verschoben || []).length || (S.fall.ergaenzt || []).length)) {
+    try { await api.werkzeug('bestand_abgleichen', {fall: id}); S.fall = await api.get('/api/fall/' + id); }
+    catch (e) { toast('Bestand nicht abgeglichen: ' + e.message, true); }
+  }
+}
 const akte = () => S.fall.akte;
 const fallId = () => akte().fall.id;
 const dokListe = () => S.fall.dokumente;
@@ -318,7 +327,7 @@ const FORMULARE = {
     lesen: f => ({art: f.get('art').trim(), stelle: f.get('stelle'), aktenzeichen: f.get('aktenzeichen').trim(), stand: f.get('stand').trim(), ordner: f.get('ordner').trim()}), leer: {art: '', stelle: '', aktenzeichen: '', stand: '', ordner: ''}},
   ereignis: {liste: 'ereignisse', kennung: 'E', titel: 'Ereignis', felder: e => `<div class="feld-reihe">${feld('datum', 'Datum', e.datum, 'date')}${feld('art', 'Art', e.art, 'select', {optionen: opt(EREIGNIS_ART, e.art || 'Vermerk')})}</div>${feld('titel', 'Kurztitel', e.titel)}${feld('quelle', 'Quelle', e.quelle, 'select', {optionen: dokOptionen(e.quelle)})}${feld('detail', 'Einzelheiten', e.detail, 'textarea', {hinweis: 'Was steht im Dokument, was ist eigene Angabe, was ist Behauptung der Gegenseite?'})}`,
     lesen: f => ({datum: f.get('datum'), art: f.get('art'), titel: f.get('titel').trim(), quelle: f.get('quelle'), detail: f.get('detail').trim()}), leer: {datum: heute(), titel: '', art: 'Vermerk', quelle: '', detail: ''}},
-  frist: {liste: 'fristen', kennung: 'F', titel: 'Frist oder Termin', felder: x => `<div class="rechner"><h3>Fristenrechner (§§ 187, 188, 193 BGB, Feiertage nach Einstellung)</h3><div class="feld-reihe drei">${feld('r_start', 'Ereignistag (Zugang)', x.r_start || '', 'date')}${feld('r_menge', 'Dauer', x.r_menge || 2, 'number', {attr: 'min="1"'})}${feld('r_einheit', 'Einheit', x.r_einheit || 'wochen', 'select', {optionen: opt(['tage', 'wochen', 'monate', 'jahre'], x.r_einheit || 'wochen')})}</div><div class="feld-reihe">${feld('r_ereignis', 'Ereignistag zählt', 'ja', 'select', {optionen: opt([['ja', 'nicht mit (§ 187 Abs. 1, Regelfall)'], ['nein', 'mit (§ 187 Abs. 2)']], 'ja')})}${feld('r_werktag', 'Wochenende und Feiertag', 'ja', 'select', {optionen: opt([['ja', 'auf nächsten Werktag (§ 193)'], ['nein', 'nicht verschieben']], 'ja')})}</div><button type="button" class="knopf klein" data-aktion="berechnen">Berechnen und übernehmen</button><div class="ergebnis" id="rechner-ergebnis"></div></div>
+  frist: {liste: 'fristen', kennung: 'F', titel: 'Frist oder Termin', felder: x => rechnerHtml(x, true) + `
     <div class="feld-reihe">${feld('datum', 'Fristende oder Termin', x.datum, 'date')}${feld('art', 'Art', x.art, 'select', {optionen: opt(FRIST_ART, x.art || 'gesetzlich')})}</div>${feld('titel', 'Kurztitel', x.titel)}${feld('ausloeser', 'Auslöser und Zugang', x.ausloeser, 'text', {hinweis: 'z. B. Zustellung am 05.09.2026, Umschlag D0004'})}${feld('rechtsgrundlage', 'Rechtsgrundlage', x.rechtsgrundlage, 'text', {hinweis: 'Norm mit Absatz und Gesetz, z. B. § 67 Abs. 1 OWiG'})}${feld('berechnung', 'Rechnung', x.berechnung, 'textarea')}<div class="feld-reihe">${feld('pruefstatus', 'Prüfstatus', x.pruefstatus, 'select', {optionen: opt(FRIST_STATUS, x.pruefstatus || 'offen'), hinweis: '„bestätigt“ nur mit Auslöser, Grundlage, Rechnung und Quelle.'})}${feld('quelle', 'Quelle', x.quelle, 'select', {optionen: dokOptionen(x.quelle)})}</div>`,
     lesen: f => ({datum: f.get('datum'), art: f.get('art'), titel: f.get('titel').trim(), ausloeser: f.get('ausloeser').trim(), rechtsgrundlage: f.get('rechtsgrundlage').trim(), berechnung: f.get('berechnung').trim(), pruefstatus: f.get('pruefstatus'), quelle: f.get('quelle')}), leer: {datum: '', titel: '', art: 'gesetzlich', ausloeser: '', rechtsgrundlage: '', berechnung: '', pruefstatus: 'offen', quelle: ''}},
   aufgabe: {liste: 'aufgaben', kennung: 'A', titel: 'Aufgabe', felder: a => `${feld('titel', 'Aufgabe', a.titel)}${feld('detail', 'Einzelheiten', a.detail, 'textarea')}<div class="feld-reihe drei">${feld('faellig', 'Fällig', a.faellig, 'date')}${feld('quelle', 'Quelle', a.quelle, 'select', {optionen: dokOptionen(a.quelle)})}${feld('erledigt', 'Erledigt', a.erledigt ? 'ja' : 'nein', 'select', {optionen: opt([['nein', 'Nein'], ['ja', 'Ja']], a.erledigt ? 'ja' : 'nein')})}</div>`,
@@ -357,8 +366,49 @@ function journalDialog() {
   dialog('Journal-Eintrag', `<div class="feld-reihe">${feld('art', 'Art', 'Arbeit', 'select', {optionen: opt(JOURNAL_ARTEN, 'Arbeit')})}${feld('titel', 'Kurztitel', '')}</div>${feld('text', 'Text', '', 'textarea', {rows: 7, hinweis: 'Bezug auf Kennungen wie D0012, F01, A03. Wird angehängt, nie umgeschrieben.'})}`,
     async f => { await api.werkzeug('journal_schreiben', {fall: fallId(), art: f.get('art'), titel: f.get('titel').trim(), text: f.get('text').trim()}); await ladeFall(fallId()); toast('Eingetragen.'); await render(); }, 'Anhängen');
 }
+// Fristenrechner: ein Block für den Frist-Dialog (mit Übernahme in die Felder) und für den eigenen Dialog (nur rechnen).
+function rechnerHtml(x = {}, uebernehmen = true) {
+  return `<div class="rechner"><h3>Fristenrechner (§§ 187, 188, 193 BGB, Feiertage nach Einstellung)</h3><div class="feld-reihe drei">${feld('r_start', 'Ereignistag (Zugang)', x.r_start || '', 'date')}${feld('r_menge', 'Dauer', x.r_menge || 2, 'number', {attr: 'min="1"'})}${feld('r_einheit', 'Einheit', x.r_einheit || 'wochen', 'select', {optionen: opt(['tage', 'wochen', 'monate', 'jahre'], x.r_einheit || 'wochen')})}</div><div class="feld-reihe">${feld('r_ereignis', 'Ereignistag zählt', 'ja', 'select', {optionen: opt([['ja', 'nicht mit (§ 187 Abs. 1, Regelfall)'], ['nein', 'mit (§ 187 Abs. 2)']], 'ja')})}${feld('r_werktag', 'Wochenende und Feiertag', 'ja', 'select', {optionen: opt([['ja', 'auf nächsten Werktag (§ 193)'], ['nein', 'nicht verschieben']], 'ja')})}</div><button type="button" class="knopf klein" data-aktion="berechnen" data-uebernehmen="${uebernehmen ? 'ja' : 'nein'}">${uebernehmen ? 'Berechnen und übernehmen' : 'Berechnen'}</button><div class="ergebnis" id="rechner-ergebnis" aria-live="polite"></div></div>`;
+}
 function rechnerDialog() {
-  dialog('Fristenrechner', FORMULARE.frist.felder({}).split('<div class="feld-reihe">')[0] + '<p class="untertitel">Zum Eintragen einer Frist „Frist oder Termin“ verwenden; dort steht derselbe Rechner.</p>', null);
+  dialog('Fristenrechner', rechnerHtml({}, false) + '<p class="untertitel">Rechnet nur. Zum Eintragen einer Frist „Frist oder Termin“ verwenden; dort steht derselbe Rechner und übernimmt das Ergebnis in die Felder.</p>', null);
+}
+async function fristBerechnen(b) {
+  const f = $('#formular'), d = new FormData(f), erg = $('#rechner-ergebnis');
+  const start = d.get('r_start'), menge = parseInt(d.get('r_menge'), 10);
+  if (!start) { erg.textContent = 'Bitte den Ereignistag angeben.'; return; }
+  if (!(menge >= 1)) { erg.textContent = 'Die Dauer muss mindestens 1 sein.'; return; }
+  b.disabled = true; erg.textContent = 'Rechnet …';
+  try {
+    const r = await api.post('/api/fristen/berechnen', {start, menge, einheit: d.get('r_einheit'), ereignisfrist: d.get('r_ereignis') === 'ja', werktagsregel: d.get('r_werktag') === 'ja'});
+    erg.textContent = r.rechnung.join('\n') + `\nFeiertage: ${r.feiertagsland_name}.` + (r.regional ? ' ' + r.regional : '') + '\n' + r.hinweis;
+    if (b.dataset.uebernehmen === 'ja') {
+      const setze = (name, wert, nurWennLeer = false) => { const el = f.elements[name]; if (el && (!nurWennLeer || !el.value.trim())) el.value = wert; };
+      setze('datum', r.ende); setze('berechnung', r.rechnung.join('\n')); setze('rechtsgrundlage', r.grundlagen.join(', '), true);
+      setze('ausloeser', `Ereignis am ${datum(r.start)} [PRÜFEN: Zugang und Beleg]`, true);
+      dialogVeraendert = true; toast('Fristende übernommen: ' + r.ende_text);
+    }
+  } catch (e) { erg.textContent = 'Fehler: ' + e.message; }
+  finally { b.disabled = false; }
+}
+async function bestandPruefen(b) {
+  const ziel = $('#bestand-ergebnis'); b.disabled = true; ziel.innerHTML = '<div class="hinweis">Prüfung läuft, jede registrierte Datei wird gelesen …</div>';
+  try {
+    const r = await api.get('/api/bestand');
+    const block = (titel, l, text) => l.length ? `<div class="feld-anzeige"><b>${esc(titel)} (${l.length})</b><span>${l.map(x => esc(text(x))).join('<br>')}</span></div>` : '';
+    ziel.innerHTML = r.faelle.map(c => `<div class="ergebnisblock ${c.veraendert.length || c.fehlend.length ? 'schlecht' : 'gut'}"><b>${esc(c.fall)}</b>: ${c.geprueft} unverändert, ${c.veraendert.length} verändert, ${c.fehlend.length} fehlend, ${c.nicht_erfasst.length} ohne Kennung, ${c.verschoben_erkannt.length} verschoben erkannt.</div>${block('Verändert', c.veraendert, x => x.id + ' · ' + x.pfad)}${block('Fehlend', c.fehlend, x => x.id + ' · ' + x.pfad)}${block('Ohne Kennung (Abgleich beim Öffnen des Falls)', c.nicht_erfasst, x => x)}${block('Verschoben erkannt', c.verschoben_erkannt, x => x.id + ' · ' + x.von + ' → ' + x.nach)}`).join('') || '<div class="hinweis">Kein Fall vorhanden.</div>';
+    ziel.innerHTML += `<p class="untertitel">Geprüft ${esc(new Date().toLocaleString('de-DE'))}. Eine Prüfsumme belegt Gleichheit mit dem registrierten Stand, nicht Echtheit oder Beweiskraft.</p>`;
+  } catch (e) { ziel.innerHTML = `<div class="hinweis rot">${esc(e.message)}</div>`; }
+  finally { b.disabled = false; }
+}
+async function sicherungErstellen(b) {
+  const alt = b.textContent; b.disabled = true; b.textContent = 'Sicherung läuft …';
+  const meldung = document.createElement('div'); meldung.className = 'hinweis'; meldung.textContent = 'Alle Dateien werden gepackt, die ZIP wird vollständig zurückgelesen und verglichen. Bei großen Mappen dauert das bis zu einer Minute.'; b.after(meldung);
+  try {
+    const r = await api.post('/api/sicherung', {});
+    S.zentrale = null; await render();
+    toast(`Sicherung geprüft: ${r.dateien} Dateien, ${groesse(r.groesse)}` + (r.zweites_ziel ? ', Kopie am zweiten Ziel.' : '.'));
+  } catch (e) { meldung.className = 'hinweis rot'; meldung.textContent = 'Sicherung fehlgeschlagen: ' + e.message; b.disabled = false; b.textContent = alt; }
 }
 function zuordnenDialog(name) {
   const f = S.zentrale.faelle.filter(c => !c.fehler);
@@ -405,6 +455,11 @@ document.addEventListener('click', async e => {
     else if (a === 'vorschau-zu') { S.auswahl = ''; gehe({seite: 'dokumente', fall: fallId()}); }
     else if (a === 'breit') { S.breit = !S.breit; vorschau(true); }
     else if (a === 'journal') journalDialog();
+    else if (a === 'rechner') rechnerDialog();
+    else if (a === 'berechnen') await fristBerechnen(b);
+    else if (a === 'bestand-pruefen') await bestandPruefen(b);
+    else if (a === 'sicherung') await sicherungErstellen(b);
+    else toast('Unbekannte Aktion „' + a + '“. Das ist ein Fehler in der Oberfläche.', true);   // still nichts tun war F01 aus dem Prüfbericht
   } catch (err) { toast(err.message, true); }
 });
 document.addEventListener('keydown', e => { const z = e.target.closest && e.target.closest('[data-dok]'); if (z && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); z.click(); } if ((e.metaKey || e.ctrlKey) && e.key === 'k' && $('#dok-suche')) { e.preventDefault(); $('#dok-suche').focus(); } });

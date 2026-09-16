@@ -24,6 +24,7 @@ def main():
             nah = [x for x in f['fristen'] if x['datum'] and (x['datum'] < heute or (date.fromisoformat(x['datum']) - date.today()).days <= 21)]
             teile = [f'{f["id"]} {f["titel"]} ({f["bereich"]}, {f["status"]})']
             teile.append('neue Post: ' + (', '.join(post) if post else 'keine'))
+            if f.get('nicht_erfasst'): teile.append(f'{f["nicht_erfasst"]} Datei(en) ohne Kennung (bestand_abgleichen nach Freigabe)')
             if nah: teile.append('Fristen: ' + '; '.join(f'{x["datum"]} {x["titel"]} [{x["pruefstatus"]}]' + (' ÜBERSCHRITTEN' if x['datum'] < heute else '') for x in nah))
             teile.append(f'offene Aufgaben: {f["offene_aufgaben"]}')
             zeilen.append(' · '.join(teile))

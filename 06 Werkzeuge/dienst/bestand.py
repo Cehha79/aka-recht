@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Bestand eines Falls: Kennungen vergeben, Prüfsummen führen, Verschiebungen erkennen.
 
-bestand.json schreibt nur dieses Modul. Dateien in den Ordnern 01 bis 08
-bekommen beim ersten Einlesen eine D-Kennung und eine erste Prüfsumme
-(sha256_erst), die bleibt. Verschobene Dateien werden über die Prüfsumme
-wiedergefunden, wenn der alte Pfad nicht mehr existiert und die Zuordnung
-eindeutig ist. Nur Standardbibliothek.
+bestand.json schreibt nur dieses Modul, und nur in abgleichen() (schreibender
+Abgleich) und verschieben(). Dateien in den Ordnern 01 bis 08 bekommen beim
+Abgleich eine D-Kennung und eine erste Prüfsumme (sha256_erst), die bleibt.
+Verschobene Dateien werden über die Prüfsumme wiedergefunden, wenn der alte
+Pfad nicht mehr existiert und die Zuordnung eindeutig ist. abgleich() rechnet
+dasselbe nur lesend und meldet Abweichungen (Prüfbericht 16.09.2026, F03).
+Nur Standardbibliothek.
 """
 import hashlib, json, re
 from datetime import datetime
@@ -36,42 +38,71 @@ def dateien(ordner):
                 liste.append(str(p.relative_to(ordner)))
     return liste
 
-def aktualisieren(ordner, weg='Dienst'):
-    """Gleicht bestand.json mit den Dateien ab. Liefert {kennung: pfad} der vorhandenen Dateien."""
+def _rechnen(ordner, weg, kennungen_vergeben):
+    """Vergleicht bestand.json mit den Dateien der Gruppen 01 bis 08, ohne zu schreiben.
+
+    Liefert (daten, alt, ergebnis, bericht): daten ist der abgeglichene Stand (Kopie), alt der gelesene,
+    ergebnis {kennung: pfad} der vorhandenen registrierten Dateien, bericht die Abweichungen:
+    neu (frisch vergebene Kennungen, nur mit kennungen_vergeben), nicht_erfasst (Dateien ohne Kennung),
+    verschoben (über die Prüfsumme wiedergefunden), fehlend (registriert, aber nicht mehr vorhanden)."""
+    ordner = Path(ordner)
+    alt = lese(ordner); daten = json.loads(json.dumps(alt))
+    vorhanden = dateien(ordner); vorhanden_set = set(vorhanden)
+    pfad_zu_id = {e['pfad']: k for k, e in daten['dateien'].items()}
+    bericht = {'neu': [], 'nicht_erfasst': [], 'verschoben': [], 'fehlend': []}
+    # Kennungen, die akte.json schon vergibt (etwa eine mitgelieferte Beispielakte), gelten vor neuen Nummern
+    akte_pfade = {}
+    try:
+        akte_datei = ordner / 'akte.json'
+        if akte_datei.exists():
+            for k, d in json.loads(akte_datei.read_text('utf-8')).get('dokumente', {}).items():
+                if re.fullmatch(r'D\d+', k) and d.get('pfad') and k not in daten['dateien']: akte_pfade[d['pfad']] = k
+    except (ValueError, OSError): akte_pfade = {}
+    naechste = max([int(k[1:]) for k in list(daten['dateien']) + list(akte_pfade.values()) if re.fullmatch(r'D\d+', k)], default=0) + 1
+    ergebnis = {}; heute = datetime.now().date().isoformat()
+    for rel in vorhanden:
+        p = ordner / rel; h = sha_datei(p); kennung = pfad_zu_id.get(rel)
+        if not kennung:
+            treffer = [k for k, e in daten['dateien'].items() if e['pfad'] not in vorhanden_set and e['sha256'] == h]
+            if len(treffer) == 1:
+                kennung = treffer[0]
+                bericht['verschoben'].append({'id': kennung, 'von': daten['dateien'][kennung]['pfad'], 'nach': rel})
+                daten['verschiebungen'].append({'id': kennung, 'von': daten['dateien'][kennung]['pfad'], 'nach': rel,
+                                                'zeit': datetime.now().isoformat(timespec='seconds'), 'weg': weg + ', über Prüfsumme erkannt'})
+                pfad_zu_id.pop(daten['dateien'][kennung]['pfad'], None)
+            elif kennungen_vergeben:
+                kennung = akte_pfade.pop(rel, None)
+                if not kennung: kennung = f'D{naechste:04d}'; naechste += 1
+                daten['dateien'][kennung] = {'pfad': rel, 'sha256_erst': h, 'sha256': h, 'alt': '', 'erfasst': heute}
+                bericht['neu'].append({'id': kennung, 'pfad': rel})
+            else:
+                bericht['nicht_erfasst'].append(rel); continue
+            pfad_zu_id[rel] = kennung
+        e = daten['dateien'][kennung]; e['pfad'] = rel; e['sha256'] = h
+        e.setdefault('sha256_erst', h); e.setdefault('erfasst', heute); e.setdefault('alt', '')
+        ergebnis[kennung] = rel
+    bericht['fehlend'] = [{'id': k, 'pfad': e['pfad']} for k, e in daten['dateien'].items() if k not in ergebnis]
+    return daten, alt, ergebnis, bericht
+
+def abgleich(ordner):
+    """Nur lesen: registrierte Dateien und Abweichungen, ohne bestand.json anzufassen.
+    Liefert (ergebnis, bericht). Verschobene Dateien stehen mit ihrem neuen Pfad im Ergebnis,
+    neue Dateien nur in bericht['nicht_erfasst']; Kennungen vergibt erst abgleichen()."""
+    _, _, ergebnis, bericht = _rechnen(ordner, 'Lesen', kennungen_vergeben=False)
+    return ergebnis, bericht
+
+def abgleichen(ordner, weg='Abgleich'):
+    """Schreibend: vergibt Kennungen für neue Dateien, übernimmt Verschiebungen, schreibt bestand.json.
+    Liefert (ergebnis, bericht)."""
     ordner = Path(ordner)
     with store.sperre():
-        alt = lese(ordner); daten = json.loads(json.dumps(alt))
-        vorhanden = dateien(ordner); vorhanden_set = set(vorhanden)
-        pfad_zu_id = {e['pfad']: k for k, e in daten['dateien'].items()}
-        # Kennungen, die akte.json schon vergibt (etwa eine mitgelieferte Beispielakte), gelten vor neuen Nummern
-        akte_pfade = {}
-        try:
-            akte_datei = ordner / 'akte.json'
-            if akte_datei.exists():
-                for k, d in json.loads(akte_datei.read_text('utf-8')).get('dokumente', {}).items():
-                    if re.fullmatch(r'D\d+', k) and d.get('pfad') and k not in daten['dateien']: akte_pfade[d['pfad']] = k
-        except (ValueError, OSError): akte_pfade = {}
-        naechste = max([int(k[1:]) for k in list(daten['dateien']) + list(akte_pfade.values()) if re.fullmatch(r'D\d+', k)], default=0) + 1
-        ergebnis = {}
-        for rel in vorhanden:
-            p = ordner / rel; h = sha_datei(p); kennung = pfad_zu_id.get(rel)
-            if not kennung:
-                treffer = [k for k, e in daten['dateien'].items() if e['pfad'] not in vorhanden_set and e['sha256'] == h]
-                if len(treffer) == 1:
-                    kennung = treffer[0]
-                    daten['verschiebungen'].append({'id': kennung, 'von': daten['dateien'][kennung]['pfad'], 'nach': rel,
-                                                    'zeit': datetime.now().isoformat(timespec='seconds'), 'weg': weg + ', über Prüfsumme erkannt'})
-                    pfad_zu_id.pop(daten['dateien'][kennung]['pfad'], None)
-                else:
-                    kennung = akte_pfade.pop(rel, None)
-                    if not kennung: kennung = f'D{naechste:04d}'; naechste += 1
-                    daten['dateien'][kennung] = {'pfad': rel, 'sha256_erst': h, 'sha256': h, 'alt': '', 'erfasst': datetime.now().date().isoformat()}
-                pfad_zu_id[rel] = kennung
-            e = daten['dateien'][kennung]; e['pfad'] = rel; e['sha256'] = h
-            e.setdefault('sha256_erst', h); e.setdefault('erfasst', datetime.now().date().isoformat()); e.setdefault('alt', '')
-            ergebnis[kennung] = rel
+        daten, alt, ergebnis, bericht = _rechnen(ordner, weg, kennungen_vergeben=True)
         if daten != alt: store.atomar(ordner / 'bestand.json', json.dumps(daten, ensure_ascii=False, indent=2) + '\n')
-        return ergebnis
+    return ergebnis, bericht
+
+def aktualisieren(ordner, weg='Dienst'):
+    """Schreibender Abgleich, liefert nur {kennung: pfad}. Für Import und Zuordnung im Dienst."""
+    return abgleichen(ordner, weg)[0]
 
 def pruefen(ordner):
     """Vergleicht jede registrierte Datei mit ihrer ersten Prüfsumme."""

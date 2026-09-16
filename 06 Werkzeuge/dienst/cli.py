@@ -14,7 +14,10 @@ Beispiele:
   cli.py fall_lesen fall=R-0001
   cli.py frist_berechnen start=2026-08-21 menge=3 einheit=wochen
   cli.py journal_schreiben fall=R-0001 art=Arbeit titel="Fristen geprüft" text="F01 und F02 gerechnet."
-Schreibende Werkzeuge laufen hier als bestätigt (der Aufrufer ist der Nutzer).
+Schreibende Werkzeuge laufen hier als bestätigt: Die Freigabe ist der Aufruf
+selbst, den der Nutzer tippt oder in seinem KI-Client je Befehl genehmigt
+(Entscheidung 16.09.2026 zu F04). Eine KI ohne solchen Dialog darf cli.py für
+schreibende Werkzeuge nur nach ausdrücklicher Zustimmung des Nutzers aufrufen.
 """
 import sys
 sys.dont_write_bytecode = True
@@ -44,6 +47,7 @@ def main(argv):
                 try: v = json.loads(v)
                 except json.JSONDecodeError: pass
             args[k] = v
+    if not store.eingerichtet(): print('Hinweis: zentrale.json fehlt, die Mappe ist noch nicht eingerichtet (Start.command einmal ausführen).', file=sys.stderr)
     try:
         erg = werkzeuge.ausfuehren(name, args, bestaetigt=True)
     except Exception as e:

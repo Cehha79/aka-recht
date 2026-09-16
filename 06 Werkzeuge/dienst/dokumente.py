@@ -75,8 +75,13 @@ def text(pfad):
     return TEXT_CACHE[k]
 
 def katalog(fall_id, akte):
-    """Dokumentliste: Bestand plus Ordnungsangaben aus der Akte. Ergänzt fehlende Einträge in der Akte (im Speicher)."""
-    ordner = store.fall_ordner(fall_id); vorhanden = bestand.aktualisieren(ordner)
+    """Dokumentliste: registrierter Bestand plus Ordnungsangaben aus der Akte. Liest nur.
+
+    Liefert (liste, ergaenzt, abweichungen). Einträge, die im Bestand stehen, aber in der Akte fehlen
+    oder einen anderen Pfad haben, werden nur im Speicher ergänzt (Kennungen in `ergaenzt`); gespeichert
+    wird das erst durch ein schreibendes Werkzeug (bestand_abgleichen). Dateien ohne Kennung stehen in
+    abweichungen['nicht_erfasst'] und erscheinen nicht als Dokument."""
+    ordner = store.fall_ordner(fall_id); vorhanden, abweichungen = bestand.abgleich(ordner)
     liste = []; ergaenzt = []
     for kennung, rel in vorhanden.items():
         d = akte['dokumente'].get(kennung)
@@ -94,13 +99,13 @@ def katalog(fall_id, akte):
         if kennung not in vorhanden:
             liste.append({'id': kennung, **d, 'name': Path(d['pfad']).name, 'gruppe': d['pfad'].split('/')[0], 'typ': '', 'groesse': 0, 'fehlt': True})
     liste.sort(key=lambda x: (x['gruppe'], x['pfad']))
-    return liste, ergaenzt
+    return liste, ergaenzt, abweichungen
 
 def suche(fall_id, akte, frage):
     q = normalisieren(frage).strip()
     if len(q) < 2: return []
     ordner = store.fall_ordner(fall_id); treffer = []
-    liste, _ = katalog(fall_id, akte)
+    liste, _, _ = katalog(fall_id, akte)
     for d in liste:
         heu = normalisieren(' '.join([d['titel'], d['pfad'], d.get('notiz', ''), ' '.join(d.get('themen', [])), d.get('anlage', '')]))
         if q in heu: treffer.append(d['id']); continue

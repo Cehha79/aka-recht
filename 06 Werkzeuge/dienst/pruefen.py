@@ -68,13 +68,16 @@ def run():
         kat = anfrage('/api/werkzeuge'); assert len(kat) >= 18 and not any(w['name'] in ('loeschen', 'versenden') for w in kat)
         ok(f'Werkzeugkatalog mit {len(kat)} Werkzeugen, ohne Löschen und Versand')
 
-        # 2 Fälle
+        # 2 Fälle. Die Fallvorlage kommt aus git ohne ihre leeren Ordner (F09): hier ebenso, die Ordner müssen trotzdem entstehen.
+        for g in ['01 Eingang', '02 Grundlagen', '03 Schriftverkehr', '04 Verfahren', '05 Beweise', '06 Entwürfe', '07 Recherche', '08 Archiv']:
+            shutil.rmtree(root / '05 Vorlagen/Fallvorlage' / g, ignore_errors=True)
+        assert sorted(p.name for p in (root / '05 Vorlagen/Fallvorlage').iterdir() if not p.name.startswith('.')) == ['JOURNAL.md', 'akte.json', 'bestand.json']
         f1 = anfrage('/api/fall', {'titel': 'Bußgeld Parkverstoß', 'bereich': 'Verkehr und Bußgeld', 'rolle': 'Betroffener', 'ziel': 'Einspruch prüfen'})
         f2 = anfrage('/api/fall', {'titel': 'Miete Nebenkosten 2025', 'bereich': 'Wohnen und Miete'})
         assert f1['id'] == 'R-0001' and f2['id'] == 'R-0002'
-        for g in ['01 Eingang', '08 Archiv']: assert (root / f1['ordner'] / g).is_dir()
+        for g in ['01 Eingang', '02 Grundlagen', '03 Schriftverkehr', '04 Verfahren', '05 Beweise', '06 Entwürfe', '07 Recherche', '08 Archiv']: assert (root / f1['ordner'] / g).is_dir(), g
         assert 'Fall angelegt' in (root / f1['ordner'] / 'JOURNAL.md').read_text()
-        ok('Zwei Fälle aus verschiedenen Rechtsgebieten mit festen Kennungen, Ordnern und Journal angelegt')
+        ok('Zwei Fälle aus verschiedenen Rechtsgebieten mit festen Kennungen, allen acht Bereichen (auch ohne Ordner in der Vorlage) und Journal angelegt')
         anfrage('/api/fall', {'titel': ''}, erwartet=400); ok('Fall ohne Titel abgewiesen')
 
         # 3 Dokumente
@@ -86,9 +89,14 @@ def run():
         ok('Import vergibt Kennungen und überschreibt keine gleichnamige Datei')
         anfrage('/api/fall/R-0001/eingang', {'name': '../ausbruch.txt', 'inhalt': base64.b64encode(b'x').decode()}, erwartet=400)
         ok('Pfadausbruch beim Import abgewiesen')
-        fall = anfrage('/api/fall/R-0001'); rev = fall['revision']
-        assert 'D0001' in fall['akte']['dokumente'] and any(x['id'] == 'D0001' for x in fall['dokumente'])
-        ok('Fallakte ergänzt neue Dateien automatisch in den Ordnungsdaten')
+        akte_roh = (root / f1['ordner'] / 'akte.json').read_bytes()
+        fall = anfrage('/api/fall/R-0001')
+        assert 'D0001' in fall['akte']['dokumente'] and any(x['id'] == 'D0001' for x in fall['dokumente']) and set(fall['ergaenzt']) == {'D0001', 'D0002'}
+        assert (root / f1['ordner'] / 'akte.json').read_bytes() == akte_roh, 'Lesen der Akte hat akte.json geschrieben'
+        r = anfrage('/api/werkzeug', {'name': 'bestand_abgleichen', 'parameter': {'fall': 'R-0001'}, 'bestaetigt': True})
+        assert set(r['in_akte_ergaenzt']) == {'D0001', 'D0002'} and 'D0001' in json.loads((root / f1['ordner'] / 'akte.json').read_text())['dokumente']
+        fall = anfrage('/api/fall/R-0001'); rev = fall['revision']; assert not fall['ergaenzt'] and not fall['abweichungen']['nicht_erfasst']
+        ok('Importierte Dateien: Lesen zeigt sie als ergänzt, ohne zu schreiben; bestand_abgleichen trägt sie in die Akte ein')
         t = anfrage('/api/fall/R-0001/text/D0001'); assert 'Traffistar' in t['text']
         s = anfrage('/api/fall/R-0001/suche?q=traffistar'); assert s['treffer'] == ['D0001']
         ok('Textauszug und Volltextsuche')
@@ -97,19 +105,57 @@ def run():
         # 4 Verschieben, Finder-Verschiebung, Bestand
         r = anfrage('/api/werkzeug', {'name': 'dokument_verschieben', 'parameter': {'fall': 'R-0001', 'dokument': 'D0001', 'bereich': '02 Grundlagen', 'unterordner': 'Bescheide'}})
         assert r.get('bestaetigung_noetig'); ok('Schreibendes Werkzeug ohne Bestätigung hält an')
+        # F05: nur der JSON-Wahrheitswert true ist eine Bestätigung
+        for wert in ('false', 'true', 'ja', 1, 0, None, [True], {'x': 1}):
+            a = anfrage('/api/werkzeug', {'name': 'dokument_verschieben', 'parameter': {'fall': 'R-0001', 'dokument': 'D0001', 'bereich': '02 Grundlagen'}, 'bestaetigt': wert}, erwartet=400)
+            assert 'bestaetigt' in a['fehler'], (wert, a)
+        assert anfrage('/api/werkzeug', {'name': 'dokument_verschieben', 'parameter': {'fall': 'R-0001', 'dokument': 'D0001', 'bereich': '02 Grundlagen'}, 'bestaetigt': False}).get('bestaetigung_noetig')
+        assert (root / f1['ordner'] / '01 Eingang' / 'Anhoerung.txt').is_file(), 'ein abgewiesener Wert hat verschoben'
+        ok('Bestätigung: „false“, „true“, 1, null und andere Typen werden abgewiesen, nur JSON true oder false gelten')
         r = anfrage('/api/werkzeug', {'name': 'dokument_verschieben', 'parameter': {'fall': 'R-0001', 'dokument': 'D0001', 'bereich': '02 Grundlagen', 'unterordner': 'Bescheide'}, 'bestaetigt': True})
         assert r['pfad'] == '02 Grundlagen/Bescheide/Anhoerung.txt' and (root / f1['ordner'] / r['pfad']).is_file()
         b = json.loads((root / f1['ordner'] / 'bestand.json').read_text()); assert b['dateien']['D0001']['pfad'] == r['pfad'] and b['verschiebungen'][-1]['id'] == 'D0001'
         ok('Einsortieren behält Kennung und protokolliert die Verschiebung')
         os.rename(root / f1['ordner'] / r['pfad'], root / f1['ordner'] / '05 Beweise' / 'Anhoerung.txt')
-        fall = anfrage('/api/fall/R-0001'); rev = fall['revision']
-        assert fall['akte']['dokumente']['D0001']['pfad'] == '05 Beweise/Anhoerung.txt'
-        ok('Im Finder verschobene Datei über Prüfsumme wiedererkannt, Kennung bleibt')
+        bestand_roh = (root / f1['ordner'] / 'bestand.json').read_bytes()
+        fall = anfrage('/api/fall/R-0001')
+        assert fall['akte']['dokumente']['D0001']['pfad'] == '05 Beweise/Anhoerung.txt' and fall['abweichungen']['verschoben'] == [{'id': 'D0001', 'von': '02 Grundlagen/Bescheide/Anhoerung.txt', 'nach': '05 Beweise/Anhoerung.txt'}]
+        assert (root / f1['ordner'] / 'bestand.json').read_bytes() == bestand_roh, 'Lesen hat bestand.json geschrieben'
+        r = anfrage('/api/werkzeug', {'name': 'bestand_abgleichen', 'parameter': {'fall': 'R-0001'}, 'bestaetigt': True}); assert r['verschoben'][0]['nach'] == '05 Beweise/Anhoerung.txt' and r['in_akte_ergaenzt'] == ['D0001']
+        b = json.loads((root / f1['ordner'] / 'bestand.json').read_text()); assert b['dateien']['D0001']['pfad'] == '05 Beweise/Anhoerung.txt' and 'Prüfsumme' in b['verschiebungen'][-1]['weg']
+        fall = anfrage('/api/fall/R-0001'); rev = fall['revision']; assert not fall['abweichungen']['verschoben']
+        ok('Im Finder verschobene Datei über Prüfsumme wiedererkannt: Lesen meldet sie, der Abgleich übernimmt sie, Kennung bleibt')
         p = root / f1['ordner'] / '05 Beweise' / 'Anhoerung.txt'; p.write_bytes(inhalt + b'geaendert')
         bp = anfrage('/api/werkzeug', {'name': 'bestand_pruefen', 'parameter': {'fall': 'R-0001'}})
         assert [x['id'] for x in bp['veraendert']] == ['D0001'] and bp['geprueft'] == 1
         p.write_bytes(inhalt); bp = anfrage('/api/werkzeug', {'name': 'bestand_pruefen', 'parameter': {'fall': 'R-0001'}}); assert not bp['veraendert']
         ok('Bestandsprüfung erkennt geänderten Inhalt trotz gleichem Namen')
+
+        # 4b Lesen schreibt nichts (Prüfbericht 16.09.2026, F03): Dateistand vor und nach jedem lesenden Weg vergleichen
+        def zustand():
+            return {str(p.relative_to(root)): (p.stat().st_mtime_ns, p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest()) for p in root.rglob('*') if p.is_file()}
+        (root / f1['ordner'] / '05 Beweise' / 'Finder-Ablage.txt').write_text('im Finder abgelegt\n')
+        vorher = zustand()
+        for pfad in ('/api/zentrale', '/api/bestand', '/api/fall/R-0001', '/api/fall/R-0001/text/D0001', '/api/fall/R-0001/suche?q=finder', '/api/fall/R-0001/journal', '/api/quellen', '/api/einstellungen'): anfrage(pfad)
+        for name, par in [('faelle_auflisten', {}), ('fall_uebersicht', {'fall': 'R-0001'}), ('bestand_pruefen', {'fall': 'R-0001'}), ('dokument_text', {'fall': 'R-0001', 'dokument': 'D0001'}),
+                          ('dokumente_suchen', {'fall': 'R-0001', 'frage': 'finder'}), ('journal_lesen', {'fall': 'R-0001'}), ('quellen_katalog', {}), ('frist_berechnen', {'start': '2026-01-31', 'menge': 1, 'einheit': 'monate'})]:
+            anfrage('/api/werkzeug', {'name': name, 'parameter': par})
+        anfrage('/api/fall/R-0001/text/D0099', erwartet=400)
+        nachher = zustand(); geaendert = sorted(k for k in set(nachher) | set(vorher) if nachher.get(k) != vorher.get(k))
+        assert not geaendert, 'ein lesender Aufruf hat Dateien geändert: ' + ', '.join(geaendert)
+        u = anfrage('/api/werkzeug', {'name': 'fall_uebersicht', 'parameter': {'fall': 'R-0001'}})
+        assert u['nicht_erfasst'] == ['05 Beweise/Finder-Ablage.txt'] and not any(d['titel'].startswith('Finder') for d in u['dokumente'])
+        assert anfrage('/api/werkzeug', {'name': 'bestand_pruefen', 'parameter': {'fall': 'R-0001'}})['nicht_erfasst'] == ['05 Beweise/Finder-Ablage.txt']
+        assert next(f for f in anfrage('/api/zentrale')['faelle'] if f['id'] == 'R-0001')['nicht_erfasst'] == 1
+        zp = root / 'zentrale.json'; zk = zp.read_bytes(); zp.unlink()
+        try: assert anfrage('/api/zentrale')['faelle'] == [] and not zp.exists(), 'Lesen ohne zentrale.json hat sie angelegt'
+        finally: zp.write_bytes(zk)
+        ok('Lesende Werkzeuge und Routen ändern keine Datei, auch nicht bei neuer Finder-Datei oder fehlender zentrale.json; Abweichungen werden gemeldet')
+        r = anfrage('/api/werkzeug', {'name': 'bestand_abgleichen', 'parameter': {'fall': 'R-0001'}, 'bestaetigt': True})
+        assert r['neu'] == [{'id': 'D0003', 'pfad': '05 Beweise/Finder-Ablage.txt'}] and r['in_akte_ergaenzt'] == ['D0003'] and not r['verschoben']
+        assert anfrage('/api/fall/R-0001/text/D0003')['text'].startswith('im Finder')
+        assert anfrage('/api/werkzeug', {'name': 'bestand_abgleichen', 'parameter': {'fall': 'R-0001'}}).get('bestaetigung_noetig')
+        ok('bestand_abgleichen registriert die Finder-Datei mit der nächsten Kennung, ergänzt die Akte und braucht die Bestätigung')
 
         # 5 Speichern, Revision, Schema
         fall = anfrage('/api/fall/R-0001'); rev = fall['revision']; akte = fall['akte']
@@ -119,11 +165,68 @@ def run():
         ok('Speichern mit Revision; veralteter Stand wird abgewiesen')
         kaputt = json.loads(json.dumps(akte)); kaputt['fristen'].append({'id': 'F01', 'datum': '2026-09-19', 'titel': 'Einspruch', 'art': 'gesetzlich', 'pruefstatus': 'bestätigt'})
         anfrage('/api/fall/R-0001', {'akte': kaputt, 'revision': rev2}, erwartet=400)
+        # F10: unmögliche Kalendertage und falsche Typen geben Fehlerlisten, keinen Absturz, und kein Speichern
+        sys.path.insert(0, str(root / '06 Werkzeuge')); import akte_schema
+        def kaputte(aenderung):
+            k = json.loads(json.dumps(akte)); aenderung(k); return k
+        proben = [
+            ('31. Februar', kaputte(lambda k: k['ereignisse'].append({'id': 'E01', 'datum': '2026-02-31', 'titel': 'x'})), 'Kalender'),
+            ('Monat 13', kaputte(lambda k: k['fall'].__setitem__('angelegt', '2026-13-01')), 'Kalender'),
+            ('fall=null', kaputte(lambda k: k.__setitem__('fall', None)), 'fall muss ein Objekt'),
+            ('Liste statt Objekt', kaputte(lambda k: k.__setitem__('fall', [])), 'fall muss ein Objekt'),
+            ('Zahl statt Eintrag', kaputte(lambda k: k.__setitem__('beteiligte', [5])), 'Kennung'),
+            ('Text in kosten', kaputte(lambda k: k.__setitem__('kosten', ['x'])), 'kein Objekt'),
+            ('angeheftet=5', kaputte(lambda k: k['fall'].__setitem__('angeheftet', 5)), 'angeheftet'),
+            ('fassung=true', kaputte(lambda k: k['entwuerfe'].append({'id': 'W01', 'titel': 'x', 'status': 'in Arbeit', 'fassung': True})), 'fassung'),
+            ('betrag=true', kaputte(lambda k: k['kosten'].append({'datum': '2026-09-01', 'posten': 'x', 'betrag': True})), 'betrag'),
+            ('unbekannte Kennung', kaputte(lambda k: k['aufgaben'].append({'id': 'A09', 'titel': 'x', 'erledigt': False, 'quelle': 'D9999'})), 'D9999'),
+        ]
+        for name, probe, erwartet in proben:
+            fehler, _ = akte_schema.validate(probe)
+            assert fehler and any(erwartet in s for s in fehler), (name, fehler)
+        assert akte_schema.validate(None)[0] and akte_schema.validate('x')[0]
+        assert not akte_schema.validate(kaputte(lambda k: k['ereignisse'].append({'id': 'E01', 'datum': '2028-02-29', 'titel': 'Schalttag'})))[0]
+        anfrage('/api/fall/R-0001', {'akte': proben[0][1], 'revision': rev2}, erwartet=400)
+        assert '2026-02-31' not in (root / f1['ordner'] / 'akte.json').read_text()
+        ok('Schema: 31. Februar, Monat 13, fall=null, Liste statt Objekt, Zahl statt Eintrag, true statt Zahl geben Fehler statt Absturz; Schalttag gilt')
         ok('Bestätigte Frist ohne Grundlage wird nicht gespeichert')
         staende = sorted((base / 'Sicherungen' / 'Ordnungsstände' / 'R-0001').glob('*_akte.json')); assert staende
         ok('Vorfassung der Ordnungsdaten außerhalb des Projekts gesichert')
 
         # 6 Fristen, Aufgaben, Journal
+        sys.path.insert(0, str(root / '06 Werkzeuge/dienst')); import fristen
+        # Grenzfälle der §§ 187, 188 BGB ohne § 193 BGB. Erwartungswerte von Hand aus dem Gesetzestext abgeleitet,
+        # nicht aus dem Rechner (Prüfbericht 16.09.2026, F02: Beginnfrist am Monatsende endete einen Tag zu früh).
+        # (Start, Menge, Einheit, Ereignisfrist?, erwartetes Ende, § 188 Abs. 3 erwartet?)
+        grenzfaelle = [
+            ('2026-01-31', 1, 'monate', False, '2026-02-28', True),    # 31.02. fehlt: letzter Tag des Monats
+            ('2026-01-30', 1, 'monate', False, '2026-02-28', True),
+            ('2026-01-29', 1, 'monate', False, '2026-02-28', True),    # 29.02. fehlt 2026
+            ('2026-01-28', 1, 'monate', False, '2026-02-27', False),   # 28.02. vorhanden, also der Vortag
+            ('2028-01-30', 1, 'monate', False, '2028-02-29', True),    # Schaltjahr
+            ('2028-01-29', 1, 'monate', False, '2028-02-28', False),
+            ('2026-03-01', 1, 'monate', False, '2026-03-31', False),   # Vortag des 01.04.
+            ('2026-03-31', 1, 'monate', False, '2026-04-30', True),
+            ('2026-08-31', 6, 'monate', False, '2027-02-28', True),
+            ('2028-02-29', 1, 'jahre', False, '2029-02-28', True),
+            ('2028-03-01', 1, 'jahre', False, '2029-02-28', False),
+            ('2026-03-02', 2, 'wochen', False, '2026-03-15', False),   # Montag bis Sonntag
+            ('2026-02-05', 10, 'tage', False, '2026-02-14', False),
+            ('2026-01-31', 1, 'monate', True, '2026-02-28', True),     # Ereignisfrist, § 188 Abs. 3
+            ('2026-05-31', 1, 'monate', True, '2026-06-30', True),
+            ('2026-03-31', 1, 'monate', True, '2026-04-30', True),
+            ('2028-02-29', 1, 'jahre', True, '2029-02-28', True),
+            ('2026-01-15', 1, 'monate', True, '2026-02-15', False),
+            ('2026-02-05', 2, 'wochen', True, '2026-02-19', False),
+            ('2026-02-05', 10, 'tage', True, '2026-02-15', False),
+        ]
+        for start, menge, einheit, ereignis, erwartet, abs3 in grenzfaelle:
+            r = fristen.berechne(start, menge, einheit, ereignisfrist=ereignis, werktagsregel=False)
+            art = 'Ereignisfrist' if ereignis else 'Beginnfrist'
+            assert r['ende'] == erwartet, f'{start} + {menge} {einheit} ({art}): {r["ende"]} statt {erwartet}'
+            assert ('§ 188 Abs. 3 BGB' in r['grundlagen']) == abs3, f'{start} + {menge} {einheit} ({art}): § 188 Abs. 3 {"fehlt" if abs3 else "zu viel"}'
+            assert r['ende_text'] in ' '.join(r['rechnung']), f'{start}: Rechnung nennt nicht das Ergebnis'
+        ok(f'Fristenrechner: {len(grenzfaelle)} Grenzfälle der §§ 187, 188 BGB (Monatsende, Schaltjahr, Jahresfrist, Beginn- und Ereignisfrist)')
         fr = anfrage('/api/fristen/berechnen', {'start': '2026-08-21', 'menge': 3, 'einheit': 'wochen'}); assert fr['ende'] == '2026-09-11'
         fr = anfrage('/api/fristen/berechnen', {'start': '2026-09-05', 'menge': 2, 'einheit': 'wochen'}); assert fr['ende'] == '2026-09-21' and fr['verschoben']
         ok('Fristenrechner über die Schnittstelle, mit § 193 BGB')
@@ -203,6 +306,10 @@ def run():
             ok('MCP: lesende Aufrufe liefern Text und strukturiertes Ergebnis')
             a = rpc({'jsonrpc': '2.0', 'id': 6, 'method': 'tools/call', 'params': {'name': 'notiz_anlegen', 'arguments': {'fall': 'R-0001', 'titel': 'MCP-Probe', 'text': 'ohne Bestätigung'}}})
             assert a['result']['structuredContent'].get('bestaetigung_noetig') and 'Rückfrage' in a['result']['content'][0]['text']
+            assert not anfrage('/api/fall/R-0001')['akte']['notizen']
+            for wert in ('true', 'false', 1, None):
+                a = rpc({'jsonrpc': '2.0', 'id': 60, 'method': 'tools/call', 'params': {'name': 'notiz_anlegen', 'arguments': {'fall': 'R-0001', 'titel': 'MCP-Probe', 'text': 'Typprobe', 'bestaetigt': wert}}})
+                assert a['result']['isError'] and 'bestaetigt' in a['result']['content'][0]['text'], (wert, a)
             assert not anfrage('/api/fall/R-0001')['akte']['notizen']
             a = rpc({'jsonrpc': '2.0', 'id': 7, 'method': 'tools/call', 'params': {'name': 'notiz_anlegen', 'arguments': {'fall': 'R-0001', 'titel': 'MCP-Probe', 'text': 'mit Bestätigung', 'bestaetigt': True}}})
             assert a['result']['structuredContent']['notiz']['id'] == 'N01' and anfrage('/api/fall/R-0001')['akte']['notizen'][0]['titel'] == 'MCP-Probe'

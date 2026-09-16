@@ -73,7 +73,7 @@ def werkzeug_aufrufen(params):
     name = params.get('name'); args = dict(params.get('arguments') or {})
     if not isinstance(name, str) or name not in {w['name'] for w in werkzeuge.fuer_agenten()}:
         raise Protokollfehler(-32602, f'Unbekanntes Werkzeug: {name}')
-    bestaetigt = bool(args.pop('bestaetigt', False))
+    bestaetigt = args.pop('bestaetigt', False)   # nur der JSON-Wahrheitswert true zählt; ausfuehren() weist andere Typen ab (F05)
     try:
         ergebnis = werkzeuge.ausfuehren(name, args, bestaetigt=bestaetigt)
     except Exception as e:

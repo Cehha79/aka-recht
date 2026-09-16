@@ -142,7 +142,10 @@ Versandbeleg. Ein Dokument beweist zunächst nur seinen Inhalt.
 Die feldgenaue Beschreibung steht in Datenmodell.md.
 
 `bestand.json` führt je D-Kennung den Pfad, die erste Prüfsumme (SHA-256)
-und jede Verschiebung mit Zeitpunkt. Das schreibt nur der Dienst.
+und jede Verschiebung mit Zeitpunkt. Das schreibt nur der Dienst, und nur
+über schreibende Wege (Import, Zuordnung, Einsortieren, `bestand_abgleichen`).
+Lesende Werkzeuge melden neue oder verschobene Dateien als Abweichung und
+ändern nichts (seit 17.09.2026, Prüfbericht F03).
 
 ## Dienst (Stufe 3)
 
@@ -194,11 +197,16 @@ Codex und andere. Dafür gibt es drei Standards, die wir bedienen:
 |---|---|---|---|
 | `AGENTS.md` und `CLAUDE.md` | Arbeitsanweisung im Projektordner, Klartext | Codex, Cursor, Gemini CLI, viele Agenten (`AGENTS.md`); Claude Code (`CLAUDE.md`) | eine Quelle, beide Dateien daraus erzeugt |
 | Agent Skills (`SKILL.md`) | Ordner mit Anleitung, offener Standard von Anthropic, von Codex übernommen | Claude Code (`.claude/skills/`), Codex (`.agents/skills/`) | Skills einmal gepflegt, für Codex kopiert |
-| MCP (Model Context Protocol) | offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe | Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini | eigener MCP-Server `mcp_server.py` ohne Fremdpaket, stellt die 20 Werkzeuge bereit |
+| MCP (Model Context Protocol) | offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe | Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini | eigener MCP-Server `mcp_server.py` ohne Fremdpaket, stellt die 22 Werkzeuge für Assistenten bereit (24 im Katalog, ohne `fall_lesen` und `akte_speichern`) |
 | Befehlszeile | `cli.py` | jede KI, die Befehle ausführen darf | vorhanden |
 
-Regeln für alle Wege: Lesen frei, Schreiben nur über die Werkzeuge mit
-Schema und Revision, Originale gesperrt, kein Versand, kein Löschen.
+Regeln für alle Wege: Lesen frei und wirklich nur lesend (kein Werkzeug mit
+`readOnlyHint` fasst akte.json, bestand.json oder zentrale.json an), Schreiben
+nur über die Werkzeuge mit Schema und Revision, Originale gesperrt, kein
+Versand, kein Löschen. Neue Dateien registriert allein `bestand_abgleichen`;
+die Oberfläche ruft es beim Öffnen eines Falls selbst auf, eine KI nur nach
+Bestätigung. zentrale.json legt der Dienst beim ersten Start an, nie ein
+lesender Aufruf.
 Schlüssel oder Konten braucht die Mappe nicht; die KI bringt der Nutzer mit.
 
 Stand 16.09.2026: `06 Werkzeuge/verteilen.py` (Punkt 1) ist gebaut. Es
@@ -220,8 +228,11 @@ Handshake, bei der jede Anfrage ihre Version in `params._meta` trägt und es
 `server/discover` gibt. Methoden: `initialize`, `server/discover`, `ping`,
 `tools/list`, `tools/call`. Werkzeuge aus `werkzeuge.fuer_agenten()` (21 seit
 `beispiel_laden`, ohne `fall_lesen` und `akte_speichern`), jedes mit `inputSchema` und
-`annotations.readOnlyHint`. Schreibende Werkzeuge tragen im Schema den
-Parameter `bestaetigt`; ohne `true` liefert der Aufruf nur die Rückfrage.
+`annotations.readOnlyHint` (seit 17.09.2026 zutreffend: lesende Werkzeuge
+schreiben nichts). Schreibende Werkzeuge tragen im Schema den
+Parameter `bestaetigt`; ohne den JSON-Wahrheitswert `true` liefert der Aufruf
+nur die Rückfrage, Text wie `"true"` oder Zahlen werden als Fehler abgewiesen
+(seit 17.09.2026, F05).
 Fehler: unbekanntes Werkzeug oder unbekannte Methode als Protokollfehler
 (JSON-RPC `error`), Werkzeugfehler als Ergebnis mit `isError`. Beim Schließen
 der Eingabe beendet sich der Server.
