@@ -28,7 +28,7 @@ def vorbereiten(base):
     return root
 
 def run():
-    base = Path(tempfile.mkdtemp(prefix='aka-recht-pruefung-', dir='/private/tmp')).resolve(); root = vorbereiten(base)
+    base = Path(tempfile.mkdtemp(prefix='aka-recht-pruefung-', dir='/private/tmp' if Path('/private/tmp').is_dir() else None)).resolve(); root = vorbereiten(base)
     instanz = hashlib.sha256(str(root).encode()).hexdigest()[:14]
     laufzeit = Path(tempfile.gettempdir()) / f'aka-recht-dienst-{instanz}.json'
     if laufzeit.exists(): laufzeit.unlink()

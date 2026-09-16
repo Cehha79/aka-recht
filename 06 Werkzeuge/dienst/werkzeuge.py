@@ -145,8 +145,16 @@ def quellen_katalog():
         return {'quellen': liste, 'text': text.split('<!-- RECHT:ANFANG -->', 1)[0].strip()}
     return {'quellen': [], 'text': text}
 
+def _oeffnen_befehl(p, zeigen):
+    """Befehl für den Dateimanager des Systems: macOS Finder, Linux xdg-open, Windows Explorer.
+    zeigen=True hebt die Datei im Ordner hervor; wo das nicht geht, öffnet sich der Ordner."""
+    import sys
+    if sys.platform == 'darwin': return ['/usr/bin/open', '-R', str(p)] if zeigen else ['/usr/bin/open', str(p)]
+    if sys.platform.startswith('win'): return ['explorer', '/select,' + str(p)] if zeigen else ['explorer', str(p)]
+    return ['xdg-open', str(p.parent if zeigen else p)]
+
 def oeffnen(fall=None, dokument=None, bereich=None, zeigen=False):
-    """Datei oder Ordner mit dem Finder öffnen. Nicht für die KI, nur für die Oberfläche."""
+    """Datei oder Ordner mit dem Dateimanager öffnen. Nicht für die KI, nur für die Oberfläche."""
     import subprocess
     if fall and dokument:
         akte, _ = store.lese_akte(fall); d = akte['dokumente'].get(dokument)
@@ -154,16 +162,17 @@ def oeffnen(fall=None, dokument=None, bereich=None, zeigen=False):
         p = store.sicher(d['pfad'], store.fall_ordner(fall))
         if not p.exists(): raise ValueError('Datei fehlt am registrierten Ort.')
         if not zeigen and p.suffix.lower() in ('.py', '.sh', '.json', '.html'): zeigen = True
-        args = ['/usr/bin/open', '-R', str(p)] if zeigen else ['/usr/bin/open', str(p)]
+        args = _oeffnen_befehl(p, zeigen)
     elif fall:
         basis = store.fall_ordner(fall)
         if bereich and bereich not in store.GRUPPEN: raise ValueError('Unbekannter Bereich.')
-        args = ['/usr/bin/open', str(store.sicher(bereich, basis) if bereich else basis)]
+        args = _oeffnen_befehl(store.sicher(bereich, basis) if bereich else basis, False)
     else:
         orte = {'projekt': '.', 'eingang': '01 Eingang', 'vertraege': '03 Verträge und Vorsorge', 'quellen': '04 Rechtsquellen', 'vorlagen': '05 Vorlagen', 'doku': 'DOKU'}
         if bereich not in orte: raise ValueError('Unbekannter Ort.')
-        args = ['/usr/bin/open', str(store.sicher(orte[bereich]))]
-    subprocess.run(args, check=True, timeout=8, capture_output=True)
+        args = _oeffnen_befehl(store.sicher(orte[bereich]), False)
+    try: subprocess.run(args, check=True, timeout=8, capture_output=True)
+    except FileNotFoundError: raise ValueError('Kein Dateimanager gefunden (' + args[0] + ').')
     return {'ok': True}
 
 # ---------------------------------------------------------------- schreibend

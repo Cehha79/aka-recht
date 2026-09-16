@@ -36,7 +36,8 @@ gerade dieselbe Datei hält (Sperrdatei im temporären Ordner).
 
 ```text
 Recht/
-├─ Start.command              startet den Dienst und öffnet den Browser
+├─ Start.command              startet den Dienst und öffnet den Browser (macOS)
+├─ Start.sh, Start.bat        dasselbe für Linux und Windows (Stufe 9, dort ungeprüft)
 ├─ CLAUDE.md                  Arbeitsprofil, Quelle (Stufe 5)
 ├─ AGENTS.md                  erzeugt aus CLAUDE.md für Codex, Cursor, Gemini CLI (Stufe 7)
 ├─ .agents/skills/            erzeugte Kopien der Skills für Codex (Stufe 7)
@@ -134,7 +135,10 @@ und jede Verschiebung mit Zeitpunkt. Das schreibt nur der Dienst.
 
 Python-Standardbibliothek, ein Prozess, nur 127.0.0.1, Sitzungsschlüssel
 über Start.command, Schreibkennung gegen fremde Seiten. Kein Netzzugriff nach
-außen. Textauszug aus PDF über das vorhandene `pdftotext`, wenn installiert.
+außen. Systemabhängig sind nur drei Stellen, je mit Weiche: Browser öffnen
+(`webbrowser`), Datei im Dateimanager zeigen (`open`, `xdg-open`,
+`explorer`), Sperre (`fcntl` oder unter Windows `msvcrt`); das zweite
+Sicherungsziel iCloud Drive wird nur vorgeschlagen, wo es den Ordner gibt. Textauszug aus PDF über das vorhandene `pdftotext`, wenn installiert.
 
 | Modul | Aufgabe |
 |---|---|

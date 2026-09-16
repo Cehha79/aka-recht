@@ -7,7 +7,9 @@ hat). Vor jedem Schreiben von akte.json wird die alte Fassung außerhalb des
 Projekts gesichert und die neue mit akte_schema geprüft.
 Nur Standardbibliothek.
 """
-import fcntl, hashlib, json, os, re, shutil, sys, tempfile, uuid
+import hashlib, json, os, re, shutil, sys, tempfile, uuid
+try: import fcntl   # macOS und Linux
+except ImportError: fcntl = None; import msvcrt   # Windows
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
@@ -52,16 +54,19 @@ def atomar(pfad, daten):
 @contextmanager
 def sperre():
     datei = Path(tempfile.gettempdir()) / f'aka-recht-{instanz()}.lock'
-    with datei.open('a') as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
+    with datei.open('a+') as f:
+        if fcntl: fcntl.flock(f, fcntl.LOCK_EX)
+        else: f.seek(0); msvcrt.locking(f.fileno(), msvcrt.LK_LOCK, 1)   # Windows: ein Byte sperren, wartet bis frei
         try: yield
-        finally: fcntl.flock(f, fcntl.LOCK_UN)
+        finally:
+            if fcntl: fcntl.flock(f, fcntl.LOCK_UN)
+            else: f.seek(0); msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
 
 # ---------------------------------------------------------------- zentrale
 def zentrale_standard():
     return {'schema': 1, 'app': 'AKA Recht', 'faelle': [],
             'sicherung': {'ziel': str(Path.home() / 'Desktop/AKA Recht Sicherungen'),
-                          'zweites_ziel': str(Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs/AKA Recht Sicherungen'),
+                          'zweites_ziel': str(Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs/AKA Recht Sicherungen') if (Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs').is_dir() else '',   # iCloud Drive nur, wo es eines gibt
                           'letzte': None},
             'verbindungen': {}}
 

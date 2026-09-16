@@ -8,7 +8,20 @@ du schon hast: Claude Code, Claude Desktop, Codex oder jede andere, die MCP
 (Model Context Protocol) oder Befehle ausführen kann. Die Mappe selbst
 enthält keine KI, braucht kein Konto, keinen Schlüssel und kein Netz.
 
-Version 0.1 · Stand 16.09.2026 · Autor: Hasan Tepegöz
+Version 0.1 · Stand 16.09.2026 · Autor: Hasan Tepegöz · English: [README.en.md](README.en.md)
+
+## So sieht es aus
+
+Alle Bilder zeigen den erfundenen Beispielfall R-9001 (Bußgeldbescheid,
+„Max Muster“). Keine echten Personen.
+
+![Zentrale: alle Fälle, Fristen, Eingang](bilder/01-zentrale.jpg)
+
+![Fallakte: Rolle, Ziel, Verfahren, nächste Fristen und Aufgaben](bilder/02-fallakte.jpg)
+
+![Dokumente mit Vorschau, Kennung und Anlagennummer](bilder/03-dokumente.jpg)
+
+![Fristen mit Rechtsgrundlage, Rechnung und Prüfstatus](bilder/04-fristen.jpg)
 
 ## Was deine KI damit kann
 
@@ -53,14 +66,21 @@ Weitere Sprachen sind geplant, passend zu den Ländern.
 
 ## Voraussetzungen
 
-- macOS mit Python 3 (`python3 --version`). Keine weiteren Pakete.
+- Python 3 (`python3 --version`), keine weiteren Pakete.
+- Gebaut und geprüft auf macOS. Linux und Windows: Startskripte liegen bei,
+  der Dienst nutzt nur die Standardbibliothek, geprüft ist es dort noch
+  nicht. Unter Windows heißt der Befehl meist `python` statt `python3`;
+  dann in `.mcp.json` und `.claude/settings.json` `python3` durch `python`
+  ersetzen.
 - Für die Textauszüge aus PDF optional `pdftotext` (Paket poppler).
 
 ## Erster Start
 
 1. Ordner an einen Ort deiner Wahl legen.
-2. `Start.command` doppelklicken. Der Dienst läuft nur auf 127.0.0.1, der
-   Browser öffnet die Oberfläche. Beim ersten Start entsteht `zentrale.json`.
+2. Starten: macOS `Start.command` doppelklicken, Linux `Start.sh`
+   ausführen, Windows `Start.bat` doppelklicken. Der Dienst läuft nur auf
+   127.0.0.1, der Standardbrowser öffnet die Oberfläche. Beim ersten Start
+   entsteht `zentrale.json`.
 3. In der Oberfläche „Neuer Fall“ anlegen, Post nach `01 Eingang` legen oder
    in „Dokumente“ hinzufügen, ordnen, Fristen rechnen, Journal führen.
 4. Seite „Anleitung“ in der Oberfläche lesen, dort steht auch, wie du eine KI

@@ -193,7 +193,9 @@ def starten(oeffnen=True, fall=None):
             if not d: raise RuntimeError('Dienst startet nicht. Protokoll: ' + str(protokoll))
     if fall: store.fall_eintrag(fall)
     url = f'http://127.0.0.1:{d["port"]}/?key={d["key"]}' + (f'&fall={fall}' if fall else '')
-    if oeffnen: subprocess.run(['/usr/bin/open', url], check=True)
+    if oeffnen:
+        import webbrowser   # Standardbrowser auf macOS, Linux und Windows
+        if not webbrowser.open(url): print('Browser nicht gefunden. Adresse von Hand öffnen: ' + url)
     print('AKA Recht läuft lokal. Dieses Fenster kann geschlossen werden.\nOrdner: ' + str(store.ROOT)); return d
 
 if __name__ == '__main__':

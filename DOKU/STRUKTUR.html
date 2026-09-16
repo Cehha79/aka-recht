@@ -42,7 +42,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}
 </aside>
 <main>
 <article>
-<div class="stamp">aus md/STRUKTUR.md, Stand 16.09.2026 19:16</div>
+<div class="stamp">aus md/STRUKTUR.md, Stand 16.09.2026 19:51</div>
 <h1>STRUKTUR</h1>
 <p><em>Stand: 16.09.2026</em></p>
 <h2 id="aufgabe-dieser-datei">Aufgabe dieser Datei</h2>
@@ -61,7 +61,8 @@ Schicht 1  Aktenkern           02 Fälle/R-XXXX …/  festes Datenformat
 <p>Beide Schichten arbeiten auf denselben Dateien. Damit sie sich nicht in die Quere kommen, gilt: Der Dienst schreibt nur mit Revisionsprüfung (Prüfsumme der Datei vor dem Speichern), und Claude schreibt nur, wenn der Dienst nicht gerade dieselbe Datei hält (Sperrdatei im temporären Ordner).</p>
 <h2 id="projektordner">Projektordner</h2>
 <pre><code>Recht/
-├─ Start.command              startet den Dienst und öffnet den Browser
+├─ Start.command              startet den Dienst und öffnet den Browser (macOS)
+├─ Start.sh, Start.bat        dasselbe für Linux und Windows (Stufe 9, dort ungeprüft)
 ├─ CLAUDE.md                  Arbeitsprofil, Quelle (Stufe 5)
 ├─ AGENTS.md                  erzeugt aus CLAUDE.md für Codex, Cursor, Gemini CLI (Stufe 7)
 ├─ .agents/skills/            erzeugte Kopien der Skills für Codex (Stufe 7)
@@ -107,7 +108,7 @@ Schicht 1  Aktenkern           02 Fälle/R-XXXX …/  festes Datenformat
 <p>Die feldgenaue Beschreibung steht in Datenmodell.md.</p>
 <p><code>bestand.json</code> führt je D-Kennung den Pfad, die erste Prüfsumme (SHA-256) und jede Verschiebung mit Zeitpunkt. Das schreibt nur der Dienst.</p>
 <h2 id="dienst-stufe-3">Dienst (Stufe 3)</h2>
-<p>Python-Standardbibliothek, ein Prozess, nur 127.0.0.1, Sitzungsschlüssel über Start.command, Schreibkennung gegen fremde Seiten. Kein Netzzugriff nach außen. Textauszug aus PDF über das vorhandene <code>pdftotext</code>, wenn installiert.</p>
+<p>Python-Standardbibliothek, ein Prozess, nur 127.0.0.1, Sitzungsschlüssel über Start.command, Schreibkennung gegen fremde Seiten. Kein Netzzugriff nach außen. Systemabhängig sind nur drei Stellen, je mit Weiche: Browser öffnen (<code>webbrowser</code>), Datei im Dateimanager zeigen (<code>open</code>, <code>xdg-open</code>, <code>explorer</code>), Sperre (<code>fcntl</code> oder unter Windows <code>msvcrt</code>); das zweite Sicherungsziel iCloud Drive wird nur vorgeschlagen, wo es den Ordner gibt. Textauszug aus PDF über das vorhandene <code>pdftotext</code>, wenn installiert.</p>
 <table><thead><tr><th>Modul</th><th>Aufgabe</th></tr></thead><tbody><tr><td><code>server.py</code></td><td>HTTP-Dienst, Sitzungen, Routen, statische Oberfläche</td></tr><tr><td><code>store.py</code></td><td>akte.json und zentrale.json lesen und mit Revision schreiben, Sperre</td></tr><tr><td><code>dokumente.py</code></td><td>Dateien auflisten, Textauszug (txt, md, html, docx, eml, pdf), Suche</td></tr><tr><td><code>fristen.py</code></td><td>Fristen rechnen nach §§ 187, 188, 193 BGB, Feiertage Baden-Württemberg, Rechnung als Text</td></tr><tr><td><code>bestand.py</code></td><td>Prüfsummen, Verschiebungen erkennen, Bestand prüfen</td></tr><tr><td><code>sicherung.py</code></td><td>geprüfte ZIP-Sicherung außerhalb des Projekts, SHA-256, Kopie nach iCloud Drive</td></tr><tr><td><code>werkzeuge.py</code></td><td>Katalog aller Funktionen als beschriebene Werkzeuge (Name, Zweck, Parameter, lesend oder schreibend); Oberfläche und KI rufen dieselben Werkzeuge</td></tr><tr><td><code>cli.py</code></td><td>alle Werkzeuge über die Befehlszeile, für Claude Code, Codex und andere Assistenten</td></tr><tr><td><code>mcp_server.py</code></td><td>dieselben Werkzeuge als MCP-Server über die Standardeingabe (JSON-RPC 2.0), für Claude Code, Claude Desktop, Codex, Cursor, Gemini; schreibende nur mit <code>bestaetigt</code></td></tr></tbody></table>
 <p>Schnittstelle, Skizze:</p>
 <pre><code>GET  /api/zentrale                    Fälle, Eingang, Sicherungsstand
