@@ -129,6 +129,8 @@ def run():
         ok('Fristenrechner über die Schnittstelle, mit § 193 BGB')
         fr = anfrage('/api/fristen/berechnen', {'start': '2026-06-03', 'menge': 1, 'einheit': 'tage', 'land': 'BW'}); assert fr['ende'] == '2026-06-05' and 'Fronleichnam' in ' '.join(fr['rechnung'])
         fr = anfrage('/api/fristen/berechnen', {'start': '2026-06-03', 'menge': 1, 'einheit': 'tage', 'land': 'BE'}); assert fr['ende'] == '2026-06-04'
+        fr = anfrage('/api/fristen/berechnen', {'start': '2025-05-07', 'menge': 1, 'einheit': 'tage', 'land': 'BE'}); assert fr['ende'] == '2025-05-09', fr   # 08.05.2025 (Donnerstag) in Berlin einmalig Feiertag, GVBl. Berlin 2024 S. 460
+        fr = anfrage('/api/fristen/berechnen', {'start': '2025-05-07', 'menge': 1, 'einheit': 'tage', 'land': 'BB'}); assert fr['ende'] == '2025-05-08', fr
         anfrage('/api/einstellungen', {'einstellungen': {'feiertagsland': 'NW'}}); assert anfrage('/api/einstellungen')['einstellungen']['feiertagsland'] == 'NW'
         fr = anfrage('/api/fristen/berechnen', {'start': '2026-10-30', 'menge': 2, 'einheit': 'tage'}); assert fr['ende'] == '2026-11-02' and fr['feiertagsland'] == 'NW'
         anfrage('/api/fristen/berechnen', {'start': '2026-06-03', 'menge': 1, 'einheit': 'tage', 'land': 'XX'}, erwartet=400)
@@ -161,6 +163,12 @@ def run():
         assert anfrage('/api/zentrale')['eingang'][0]['name'] == 'Brief.pdf'
         r = anfrage('/api/eingang/zuordnen', {'name': 'Brief.pdf', 'fall': 'R-0002'}); assert r['dokument'] == 'D0001' and (root / f2['ordner'] / '01 Eingang/Brief.pdf').is_file()
         ok('Gemeinsamen Eingang einem Fall zugeordnet')
+        r = anfrage('/api/werkzeug', {'name': 'dokument_ordnen', 'parameter': {'fall': 'R-0002', 'dokument': 'D0001', 'felder': {'titel': 'Brief', 'stand': 'Zugegangen'}}, 'bestaetigt': True})
+        assert r['dokument'] == 'D0001'
+        r = anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': {'fall': 'R-0002', 'titel': 'Antwort', 'datei': '06 Entwürfe/Antwort_ENTWURF.md', 'status': 'versandt', 'versandt_als': 'D0001'}, 'bestaetigt': True})
+        assert r['entwurf']['versandt_als'] == 'D0001'
+        a2 = json.loads((root / f2['ordner'] / 'akte.json').read_text()); assert a2['dokumente']['D0001']['stand'] == 'Zugegangen'
+        ok('Neu zugeordnetes Dokument sofort ordnen und als Versandbeleg verweisen, ohne vorheriges Lesen der Akte')
 
         # 8 Sicherung
         s = anfrage('/api/sicherung', {}); zp = Path(s['pfad']); assert zp.is_file() and s['zweites_ziel'] and Path(s['zweites_ziel']).is_file()

@@ -45,6 +45,7 @@ Kein Rechtsanwalt: bei Weichenstellungen fachanwaltliche Prüfung empfehlen.
 `/recherche-de R-0001 "Frage"`, `/gegenpruefung R-0001 <Datei>`,
 `/fristencheck R-0001`, `/entwurf R-0001 Einspruch`,
 `/uebergabe R-0001 Anwalt`. Schreibvorlagen unter `05 Vorlagen/Schreiben/`,
+Merkblätter je Verfahrensart unter `04 Rechtsquellen/Verfahren/`,
 Word-Erzeuger `.claude/recht/werkzeuge/docx_erzeugen.py`, Übergabepaket
 `.claude/recht/werkzeuge/uebergabe_paket.py`. Hooks in `.claude/settings.json`:
 SessionStart (Eingang, Fristen), PreToolUse (Originalschutz), Stop

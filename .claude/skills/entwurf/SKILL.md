@@ -18,6 +18,10 @@ Akte, nicht vorausgesetzt.
 2. Sachverhalt aus belegten Tatsachen (D-Kennungen, Fundstellen). Keine
    Behauptung ohne Beleg, sonst `[BELEG: …]`. Rechtsgrundlagen nur nach
    Lesen am Volltext, sonst `[QUELLE: …]`.
+   Gibt es zur Verfahrensart ein Merkblatt unter `04 Rechtsquellen/Verfahren/`
+   (die Vorlage nennt es), dessen Pflichtinhalt, Adressat und Frist gegen den
+   Entwurf prüfen und fehlende Punkte als `[PRÜFEN: …]` markieren. Das
+   Merkblatt hat ein Prüfdatum; Fassung der Normen für den Fall erneut prüfen.
 3. Datei schreiben: `06 Entwürfe/JJJJ-MM-TT_<Kurzname>_ENTWURF.md` im Fallordner.
    Oben interne Hinweise (Frist, Versandweg, offene Punkte), dann `---`,
    dann der Sendetext. Neue Fassung: Datei überschreiben.

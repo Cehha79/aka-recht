@@ -25,6 +25,9 @@ Kündigungsfall, jederzeit löschbar) statt eines echten Falls.
    Zugang mit Nachweis, Aktenzeichen, gesetzte Fristen als Kandidaten.
 4. Eigene Rolle, Beteiligte, Ziel, Rechtsordnung (bei Auslandsbezug Land und
    Sprache), Verfahrensart und Bereich klären. Was unklar bleibt, offen lassen.
+   Gibt es zur Verfahrensart ein Merkblatt unter `04 Rechtsquellen/Verfahren/`,
+   daraus Rechtsbehelf, Frist mit Norm und Adressat als Kandidaten nennen
+   (unbestätigt, bis `/fristencheck` gerechnet hat).
 5. Ergebnis in die Akte übernehmen, jeweils über die Werkzeuge:
    - Beteiligte und Fallfelder: `cli.py fall_lesen`, Änderungen als vollständige
      Akte mit `cli.py akte_speichern fall=$fall akte='{…}' revision=…`

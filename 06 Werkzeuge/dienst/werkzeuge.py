@@ -100,7 +100,7 @@ def fall_uebersicht(fall):
 @werkzeug('dokument_text', 'Textauszug eines Dokuments (Word, E-Mail, PDF, Text, HTML). Fotos haben keinen Text.',
           {'fall': {'type': 'string'}, 'dokument': {'type': 'string', 'description': 'D-Kennung wie D0038'}}, pflicht=['fall', 'dokument'])
 def dokument_text(fall, dokument):
-    akte, _ = store.lese_akte(fall); ordner = store.fall_ordner(fall)
+    akte, _ = _akte_mit_dokument(fall, dokument); ordner = store.fall_ordner(fall)
     d = akte['dokumente'].get(dokument)
     if not d: raise ValueError('Unbekannte Dokumentkennung.')
     p = store.sicher(d['pfad'], ordner)
@@ -162,7 +162,7 @@ def oeffnen(fall=None, dokument=None, bereich=None, zeigen=False):
     """Datei oder Ordner mit dem Dateimanager öffnen. Nicht für die KI, nur für die Oberfläche."""
     import subprocess
     if fall and dokument:
-        akte, _ = store.lese_akte(fall); d = akte['dokumente'].get(dokument)
+        akte, _ = _akte_mit_dokument(fall, dokument); d = akte['dokumente'].get(dokument)
         if not d: raise ValueError('Unbekannte Dokumentkennung.')
         p = store.sicher(d['pfad'], store.fall_ordner(fall))
         if not p.exists(): raise ValueError('Datei fehlt am registrierten Ort.')
@@ -205,7 +205,7 @@ def _quelle(fall, quelle, detail=''):
     quelle = (quelle or '').strip()
     if not quelle: return '', detail
     if re.fullmatch(r'D\d{4,}', quelle.upper()):
-        akte, _ = store.lese_akte(fall)
+        akte, _ = _akte_mit_dokument(fall, quelle)
         if quelle.upper() in akte['dokumente']: return quelle.upper(), detail
         raise ValueError(f'Dokumentkennung {quelle} gibt es in diesem Fall nicht.')
     return '', (detail + ' ' if detail else '') + f'[Quelle laut Angabe: {quelle}; keine Dokumentkennung]'
@@ -276,18 +276,29 @@ def notiz_anlegen(fall, titel, text):
            'status': {'type': 'string', 'enum': akte_schema.ENTWURF_STATUS}, 'versandt_als': {'type': 'string', 'description': 'D-Kennung des Versandbelegs bei Status versandt'}},
           schreibend=True, pflicht=['fall', 'titel', 'datei'])
 def entwurf_erfassen(fall, titel, datei, status='in Arbeit', versandt_als=''):
-    akte, rev = store.lese_akte(fall)
+    akte, rev = _akte_mit_dokument(fall, versandt_als)
     e = next((x for x in akte['entwuerfe'] if x['titel'] == titel), None)
     if e: e.update({'datei': datei, 'fassung': e.get('fassung', 1) + 1, 'status': status, 'versandt_als': versandt_als})
     else: e = {'id': _naechste(akte['entwuerfe'], 'W'), 'titel': titel, 'datei': datei, 'fassung': 1, 'status': status, 'versandt_als': versandt_als}; akte['entwuerfe'].append(e)
     rev = store.speichere_akte(fall, akte, rev)
     return {'entwurf': e, 'revision': rev}
 
+def _akte_mit_dokument(fall, dokument=''):
+    """Akte lesen. Ist die Dokumentkennung unbekannt, den Katalog nachziehen (neu zugeordnete oder im
+    Finder abgelegte Dateien bekommen so sofort ihren Eintrag), erst dann gilt sie als unbekannt."""
+    akte, rev = store.lese_akte(fall)
+    dokument = (dokument or '').strip().upper()
+    if dokument and dokument not in akte['dokumente']:
+        _, ergaenzt = dokumente.katalog(fall, akte)
+        if ergaenzt: rev = store.speichere_akte(fall, akte, rev, ohne_sicherung=True)
+    return akte, rev
+
+
 @werkzeug('dokument_ordnen', 'Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz). Die Datei selbst bleibt unverändert.',
           {'fall': {'type': 'string'}, 'dokument': {'type': 'string'}, 'felder': {'type': 'object', 'description': 'nur die zu ändernden Felder'}},
           schreibend=True, pflicht=['fall', 'dokument', 'felder'])
 def dokument_ordnen(fall, dokument, felder):
-    akte, rev = store.lese_akte(fall)
+    akte, rev = _akte_mit_dokument(fall, dokument)
     d = akte['dokumente'].get(dokument)
     if not d: raise ValueError('Unbekannte Dokumentkennung.')
     erlaubt = {'titel', 'datum', 'art', 'stand', 'themen', 'anlage', 'personen', 'verweise', 'notiz'}
@@ -303,7 +314,7 @@ def dokument_ordnen(fall, dokument, felder):
 def dokument_verschieben(fall, dokument, bereich, unterordner=''):
     ordner = store.fall_ordner(fall)
     neu = bestand.verschieben(ordner, dokument, bereich, unterordner)
-    akte, rev = store.lese_akte(fall)
+    akte, rev = _akte_mit_dokument(fall, dokument)
     if dokument in akte['dokumente']:
         akte['dokumente'][dokument]['pfad'] = neu; rev = store.speichere_akte(fall, akte, rev, ohne_sicherung=True)
     return {'dokument': dokument, 'pfad': neu, 'revision': rev}

@@ -27,8 +27,11 @@ LAENDER = {'BW': 'Baden-Württemberg', 'BY': 'Bayern', 'BE': 'Berlin', 'BB': 'Br
            'NW': 'Nordrhein-Westfalen', 'RP': 'Rheinland-Pfalz', 'SL': 'Saarland', 'SN': 'Sachsen',
            'ST': 'Sachsen-Anhalt', 'SH': 'Schleswig-Holstein', 'TH': 'Thüringen'}
 # Nur landesweite Feiertage. Regionale (nur in Teilen des Landes) fehlen bewusst und werden als Hinweis genannt,
-# denn sie könnten ein Fristende fälschlich verschieben. Quellen: BW FTG und BY FTG Art. 1 am Volltext (16.09.2026);
-# übrige Länder nach der Übersicht der Feiertagsgesetze (Wikipedia, Stand 22.08.2026) [QUELLE: je Landesgesetz prüfen].
+# denn sie könnten ein Fristende fälschlich verschieben. Quellen (16.09.2026, Einzelheiten in DOKU/md/Rechtsinhalte.md):
+# am amtlichen Volltext gelesen: BW, BY, BB (bravors), HH (§ 1, ab 21.03.2018), MV (§ 2, ab 13.07.2022), NI (§ 2, ab 29.06.2018),
+# SN (§ 1, revosax), SH (§ 2, ab 30.03.2018), BE (Senatsverwaltung plus GVBl. 2024 S. 460); nach der amtlichen Übersicht des
+# BMI (Stand 09/2018) und Ministeriumsseiten: HE, NW, RP, SL, ST, TH [QUELLE: je Landesgesetz am Portal lesen];
+# HB Reformationstag seit 2018 und TH Weltkindertag seit 2019 [QUELLE: Gesetzblatt nicht gelesen].
 REGIONAL = {'BY': 'Mariä Himmelfahrt (15.08.) nur in Gemeinden mit überwiegend katholischer Bevölkerung, Friedensfest (08.08.) nur in Augsburg.',
             'SN': 'Fronleichnam nur in einzelnen Gemeinden.', 'TH': 'Fronleichnam nur in einzelnen Gemeinden.'}
 
@@ -61,6 +64,11 @@ def feiertage(jahr, land='BW'):
         'SH': [reformation] if jahr >= 2018 else [], 'TH': [reformation] + ([kindertag] if jahr >= 2019 else []),
     }
     if jahr == 2017: zusatz = {k: v + ([reformation] if reformation not in v else []) for k, v in zusatz.items()}   # 2017 bundesweit einmalig
+    # Einmalige Feiertage einzelner Länder (am Gesetzblatt gelesen): Berlin 8. Mai 2025 und 17. Juni 2028
+    # (Viertes Gesetz zur Änderung des Gesetzes über die Sonn- und Feiertage vom 10.07.2024, GVBl. Berlin 2024 S. 460).
+    EINMALIG = {'BE': {2025: [(date(2025, 5, 8), '80. Jahrestag der Befreiung (einmalig)')],
+                       2028: [(date(2028, 6, 17), '75. Jahrestag des 17. Juni 1953 (einmalig)')]}}
+    for d, name in EINMALIG.get(land, {}).get(jahr, []): fest[d] = name
     for d, name in zusatz[land]: fest[d] = name
     return fest
 

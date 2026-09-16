@@ -47,7 +47,7 @@ Recht/
 ├─ 01 Eingang/                gemeinsame Post ohne Fallzuordnung
 ├─ 02 Fälle/                  eine Fallakte je Vorgang, feste Kennung R-0001 …
 ├─ 03 Verträge und Vorsorge/  Unterlagen ohne Streit (Finder-Ablage)
-├─ 04 Rechtsquellen/          Quellen.md, Zugangskatalog amtlicher Angebote
+├─ 04 Rechtsquellen/          Quellen.md (Zugangskatalog), Verfahren/ (Merkblätter je Rechtsbehelf, Stufe 10)
 ├─ 05 Vorlagen/               Fallvorlage, Beispielakte (vollständiger erfundener Fall Kündigung, „Beispielfall laden“)
 ├─ 06 Werkzeuge/
 │  ├─ dienst/                 server.py, store.py, dokumente.py, fristen.py,
@@ -57,7 +57,7 @@ Recht/
 │  └─ pruefen.py              Funktionstest mit künstlichen Akten
 ├─ .claude/recht/      Claude-Schicht als Plugin „recht“ (Stufe 5): Skills,
 │                             Hooks, Vorlagen, Werkzeuge; lädt automatisch im Projekt
-└─ DOKU/                      md/ als Quelle, HTML-Ansichten daneben
+└─ DOKU/                      md/ als Quelle, HTML-Ansichten daneben; Rechtsinhalte.md = Stand und Pflege der mitgelieferten Rechtsinhalte
 ```
 
 ## Fallakte: feste Ordnerstruktur
