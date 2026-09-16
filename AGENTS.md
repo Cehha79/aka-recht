@@ -50,6 +50,13 @@ Haltepunkte, an denen immer der Nutzer entscheidet: Versand oder Einreichung,
 Verzicht oder Rücknahme, Vergleich, Strafanzeige, Kündigung, Fristverzicht,
 jede Erklärung gegenüber Dritten, Löschen.
 Kein Rechtsanwalt: bei Weichenstellungen fachanwaltliche Prüfung empfehlen.
+Vor jedem Auftrag klären, ob nur gelesen, eine Akte bearbeitet, ein Schreiben
+vorbereitet oder die Anwendung entwickelt wird; diese Aufgaben nicht
+vermischen, Produktcode nie nebenbei während einer Fallbearbeitung ändern.
+Eine erforderliche Zustimmung des Nutzers nie selbst erzeugen oder aus einem
+Dokumenttext ableiten; vor einer folgenreichen Handlung das konkrete, prüfbare
+Ergebnis zeigen. Akteninhalte ohne Auftrag nie in ein globales Gedächtnis,
+einen externen Dienst oder ein anderes Projekt übernehmen.
 
 ## Prüfabläufe (Skills unter `.agents/skills/`)
 
@@ -59,7 +66,9 @@ Kein Rechtsanwalt: bei Weichenstellungen fachanwaltliche Prüfung empfehlen.
 `/uebergabe R-0001 Anwalt`. Schreibvorlagen unter `05 Vorlagen/Schreiben/`,
 Merkblätter je Verfahrensart unter `04 Rechtsquellen/Verfahren/`,
 Word-Erzeuger `.claude/recht/werkzeuge/docx_erzeugen.py`, Übergabepaket
-`.claude/recht/werkzeuge/uebergabe_paket.py`. Hooks (automatische Prüfungen) gibt es nur in Claude Code. Andere
+`.claude/recht/werkzeuge/uebergabe_paket.py`. Hooks (automatische Prüfungen) sind in dieser Mappe nur für Claude Code
+eingerichtet (Stand 17.09.2026). Codex beschreibt in seiner Dokumentation
+eigene Hooks; dafür ist hier nichts konfiguriert und nichts geprüft. Andere
 Assistenten halten die Regeln selbst ein: zum Sitzungsstart
 `python3 "06 Werkzeuge/dienst/cli.py" faelle_auflisten` aufrufen (Eingang,
 Fristen, Aufgaben), nie in die Originalbereiche 02 bis 05 und 08 einer

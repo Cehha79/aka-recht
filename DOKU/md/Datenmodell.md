@@ -69,6 +69,7 @@ Ordnungsangaben sind optional.
 | personen | Liste von P-Kennungen | Verweise |
 | verweise | Liste von D-Kennungen | Verweise |
 | notiz | Ordnungsnotiz | frei |
+| textstand | direkt ausgelesen, OCR-erkannt, visuell geprüft, teilweise lesbar, nicht lesbar | fest, optional; was vom Inhalt tatsächlich gelesen wurde (seit 17.09.2026, F34); getrennt davon liefert `dokument_text` die technische `textquelle` (direkt, pdf-text, kein-text, werkzeug-fehlt, bild, kein-auszug, fehler) |
 
 ## verfahren
 

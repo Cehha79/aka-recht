@@ -40,6 +40,30 @@ Lies `AGENTS.md` und die Akte (`cli.py fall_lesen fall=$fall`).
    Word-Datei mit `docx_erzeugen.py`.
 5. Journal: `cli.py journal_schreiben fall=$fall art=Arbeit titel="Übergabepaket …" text=…`.
 
+## Datensparsamkeit vor der Übergabe
+
+Nur, was Empfänger und Zweck brauchen (Prüfbericht 16.09.2026, S05). Vor
+dem Bau der Vorschau prüfen und dem Nutzer die Ausschlüsse mit Grund nennen:
+
+- Dokumente: jedes gewählte Dokument einzeln begründen; Gesundheitsdaten,
+  Daten Dritter (Kollegen, Zeugen, Familie), interne Notizen, Entwürfe und
+  Gedächtnisprotokolle nur, wenn der Zweck es verlangt. Bei Gericht und
+  Behörde nur die Anlagen, die im Schriftsatz genannt sind.
+- Ordnungsangaben: Titel, Notizfelder und Dateinamen im Verzeichnis
+  können Bewertungen oder Namen Dritter tragen („Lügner“, Klarnamen von
+  Zeugen); vorher lesen, nötigenfalls Titel neutral fassen (nur
+  Ordnungsangabe, nie die Datei).
+- Journal und Chronologie sind intern; nur mit `--mit-journal`,
+  `--mit-chronologie` und nur an die eigene Anwältin oder den eigenen Anwalt.
+- Schwärzungen: die Mappe schwärzt nicht. Wird eine geschwärzte Fassung
+  gebraucht, entsteht sie als neue Datei außerhalb der Originale (06
+  Entwürfe) mit einem geeigneten Programm; danach prüfen, ob der verdeckte
+  Text auch im Textauszug (`dokument_text`) und in den Metadaten fehlt. Ein
+  schwarzes Rechteck über lesbarem Text reicht nicht.
+- Nach der Vorschau: jede Datei der Liste gegen die Ausschlussliste lesen;
+  eine ausgeschlossene Angabe darf weder in einer Datei noch im Verzeichnis
+  noch im Manifest stehen.
+
 ## Grenzen
 
 Das Paket wird nicht verschickt. Der Nutzer entscheidet über Empfänger und

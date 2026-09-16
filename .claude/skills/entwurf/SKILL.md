@@ -64,11 +64,24 @@ ein Sachbearbeiter beim ersten Lesen nicht versteht, wird umformuliert.
 
 ## Nach Versand durch den Nutzer
 
-Nicht der Skill versendet. Wenn der Nutzer den Versand meldet: Beleg
-(E-Mail als .eml, Sendebericht, Einlieferungsbeleg) in `01 Eingang/` ablegen
-lassen, mit `cli.py dokument_verschieben` nach `03 Schriftverkehr/Versandnachweise`,
-Entwurf auf `status=versandt versandt_als=D…` setzen, Ereignis „Versand“ und
-Journal „Versand“ eintragen.
+Nicht der Skill versendet. Wenn der Nutzer den Versand meldet
+(Prüfbericht 16.09.2026, S06), den Versand nachvollziehbar nachbereiten:
+
+1. Versandweg, Zeitpunkt, Empfänger, Anlagen und die konkrete Fassung
+   erfragen; eine erzeugte Word-Datei belegt keinen Versand.
+2. Beleg (E-Mail als .eml, Sendebericht, Einlieferungsbeleg, Portalquittung)
+   in `01 Eingang/` ablegen lassen, mit `cli.py dokument_verschieben` nach
+   `03 Schriftverkehr/Versandnachweise`, Stand „Versandt“.
+3. Entwurf auf `status=versandt versandt_als=D…` setzen (friert die Fassung
+   ein; weicht der Text von der geprüften Fassung ab, meldet es das Werkzeug).
+4. Ereignis „Versand“ mit Quelle des Belegs; fehlt ein Beleg, Ereignis mit
+   `detail="Angabe des Nutzers, kein Beleg"` und Aufgabe „Versandbeleg ablegen“.
+5. Zugang ist ein eigenes Ereignis (Empfangsbestätigung, Antwort der
+   Gegenseite, Zustellnachweis). Versand und Zugang nie gleichsetzen.
+6. Eine Frist, die dieses Schreiben wahren sollte, erst dann `erledigt`, wenn
+   der vereinbarte Nachweis vorliegt (Eingangsbestätigung des Gerichts, der
+   Behörde oder des Empfängers); sonst bleibt sie `bestätigt` oder `offen`
+   mit dem Vermerk „Versand laut Nutzerangabe am …, Zugang offen“.
 
 ## Grenzen
 

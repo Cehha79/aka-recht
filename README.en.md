@@ -169,8 +169,10 @@ the data model and saved with a revision.
 <img src="bilder/kapitel-hooks-en.svg" alt="Hooks: automatic checks">
 
 Hooks are small check scripts that Claude Code runs itself (registered in
-`.claude/settings.json`, source under `.claude/recht/hooks/`). Other
-assistants have no hooks; for them the rules are in `AGENTS.md`.
+`.claude/settings.json`, source under `.claude/recht/hooks/`). They are set
+up and tested for Claude Code only (as of 17.09.2026). Codex documents hooks
+of its own; nothing is included here for them. Other assistants follow the
+rules in `AGENTS.md` themselves.
 
 | Event | What the hook does |
 |---|---|

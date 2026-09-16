@@ -155,7 +155,7 @@ und mit Revision gespeichert.
 |---|---|---|
 | `faelle_auflisten` | lesend | Alle Fälle mit Kennung, Titel, Bereich, Status, Zahl der Dokumente, nicht erfassten Dateien und offenen Aufgaben. |
 | `fall_uebersicht` | lesend | Kompakte Übersicht eines Falls: Fall, Beteiligte, Verfahren, offene Fristen und Aufgaben, Ereignisse, Dokumentliste mit Kennung, Titel, Datum, Stand, dazu nicht erfasste Dateien. Dokumentinhalte über dokument_text. |
-| `dokument_text` | lesend | Textauszug eines Dokuments (Word, E-Mail, PDF, Text, HTML). Fotos haben keinen Text. |
+| `dokument_text` | lesend | Textauszug eines Dokuments (Word, E-Mail, PDF, Text, HTML) mit Herkunft: textquelle sagt, ob der Text direkt, aus der PDF-Textschicht oder gar nicht gelesen wurde (Bildscan, Foto); textstand ist die in der Akte vermerkte Lesequalität. Der Auszug ist eine Ableitung, Zahlen und Fristen am Original prüfen. |
 | `dokumente_suchen` | lesend | Volltextsuche in Titeln, Ordnungsangaben und Dokumentinhalten eines Falls. |
 | `frist_berechnen` | lesend | Fristende nach §§ 187, 188, 193 BGB mit den landesweiten Feiertagen eines Bundeslands berechnen (Standard: Einstellung der Mappe). Liefert die Rechnung als Text. Entscheidet nicht, welche Frist gilt. |
 | `beispiel_laden` | schreibend | Die mitgelieferte Beispielakte (erfundener Fall) als neuen Fall anlegen, zum Ausprobieren. Der Fall bekommt die nächste freie Kennung. |
@@ -171,7 +171,7 @@ und mit Revision gespeichert.
 | `notiz_anlegen` | schreibend | Ordnungsnotiz in einem Fall anlegen. |
 | `entwurf_erfassen` | schreibend | Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung. |
 | `bestand_abgleichen` | schreibend | Bestand eines Falls mit den Dateien abgleichen: neue Dateien in 01 bis 08 bekommen eine Kennung, im Finder verschobene werden über die Prüfsumme wiedergefunden, fehlende Ordnungsangaben werden in der Akte ergänzt. Der einzige Weg, auf dem neue Dateien registriert werden. |
-| `dokument_ordnen` | schreibend | Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz). Die Datei selbst bleibt unverändert. |
+| `dokument_ordnen` | schreibend | Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz, Textstand: direkt ausgelesen, OCR-erkannt, visuell geprüft, teilweise lesbar, nicht lesbar). Die Datei selbst bleibt unverändert. |
 | `dokument_verschieben` | schreibend | Datei in einen anderen Aktenbereich einsortieren. Kennung und Inhalt bleiben, nichts wird überschrieben. |
 | `journal_schreiben` | schreibend | Eintrag an das Journal eines Falls anhängen. |
 | `sicherung_erstellen` | schreibend | Geprüfte ZIP-Sicherung des ganzen Projekts erstellen, mit Kopie an das zweite Ziel. |
@@ -183,8 +183,9 @@ und mit Revision gespeichert.
 
 Hooks sind kleine Prüfskripte, die Claude Code selbst ausführt (in
 `.claude/settings.json` eingetragen, Quelltext unter `.claude/recht/hooks/`).
-Andere Assistenten kennen keine Hooks; für sie stehen die Regeln in
-`AGENTS.md`.
+Eingerichtet und geprüft sind sie nur für Claude Code (Stand 17.09.2026).
+Codex beschreibt in seiner Dokumentation eigene Hooks; dafür liegt hier
+nichts bei. Andere Assistenten halten die Regeln aus `AGENTS.md` selbst ein.
 
 | Zeitpunkt | Was der Hook tut |
 |---|---|

@@ -162,7 +162,7 @@ Sicherungsziel iCloud Drive wird nur vorgeschlagen, wo es den Ordner gibt. Texta
 |---|---|
 | `server.py` | HTTP-Dienst, Sitzungen, Routen, statische Oberfläche |
 | `store.py` | akte.json und zentrale.json lesen und mit Revision schreiben, Sperre |
-| `dokumente.py` | Dateien auflisten, Textauszug (txt, md, html, docx, eml, pdf), Suche |
+| `dokumente.py` | Dateien auflisten, Textauszug (txt, md, html, docx, eml, pdf) mit Herkunft (`befund()`: textquelle, Seiten, Zeichen; Bildscan und Foto gelten als nicht gelesen, seit 17.09.2026, F34), Suche |
 | `fristen.py` | Fristen rechnen nach §§ 187, 188, 193 BGB, landesweite Feiertage aller 16 Bundesländer (Kürzel, Einstellung `feiertagsland` in zentrale.json, Standard BW), Rechnung als Text |
 | `bestand.py` | Prüfsummen, Verschiebungen erkennen, Bestand prüfen |
 | `sicherung.py` | geprüfte ZIP-Sicherung außerhalb des Projekts, SHA-256, Kopie an das zweite Ziel (Rechte 0600); Status prüft beide Archive und nennt die Ziele mit Cloud-Hinweis; `wiederherstellen()` entpackt in einen neuen, leeren Ordner außerhalb und prüft Schema und Prüfsummen, `probe()` dasselbe in einem Zwischenordner (seit 17.09.2026, F19, F20) |
@@ -249,6 +249,18 @@ der Eingabe beendet sich der Server.
 | Claude Desktop | `~/Library/Application Support/Claude/claude_desktop_config.json`, unter `mcpServers` ein Eintrag `aka-recht` mit `command` `python3` und `args` `["/voller/Pfad/06 Werkzeuge/dienst/mcp_server.py"]`, Pfade absolut, danach Claude Desktop ganz beenden und neu starten. Protokolle unter `~/Library/Logs/Claude/mcp-server-aka-recht.log`. | Geprüft (16.09.2026): Eintrag von Hand gesetzt, Neustart, Konnektor aka-recht aktiv; Protokoll zeigt `initialize`, `notifications/initialized`, `tools/list`. Claude Desktop hält je Fenster einen eigenen Serverprozess. |
 | Cursor, Gemini CLI, andere | Eigene Konfigurationsdatei des Assistenten, gleicher Aufruf (`python3` mit dem Pfad zu `mcp_server.py`, Arbeitsverzeichnis Projektordner oder `--root <Projektordner>`). | Nicht geprüft. |
 
+### Stand je Client (17.09.2026, Prüfbericht F21 bis F23)
+
+Drei Aussagen auseinanderhalten: „der Client kann es laut Doku“,
+„in AKA Recht ist es eingerichtet“, „hier praktisch geprüft“.
+
+| Funktion | Claude Code | Codex | Claude Desktop |
+|---|---|---|---|
+| Hooks (automatische Prüfungen) | dokumentiert, eingerichtet (`.claude/settings.json`), geprüft (Funktionstest Abschnitt 11, Handproben) | in der Codex-Doku beschrieben; hier nichts eingerichtet, nichts geprüft | keine |
+| Projektkonfiguration für den MCP-Server | `.mcp.json`, geprüft | `.codex/config.toml` liegt bei, wurde in drei Läufen (16.09.2026, Codex CLI 0.154.0) nicht geladen; genutzt wird der globale Eintrag `codex mcp add`; welche Konfigurationsquelle ein Lauf lädt, im Client prüfen, nie aus dem globalen Eintrag auf die Projektdatei schließen | Eintrag in `claude_desktop_config.json`, geprüft |
+| Skills | `.claude/skills/`, geprüft | `.agents/skills/`, gesehen (sieben Skills gelistet), Ablauf nicht durchgespielt | keine (nur MCP-Werkzeuge) |
+| Vollständiger Ablauf nur über MCP | nicht nötig (hat Dateizugriff und cli.py) | nicht nötig (cli.py) | offen: `fall_lesen` und `akte_speichern` sind für Assistenten bewusst nicht freigegeben; Beteiligte und Verfahren ändern, vorhandene Fristen korrigieren, Entwurfstexte schreiben geht über MCP allein nicht (F23). Ein reiner MCP-Client bekommt die Skills auch nicht mit. Abnahme „Fallaufnahme bis Übergabe nur mit MCP“ steht aus (TODO) |
+
 Die Anleitung der Oberfläche (Seite „Anleitung“, Abschnitt „KI anbinden“)
 fasst das für Nutzer zusammen.
 
@@ -257,7 +269,10 @@ fasst das für Nutzer zusammen.
 Ein Frontend für Zentrale und Fallakte, reines HTML, CSS und JavaScript ohne
 Framework, damit es später unverändert in eine Desktop-Hülle passt.
 Seitenleiste links, Inhalt rechts, jeder Bereich scrollt für sich. Nach jeder
-Änderung an CSS oder JS wird die Versionsnummer im HTML-Link erhöht.
+Änderung an CSS oder JS wird die Versionsnummer im HTML-Link erhöht. Der
+Dienst setzt `style-src 'self'`; die Oberfläche erzeugt deshalb keine
+Inline-Stile, Abstände und Farben liegen als Hilfsklassen `u-…` in style.css
+(seit 17.09.2026, F37).
 
 Bereiche der Zentrale: Übersicht, Alle Fälle, Posteingang, Fristen aller
 Fälle, Rechtsquellen, Bestand und Sicherung, Einstellungen, Anleitung.

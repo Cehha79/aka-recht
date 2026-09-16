@@ -31,6 +31,7 @@ EREIGNIS_ART_VORSCHLAG = ['Zugang', 'Versand', 'Termin', 'Gespräch', 'Vorfall',
 FRIST_ART = ['gesetzlich', 'selbst gesetzt', 'von Gegenseite gesetzt', 'vorsorglich', 'Termin']
 FRIST_STATUS = ['offen', 'bestätigt', 'abgelaufen', 'erledigt']
 ENTWURF_STATUS = ['in Arbeit', 'geprüft', 'versandt', 'verworfen']
+TEXTSTAND = ['direkt ausgelesen', 'OCR-erkannt', 'visuell geprüft', 'teilweise lesbar', 'nicht lesbar']   # was vom Dokument tatsächlich gelesen wurde (F34)
 
 KENNUNG = {
     'dokumente': r'D\d{4,}', 'beteiligte': r'P\d{2,}', 'verfahren': r'V\d{2,}',
@@ -139,6 +140,7 @@ def validate(akte):
             elif str(d['pfad']).startswith('/') or '..' in str(d['pfad']).split('/'): f.append(f'{k}: pfad muss relativ zum Fallordner sein.')
             if d.get('stand', 'Original') not in DOKUMENT_STAND: f.append(f'{k}: stand muss eines von {DOKUMENT_STAND} sein.')
             if d.get('art') and d['art'] not in DOKUMENT_ART_VORSCHLAG: w.append(f'{k}: art „{d["art"]}“ ist unüblich.')
+            if d.get('textstand') and d['textstand'] not in TEXTSTAND: f.append(f'{k}: textstand muss eines von {TEXTSTAND} sein.')
             datum(d.get('datum', ''), k)
             for feld in ('themen', 'personen', 'verweise'):
                 if feld in d and not isinstance(d[feld], list): f.append(f'{k}: {feld} muss eine Liste sein.')

@@ -98,8 +98,18 @@ def run():
         fall = anfrage('/api/fall/R-0001'); rev = fall['revision']; assert not fall['ergaenzt'] and not fall['abweichungen']['nicht_erfasst']
         ok('Importierte Dateien: Lesen zeigt sie als ergänzt, ohne zu schreiben; bestand_abgleichen trägt sie in die Akte ein')
         t = anfrage('/api/fall/R-0001/text/D0001'); assert 'Traffistar' in t['text']
+        # F34: Herkunft des Textes ist sichtbar; Foto und Bildscan gelten als nicht gelesen; Textstand ist in der Akte vermerkbar
+        assert t['textquelle'] == 'direkt' and t['gelesen'] is True and 'Ableitung' in t['hinweis'], t
+        sys.path.insert(0, str(root / '06 Werkzeuge/dienst')); import dokumente as _dok
+        (base / 'Foto.jpg').write_bytes(b'\xff\xd8\xff\xe0 kein Text'); b = _dok.befund(base / 'Foto.jpg'); assert b['textquelle'] == 'bild' and b['text'] == '' and 'visuell' in b['hinweis'], b
+        (base / 'Scan.pdf').write_bytes(b'%PDF-1.4 test'); b = _dok.befund(base / 'Scan.pdf'); assert b['textquelle'] in ('kein-text', 'werkzeug-fehlt') and b['text'] == '', b
+        anfrage('/api/werkzeug', {'name': 'dokument_ordnen', 'parameter': {'fall': 'R-0001', 'dokument': 'D0001', 'felder': {'textstand': 'visuell geprüft'}}, 'bestaetigt': True})
+        assert anfrage('/api/fall/R-0001/text/D0001')['textstand'] == 'visuell geprüft'
+        assert next(x for x in anfrage('/api/werkzeug', {'name': 'fall_uebersicht', 'parameter': {'fall': 'R-0001'}})['dokumente'] if x['id'] == 'D0001')['textstand'] == 'visuell geprüft'
+        anfrage('/api/werkzeug', {'name': 'dokument_ordnen', 'parameter': {'fall': 'R-0001', 'dokument': 'D0001', 'felder': {'textstand': 'gelesen'}}, 'bestaetigt': True}, erwartet=400)
+        fall = anfrage('/api/fall/R-0001'); rev = fall['revision']
         s = anfrage('/api/fall/R-0001/suche?q=traffistar'); assert s['treffer'] == ['D0001']
-        ok('Textauszug und Volltextsuche')
+        ok('Textauszug und Volltextsuche; Textquelle sichtbar (direkt, Bild, Bildscan ohne Text), Textstand über dokument_ordnen mit fester Werteliste')
         anfrage('/api/fall/R-0002/text/D0001', erwartet=400); ok('Dokumentkennungen bleiben je Fall getrennt')
 
         # 4 Verschieben, Finder-Verschiebung, Bestand

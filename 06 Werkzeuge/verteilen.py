@@ -52,9 +52,12 @@ ERSETZUNGEN = [
     ('## Prüfabläufe (Plugin `.claude/recht`)',
      '## Prüfabläufe (Skills unter `.agents/skills/`)'),
     ('Hooks in `.claude/settings.json`:\n'
-     'SessionStart (Eingang, Fristen), PreToolUse (Originalschutz), Stop\n'
-     '(Doku-Abgleich). Hook-Änderungen wirken nach Neustart der Sitzung.',
-     'Hooks (automatische Prüfungen) gibt es nur in Claude Code. Andere\n'
+     'SessionStart (Eingang, Fristen), PreToolUse (Originalschutz), PostToolUse\n'
+     '(Fremdtext-Wächter), Stop (Doku-Abgleich). Hook-Änderungen wirken nach\n'
+     'Neustart der Sitzung.',
+     'Hooks (automatische Prüfungen) sind in dieser Mappe nur für Claude Code\n'
+     'eingerichtet (Stand 17.09.2026). Codex beschreibt in seiner Dokumentation\n'
+     'eigene Hooks; dafür ist hier nichts konfiguriert und nichts geprüft. Andere\n'
      'Assistenten halten die Regeln selbst ein: zum Sitzungsstart\n'
      '`python3 "06 Werkzeuge/dienst/cli.py" faelle_auflisten` aufrufen (Eingang,\n'
      'Fristen, Aufgaben), nie in die Originalbereiche 02 bis 05 und 08 einer\n'

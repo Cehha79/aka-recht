@@ -105,11 +105,11 @@ def fall_uebersicht(fall):
             'aufgaben_offen': [{'id': a['id'], 'titel': a['titel'], 'faellig': a.get('faellig', ''), 'quelle': a.get('quelle', '')} for a in akte['aufgaben'] if not a['erledigt']],
             'ereignisse': [{'id': e['id'], 'datum': e['datum'], 'titel': e['titel'], 'art': e.get('art', ''), 'quelle': e.get('quelle', '')} for e in sorted(akte['ereignisse'], key=lambda x: x['datum'])],
             'entwuerfe': [{'id': w['id'], 'titel': w['titel'], 'fassung': w.get('fassung', 1), 'status': w.get('status', '')} for w in akte['entwuerfe']],
-            'dokumente': [{'id': d['id'], 'titel': kurz(d['titel'], 90), 'datum': d.get('datum', ''), 'stand': d.get('stand', ''), 'anlage': d.get('anlage', ''), 'bereich': d.get('gruppe', '')} for d in liste],
+            'dokumente': [{'id': d['id'], 'titel': kurz(d['titel'], 90), 'datum': d.get('datum', ''), 'stand': d.get('stand', ''), 'anlage': d.get('anlage', ''), 'bereich': d.get('gruppe', ''), 'textstand': d.get('textstand', '')} for d in liste],
             'nicht_erfasst': abweichungen['nicht_erfasst'], 'verschoben': abweichungen['verschoben'],
             'hinweis': 'Dokumentdatum ist kein Zugangsnachweis. Inhalte mit dokument_text lesen. ' + ABGLEICH_HINWEIS}
 
-@werkzeug('dokument_text', 'Textauszug eines Dokuments (Word, E-Mail, PDF, Text, HTML). Fotos haben keinen Text.',
+@werkzeug('dokument_text', 'Textauszug eines Dokuments (Word, E-Mail, PDF, Text, HTML) mit Herkunft: textquelle sagt, ob der Text direkt, aus der PDF-Textschicht oder gar nicht gelesen wurde (Bildscan, Foto); textstand ist die in der Akte vermerkte Lesequalität. Der Auszug ist eine Ableitung, Zahlen und Fristen am Original prüfen.',
           {'fall': {'type': 'string'}, 'dokument': {'type': 'string', 'description': 'D-Kennung wie D0038'}}, pflicht=['fall', 'dokument'])
 def dokument_text(fall, dokument):
     akte, _ = store.lese_akte(fall); ordner = store.fall_ordner(fall); dokument = (dokument or '').strip().upper()
@@ -117,8 +117,10 @@ def dokument_text(fall, dokument):
     if not d: raise ValueError('Unbekannte Dokumentkennung. ' + ABGLEICH_HINWEIS)
     p = store.sicher(d['pfad'], ordner)
     if not p.is_file(): raise ValueError('Datei fehlt am registrierten Ort. Falls sie verschoben wurde: bestand_abgleichen ausführen.')
-    t, hinweis = dokumente.text(p)
-    return {'dokument': dokument, 'titel': d['titel'], 'pfad': d['pfad'], 'text': t, 'hinweis': hinweis}
+    b = dokumente.befund(p)
+    return {'dokument': dokument, 'titel': d['titel'], 'pfad': d['pfad'], 'text': b['text'], 'hinweis': (b['hinweis'] + ' ' if b['hinweis'] else '') + dokumente.ABLEITUNG,
+            'textquelle': b['textquelle'], 'textquelle_text': b['textquelle_text'], 'seiten': b['seiten'], 'zeichen': b['zeichen'], 'textstand': d.get('textstand', ''),
+            'gelesen': b['textquelle'] in ('direkt', 'pdf-text')}
 
 @werkzeug('dokumente_suchen', 'Volltextsuche in Titeln, Ordnungsangaben und Dokumentinhalten eines Falls.',
           {'fall': {'type': 'string'}, 'frage': {'type': 'string', 'description': 'Suchbegriff, mindestens zwei Zeichen'}}, pflicht=['fall', 'frage'])
@@ -366,14 +368,14 @@ def bestand_abgleichen(fall):
             'in_akte_ergaenzt': ergaenzt, 'revision': rev}
 
 
-@werkzeug('dokument_ordnen', 'Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz). Die Datei selbst bleibt unverändert.',
+@werkzeug('dokument_ordnen', 'Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz, Textstand: direkt ausgelesen, OCR-erkannt, visuell geprüft, teilweise lesbar, nicht lesbar). Die Datei selbst bleibt unverändert.',
           {'fall': {'type': 'string'}, 'dokument': {'type': 'string'}, 'felder': {'type': 'object', 'description': 'nur die zu ändernden Felder'}},
           schreibend=True, pflicht=['fall', 'dokument', 'felder'])
 def dokument_ordnen(fall, dokument, felder):
     akte, rev = _akte_mit_dokument(fall, dokument)
     d = akte['dokumente'].get(dokument)
     if not d: raise ValueError('Unbekannte Dokumentkennung.')
-    erlaubt = {'titel', 'datum', 'art', 'stand', 'themen', 'anlage', 'personen', 'verweise', 'notiz'}
+    erlaubt = {'titel', 'datum', 'art', 'stand', 'themen', 'anlage', 'personen', 'verweise', 'notiz', 'textstand'}   # textstand: F34, Werte in akte_schema.TEXTSTAND
     fremd = set(felder) - erlaubt
     if fremd: raise ValueError('Nur Ordnungsangaben sind änderbar, nicht: ' + ', '.join(sorted(fremd)))
     d.update(felder); rev = store.speichere_akte(fall, akte, rev)

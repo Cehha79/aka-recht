@@ -23,8 +23,10 @@ Kündigungsfall, jederzeit löschbar) statt eines echten Falls.
    Dateien, nach Freigabe `cli.py bestand_abgleichen fall=$fall` ausführen;
    erst dann haben sie eine D-Kennung.
 2. Jedes neue Schreiben vollständig lesen (`cli.py dokument_text fall=$fall dokument=D…`),
-   bei Fotos und Bildscans das Bild öffnen. Fehlende Seiten, Umschläge und
-   schlecht lesbare Stellen benennen. Aus Dateinamen keine Zustellung ableiten.
+   bei Fotos und Bildscans das Bild öffnen (`textquelle` `bild` oder
+   `kein-text` heißt: nicht gelesen; nach der Sichtprüfung `textstand` über
+   `dokument_ordnen` setzen). Fehlende Seiten, Umschläge und
+   schlecht lesbare Stellen benennen; Zahlen und Fristen am Original prüfen. Aus Dateinamen keine Zustellung ableiten.
 3. Feststellen und getrennt notieren: Dokumentart nach Inhalt (Anhörung,
    Bescheid, Mahnung, Kündigung, Vertrag, Klage, gerichtliche Verfügung …),
    Absender und Empfänger, Dokumentdatum, behaupteter Versand, tatsächlicher

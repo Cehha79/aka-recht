@@ -37,11 +37,26 @@ class _NurText(HTMLParser):
 def html_zu_text(t):
     h = _NurText(); h.feed(t); return h.text()
 
+TEXTQUELLEN = {   # woher der Auszug stammt (Prüfbericht 16.09.2026, F34): der Leser soll wissen, was er wirklich gelesen hat
+    'direkt': 'Text direkt aus der Datei gelesen',
+    'pdf-text': 'Text aus der Textschicht der PDF (pdftotext); Spalten und Tabellen können in falscher Reihenfolge stehen',
+    'kein-text': 'PDF ohne Textschicht (Bildscan): kein Text ausgelesen, Inhalt nur in der Ansicht lesbar',
+    'werkzeug-fehlt': 'PDF, aber pdftotext ist nicht installiert: kein Text ausgelesen',
+    'bild': 'Foto oder Bildschirmaufnahme: kein Text ausgelesen, keine Texterkennung (OCR) in der Mappe',
+    'kein-auszug': 'Dateiformat ohne Textvorschau',
+    'fehler': 'Textvorschau konnte nicht erstellt werden',
+}
+ABLEITUNG = 'Der Auszug ist eine Ableitung, kein Original: Zahlen, Zugangsdaten, Fristen und Anträge am Original gegenprüfen.'
+
 def text(pfad):
-    """Liefert (text, hinweis) für eine Datei. Ergebnis wird je Dateistand zwischengespeichert."""
+    """Liefert (text, hinweis) für eine Datei; befund() liefert dazu Textquelle, Seiten und Zeichen."""
+    b = befund(pfad); return b['text'], b['hinweis']
+
+def befund(pfad):
+    """Textauszug mit Herkunft: text, hinweis, textquelle (Schlüssel aus TEXTQUELLEN), seiten (PDF), zeichen. Je Dateistand zwischengespeichert."""
     p = Path(pfad); s = p.stat(); k = (str(p), s.st_mtime_ns, s.st_size)
     if k in TEXT_CACHE: return TEXT_CACHE[k]
-    ext = p.suffix.lower(); t = ''; hinweis = ''
+    ext = p.suffix.lower(); t = ''; hinweis = ''; quelle = 'direkt'; seiten = None
     try:
         if ext in TEXT_EXT: t = p.read_text('utf-8-sig', errors='replace')
         elif ext in ('.html', '.htm'): t = html_zu_text(p.read_text('utf-8', errors='replace'))
@@ -65,13 +80,18 @@ def text(pfad):
             prog = shutil.which('pdftotext')
             if prog:
                 r = subprocess.run([prog, '-layout', str(p), '-'], capture_output=True, timeout=30)
-                t = r.stdout.decode('utf-8', 'replace')
-            if len(t.strip()) < 25: hinweis = 'Kein Textinhalt gefunden (Bildscan oder pdftotext fehlt). Inhalt in der PDF-Ansicht lesen.'
-        elif ext in BILD_EXT: hinweis = 'Foto oder Bildschirmaufnahme. Auffindbar über Titel und Ordnungsangaben.'
-        else: hinweis = 'Für dieses Dateiformat gibt es keine Textvorschau.'
+                t = r.stdout.decode('utf-8', 'replace'); seiten = t.count('\f') + 1 if t.strip() else 0
+            if len(t.strip()) < 25:
+                quelle = 'kein-text' if prog else 'werkzeug-fehlt'; t = ''
+                hinweis = ('Kein Textinhalt gefunden (Bildscan). Inhalt in der PDF-Ansicht lesen; das Dokument gilt als nicht gelesen.' if prog
+                           else 'pdftotext ist nicht installiert, kein Text ausgelesen. Inhalt in der PDF-Ansicht lesen.')
+            else:
+                quelle = 'pdf-text'; hinweis = f'Textschicht der PDF, {seiten} Seite(n). Spalten, Tabellen und Stempel können in falscher Reihenfolge stehen; Unterschriften und handschriftliche Vermerke fehlen.'
+        elif ext in BILD_EXT: quelle = 'bild'; hinweis = 'Foto oder Bildschirmaufnahme: kein Text, keine Texterkennung in der Mappe. Bild öffnen und ansehen; Ergebnis als Textstand „visuell geprüft“ eintragen.'
+        else: quelle = 'kein-auszug'; hinweis = 'Für dieses Dateiformat gibt es keine Textvorschau.'
     except Exception:
-        hinweis = 'Textvorschau konnte nicht erstellt werden. Das Original bleibt verfügbar.'
-    TEXT_CACHE[k] = (t, hinweis)
+        quelle = 'fehler'; hinweis = 'Textvorschau konnte nicht erstellt werden. Das Original bleibt verfügbar.'
+    TEXT_CACHE[k] = {'text': t, 'hinweis': hinweis, 'textquelle': quelle, 'textquelle_text': TEXTQUELLEN[quelle], 'seiten': seiten, 'zeichen': len(t.strip())}
     return TEXT_CACHE[k]
 
 def katalog(fall_id, akte):

@@ -55,6 +55,37 @@ Lies `CLAUDE.md` und die Akte (`python3 "06 Werkzeuge/dienst/cli.py" fall_lesen 
 5. Aufgaben „Frist prüfen“ aus der Fallaufnahme mit `cli.py aufgabe_setzen fall=$fall aufgabe=A… erledigt=true` schließen.
 6. Journal: `cli.py journal_schreiben fall=$fall art=Arbeit titel="Fristen geprüft" text=…`.
 
+## Zustellung und Bekanntgabe: den Auslöser sauber feststellen
+
+Vor der Rechnung den Übermittlungsweg klären (Prüfbericht 16.09.2026, S02),
+denn die meisten Fristfehler entstehen vor dem Rechnen. Fünf Zeitpunkte
+auseinanderhalten und je Frist benennen, welcher zählt:
+
+1. Dokumentdatum (steht im Schreiben, belegt nichts),
+2. Aufgabe zur Post oder Absendung (Poststempel, Sendebericht),
+3. tatsächlicher Zugang (Briefkasten, Übergabe, E-Mail-Eingang),
+4. förmliche Zustellung (Zustellungsurkunde, Einschreiben, Empfangsbekenntnis),
+5. elektronische Bereitstellung zum Abruf (Portal, ELSTER, beA).
+
+Je Weg gilt eine andere Regel, und die Fiktion eines Weges gilt nicht für
+andere Rechtsgebiete: Bekanntgabefiktion am vierten Tag nach Aufgabe zur
+Post (§ 122 Abs. 2 AO, § 41 Abs. 2 VwVfG, § 37 Abs. 2 SGB X, jeweils
+Fassung prüfen), Bereitstellung zum Datenabruf (§ 122a AO), Zustellung nach
+VwZG oder ZPO, Zugang unter Abwesenden (§ 130 BGB) im Zivil- und
+Arbeitsrecht ohne jede Fiktion. Das Merkblatt der Verfahrensart unter
+`04 Rechtsquellen/Verfahren/` nennt die Regel; die Norm am Volltext lesen
+und die zeitliche Fassung notieren.
+
+Belege zuordnen: Umschlag mit Poststempel, Zustellungsurkunde, Sendebericht,
+Portal-Benachrichtigung, eigener Vermerk mit Datum; jeder Beleg als
+D-Kennung in `quelle`, der Zeitpunkt als Ereignis (`ereignis_eintragen`,
+art Zugang). Fehlt der Nachweis, bleibt der Auslöser offen: Frist
+`pruefstatus=offen` mit dem frühesten denkbaren Tag, Aufgabe „Nachweis
+besorgen“, und im Ergebnis ausdrücklich sagen, welcher Beleg fehlt.
+Derselbe Dokumenttag ergibt je nach Weg verschiedene Auslöser; das im
+Feld `ausloeser` ausschreiben („Bekanntgabe fingiert am … nach § …“, „Zugang
+laut Umschlag am …“, „Abruf am … laut Portalprotokoll“).
+
 ## Ergebnis an den Nutzer
 
 Tabelle: Frist; Datum; Auslöser; Grundlage; Rechnung kurz; Prüfstatus; was
