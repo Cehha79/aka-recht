@@ -2,21 +2,23 @@
   "schema": 1,
   "fall": {
     "id": "R-9001",
-    "titel": "Beispiel: Bußgeldbescheid Geschwindigkeit",
-    "untertitel": "Künstlicher Fall zur Prüfung des Datenmodells. Keine echten Personen.",
-    "bereich": "Verkehr und Bußgeld",
+    "titel": "Beispiel: Kündigung durch den Arbeitgeber",
+    "untertitel": "Erfundener Fall zum Ausprobieren. Keine echten Personen, keine echte Firma.",
+    "bereich": "Arbeit",
     "themen": [
-      "Geschwindigkeit",
-      "Einspruch",
-      "Fahrverbot"
+      "Kündigung",
+      "Kündigungsschutzklage",
+      "Betriebsbedingt",
+      "Zeugnis"
     ],
-    "rolle": "Betroffener",
-    "ziel": "Einspruch prüfen, Fahrverbot abwenden, Messung anzweifeln.",
+    "rolle": "Arbeitnehmer",
+    "ziel": "Kündigungsschutzklage fristgerecht erheben, Weiterbeschäftigung oder Abfindung erreichen, Zeugnis sichern.",
     "rechtsordnung": "DE",
     "status": "offen",
-    "angelegt": "2026-09-16",
+    "angelegt": "2026-09-04",
     "angeheftet": [
-      "D0002"
+      "D0002",
+      "D0004"
     ]
   },
   "beteiligte": [
@@ -24,22 +26,30 @@
       "id": "P01",
       "name": "Max Muster",
       "rolle": "Ich",
-      "anschrift": "",
+      "anschrift": "Musterweg 1, 70000 Beispielstadt",
       "kontakt": "",
       "aktenzeichen": ""
     },
     {
       "id": "P02",
-      "name": "Regierungspräsidium Beispielstadt, Bußgeldstelle",
-      "rolle": "Behörde",
-      "anschrift": "Musterweg 1, 70000 Beispielstadt",
-      "kontakt": "",
-      "aktenzeichen": "BG-2026-000123"
+      "name": "Muster Logistik GmbH",
+      "rolle": "Gegner",
+      "anschrift": "Lagerstraße 8, 70000 Beispielstadt",
+      "kontakt": "Geschäftsführerin Erika Beispiel",
+      "aktenzeichen": "Personal-Nr. 4711"
     },
     {
       "id": "P03",
-      "name": "Amtsgericht Beispielstadt",
+      "name": "Arbeitsgericht Beispielstadt",
       "rolle": "Gericht",
+      "anschrift": "",
+      "kontakt": "",
+      "aktenzeichen": ""
+    },
+    {
+      "id": "P04",
+      "name": "Agentur für Arbeit Beispielstadt",
+      "rolle": "Behörde",
       "anschrift": "",
       "kontakt": "",
       "aktenzeichen": ""
@@ -47,186 +57,223 @@
   ],
   "dokumente": {
     "D0001": {
-      "pfad": "01 Eingang/Gelesen/2026-08-20_Anhoerungsbogen.pdf",
-      "titel": "Anhörungsbogen",
-      "datum": "2026-08-20",
-      "art": "Bescheid",
+      "pfad": "02 Grundlagen/2021-02-15_Arbeitsvertrag.txt",
+      "titel": "Arbeitsvertrag",
+      "datum": "2021-02-15",
+      "art": "Vertrag",
+      "stand": "Original",
+      "themen": [
+        "Kündigung"
+      ],
+      "anlage": "K 1",
+      "personen": [
+        "P02"
+      ],
+      "verweise": [],
+      "notiz": "Beginn 01.03.2021, gesetzliche Kündigungsfristen."
+    },
+    "D0002": {
+      "pfad": "03 Schriftverkehr/Von Muster Logistik/2026-09-02_Kuendigung.txt",
+      "titel": "Kündigung vom 02.09.2026",
+      "datum": "2026-09-02",
+      "art": "Schreiben",
       "stand": "Zugegangen",
       "themen": [
-        "Geschwindigkeit"
+        "Kündigung",
+        "Betriebsbedingt"
       ],
-      "anlage": "",
+      "anlage": "K 2",
       "personen": [
         "P02"
       ],
       "verweise": [
+        "D0003",
+        "D0004"
+      ],
+      "notiz": "Zugang am 04.09.2026 laut Vermerk D0003."
+    },
+    "D0003": {
+      "pfad": "05 Beweise/2026-09-04_Vermerk_Zugang_Kuendigung.txt",
+      "titel": "Vermerk zum Zugang der Kündigung",
+      "datum": "2026-09-04",
+      "art": "Beleg",
+      "stand": "Vermerk",
+      "themen": [
+        "Kündigung"
+      ],
+      "anlage": "K 3",
+      "personen": [
+        "P01"
+      ],
+      "verweise": [
         "D0002"
       ],
-      "notiz": "Zugang laut Umschlagfoto D0004."
+      "notiz": "Eigener Vermerk, Umschlagfoto auf dem Handy, Zeugin benannt."
     },
-    "D0002": {
-      "pfad": "02 Grundlagen/2026-09-02_Bussgeldbescheid.pdf",
-      "titel": "Bußgeldbescheid",
-      "datum": "2026-09-02",
-      "art": "Bescheid",
-      "stand": "Zugegangen",
+    "D0004": {
+      "pfad": "06 Entwürfe/Kuendigungsschutzklage_ENTWURF.md",
+      "titel": "Kündigungsschutzklage, Entwurf",
+      "datum": "2026-09-08",
+      "art": "Entwurf",
+      "stand": "Entwurf",
       "themen": [
-        "Geschwindigkeit",
-        "Fahrverbot"
+        "Kündigungsschutzklage"
       ],
-      "anlage": "B 1",
+      "anlage": "",
       "personen": [
+        "P03",
         "P02"
       ],
       "verweise": [
         "D0001",
+        "D0002",
         "D0003"
       ],
-      "notiz": "Zustellung laut Umschlag am 05.09.2026, siehe D0004."
-    },
-    "D0003": {
-      "pfad": "06 Entwürfe/Einspruch_ENTWURF.txt",
-      "titel": "Einspruch gegen den Bußgeldbescheid",
-      "datum": "2026-09-10",
-      "art": "Schreiben",
-      "stand": "Entwurf",
-      "themen": [
-        "Einspruch"
-      ],
-      "anlage": "",
-      "personen": [
-        "P02"
-      ],
-      "verweise": [
-        "D0002"
-      ],
-      "notiz": "Fassung 2, noch nicht versandt."
-    },
-    "D0004": {
-      "pfad": "05 Beweise/2026-09-05_Umschlag_Zustellung.jpg",
-      "titel": "Umschlag mit Zustelldatum",
-      "datum": "2026-09-05",
-      "art": "Foto",
-      "stand": "Original",
-      "themen": [
-        "Einspruch"
-      ],
-      "anlage": "B 2",
-      "personen": [],
-      "verweise": [
-        "D0002"
-      ],
-      "notiz": "Vermerk des Zustellers: 05.09.2026."
+      "notiz": "Fassung 1, drei offene Marker."
     }
   },
   "verfahren": [
     {
       "id": "V01",
-      "art": "Bußgeldverfahren",
-      "stelle": "P02",
-      "aktenzeichen": "BG-2026-000123",
-      "stand": "Bescheid zugestellt, Einspruch in Vorbereitung",
-      "ordner": "04 Verfahren/01 Bußgeld"
+      "art": "Kündigungsschutzklage",
+      "stelle": "P03",
+      "aktenzeichen": "",
+      "stand": "Klage in Vorbereitung, noch nicht eingereicht",
+      "ordner": "04 Verfahren/01 Kündigungsschutzklage"
     }
   ],
   "ereignisse": [
     {
       "id": "E01",
-      "datum": "2026-08-20",
-      "titel": "Anhörungsbogen zugegangen",
-      "art": "Zugang",
+      "datum": "2021-03-01",
+      "titel": "Beginn des Arbeitsverhältnisses",
+      "art": "Vorfall",
       "quelle": "D0001",
-      "detail": "Eigene Angabe, Umschlag nicht aufgehoben."
+      "detail": "Lagerist in Vollzeit."
     },
     {
       "id": "E02",
-      "datum": "2026-09-05",
-      "titel": "Bußgeldbescheid zugestellt",
+      "datum": "2026-09-04",
+      "titel": "Kündigung zugegangen",
       "art": "Zugang",
-      "quelle": "D0004",
-      "detail": "Zustelldatum auf dem Umschlag vermerkt."
+      "quelle": "D0003",
+      "detail": "Einwurf in den Briefkasten am 04.09.2026 gegen 11 Uhr, Vermerk und Umschlagfoto."
+    },
+    {
+      "id": "E03",
+      "datum": "2026-09-07",
+      "titel": "Arbeitsuchend gemeldet",
+      "art": "Vermerk",
+      "quelle": "",
+      "detail": "Online bei der Agentur für Arbeit gemeldet, Bestätigung per E-Mail [BELEG: Bestätigung ablegen]."
     }
   ],
   "fristen": [
     {
       "id": "F01",
-      "datum": "2026-09-21",
-      "titel": "Einspruchsfrist Bußgeldbescheid",
+      "datum": "2026-09-25",
+      "titel": "Klagefrist Kündigungsschutzklage",
       "art": "gesetzlich",
-      "ausloeser": "Zustellung am 2026-09-05 (E02)",
-      "rechtsgrundlage": "§ 67 Abs. 1 OWiG: zwei Wochen nach Zustellung; §§ 187 Abs. 1, 188 Abs. 2 BGB",
-      "berechnung": "Ereignis am Samstag, 05.09.2026. Der Ereignistag wird nicht mitgerechnet (§ 187 Abs. 1 BGB). Frist von 2 Wochen endet mit Ablauf des Tages der letzten Woche oder des letzten Monats, der dem Ereignistag nach Benennung oder Zahl entspricht (§ 188 Abs. 2 BGB): Samstag, 19.09.2026. Das rechnerische Ende fällt auf Samstag. Es gilt der nächste Werktag (§ 193 BGB): Montag, 21.09.2026. Ob § 193 BGB auf diese Frist anwendbar ist, fachlich prüfen. [QUELLE: § 43 Abs. 2 StPO über § 46 OWiG regelt die Verschiebung für Bußgeldfristen; am Volltext prüfen.]",
-      "pruefstatus": "offen",
+      "ausloeser": "Zugang der schriftlichen Kündigung am 04.09.2026 (E02, Vermerk D0003)",
+      "rechtsgrundlage": "§ 4 Satz 1 KSchG: drei Wochen nach Zugang der schriftlichen Kündigung; §§ 187 Abs. 1, 188 Abs. 2 BGB",
+      "berechnung": "Ereignis am Freitag, 04.09.2026. Der Ereignistag wird nicht mitgerechnet (§ 187 Abs. 1 BGB). Frist von 3 Wochen endet mit Ablauf des Tages der letzten Woche, der dem Ereignistag nach Benennung entspricht (§ 188 Abs. 2 BGB): Freitag, 25.09.2026. Kein Samstag, Sonntag oder Feiertag, § 193 BGB greift nicht. Eingang bei Gericht bis 25.09.2026, 24 Uhr; geplant bis 23.09.2026.",
+      "pruefstatus": "bestätigt",
       "quelle": "D0002"
     },
     {
       "id": "F02",
-      "datum": "2026-10-01",
-      "titel": "Rückfrage Bußgeldstelle zur Messakte",
-      "art": "selbst gesetzt",
-      "ausloeser": "Eigenes Schreiben, geplant",
-      "rechtsgrundlage": "Keine gesetzliche Frist, eigene Fristsetzung",
+      "datum": "2026-09-07",
+      "titel": "Meldung arbeitsuchend bei der Agentur für Arbeit",
+      "art": "gesetzlich",
+      "ausloeser": "Kenntnis vom Beendigungszeitpunkt am 04.09.2026 (E02)",
+      "rechtsgrundlage": "§ 38 Abs. 1 Satz 1 und 2 SGB III: spätestens drei Monate vor Beendigung, bei kürzerer Kenntnis innerhalb von drei Tagen nach Kenntnis",
+      "berechnung": "Kenntnis am 04.09.2026, drei Tage: 07.09.2026 (Montag). Gemeldet am 07.09.2026 (E03).",
+      "pruefstatus": "erledigt",
+      "quelle": "D0002"
+    },
+    {
+      "id": "F03",
+      "datum": "2026-12-31",
+      "titel": "Ende des Arbeitsverhältnisses laut Kündigung",
+      "art": "Termin",
+      "ausloeser": "Kündigung vom 02.09.2026",
+      "rechtsgrundlage": "Datum laut Schreiben",
       "berechnung": "",
       "pruefstatus": "offen",
-      "quelle": "D0003"
+      "quelle": "D0002"
     }
   ],
   "aufgaben": [
     {
       "id": "A01",
-      "titel": "Zustelldatum unabhängig belegen",
-      "detail": "Umschlagfoto D0004 reicht als eigenes Beweisstück; Zustellurkunde bei der Behörde anfragen.",
-      "faellig": "2026-09-17",
+      "titel": "Klage bis 23.09.2026 beim Arbeitsgericht einreichen",
+      "detail": "Zwei Tage Puffer vor Fristende F01. Einreichung per beA über einen Anwalt oder persönlich bei der Rechtsantragstelle; Eingangsstempel aufheben.",
+      "faellig": "2026-09-23",
       "erledigt": false,
       "quelle": "D0004"
     },
     {
       "id": "A02",
-      "titel": "Einspruch Fassung 3 fertigstellen",
-      "detail": "Akteneinsicht beantragen, Messprotokoll anfordern.",
-      "faellig": "2026-09-18",
+      "titel": "Betriebsrat und Beschäftigtenzahl klären",
+      "detail": "Gibt es einen Betriebsrat (§ 102 BetrVG)? Mehr als zehn Beschäftigte (§ 23 KSchG)? Kollegen fragen, Betriebsvereinbarungen ansehen.",
+      "faellig": "2026-09-15",
       "erledigt": false,
-      "quelle": "D0003"
+      "quelle": "D0002"
+    },
+    {
+      "id": "A03",
+      "titel": "Zwischenzeugnis anfordern",
+      "detail": "Schriftlich bei der Geschäftsführung, Entwurf über /entwurf.",
+      "faellig": "2026-09-30",
+      "erledigt": false,
+      "quelle": "D0001"
+    },
+    {
+      "id": "A04",
+      "titel": "Arbeitsuchend melden",
+      "detail": "Innerhalb von drei Tagen nach Zugang.",
+      "faellig": "2026-09-07",
+      "erledigt": true,
+      "quelle": "D0002"
     }
   ],
   "entwuerfe": [
     {
       "id": "W01",
-      "titel": "Einspruch gegen den Bußgeldbescheid",
-      "datei": "06 Entwürfe/Einspruch_ENTWURF.txt",
-      "fassung": 2,
+      "titel": "Kündigungsschutzklage",
+      "datei": "06 Entwürfe/Kuendigungsschutzklage_ENTWURF.md",
+      "fassung": 1,
       "status": "in Arbeit",
       "versandt_als": ""
     }
   ],
-  "kosten": [
-    {
-      "datum": "2026-09-02",
-      "posten": "Bußgeld laut Bescheid",
-      "betrag": 120.0,
-      "beleg": "D0002"
-    },
-    {
-      "datum": "2026-09-02",
-      "posten": "Gebühren und Auslagen laut Bescheid",
-      "betrag": 28.5,
-      "beleg": "D0002"
-    }
-  ],
+  "kosten": [],
   "notizen": [
     {
       "id": "N01",
-      "titel": "Messgerät",
-      "text": "Typ laut Bescheid: [PRÜFEN: Gerätetyp und Eichung im Messprotokoll].",
-      "datum": "2026-09-16"
+      "titel": "Kündigungsfrist",
+      "text": "Beschäftigt seit 01.03.2021, also über fünf Jahre: Kündigungsfrist nach § 622 Abs. 2 BGB prüfen, ob der 31.12.2026 stimmt [QUELLE: § 622 Abs. 2 BGB am Volltext].",
+      "datum": "2026-09-08"
+    },
+    {
+      "id": "N02",
+      "titel": "Vergleich",
+      "text": "Ziel im Gütetermin: Abfindung oder Weiterbeschäftigung am anderen Standort. Vorher fachanwaltliche Beratung.",
+      "datum": "2026-09-08"
     }
   ],
   "quellen": [
     {
-      "titel": "§ 67 OWiG, Einspruch",
-      "url": "https://www.gesetze-im-internet.de/owig_1968/__67.html",
+      "titel": "§ 4 KSchG, Anrufung des Arbeitsgerichts",
+      "url": "https://www.gesetze-im-internet.de/kschg/__4.html",
       "geprueft": "2026-09-16",
-      "verwendung": "Zweiwochenfrist ab Zustellung."
+      "verwendung": "Dreiwochenfrist ab Zugang der schriftlichen Kündigung (F01)."
+    },
+    {
+      "titel": "§ 38 SGB III, Meldepflicht",
+      "url": "https://www.gesetze-im-internet.de/sgb_3/__38.html",
+      "geprueft": "2026-09-16",
+      "verwendung": "Meldung arbeitsuchend innerhalb von drei Tagen nach Kenntnis (F02)."
     }
   ]
 }

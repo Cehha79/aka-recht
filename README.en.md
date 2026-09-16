@@ -1,3 +1,15 @@
+<p align="center"><img src="bilder/banner.svg" alt="AKA Recht" width="100%"></p>
+
+<p align="center">
+<img src="bilder/abzeichen-preis.svg" alt="free">
+<img src="bilder/abzeichen-lizenz.svg" alt="licence AGPL-3.0">
+<img src="bilder/abzeichen-python.svg" alt="Python 3, no third-party packages">
+<img src="bilder/abzeichen-lokal.svg" alt="runs locally, no network">
+<img src="bilder/abzeichen-recht.svg" alt="law: Germany">
+</p>
+
+<p align="center"><a href="README.md">Deutsch</a> · <b>English</b> · <a href="CONTRIBUTING.md">Contribute</a> · <a href="https://github.com/sponsors/Cehha79">Support</a></p>
+
 # AKA Recht
 
 A local case folder for legal matters of every kind (employment, traffic,
@@ -15,18 +27,26 @@ Note: the interface, templates, guides and skills are in German, and the
 folder is built for German law (see Scope). This file only translates the
 overview.
 
+> [!TIP]
+> To try it out, load the invented sample case (dismissal by the employer):
+> click **"Beispielfall laden"** in the interface, then browse the file,
+> documents, deadlines and the draft. Delete it any time.
+
 ## What it looks like
 
-All pictures show the invented sample case R-9001 (speeding fine, "Max
-Muster"). No real persons.
+Click to enlarge. All pictures show the invented sample case ("Max Muster"
+against "Muster Logistik GmbH"), no real persons.
 
-![Home: all cases, deadlines, inbox](bilder/01-zentrale.jpg)
-
-![Case file: role, goal, proceedings, next deadlines and tasks](bilder/02-fallakte.jpg)
-
-![Documents with preview, ID and exhibit number](bilder/03-dokumente.jpg)
-
-![Deadlines with legal basis, calculation and check status](bilder/04-fristen.jpg)
+<table>
+<tr>
+<td width="50%"><a href="bilder/01-zentrale.jpg"><img src="bilder/01-zentrale.jpg" alt="Home"></a><br><sub><b>Home:</b> all cases, next deadlines, inbox</sub></td>
+<td width="50%"><a href="bilder/02-fallakte.jpg"><img src="bilder/02-fallakte.jpg" alt="Case file"></a><br><sub><b>Case file:</b> role, goal, proceedings, deadlines, tasks</sub></td>
+</tr>
+<tr>
+<td width="50%"><a href="bilder/03-dokumente.jpg"><img src="bilder/03-dokumente.jpg" alt="Documents"></a><br><sub><b>Documents:</b> preview, ID, exhibit number, filing</sub></td>
+<td width="50%"><a href="bilder/04-fristen.jpg"><img src="bilder/04-fristen.jpg" alt="Deadlines"></a><br><sub><b>Deadlines:</b> legal basis, calculation, check status</sub></td>
+</tr>
+</table>
 
 ## What your AI can do with it
 
@@ -52,8 +72,10 @@ Every draft stays a draft until you check it and send it yourself.
 ## Scope
 
 This version is built for German law: deadline calculator under §§ 187,
-188, 193 BGB with the public holidays of Baden-Württemberg, a catalogue of
-official German legal sources, templates for German proceedings. Other
+188, 193 BGB with the state-wide public holidays of all 16 German states
+(choose the state in the settings; local holidays of single municipalities
+are not counted), a catalogue of official German legal sources, templates
+for German proceedings. Other
 jurisdictions are planned, in this order: Austria, Switzerland, France,
 England and Wales, Turkey, USA, China, Russia and more. Until then you can
 use the folder elsewhere to organise documents, but deadlines and templates
@@ -97,7 +119,8 @@ sending, deleting or changing originals.
 
 ## Limits
 
-The folder is not a lawyer and gives no legal advice. It helps you organise,
+> [!IMPORTANT]
+> The folder is not a lawyer and gives no legal advice. It helps you organise,
 check and draft: it sorts documents, calculates deadlines with a visible
 calculation, records what is proven and what is not, and guides your AI
 through facts, research, drafts and review. Whether a deadline applies,

@@ -20,7 +20,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import bestand, dokumente, sicherung, store, werkzeuge
+import bestand, dokumente, fristen, sicherung, store, werkzeuge
 OBERFLAECHE = Path(__file__).resolve().parent.parent / 'oberflaeche'
 CSP = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-src 'self'; object-src 'none'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'"
 CSP_ROH = "sandbox allow-scripts; default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; script-src 'unsafe-inline'; frame-ancestors 'self'"
@@ -72,7 +72,7 @@ class Handler(BaseHTTPRequestHandler):
             if pfad == '/api/werkzeuge': self.antwort(200, werkzeuge.beschreibung()); return
             if pfad == '/api/quellen': self.antwort(200, werkzeuge.quellen_katalog()); return
             if pfad == '/api/einstellungen':
-                z = store.lade_zentrale(); self.antwort(200, {'sicherung': {k: v for k, v in z['sicherung'].items() if k != 'letzte'}}); return
+                z = store.lade_zentrale(); self.antwort(200, {'sicherung': {k: v for k, v in z['sicherung'].items() if k != 'letzte'}, 'einstellungen': z['einstellungen'], 'laender': fristen.LAENDER}); return
             if pfad == '/api/sicherung/status': self.antwort(200, sicherung.status()); return
             if pfad == '/api/bestand':
                 self.antwort(200, {'faelle': [werkzeuge.bestand_pruefen(f['id']) for f in store.faelle()]}); return
@@ -137,6 +137,10 @@ class Handler(BaseHTTPRequestHandler):
                 z = store.lade_zentrale()
                 for k in ('ziel', 'zweites_ziel'):
                     if k in daten.get('sicherung', {}): z['sicherung'][k] = daten['sicherung'][k]
+                land = str(daten.get('einstellungen', {}).get('feiertagsland', '') or '').upper()
+                if land:
+                    if land not in fristen.LAENDER: self.antwort(400, {'fehler': 'Unbekanntes Bundesland.'}); return
+                    z['einstellungen']['feiertagsland'] = land
                 store.speichere_zentrale(z)
                 self.antwort(200, {'ok': True}); return
             self.antwort(404, {'fehler': 'Nicht gefunden.'})

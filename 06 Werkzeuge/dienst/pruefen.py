@@ -127,6 +127,18 @@ def run():
         fr = anfrage('/api/fristen/berechnen', {'start': '2026-08-21', 'menge': 3, 'einheit': 'wochen'}); assert fr['ende'] == '2026-09-11'
         fr = anfrage('/api/fristen/berechnen', {'start': '2026-09-05', 'menge': 2, 'einheit': 'wochen'}); assert fr['ende'] == '2026-09-21' and fr['verschoben']
         ok('Fristenrechner über die Schnittstelle, mit § 193 BGB')
+        fr = anfrage('/api/fristen/berechnen', {'start': '2026-06-03', 'menge': 1, 'einheit': 'tage', 'land': 'BW'}); assert fr['ende'] == '2026-06-05' and 'Fronleichnam' in ' '.join(fr['rechnung'])
+        fr = anfrage('/api/fristen/berechnen', {'start': '2026-06-03', 'menge': 1, 'einheit': 'tage', 'land': 'BE'}); assert fr['ende'] == '2026-06-04'
+        anfrage('/api/einstellungen', {'einstellungen': {'feiertagsland': 'NW'}}); assert anfrage('/api/einstellungen')['einstellungen']['feiertagsland'] == 'NW'
+        fr = anfrage('/api/fristen/berechnen', {'start': '2026-10-30', 'menge': 2, 'einheit': 'tage'}); assert fr['ende'] == '2026-11-02' and fr['feiertagsland'] == 'NW'
+        anfrage('/api/fristen/berechnen', {'start': '2026-06-03', 'menge': 1, 'einheit': 'tage', 'land': 'XX'}, erwartet=400)
+        ok('Feiertage je Bundesland (Fronleichnam BW, nicht BE), Einstellung Bundesland, unbekanntes Land abgewiesen')
+        r = anfrage('/api/werkzeug', {'name': 'beispiel_laden', 'parameter': {}, 'bestaetigt': True}); beispiel = r['id']
+        b = anfrage('/api/fall/' + beispiel); assert b['akte']['fall']['id'] == beispiel and b['akte']['fall']['bereich'] == 'Arbeit'
+        assert set(b['akte']['dokumente']) == {d['id'] for d in b['dokumente']}
+        d4 = next(d for d in b['dokumente'] if d['id'] == 'D0004'); assert any(isinstance(v, str) and v.endswith('Kuendigungsschutzklage_ENTWURF.md') for v in d4.values())
+        assert anfrage('/api/werkzeug', {'name': 'bestand_pruefen', 'parameter': {'fall': beispiel}})['geprueft'] == 4
+        ok('Beispielfall laden: Kennungen wie in akte.json, Bestand 4 geprüft')
         r = anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': {'fall': 'R-0001', 'datum': '2026-09-21', 'titel': 'Einspruchsfrist', 'art': 'gesetzlich', 'ausloeser': 'Zustellung 05.09.2026', 'rechtsgrundlage': '§ 67 Abs. 1 OWiG', 'berechnung': '\n'.join(fr['rechnung']), 'pruefstatus': 'offen', 'quelle': 'D0001'}, 'bestaetigt': True})
         assert r['frist']['id'] == 'F01'
         r = anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'Zustellurkunde anfordern', 'quelle': 'D0001'}, 'bestaetigt': True}); assert r['aufgabe']['id'] == 'A01'
@@ -177,7 +189,7 @@ def run():
             assert schreibend and lesend and all('bestaetigt' in t['inputSchema']['properties'] for t in schreibend) and not any('bestaetigt' in t['inputSchema']['properties'] for t in lesend)
             ok(f'MCP: tools/list mit {len(tools)} Werkzeugen, ohne Ganz-Akte-Werkzeuge; schreibende mit Parameter bestaetigt')
             a = rpc({'jsonrpc': '2.0', 'id': 4, 'method': 'tools/call', 'params': {'name': 'faelle_auflisten', 'arguments': {}}})
-            assert not a['result']['isError'] and [f['id'] for f in a['result']['structuredContent']['ergebnis']] == ['R-0001', 'R-0002'] and 'R-0001' in a['result']['content'][0]['text']
+            assert not a['result']['isError'] and [f['id'] for f in a['result']['structuredContent']['ergebnis']][:2] == ['R-0001', 'R-0002'] and 'R-0001' in a['result']['content'][0]['text']
             a = rpc({'jsonrpc': '2.0', 'id': 5, 'method': 'tools/call', 'params': {'name': 'fall_uebersicht', 'arguments': {'fall': 'R-0001'}}})
             assert a['result']['structuredContent']['fristen'][0]['id'] == 'F01' and a['result']['structuredContent']['dokumente']
             ok('MCP: lesende Aufrufe liefern Text und strukturiertes Ergebnis')

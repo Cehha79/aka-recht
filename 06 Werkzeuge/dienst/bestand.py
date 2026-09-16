@@ -43,7 +43,15 @@ def aktualisieren(ordner, weg='Dienst'):
         alt = lese(ordner); daten = json.loads(json.dumps(alt))
         vorhanden = dateien(ordner); vorhanden_set = set(vorhanden)
         pfad_zu_id = {e['pfad']: k for k, e in daten['dateien'].items()}
-        naechste = max([int(k[1:]) for k in daten['dateien'] if re.fullmatch(r'D\d+', k)], default=0) + 1
+        # Kennungen, die akte.json schon vergibt (etwa eine mitgelieferte Beispielakte), gelten vor neuen Nummern
+        akte_pfade = {}
+        try:
+            akte_datei = ordner / 'akte.json'
+            if akte_datei.exists():
+                for k, d in json.loads(akte_datei.read_text('utf-8')).get('dokumente', {}).items():
+                    if re.fullmatch(r'D\d+', k) and d.get('pfad') and k not in daten['dateien']: akte_pfade[d['pfad']] = k
+        except (ValueError, OSError): akte_pfade = {}
+        naechste = max([int(k[1:]) for k in list(daten['dateien']) + list(akte_pfade.values()) if re.fullmatch(r'D\d+', k)], default=0) + 1
         ergebnis = {}
         for rel in vorhanden:
             p = ordner / rel; h = sha_datei(p); kennung = pfad_zu_id.get(rel)
@@ -55,7 +63,8 @@ def aktualisieren(ordner, weg='Dienst'):
                                                     'zeit': datetime.now().isoformat(timespec='seconds'), 'weg': weg + ', über Prüfsumme erkannt'})
                     pfad_zu_id.pop(daten['dateien'][kennung]['pfad'], None)
                 else:
-                    kennung = f'D{naechste:04d}'; naechste += 1
+                    kennung = akte_pfade.pop(rel, None)
+                    if not kennung: kennung = f'D{naechste:04d}'; naechste += 1
                     daten['dateien'][kennung] = {'pfad': rel, 'sha256_erst': h, 'sha256': h, 'alt': '', 'erfasst': datetime.now().date().isoformat()}
                 pfad_zu_id[rel] = kennung
             e = daten['dateien'][kennung]; e['pfad'] = rel; e['sha256'] = h

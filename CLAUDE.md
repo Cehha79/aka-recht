@@ -18,7 +18,7 @@ Strafsachen und mehr). Die Regeln aus `~/.claude/CLAUDE.md` gelten weiter.
   08 Archiv nie ändern. Ein Hook sperrt das. Neue Texte nach 06 Entwürfe,
   Vermerke nach 07 Recherche.
 - Änderungen an der Akte über die Werkzeuge, nie akte.json von Hand:
-  `python3 "06 Werkzeuge/dienst/cli.py" liste` zeigt alle 20.
+  `python3 "06 Werkzeuge/dienst/cli.py" liste` zeigt alle.
   Lesen: `fall_lesen`, `dokument_text`, `dokumente_suchen`, `frist_berechnen`.
   Schreiben: `aufgabe_anlegen`, `frist_eintragen`, `ereignis_eintragen`,
   `notiz_anlegen`, `dokument_ordnen`, `dokument_verschieben`,

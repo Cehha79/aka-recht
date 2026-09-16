@@ -1,27 +1,55 @@
+<p align="center"><img src="bilder/banner.svg" alt="AKA Recht: Deine Aktenmappe für Rechtssachen" width="100%"></p>
+
+<p align="center">
+<img src="bilder/abzeichen-preis.svg" alt="kostenlos">
+<img src="bilder/abzeichen-lizenz.svg" alt="Lizenz AGPL-3.0">
+<img src="bilder/abzeichen-python.svg" alt="Python 3, keine Fremdpakete">
+<img src="bilder/abzeichen-lokal.svg" alt="läuft lokal, ohne Netz">
+<img src="bilder/abzeichen-recht.svg" alt="Recht: Deutschland">
+</p>
+
+<p align="center"><b>Deutsch</b> · <a href="README.en.md">English</a> · <a href="CONTRIBUTING.md">Mitmachen</a> · <a href="https://github.com/sponsors/Cehha79">Unterstützen</a></p>
+
 # AKA Recht
 
-Eine lokale Aktenmappe für Rechtssachen aller Art (Arbeit, Verkehr, Miete,
-Verträge, Behörden, Strafsachen und mehr). Jede Sache ist ein Fall mit fester
-Kennung, festen Ordnern, Ordnungsdaten in `akte.json` und einem Journal.
-Bedient wird die Mappe über eine Oberfläche im Browser und über die KI, die
-du schon hast: Claude Code, Claude Desktop, Codex oder jede andere, die MCP
-(Model Context Protocol) oder Befehle ausführen kann. Die Mappe selbst
-enthält keine KI, braucht kein Konto, keinen Schlüssel und kein Netz.
+Ein Strafzettel, eine Kündigung, eine Nebenkostenabrechnung, ein Bescheid
+vom Amt: Irgendwann hat jeder eine Rechtssache, und dann liegen Briefe,
+Fotos, Mails und Fristen überall. **AKA Recht** ist der Ordner, in dem das
+alles seinen Platz findet, und die Anleitung, mit der deine KI dir hilft,
+es zu ordnen, zu prüfen und zu formulieren.
 
-Version 0.1 · Stand 16.09.2026 · Autor: Hasan Tepegöz · English: [README.en.md](README.en.md)
+- **Jede Sache ist ein Fall** mit fester Kennung, festen Ordnern, Ordnungsdaten
+  in `akte.json` und einem Journal. Originale werden nie verändert.
+- **Fristen mit Rechnung:** Jede Frist zeigt Auslöser, Rechtsgrundlage und den
+  Rechenweg nach §§ 187, 188, 193 BGB, mit den Feiertagen deines Bundeslands.
+- **Deine KI arbeitet mit:** Claude Code, Claude Desktop, Codex oder jede andere,
+  die MCP (Model Context Protocol) oder Befehle ausführen kann. Sieben
+  Anleitungen führen sie von der Fallaufnahme bis zum geprüften Entwurf.
+- **Alles bleibt bei dir:** keine KI in der App, kein Konto, kein Schlüssel,
+  kein Netz. Der Dienst läuft nur auf deinem Rechner.
+
+> [!TIP]
+> Zum Ausprobieren gibt es einen erfundenen Beispielfall (Kündigung durch den
+> Arbeitgeber). In der Oberfläche auf **„Beispielfall laden“** klicken, dann
+> durch Akte, Dokumente, Fristen und Entwurf klicken. Jederzeit löschbar.
+
+Version 0.1 · Stand 16.09.2026 · Autor: Hasan Tepegöz
 
 ## So sieht es aus
 
-Alle Bilder zeigen den erfundenen Beispielfall R-9001 (Bußgeldbescheid,
-„Max Muster“). Keine echten Personen.
+Zum Vergrößern anklicken. Alle Bilder zeigen den erfundenen Beispielfall
+(„Max Muster“ gegen „Muster Logistik GmbH“), keine echten Personen.
 
-![Zentrale: alle Fälle, Fristen, Eingang](bilder/01-zentrale.jpg)
-
-![Fallakte: Rolle, Ziel, Verfahren, nächste Fristen und Aufgaben](bilder/02-fallakte.jpg)
-
-![Dokumente mit Vorschau, Kennung und Anlagennummer](bilder/03-dokumente.jpg)
-
-![Fristen mit Rechtsgrundlage, Rechnung und Prüfstatus](bilder/04-fristen.jpg)
+<table>
+<tr>
+<td width="50%"><a href="bilder/01-zentrale.jpg"><img src="bilder/01-zentrale.jpg" alt="Zentrale: alle Fälle, Fristen, Eingang"></a><br><sub><b>Zentrale:</b> alle Fälle, nächste Fristen, Posteingang</sub></td>
+<td width="50%"><a href="bilder/02-fallakte.jpg"><img src="bilder/02-fallakte.jpg" alt="Fallakte: Rolle, Ziel, Verfahren, nächste Fristen und Aufgaben"></a><br><sub><b>Fallakte:</b> Rolle, Ziel, Verfahren, Fristen, Aufgaben</sub></td>
+</tr>
+<tr>
+<td width="50%"><a href="bilder/03-dokumente.jpg"><img src="bilder/03-dokumente.jpg" alt="Dokumente mit Vorschau, Kennung und Anlagennummer"></a><br><sub><b>Dokumente:</b> Vorschau, Kennung, Anlagennummer, Einsortieren</sub></td>
+<td width="50%"><a href="bilder/04-fristen.jpg"><img src="bilder/04-fristen.jpg" alt="Fristen mit Rechtsgrundlage, Rechnung und Prüfstatus"></a><br><sub><b>Fristen:</b> Rechtsgrundlage, Rechenweg, Prüfstatus</sub></td>
+</tr>
+</table>
 
 ## Was deine KI damit kann
 
@@ -51,10 +79,10 @@ oder `cli.py`.
 ## Geltungsbereich
 
 Diese Fassung ist für deutsches Recht gebaut: Fristenrechner nach §§ 187,
-188, 193 BGB mit den Feiertagen von Baden-Württemberg, Quellenkatalog mit
-deutschen amtlichen Angeboten, Schreibvorlagen für deutsche Verfahren.
-Für andere Bundesländer gelten teils andere Feiertage; das prüfst du beim
-Fristende selbst, die Rechnung zeigt jeden Schritt.
+188, 193 BGB mit den landesweiten Feiertagen aller 16 Bundesländer (Bundesland
+in den Einstellungen wählen; regionale Feiertage einzelner Gemeinden zählen
+nicht), Quellenkatalog mit deutschen amtlichen Angeboten, Schreibvorlagen für
+deutsche Verfahren.
 
 Weitere Rechtsordnungen sind geplant, in dieser Reihenfolge: Österreich,
 Schweiz, Frankreich, England und Wales, Türkei, USA, China, Russland und
@@ -101,7 +129,8 @@ für Versand, Löschen oder Ändern von Originalen gibt es nicht.
 
 ## Grenzen
 
-Die Mappe ist kein Rechtsanwalt und gibt keine Rechtsberatung. Sie hilft
+> [!IMPORTANT]
+> Die Mappe ist kein Rechtsanwalt und gibt keine Rechtsberatung. Sie hilft
 beim Ordnen, Prüfen und Formulieren: Sie ordnet Unterlagen, rechnet Fristen
 nach §§ 187, 188, 193 BGB mit sichtbarer Rechnung, hält fest, was belegt ist
 und was nicht, und gibt deiner KI Anleitungen für Sachverhalt, Recherche,

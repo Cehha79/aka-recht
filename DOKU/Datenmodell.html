@@ -42,7 +42,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}
 </aside>
 <main>
 <article>
-<div class="stamp">aus md/Datenmodell.md, Stand 16.09.2026 18:20</div>
+<div class="stamp">aus md/Datenmodell.md, Stand 16.09.2026 20:05</div>
 <h1>Datenmodell</h1>
 <p><em>Stand: 16.09.2026</em></p>
 <h2 id="aufgabe-dieser-datei">Aufgabe dieser Datei</h2>
@@ -81,6 +81,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}
     {&quot;id&quot;: &quot;D0038&quot;, &quot;von&quot;: &quot;01 Eingang/…&quot;, &quot;nach&quot;: &quot;04 Verfahren/…&quot;, &quot;zeit&quot;: &quot;2026-09-22T10:00:00&quot;, &quot;weg&quot;: &quot;Oberfläche&quot;}
   ]
 }</code></pre>
+<p>Beim ersten Einlesen eines Falls, dessen <code>akte.json</code> schon Dokumente mit Pfaden nennt (etwa die Beispielakte), übernimmt der Bestand diese Kennungen für die passenden Pfade, statt neue zu vergeben (seit 16.09.2026).</p>
 <p><code>sha256_erst</code> ist die Prüfsumme beim ersten Einlesen und bleibt. <code>sha256</code> ist der zuletzt gesehene Stand. Weichen beide ab, meldet die Bestandsprüfung eine Änderung. Beim Umzug werden Dateien über <code>sha256_erst</code> wiedergefunden, auch wenn ihr Pfad sich geändert hat.</p>
 <h2 id="journalmd">JOURNAL.md</h2>
 <p>Markdown, nur anhängen, neueste Einträge unten. Aufgaben und Fristen gehören nicht ins Journal.</p>
@@ -88,7 +89,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}
 Text mit Bezug auf Kennungen wie D0012, F01, A03.</code></pre>
 <p>Arten: Eingang, Versand, Entscheidung, Gespräch, Termin, Arbeit, Vermerk. Die Oberfläche liest die Überschriftzeile und kann danach filtern.</p>
 <h2 id="werkzeuge">Werkzeuge</h2>
-<table><thead><tr><th>Werkzeug</th><th>Aufgabe</th></tr></thead><tbody><tr><td><code>06 Werkzeuge/dienst/cli.py</code></td><td>alle Werkzeuge ohne laufenden Dienst, für Claude und Skripte</td></tr><tr><td><code>06 Werkzeuge/akte_schema.py</code></td><td>leere Akte erzeugen, Akte prüfen (Fehler, Warnungen); der Dienst ruft <code>validate()</code> vor jedem Speichern</td></tr><tr><td><code>05 Vorlagen/Fallvorlage/</code></td><td>Ordner 01 bis 08, leere akte.json, bestand.json, JOURNAL.md</td></tr><tr><td><code>05 Vorlagen/Beispielakte/akte.json</code></td><td>künstlicher Bußgeldfall, alle Blöcke gefüllt, Prüfung ohne Fehler</td></tr></tbody></table>
+<table><thead><tr><th>Werkzeug</th><th>Aufgabe</th></tr></thead><tbody><tr><td><code>06 Werkzeuge/dienst/cli.py</code></td><td>alle Werkzeuge ohne laufenden Dienst, für Claude und Skripte</td></tr><tr><td><code>06 Werkzeuge/akte_schema.py</code></td><td>leere Akte erzeugen, Akte prüfen (Fehler, Warnungen); der Dienst ruft <code>validate()</code> vor jedem Speichern</td></tr><tr><td><code>05 Vorlagen/Fallvorlage/</code></td><td>Ordner 01 bis 08, leere akte.json, bestand.json, JOURNAL.md</td></tr><tr><td><code>05 Vorlagen/Beispielakte/</code></td><td>vollständiger erfundener Fall „Kündigung durch den Arbeitgeber“ (R-9001): akte.json mit allen Blöcken, bestand.json mit Prüfsummen, JOURNAL.md, vier Textdokumente; über „Beispielfall laden“ (Werkzeug <code>beispiel_laden</code>) als neuer Fall kopierbar; Prüfung ohne Fehler</td></tr></tbody></table>
 </article>
 </main>
 </body>

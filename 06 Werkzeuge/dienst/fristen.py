@@ -22,8 +22,20 @@ def ostersonntag(jahr):
     monat, tag = divmod(h + l - 7 * m + 114, 31)
     return date(jahr, monat, tag + 1)
 
+LAENDER = {'BW': 'Baden-Württemberg', 'BY': 'Bayern', 'BE': 'Berlin', 'BB': 'Brandenburg', 'HB': 'Bremen',
+           'HH': 'Hamburg', 'HE': 'Hessen', 'MV': 'Mecklenburg-Vorpommern', 'NI': 'Niedersachsen',
+           'NW': 'Nordrhein-Westfalen', 'RP': 'Rheinland-Pfalz', 'SL': 'Saarland', 'SN': 'Sachsen',
+           'ST': 'Sachsen-Anhalt', 'SH': 'Schleswig-Holstein', 'TH': 'Thüringen'}
+# Nur landesweite Feiertage. Regionale (nur in Teilen des Landes) fehlen bewusst und werden als Hinweis genannt,
+# denn sie könnten ein Fristende fälschlich verschieben. Quellen: BW FTG und BY FTG Art. 1 am Volltext (16.09.2026);
+# übrige Länder nach der Übersicht der Feiertagsgesetze (Wikipedia, Stand 22.08.2026) [QUELLE: je Landesgesetz prüfen].
+REGIONAL = {'BY': 'Mariä Himmelfahrt (15.08.) nur in Gemeinden mit überwiegend katholischer Bevölkerung, Friedensfest (08.08.) nur in Augsburg.',
+            'SN': 'Fronleichnam nur in einzelnen Gemeinden.', 'TH': 'Fronleichnam nur in einzelnen Gemeinden.'}
+
 def feiertage(jahr, land='BW'):
-    """Gesetzliche Feiertage. BW: Feiertagsgesetz Baden-Württemberg."""
+    """Gesetzliche, landesweite Feiertage des Bundeslands (Kürzel wie BW, BY, NW)."""
+    land = (land or 'BW').upper()
+    if land not in LAENDER: raise ValueError('Unbekanntes Bundesland: ' + land + '. Erlaubt: ' + ', '.join(LAENDER))
     o = ostersonntag(jahr)
     fest = {
         date(jahr, 1, 1): 'Neujahr', date(jahr, 5, 1): 'Tag der Arbeit',
@@ -32,10 +44,24 @@ def feiertage(jahr, land='BW'):
         o - timedelta(days=2): 'Karfreitag', o + timedelta(days=1): 'Ostermontag',
         o + timedelta(days=39): 'Christi Himmelfahrt', o + timedelta(days=50): 'Pfingstmontag',
     }
-    if land == 'BW':
-        fest[date(jahr, 1, 6)] = 'Heilige Drei Könige'
-        fest[o + timedelta(days=60)] = 'Fronleichnam'
-        fest[date(jahr, 11, 1)] = 'Allerheiligen'
+    h3k = (date(jahr, 1, 6), 'Heilige Drei Könige'); frauentag = (date(jahr, 3, 8), 'Internationaler Frauentag')
+    fron = (o + timedelta(days=60), 'Fronleichnam'); maria = (date(jahr, 8, 15), 'Mariä Himmelfahrt')
+    kindertag = (date(jahr, 9, 20), 'Weltkindertag'); reformation = (date(jahr, 10, 31), 'Reformationstag')
+    allerheiligen = (date(jahr, 11, 1), 'Allerheiligen')
+    bussbettag = date(jahr, 11, 22)
+    while bussbettag.weekday() != 2: bussbettag -= timedelta(days=1)   # Mittwoch vor dem 23. November
+    bussbettag = (bussbettag, 'Buß- und Bettag')
+    zusatz = {
+        'BW': [h3k, fron, allerheiligen], 'BY': [h3k, fron, allerheiligen],
+        'BE': [frauentag] if jahr >= 2019 else [], 'BB': [reformation],
+        'HB': [reformation] if jahr >= 2018 else [], 'HH': [reformation] if jahr >= 2018 else [],
+        'HE': [fron], 'MV': ([frauentag] if jahr >= 2023 else []) + [reformation],
+        'NI': [reformation] if jahr >= 2018 else [], 'NW': [fron, allerheiligen], 'RP': [fron, allerheiligen],
+        'SL': [fron, maria, allerheiligen], 'SN': [reformation, bussbettag], 'ST': [h3k, reformation],
+        'SH': [reformation] if jahr >= 2018 else [], 'TH': [reformation] + ([kindertag] if jahr >= 2019 else []),
+    }
+    if jahr == 2017: zusatz = {k: v + ([reformation] if reformation not in v else []) for k, v in zusatz.items()}   # 2017 bundesweit einmalig
+    for d, name in zusatz[land]: fest[d] = name
     return fest
 
 def ist_werktag(d, land='BW'):
@@ -113,7 +139,8 @@ def berechne(start, menge, einheit, ereignisfrist=True, werktagsregel=True, land
         rechnung.append('Verschiebung auf den nächsten Werktag (§ 193 BGB) wurde nicht angewendet.')
     return {'start': d0.isoformat(), 'ende': ende.isoformat(), 'ende_text': fmt(ende),
             'rechnerisch': rechnerisch.isoformat(), 'verschoben': verschoben,
-            'rechnung': rechnung, 'grundlagen': grundlagen, 'feiertagsland': land,
+            'rechnung': rechnung, 'grundlagen': grundlagen, 'feiertagsland': land, 'feiertagsland_name': LAENDER[(land or 'BW').upper()],
+            'regional': REGIONAL.get((land or 'BW').upper(), ''),
             'hinweis': 'Rechnung ohne Gewähr für die Wahl der richtigen Frist. Auslöser, Zugang und Rechtsgrundlage sind gesondert zu belegen.'}
 
 if __name__ == '__main__':

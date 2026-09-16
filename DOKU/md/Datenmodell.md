@@ -160,6 +160,10 @@ Technische Datei, schreibt nur der Dienst.
 }
 ```
 
+Beim ersten Einlesen eines Falls, dessen `akte.json` schon Dokumente mit
+Pfaden nennt (etwa die Beispielakte), übernimmt der Bestand diese Kennungen
+für die passenden Pfade, statt neue zu vergeben (seit 16.09.2026).
+
 `sha256_erst` ist die Prüfsumme beim ersten Einlesen und bleibt. `sha256` ist
 der zuletzt gesehene Stand. Weichen beide ab, meldet die Bestandsprüfung eine
 Änderung. Beim Umzug werden Dateien über `sha256_erst` wiedergefunden, auch
@@ -185,5 +189,5 @@ Die Oberfläche liest die Überschriftzeile und kann danach filtern.
 | `06 Werkzeuge/dienst/cli.py` | alle Werkzeuge ohne laufenden Dienst, für Claude und Skripte |
 | `06 Werkzeuge/akte_schema.py` | leere Akte erzeugen, Akte prüfen (Fehler, Warnungen); der Dienst ruft `validate()` vor jedem Speichern |
 | `05 Vorlagen/Fallvorlage/` | Ordner 01 bis 08, leere akte.json, bestand.json, JOURNAL.md |
-| `05 Vorlagen/Beispielakte/akte.json` | künstlicher Bußgeldfall, alle Blöcke gefüllt, Prüfung ohne Fehler |
+| `05 Vorlagen/Beispielakte/` | vollständiger erfundener Fall „Kündigung durch den Arbeitgeber“ (R-9001): akte.json mit allen Blöcken, bestand.json mit Prüfsummen, JOURNAL.md, vier Textdokumente; über „Beispielfall laden“ (Werkzeug `beispiel_laden`) als neuer Fall kopierbar; Prüfung ohne Fehler |
 

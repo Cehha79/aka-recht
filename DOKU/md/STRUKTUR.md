@@ -48,7 +48,7 @@ Recht/
 ├─ 02 Fälle/                  eine Fallakte je Vorgang, feste Kennung R-0001 …
 ├─ 03 Verträge und Vorsorge/  Unterlagen ohne Streit (Finder-Ablage)
 ├─ 04 Rechtsquellen/          Quellen.md, Zugangskatalog amtlicher Angebote
-├─ 05 Vorlagen/               Fallvorlage, Beispielakte
+├─ 05 Vorlagen/               Fallvorlage, Beispielakte (vollständiger erfundener Fall Kündigung, „Beispielfall laden“)
 ├─ 06 Werkzeuge/
 │  ├─ dienst/                 server.py, store.py, dokumente.py, fristen.py,
 │  │                          bestand.py, sicherung.py, werkzeuge.py, cli.py
@@ -145,7 +145,7 @@ Sicherungsziel iCloud Drive wird nur vorgeschlagen, wo es den Ordner gibt. Texta
 | `server.py` | HTTP-Dienst, Sitzungen, Routen, statische Oberfläche |
 | `store.py` | akte.json und zentrale.json lesen und mit Revision schreiben, Sperre |
 | `dokumente.py` | Dateien auflisten, Textauszug (txt, md, html, docx, eml, pdf), Suche |
-| `fristen.py` | Fristen rechnen nach §§ 187, 188, 193 BGB, Feiertage Baden-Württemberg, Rechnung als Text |
+| `fristen.py` | Fristen rechnen nach §§ 187, 188, 193 BGB, landesweite Feiertage aller 16 Bundesländer (Kürzel, Einstellung `feiertagsland` in zentrale.json, Standard BW), Rechnung als Text |
 | `bestand.py` | Prüfsummen, Verschiebungen erkennen, Bestand prüfen |
 | `sicherung.py` | geprüfte ZIP-Sicherung außerhalb des Projekts, SHA-256, Kopie nach iCloud Drive |
 | `werkzeuge.py` | Katalog aller Funktionen als beschriebene Werkzeuge (Name, Zweck, Parameter, lesend oder schreibend); Oberfläche und KI rufen dieselben Werkzeuge |
@@ -167,8 +167,8 @@ POST /api/fristen/berechnen           Frist rechnen, Ergebnis mit Rechnung
 GET  /api/bestand                     Prüfsummen aller Fälle prüfen
 POST /api/sicherung                   geprüfte ZIP erstellen
 GET  /api/werkzeuge                   Werkzeugkatalog (für Oberfläche und KI)
-GET  /api/einstellungen               Sicherungsziele
-POST /api/einstellungen               Sicherungsziele ändern
+GET  /api/einstellungen               Sicherungsziele, Bundesland für Feiertage, Länderliste
+POST /api/einstellungen               Sicherungsziele und Bundesland ändern
 ```
 
 ## Aktenmappe für jede KI (Stufe 7)
@@ -205,8 +205,8 @@ modelcontextprotocol.io): die Fassungen bis 2025-11-25 mit Handshake
 (`initialize`, `notifications/initialized`) und die Fassung 2026-07-28 ohne
 Handshake, bei der jede Anfrage ihre Version in `params._meta` trägt und es
 `server/discover` gibt. Methoden: `initialize`, `server/discover`, `ping`,
-`tools/list`, `tools/call`. Werkzeuge aus `werkzeuge.fuer_agenten()` (20,
-ohne `fall_lesen` und `akte_speichern`), jedes mit `inputSchema` und
+`tools/list`, `tools/call`. Werkzeuge aus `werkzeuge.fuer_agenten()` (21 seit
+`beispiel_laden`, ohne `fall_lesen` und `akte_speichern`), jedes mit `inputSchema` und
 `annotations.readOnlyHint`. Schreibende Werkzeuge tragen im Schema den
 Parameter `bestaetigt`; ohne `true` liefert der Aufruf nur die Rückfrage.
 Fehler: unbekanntes Werkzeug oder unbekannte Methode als Protokollfehler

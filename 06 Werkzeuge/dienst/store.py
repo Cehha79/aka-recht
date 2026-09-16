@@ -68,6 +68,7 @@ def zentrale_standard():
             'sicherung': {'ziel': str(Path.home() / 'Desktop/AKA Recht Sicherungen'),
                           'zweites_ziel': str(Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs/AKA Recht Sicherungen') if (Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs').is_dir() else '',   # iCloud Drive nur, wo es eines gibt
                           'letzte': None},
+            'einstellungen': {'feiertagsland': 'BW'},
             'verbindungen': {}}
 
 def zentrale_pfad(): return ROOT / 'zentrale.json'
@@ -76,7 +77,11 @@ def lade_zentrale():
     p = zentrale_pfad()
     if not p.exists():
         atomar(p, json.dumps(zentrale_standard(), ensure_ascii=False, indent=2) + '\n')
-    return json.loads(p.read_text('utf-8'))
+    z = json.loads(p.read_text('utf-8'))
+    z.setdefault('einstellungen', {}).setdefault('feiertagsland', 'BW')   # ältere zentrale.json
+    return z
+
+def feiertagsland(): return lade_zentrale()['einstellungen'].get('feiertagsland') or 'BW'
 
 def speichere_zentrale(z):
     atomar(zentrale_pfad(), json.dumps(z, ensure_ascii=False, indent=2) + '\n')
@@ -145,6 +150,33 @@ def neuer_fall(titel, bereich='Allgemein', rolle='', ziel=''):
         z['faelle'].append({'id': kennung, 'ordner': rel}); speichere_zentrale(z)
     journal_anhaengen(kennung, 'Arbeit', 'Fall angelegt', f'Fall {kennung} „{titel}“ angelegt. Bereich: {bereich or "Allgemein"}.')
     return {'id': kennung, 'ordner': rel}
+
+BEISPIEL = '05 Vorlagen/Beispielakte'
+
+def beispiel_laden():
+    """Kopiert die mitgelieferte Beispielakte als neuen Fall mit der nächsten freien Kennung."""
+    quelle = sicher(BEISPIEL)
+    if not (quelle / 'akte.json').exists(): raise ValueError('Keine Beispielakte unter ' + BEISPIEL + '.')
+    with sperre():
+        z = lade_zentrale()
+        nummern = [int(f['id'].split('-')[1]) for f in z['faelle']]
+        ordner_faelle = sicher('02 Fälle'); ordner_faelle.mkdir(exist_ok=True)
+        nummern += [int(m[1]) for p in ordner_faelle.iterdir() if (m := re.match(r'R-(\d+)', p.name))]
+        kennung = 'R-' + str(max(nummern, default=0) + 1).zfill(4)
+        akte = json.loads((quelle / 'akte.json').read_text('utf-8'))
+        titel = akte['fall'].get('titel') or 'Beispielfall'
+        name = re.sub(r'[^\w äöüÄÖÜß.-]', '', titel).strip(' .')[:65] or 'Beispiel'
+        rel = f'02 Fälle/{kennung} {name}'; ziel_ordner = sicher(rel)
+        shutil.copytree(quelle, ziel_ordner, ignore=shutil.ignore_patterns('.DS_Store'))
+        for g in GRUPPEN: (ziel_ordner / g).mkdir(exist_ok=True)
+        akte['fall']['id'] = kennung; akte['fall']['angelegt'] = datetime.now().date().isoformat()
+        fehler, _ = akte_schema.validate(akte)
+        if fehler: raise ValueError('Beispielakte fehlerhaft: ' + '; '.join(fehler[:3]))
+        atomar(ziel_ordner / 'akte.json', json.dumps(akte, ensure_ascii=False, indent=2) + '\n')
+        if not (ziel_ordner / 'JOURNAL.md').exists(): atomar(ziel_ordner / 'JOURNAL.md', '# Journal\n\n')
+        z['faelle'].append({'id': kennung, 'ordner': rel}); speichere_zentrale(z)
+    journal_anhaengen(kennung, 'Arbeit', 'Beispielfall geladen', f'Beispielakte als {kennung} übernommen. Erfundener Fall zum Ausprobieren; jederzeit löschbar.')
+    return {'id': kennung, 'ordner': rel, 'titel': titel}
 
 def fall_status(fall_id, status):
     akte, rev = lese_akte(fall_id)

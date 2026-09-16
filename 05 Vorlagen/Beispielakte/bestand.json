@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "dateien": {
+    "D0001": {
+      "pfad": "02 Grundlagen/2021-02-15_Arbeitsvertrag.txt",
+      "sha256_erst": "494a4bf79b1de4420402f787e00ec73e591993dbdac0aae7f58375e41a9dd6e0",
+      "sha256": "494a4bf79b1de4420402f787e00ec73e591993dbdac0aae7f58375e41a9dd6e0",
+      "alt": "",
+      "erfasst": "2026-09-16"
+    },
+    "D0002": {
+      "pfad": "03 Schriftverkehr/Von Muster Logistik/2026-09-02_Kuendigung.txt",
+      "sha256_erst": "f0817e076444ccad9f028747229d3d5c894317cb505e288460661d25d05ee2aa",
+      "sha256": "f0817e076444ccad9f028747229d3d5c894317cb505e288460661d25d05ee2aa",
+      "alt": "",
+      "erfasst": "2026-09-16"
+    },
+    "D0003": {
+      "pfad": "05 Beweise/2026-09-04_Vermerk_Zugang_Kuendigung.txt",
+      "sha256_erst": "044f543af1fe2f722250bfa962ee1f0a4e4be44b31b580fd23b056b4f62637a9",
+      "sha256": "044f543af1fe2f722250bfa962ee1f0a4e4be44b31b580fd23b056b4f62637a9",
+      "alt": "",
+      "erfasst": "2026-09-16"
+    },
+    "D0004": {
+      "pfad": "06 Entwürfe/Kuendigungsschutzklage_ENTWURF.md",
+      "sha256_erst": "053eacca3b334a665881eb08b95b6045dcf07063e72a7c11f720b65297cd9c8c",
+      "sha256": "053eacca3b334a665881eb08b95b6045dcf07063e72a7c11f720b65297cd9c8c",
+      "alt": "",
+      "erfasst": "2026-09-16"
+    }
+  },
+  "verschiebungen": []
+}

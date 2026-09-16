@@ -114,14 +114,19 @@ def dokumente_suchen(fall, frage):
     akte, _ = store.lese_akte(fall)
     return {'treffer': dokumente.suche(fall, akte, frage)}
 
-@werkzeug('frist_berechnen', 'Fristende nach §§ 187, 188, 193 BGB mit Feiertagen Baden-Württemberg berechnen. Liefert die Rechnung als Text. Entscheidet nicht, welche Frist gilt.',
+@werkzeug('frist_berechnen', 'Fristende nach §§ 187, 188, 193 BGB mit den landesweiten Feiertagen eines Bundeslands berechnen (Standard: Einstellung der Mappe). Liefert die Rechnung als Text. Entscheidet nicht, welche Frist gilt.',
           {'start': {'type': 'string', 'description': 'Ereignistag (Zugang) als JJJJ-MM-TT'},
            'menge': {'type': 'integer'}, 'einheit': {'type': 'string', 'enum': ['tage', 'wochen', 'monate', 'jahre']},
            'ereignisfrist': {'type': 'boolean', 'description': 'true: Ereignistag zählt nicht mit (§ 187 Abs. 1 BGB), Regelfall'},
-           'werktagsregel': {'type': 'boolean', 'description': 'true: Ende auf Sa, So, Feiertag verschiebt sich auf den nächsten Werktag (§ 193 BGB)'}},
+           'werktagsregel': {'type': 'boolean', 'description': 'true: Ende auf Sa, So, Feiertag verschiebt sich auf den nächsten Werktag (§ 193 BGB)'},
+           'land': {'type': 'string', 'enum': list(fristen.LAENDER), 'description': 'Bundesland des Leistungsorts (§ 193 BGB), Kürzel wie BW, BY, NW; leer: Einstellung der Mappe'}},
           pflicht=['start', 'menge', 'einheit'])
-def frist_berechnen(start, menge, einheit, ereignisfrist=True, werktagsregel=True):
-    return fristen.berechne(start, menge, einheit, ereignisfrist, werktagsregel)
+def frist_berechnen(start, menge, einheit, ereignisfrist=True, werktagsregel=True, land=''):
+    return fristen.berechne(start, menge, einheit, ereignisfrist, werktagsregel, (land or store.feiertagsland()).upper())
+
+@werkzeug('beispiel_laden', 'Die mitgelieferte Beispielakte (erfundener Fall) als neuen Fall anlegen, zum Ausprobieren. Der Fall bekommt die nächste freie Kennung.', {}, schreibend=True)
+def beispiel_laden():
+    return store.beispiel_laden()
 
 @werkzeug('bestand_pruefen', 'Prüfsummen aller registrierten Dateien eines Falls mit dem ersten Stand vergleichen.',
           {'fall': {'type': 'string'}}, pflicht=['fall'])
