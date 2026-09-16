@@ -1,0 +1,232 @@
+{
+  "schema": 1,
+  "fall": {
+    "id": "R-9001",
+    "titel": "Beispiel: Bußgeldbescheid Geschwindigkeit",
+    "untertitel": "Künstlicher Fall zur Prüfung des Datenmodells. Keine echten Personen.",
+    "bereich": "Verkehr und Bußgeld",
+    "themen": [
+      "Geschwindigkeit",
+      "Einspruch",
+      "Fahrverbot"
+    ],
+    "rolle": "Betroffener",
+    "ziel": "Einspruch prüfen, Fahrverbot abwenden, Messung anzweifeln.",
+    "rechtsordnung": "DE",
+    "status": "offen",
+    "angelegt": "2026-09-16",
+    "angeheftet": [
+      "D0002"
+    ]
+  },
+  "beteiligte": [
+    {
+      "id": "P01",
+      "name": "Max Muster",
+      "rolle": "Ich",
+      "anschrift": "",
+      "kontakt": "",
+      "aktenzeichen": ""
+    },
+    {
+      "id": "P02",
+      "name": "Regierungspräsidium Beispielstadt, Bußgeldstelle",
+      "rolle": "Behörde",
+      "anschrift": "Musterweg 1, 70000 Beispielstadt",
+      "kontakt": "",
+      "aktenzeichen": "BG-2026-000123"
+    },
+    {
+      "id": "P03",
+      "name": "Amtsgericht Beispielstadt",
+      "rolle": "Gericht",
+      "anschrift": "",
+      "kontakt": "",
+      "aktenzeichen": ""
+    }
+  ],
+  "dokumente": {
+    "D0001": {
+      "pfad": "01 Eingang/Gelesen/2026-08-20_Anhoerungsbogen.pdf",
+      "titel": "Anhörungsbogen",
+      "datum": "2026-08-20",
+      "art": "Bescheid",
+      "stand": "Zugegangen",
+      "themen": [
+        "Geschwindigkeit"
+      ],
+      "anlage": "",
+      "personen": [
+        "P02"
+      ],
+      "verweise": [
+        "D0002"
+      ],
+      "notiz": "Zugang laut Umschlagfoto D0004."
+    },
+    "D0002": {
+      "pfad": "02 Grundlagen/2026-09-02_Bussgeldbescheid.pdf",
+      "titel": "Bußgeldbescheid",
+      "datum": "2026-09-02",
+      "art": "Bescheid",
+      "stand": "Zugegangen",
+      "themen": [
+        "Geschwindigkeit",
+        "Fahrverbot"
+      ],
+      "anlage": "B 1",
+      "personen": [
+        "P02"
+      ],
+      "verweise": [
+        "D0001",
+        "D0003"
+      ],
+      "notiz": "Zustellung laut Umschlag am 05.09.2026, siehe D0004."
+    },
+    "D0003": {
+      "pfad": "06 Entwürfe/Einspruch_ENTWURF.txt",
+      "titel": "Einspruch gegen den Bußgeldbescheid",
+      "datum": "2026-09-10",
+      "art": "Schreiben",
+      "stand": "Entwurf",
+      "themen": [
+        "Einspruch"
+      ],
+      "anlage": "",
+      "personen": [
+        "P02"
+      ],
+      "verweise": [
+        "D0002"
+      ],
+      "notiz": "Fassung 2, noch nicht versandt."
+    },
+    "D0004": {
+      "pfad": "05 Beweise/2026-09-05_Umschlag_Zustellung.jpg",
+      "titel": "Umschlag mit Zustelldatum",
+      "datum": "2026-09-05",
+      "art": "Foto",
+      "stand": "Original",
+      "themen": [
+        "Einspruch"
+      ],
+      "anlage": "B 2",
+      "personen": [],
+      "verweise": [
+        "D0002"
+      ],
+      "notiz": "Vermerk des Zustellers: 05.09.2026."
+    }
+  },
+  "verfahren": [
+    {
+      "id": "V01",
+      "art": "Bußgeldverfahren",
+      "stelle": "P02",
+      "aktenzeichen": "BG-2026-000123",
+      "stand": "Bescheid zugestellt, Einspruch in Vorbereitung",
+      "ordner": "04 Verfahren/01 Bußgeld"
+    }
+  ],
+  "ereignisse": [
+    {
+      "id": "E01",
+      "datum": "2026-08-20",
+      "titel": "Anhörungsbogen zugegangen",
+      "art": "Zugang",
+      "quelle": "D0001",
+      "detail": "Eigene Angabe, Umschlag nicht aufgehoben."
+    },
+    {
+      "id": "E02",
+      "datum": "2026-09-05",
+      "titel": "Bußgeldbescheid zugestellt",
+      "art": "Zugang",
+      "quelle": "D0004",
+      "detail": "Zustelldatum auf dem Umschlag vermerkt."
+    }
+  ],
+  "fristen": [
+    {
+      "id": "F01",
+      "datum": "2026-09-21",
+      "titel": "Einspruchsfrist Bußgeldbescheid",
+      "art": "gesetzlich",
+      "ausloeser": "Zustellung am 2026-09-05 (E02)",
+      "rechtsgrundlage": "§ 67 Abs. 1 OWiG: zwei Wochen nach Zustellung; §§ 187 Abs. 1, 188 Abs. 2 BGB",
+      "berechnung": "Ereignis am Samstag, 05.09.2026. Der Ereignistag wird nicht mitgerechnet (§ 187 Abs. 1 BGB). Frist von 2 Wochen endet mit Ablauf des Tages der letzten Woche oder des letzten Monats, der dem Ereignistag nach Benennung oder Zahl entspricht (§ 188 Abs. 2 BGB): Samstag, 19.09.2026. Das rechnerische Ende fällt auf Samstag. Es gilt der nächste Werktag (§ 193 BGB): Montag, 21.09.2026. Ob § 193 BGB auf diese Frist anwendbar ist, fachlich prüfen. [QUELLE: § 43 Abs. 2 StPO über § 46 OWiG regelt die Verschiebung für Bußgeldfristen; am Volltext prüfen.]",
+      "pruefstatus": "offen",
+      "quelle": "D0002"
+    },
+    {
+      "id": "F02",
+      "datum": "2026-10-01",
+      "titel": "Rückfrage Bußgeldstelle zur Messakte",
+      "art": "selbst gesetzt",
+      "ausloeser": "Eigenes Schreiben, geplant",
+      "rechtsgrundlage": "Keine gesetzliche Frist, eigene Fristsetzung",
+      "berechnung": "",
+      "pruefstatus": "offen",
+      "quelle": "D0003"
+    }
+  ],
+  "aufgaben": [
+    {
+      "id": "A01",
+      "titel": "Zustelldatum unabhängig belegen",
+      "detail": "Umschlagfoto D0004 reicht als eigenes Beweisstück; Zustellurkunde bei der Behörde anfragen.",
+      "faellig": "2026-09-17",
+      "erledigt": false,
+      "quelle": "D0004"
+    },
+    {
+      "id": "A02",
+      "titel": "Einspruch Fassung 3 fertigstellen",
+      "detail": "Akteneinsicht beantragen, Messprotokoll anfordern.",
+      "faellig": "2026-09-18",
+      "erledigt": false,
+      "quelle": "D0003"
+    }
+  ],
+  "entwuerfe": [
+    {
+      "id": "W01",
+      "titel": "Einspruch gegen den Bußgeldbescheid",
+      "datei": "06 Entwürfe/Einspruch_ENTWURF.txt",
+      "fassung": 2,
+      "status": "in Arbeit",
+      "versandt_als": ""
+    }
+  ],
+  "kosten": [
+    {
+      "datum": "2026-09-02",
+      "posten": "Bußgeld laut Bescheid",
+      "betrag": 120.0,
+      "beleg": "D0002"
+    },
+    {
+      "datum": "2026-09-02",
+      "posten": "Gebühren und Auslagen laut Bescheid",
+      "betrag": 28.5,
+      "beleg": "D0002"
+    }
+  ],
+  "notizen": [
+    {
+      "id": "N01",
+      "titel": "Messgerät",
+      "text": "Typ laut Bescheid: [PRÜFEN: Gerätetyp und Eichung im Messprotokoll].",
+      "datum": "2026-09-16"
+    }
+  ],
+  "quellen": [
+    {
+      "titel": "§ 67 OWiG, Einspruch",
+      "url": "https://www.gesetze-im-internet.de/owig_1968/__67.html",
+      "geprueft": "2026-09-16",
+      "verwendung": "Zweiwochenfrist ab Zustellung."
+    }
+  ]
+}

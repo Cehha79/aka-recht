@@ -1,0 +1,31 @@
+Interne Hinweise (nicht im Sendetext): Rechtsbehelfsbelehrung des Bescheids lesen. Sie nennt Rechtsbehelf, Stelle und Frist.
+Widerspruchsfrist meist ein Monat ab Bekanntgabe, § 70 Abs. 1 VwGO, bei Sozialrecht § 84 SGG [QUELLE: prüfen, ob in diesem Land und Bereich ein Widerspruchsverfahren stattfindet; sonst Klage].
+Bekanntgabe belegen (Umschlag, Datum), Frist mit dem Rechner prüfen und eintragen.
+---
+Von: 【Vorname Nachname, Anschrift】
+An: 【Behörde, Anschrift】
+Datum: 【TT.MM.JJJJ】
+Betreff: Widerspruch gegen den Bescheid vom 【TT.MM.JJJJ】, Aktenzeichen 【…】
+
+Sehr geehrte Damen und Herren,
+
+gegen den oben genannten Bescheid, mir bekannt gegeben am 【TT.MM.JJJJ】, lege ich hiermit
+
+**Widerspruch**
+
+ein.
+
+Begründung:
+
+【Sachverhalt mit Daten und Belegen.】
+
+【Warum der Bescheid rechtswidrig oder unzweckmäßig ist, mit Rechtsgrundlage: [QUELLE: § … Abs. … Gesetz].】
+
+Ich beantrage, den Bescheid aufzuheben 【oder: wie folgt zu ändern: …】. Ferner beantrage ich Akteneinsicht [QUELLE: § 29 VwVfG oder § 25 SGB X, je nach Bereich].
+
+Mit freundlichen Grüßen
+
+【Vorname Nachname】
+
+Anlagen:
+- 【Bescheid in Kopie】

@@ -1,0 +1,12 @@
+# AKA Recht: eigene Daten bleiben außerhalb von git
+.DS_Store
+__pycache__/
+*.pyc
+zentrale.json
+.claude/settings.local.json
+01 Eingang/*
+02 Fälle/*
+03 Verträge und Vorsorge/*
+!01 Eingang/.gitkeep
+!02 Fälle/.gitkeep
+!03 Verträge und Vorsorge/.gitkeep

@@ -1,0 +1,8 @@
+# AKA Recht für Codex: MCP-Server der Aktenmappe (gilt nur in diesem Projekt,
+# Codex fragt beim ersten Öffnen, ob es dem Projektordner vertraut).
+# Quelle der Werkzeuge: 06 Werkzeuge/dienst/mcp_server.py. Schreibende
+# Werkzeuge laufen nur mit bestaetigt=true nach Rückfrage beim Nutzer.
+[mcp_servers.aka-recht]
+command = "python3"
+args = ["06 Werkzeuge/dienst/mcp_server.py"]
+cwd = "."

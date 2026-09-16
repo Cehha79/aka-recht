@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datenmodell · Recht DOKU</title>
+<style>
+:root{--bg:#eef2f6;--paper:#fbfcfe;--text:#172033;--muted:#5b6472;--line:#cfd8e6;--soft:#e7edf5;--accent:#2f6fed;--code:#dde6f2;--nav:#1d2b44;--navtext:#dbe4f2}
+*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;display:grid;grid-template-columns:260px minmax(0,1fr)}
+aside{background:var(--nav);color:var(--navtext);overflow-y:auto;min-height:0;padding:26px 16px}
+aside .marke{color:#fff;font-weight:700;font-size:15px;letter-spacing:.06em;padding:0 10px 18px}
+aside .marke small{display:block;color:#9fb0c9;font-weight:400;letter-spacing:0;margin-top:4px}
+aside .titel{font-size:11px;letter-spacing:.14em;color:#9fb0c9;padding:14px 10px 6px;text-transform:uppercase}
+aside a{display:block;color:var(--navtext);text-decoration:none;padding:8px 10px;border-radius:6px;font-size:14px}
+aside a:hover{background:#ffffff14}aside a.aktiv{background:#e2e9f6;color:#1d2b44;font-weight:600}
+aside a.abschnitt{font-size:13px;padding:5px 10px 5px 18px;color:#b9c6da}
+main{overflow-y:auto;min-height:0;padding:32px 40px 60px}
+article{max-width:960px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:34px 38px;box-shadow:0 18px 45px rgba(23,32,51,.08)}
+.stamp{color:var(--muted);font-size:13px;margin:0 0 22px}
+h1{font-size:34px;margin:0 0 8px}h2{margin-top:34px;border-top:1px solid var(--line);padding-top:22px;scroll-margin-top:12px}h3{margin-top:22px}
+p,li{font-size:16px}blockquote{background:var(--soft);border-left:5px solid var(--accent);margin:16px 0;padding:12px 18px;border-radius:8px}
+table{width:100%;border-collapse:separate;border-spacing:0;background:#f8fafd;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:14px 0}
+th,td{border-bottom:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top;font-size:15px}th{background:var(--soft)}tr:last-child td{border-bottom:0}
+code{background:var(--code);padding:2px 5px;border-radius:5px;font-size:.92em}pre{background:#eef3f8;border:1px solid var(--line);padding:16px;border-radius:10px;overflow:auto;line-height:1.45}pre code{background:transparent;padding:0}
+ul,ol{padding-left:26px}li{margin:4px 0}
+li.offen,li.erledigt,li.arbeit{list-style:none;margin-left:-22px;padding-left:0}
+.kasten{display:inline-block;width:20px;height:20px;line-height:18px;text-align:center;border:1px solid #8a97ab;border-radius:5px;margin-right:8px;font-size:12px;font-family:ui-monospace,Menlo,monospace;background:#fff}
+li.erledigt .kasten{background:#2f8f5b;color:#fff;border-color:#2f8f5b}li.arbeit .kasten{background:#e7b23c;color:#fff;border-color:#e7b23c}li.erledigt{color:var(--muted)}
+hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+@media(max-width:760px){body{grid-template-columns:170px minmax(0,1fr)}main{padding:18px 16px 40px}article{padding:22px 18px}h1{font-size:26px}aside a{font-size:13px}}
+@media print{html,body{overflow:visible;display:block}aside{display:none}main{overflow:visible;padding:0}article{border:0;box-shadow:none}}
+</style>
+</head>
+<body>
+<aside aria-label="Navigation">
+<div class="marke">RECHT<small>DOKU</small></div>
+<div class="titel">Seiten</div>
+<a href="STRUKTUR.html" class="">STRUKTUR</a><a href="REGELN.html" class="">REGELN</a><a href="Datenmodell.html" class="aktiv">Datenmodell</a>
+<div class="titel">Abschnitte</div>
+<a class="abschnitt" href="#aufgabe-dieser-datei">Aufgabe dieser Datei</a><a class="abschnitt" href="#grundsätze">Grundsätze</a><a class="abschnitt" href="#fall">fall</a><a class="abschnitt" href="#beteiligte">beteiligte</a><a class="abschnitt" href="#dokumente">dokumente</a><a class="abschnitt" href="#verfahren">verfahren</a><a class="abschnitt" href="#ereignisse">ereignisse</a><a class="abschnitt" href="#fristen">fristen</a><a class="abschnitt" href="#aufgaben">aufgaben</a><a class="abschnitt" href="#entwuerfe">entwuerfe</a><a class="abschnitt" href="#kosten-notizen-quellen">kosten, notizen, quellen</a><a class="abschnitt" href="#bestandjson">bestand.json</a><a class="abschnitt" href="#journalmd">JOURNAL.md</a><a class="abschnitt" href="#werkzeuge">Werkzeuge</a>
+</aside>
+<main>
+<article>
+<div class="stamp">aus md/Datenmodell.md erzeugt am 16.09.2026 19:12</div>
+<h1>Datenmodell</h1>
+<p><em>Stand: 16.09.2026</em></p>
+<h2 id="aufgabe-dieser-datei">Aufgabe dieser Datei</h2>
+<p>Feldgenaue Beschreibung von <code>akte.json</code>, <code>bestand.json</code> und <code>JOURNAL.md</code> (Schema-Version 1). STRUKTUR.md gibt den Überblick, hier stehen die Details. Prüfbar mit <code>python3 "06 Werkzeuge/akte_schema.py" &lt;akte.json&gt;</code>.</p>
+<h2 id="grundsätze">Grundsätze</h2>
+<ul><li>Eine <code>akte.json</code> je Fall, UTF-8, eingerückt, lesbar im Editor.</li><li>Datumsfelder immer <code>JJJJ-MM-TT</code>. Die Oberfläche zeigt <code>TT.MM.JJJJ</code>.</li><li>Kennungen sind stabil und werden nie neu vergeben: D0001 (Dokument), P01 (Beteiligter), V01 (Verfahren), E01 (Ereignis), F01 (Frist), A01 (Aufgabe), W01 (Entwurf), N01 (Notiz). Anlagenkennungen wie <code>K 13</code> oder <code>B 2</code> sind Text im Feld <code>anlage</code> und bleiben, wie sie im Schriftsatz stehen.</li><li>Verweise gehen immer auf Kennungen, nie auf Dateipfade. Ein Verweis auf eine unbekannte Kennung ist ein Fehler.</li><li>Feste Werte (Fehler bei Abweichung) und vorgeschlagene Werte (nur Warnung) sind unten je Feld markiert.</li><li>Marker in Textfeldern: <code>[BELEG: …]</code>, <code>[PRÜFEN: …]</code>, <code>[QUELLE: …]</code>.</li></ul>
+<h2 id="fall">fall</h2>
+<table><thead><tr><th>Feld</th><th>Inhalt</th><th>Regel</th></tr></thead><tbody><tr><td>id</td><td>R-0001</td><td>fest: <code>R-</code> und mindestens vier Ziffern</td></tr><tr><td>titel</td><td>Kurzbezeichnung</td><td>Pflicht</td></tr><tr><td>untertitel</td><td>Beteiligte oder Zusatz</td><td>frei</td></tr><tr><td>bereich</td><td>Hauptbereich</td><td>vorgeschlagen: die neun Bereiche aus STRUKTUR.md plus Allgemein</td></tr><tr><td>themen</td><td>Liste von Stichworten</td><td>frei, wird aus den Dokumenten gesammelt</td></tr><tr><td>rolle</td><td>eigene Rolle, z. B. Arbeitnehmer, Betroffener, Mieter</td><td>Warnung wenn leer</td></tr><tr><td>ziel</td><td>was erreicht werden soll</td><td>Warnung wenn leer</td></tr><tr><td>rechtsordnung</td><td>DE</td><td>frei, bei Auslandsbezug Land und Sprache</td></tr><tr><td>status</td><td>offen, ruhend, abgeschlossen</td><td>fest</td></tr><tr><td>angelegt</td><td>Datum</td><td>Datum</td></tr><tr><td>angeheftet</td><td>Liste von D-Kennungen</td><td>Verweise</td></tr></tbody></table>
+<h2 id="beteiligte">beteiligte</h2>
+<table><thead><tr><th>Feld</th><th>Inhalt</th><th>Regel</th></tr></thead><tbody><tr><td>id</td><td>P01</td><td>fest</td></tr><tr><td>name</td><td>Name oder Stelle</td><td>Pflicht</td></tr><tr><td>rolle</td><td>Ich, Gegner, Gericht, Behörde, Anwalt, Zeuge, Stelle, Versicherung, Sonstige</td><td>vorgeschlagen</td></tr><tr><td>anschrift, kontakt</td><td>Text</td><td>frei</td></tr><tr><td>aktenzeichen</td><td>Zeichen dieser Stelle</td><td>frei</td></tr></tbody></table>
+<h2 id="dokumente">dokumente</h2>
+<p>Objekt mit D-Kennung als Schlüssel. Jede Datei im Bestand hat einen Eintrag, Ordnungsangaben sind optional.</p>
+<table><thead><tr><th>Feld</th><th>Inhalt</th><th>Regel</th></tr></thead><tbody><tr><td>pfad</td><td>relativ zum Fallordner</td><td>Pflicht, kein <code>/</code> am Anfang, kein <code>..</code></td></tr><tr><td>titel</td><td>Anzeigetitel</td><td>frei, sonst Dateiname</td></tr><tr><td>datum</td><td>Dokumentdatum</td><td>Datum; ist kein Zugangsdatum</td></tr><tr><td>art</td><td>Schreiben, E-Mail, Foto, Vertrag, Bescheid, Urteil, Entwurf, Beleg, Übersicht, Gesetz, Sonstiges</td><td>vorgeschlagen</td></tr><tr><td>stand</td><td>Original, Entwurf, Versandt, Zugegangen, Historisch, Vermerk</td><td>fest</td></tr><tr><td>themen</td><td>Liste</td><td>frei</td></tr><tr><td>anlage</td><td>K 8, B 1</td><td>frei</td></tr><tr><td>personen</td><td>Liste von P-Kennungen</td><td>Verweise</td></tr><tr><td>verweise</td><td>Liste von D-Kennungen</td><td>Verweise</td></tr><tr><td>notiz</td><td>Ordnungsnotiz</td><td>frei</td></tr></tbody></table>
+<h2 id="verfahren">verfahren</h2>
+<table><thead><tr><th>Feld</th><th>Inhalt</th><th>Regel</th></tr></thead><tbody><tr><td>id</td><td>V01</td><td>fest</td></tr><tr><td>art</td><td>Arbeitsgericht, Bußgeldverfahren, Widerspruch, Mahnverfahren, Strafanzeige …</td><td>Pflicht, frei</td></tr><tr><td>stelle</td><td>P-Kennung des Gerichts oder der Behörde</td><td>Verweis</td></tr><tr><td>aktenzeichen</td><td>Zeichen der Stelle</td><td>frei</td></tr><tr><td>stand</td><td>Verfahrensstand in einem Satz</td><td>frei</td></tr><tr><td>ordner</td><td>Unterordner in 04 Verfahren</td><td>frei</td></tr></tbody></table>
+<h2 id="ereignisse">ereignisse</h2>
+<table><thead><tr><th>Feld</th><th>Inhalt</th><th>Regel</th></tr></thead><tbody><tr><td>id</td><td>E01</td><td>fest</td></tr><tr><td>datum</td><td>Datum</td><td>Pflicht</td></tr><tr><td>titel</td><td>Kurztitel</td><td>Pflicht</td></tr><tr><td>art</td><td>Zugang, Versand, Termin, Gespräch, Vorfall, Entscheidung, Vermerk, Arbeitsstand</td><td>vorgeschlagen</td></tr><tr><td>quelle</td><td>D-Kennung</td><td>Verweis</td></tr><tr><td>detail</td><td>Text</td><td>frei</td></tr></tbody></table>
+<h2 id="fristen">fristen</h2>
+<table><thead><tr><th>Feld</th><th>Inhalt</th><th>Regel</th></tr></thead><tbody><tr><td>id</td><td>F01</td><td>fest</td></tr><tr><td>datum</td><td>Fristende oder Termin</td><td>Pflicht</td></tr><tr><td>titel</td><td>Kurztitel</td><td>Pflicht</td></tr><tr><td>art</td><td>gesetzlich, selbst gesetzt, von Gegenseite gesetzt, vorsorglich, Termin</td><td>fest</td></tr><tr><td>ausloeser</td><td>Ereignis und Zugang, gern mit E-Kennung</td><td>Pflicht bei bestätigt</td></tr><tr><td>rechtsgrundlage</td><td>Norm mit Absatz und Gesetz</td><td>Pflicht bei bestätigt</td></tr><tr><td>berechnung</td><td>Rechnung als Text, sichtbar</td><td>Pflicht bei bestätigt</td></tr><tr><td>pruefstatus</td><td>offen, bestätigt, abgelaufen, erledigt</td><td>fest</td></tr><tr><td>quelle</td><td>D-Kennung</td><td>Verweis, Pflicht bei bestätigt</td></tr></tbody></table>
+<p>Regel: <code>bestätigt</code> nur mit Auslöser, Rechtsgrundlage, Berechnung und Quelle. Bei <code>art</code> Termin genügt ein Datum mit Quelle. Bei Kalenderfristen aus einem Schreiben (von Gegenseite oder selbst gesetzt) ist das Schreiben die Quelle, die Rechtsgrundlage lautet „Datum laut Schreiben“. <code>abgelaufen</code> ist vorbei, bleibt aber sichtbar (etwa ein Zahlungsziel für die Verzugsfrage). <code>erledigt</code> bedeutet: gewahrt oder gegenstandslos, mit Begründung in <code>berechnung</code> oder im Journal.</p>
+<h2 id="aufgaben">aufgaben</h2>
+<table><thead><tr><th>Feld</th><th>Inhalt</th><th>Regel</th></tr></thead><tbody><tr><td>id</td><td>A01</td><td>fest</td></tr><tr><td>titel</td><td>Kurztitel</td><td>Pflicht</td></tr><tr><td>detail</td><td>Text</td><td>frei</td></tr><tr><td>faellig</td><td>Datum</td><td>Datum, leer erlaubt</td></tr><tr><td>erledigt</td><td>true oder false</td><td>fest</td></tr><tr><td>quelle</td><td>D-Kennung</td><td>Verweis</td></tr></tbody></table>
+<h2 id="entwuerfe">entwuerfe</h2>
+<table><thead><tr><th>Feld</th><th>Inhalt</th><th>Regel</th></tr></thead><tbody><tr><td>id</td><td>W01</td><td>fest</td></tr><tr><td>titel</td><td>Kurztitel</td><td>Pflicht</td></tr><tr><td>datei</td><td>Pfad der Quelle (md, txt, html) relativ zum Fallordner</td><td>frei; Ausnahme von der Kennungsregel, weil die Datei beim Erfassen oft noch keine D-Kennung hat</td></tr><tr><td>fassung</td><td>1, 2, 3 …</td><td>ganze Zahl ab 1</td></tr><tr><td>status</td><td>in Arbeit, geprüft, versandt, verworfen</td><td>fest</td></tr><tr><td>versandt_als</td><td>D-Kennung des Versandbelegs</td><td>Pflicht bei versandt</td></tr></tbody></table>
+<h2 id="kosten-notizen-quellen">kosten, notizen, quellen</h2>
+<table><thead><tr><th>Block</th><th>Felder</th></tr></thead><tbody><tr><td>kosten</td><td>datum, posten, betrag (Zahl in Euro), beleg (D-Kennung)</td></tr><tr><td>notizen</td><td>id N01, titel, text, datum</td></tr><tr><td>quellen</td><td>titel, url, geprueft (Datum), verwendung</td></tr></tbody></table>
+<p><code>quellen</code> sind fallbezogene Rechtsquellen mit Abrufdatum. Der gemeinsame Zugangskatalog bleibt in <code>04 Rechtsquellen/Quellen.md</code>.</p>
+<h2 id="bestandjson">bestand.json</h2>
+<p>Technische Datei, schreibt nur der Dienst.</p>
+<pre><code>{
+  &quot;schema&quot;: 1,
+  &quot;dateien&quot;: {
+    &quot;D0038&quot;: {&quot;pfad&quot;: &quot;04 Verfahren/01 Teilkündigung/…JPG&quot;, &quot;sha256_erst&quot;: &quot;…&quot;, &quot;sha256&quot;: &quot;…&quot;, &quot;alt&quot;: &quot;alter Pfad&quot;, &quot;erfasst&quot;: &quot;2026-09-10&quot;}
+  },
+  &quot;verschiebungen&quot;: [
+    {&quot;id&quot;: &quot;D0038&quot;, &quot;von&quot;: &quot;01 Eingang/…&quot;, &quot;nach&quot;: &quot;04 Verfahren/…&quot;, &quot;zeit&quot;: &quot;2026-09-22T10:00:00&quot;, &quot;weg&quot;: &quot;Oberfläche&quot;}
+  ]
+}</code></pre>
+<p><code>sha256_erst</code> ist die Prüfsumme beim ersten Einlesen und bleibt. <code>sha256</code> ist der zuletzt gesehene Stand. Weichen beide ab, meldet die Bestandsprüfung eine Änderung. Beim Umzug werden Dateien über <code>sha256_erst</code> wiedergefunden, auch wenn ihr Pfad sich geändert hat.</p>
+<h2 id="journalmd">JOURNAL.md</h2>
+<p>Markdown, nur anhängen, neueste Einträge unten. Aufgaben und Fristen gehören nicht ins Journal.</p>
+<pre><code>## JJJJ-MM-TT · Art · Kurztitel
+Text mit Bezug auf Kennungen wie D0012, F01, A03.</code></pre>
+<p>Arten: Eingang, Versand, Entscheidung, Gespräch, Termin, Arbeit, Vermerk. Die Oberfläche liest die Überschriftzeile und kann danach filtern.</p>
+<h2 id="werkzeuge">Werkzeuge</h2>
+<table><thead><tr><th>Werkzeug</th><th>Aufgabe</th></tr></thead><tbody><tr><td><code>06 Werkzeuge/dienst/cli.py</code></td><td>alle Werkzeuge ohne laufenden Dienst, für Claude und Skripte</td></tr><tr><td><code>06 Werkzeuge/akte_schema.py</code></td><td>leere Akte erzeugen, Akte prüfen (Fehler, Warnungen); der Dienst ruft <code>validate()</code> vor jedem Speichern</td></tr><tr><td><code>05 Vorlagen/Fallvorlage/</code></td><td>Ordner 01 bis 08, leere akte.json, bestand.json, JOURNAL.md</td></tr><tr><td><code>05 Vorlagen/Beispielakte/akte.json</code></td><td>künstlicher Bußgeldfall, alle Blöcke gefüllt, Prüfung ohne Fehler</td></tr></tbody></table>
+</article>
+</main>
+</body>
+</html>

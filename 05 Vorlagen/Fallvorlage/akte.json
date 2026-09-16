@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "fall": {
+    "id": "",
+    "titel": "",
+    "untertitel": "",
+    "bereich": "Allgemein",
+    "themen": [],
+    "rolle": "",
+    "ziel": "",
+    "rechtsordnung": "DE",
+    "status": "offen",
+    "angelegt": "",
+    "angeheftet": []
+  },
+  "beteiligte": [],
+  "dokumente": {},
+  "verfahren": [],
+  "ereignisse": [],
+  "fristen": [],
+  "aufgaben": [],
+  "entwuerfe": [],
+  "kosten": [],
+  "notizen": [],
+  "quellen": []
+}

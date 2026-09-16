@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "aka-recht": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["06 Werkzeuge/dienst/mcp_server.py"]
+    }
+  }
+}

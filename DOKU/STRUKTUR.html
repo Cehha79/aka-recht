@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STRUKTUR · Recht DOKU</title>
+<style>
+:root{--bg:#eef2f6;--paper:#fbfcfe;--text:#172033;--muted:#5b6472;--line:#cfd8e6;--soft:#e7edf5;--accent:#2f6fed;--code:#dde6f2;--nav:#1d2b44;--navtext:#dbe4f2}
+*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;display:grid;grid-template-columns:260px minmax(0,1fr)}
+aside{background:var(--nav);color:var(--navtext);overflow-y:auto;min-height:0;padding:26px 16px}
+aside .marke{color:#fff;font-weight:700;font-size:15px;letter-spacing:.06em;padding:0 10px 18px}
+aside .marke small{display:block;color:#9fb0c9;font-weight:400;letter-spacing:0;margin-top:4px}
+aside .titel{font-size:11px;letter-spacing:.14em;color:#9fb0c9;padding:14px 10px 6px;text-transform:uppercase}
+aside a{display:block;color:var(--navtext);text-decoration:none;padding:8px 10px;border-radius:6px;font-size:14px}
+aside a:hover{background:#ffffff14}aside a.aktiv{background:#e2e9f6;color:#1d2b44;font-weight:600}
+aside a.abschnitt{font-size:13px;padding:5px 10px 5px 18px;color:#b9c6da}
+main{overflow-y:auto;min-height:0;padding:32px 40px 60px}
+article{max-width:960px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:34px 38px;box-shadow:0 18px 45px rgba(23,32,51,.08)}
+.stamp{color:var(--muted);font-size:13px;margin:0 0 22px}
+h1{font-size:34px;margin:0 0 8px}h2{margin-top:34px;border-top:1px solid var(--line);padding-top:22px;scroll-margin-top:12px}h3{margin-top:22px}
+p,li{font-size:16px}blockquote{background:var(--soft);border-left:5px solid var(--accent);margin:16px 0;padding:12px 18px;border-radius:8px}
+table{width:100%;border-collapse:separate;border-spacing:0;background:#f8fafd;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:14px 0}
+th,td{border-bottom:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top;font-size:15px}th{background:var(--soft)}tr:last-child td{border-bottom:0}
+code{background:var(--code);padding:2px 5px;border-radius:5px;font-size:.92em}pre{background:#eef3f8;border:1px solid var(--line);padding:16px;border-radius:10px;overflow:auto;line-height:1.45}pre code{background:transparent;padding:0}
+ul,ol{padding-left:26px}li{margin:4px 0}
+li.offen,li.erledigt,li.arbeit{list-style:none;margin-left:-22px;padding-left:0}
+.kasten{display:inline-block;width:20px;height:20px;line-height:18px;text-align:center;border:1px solid #8a97ab;border-radius:5px;margin-right:8px;font-size:12px;font-family:ui-monospace,Menlo,monospace;background:#fff}
+li.erledigt .kasten{background:#2f8f5b;color:#fff;border-color:#2f8f5b}li.arbeit .kasten{background:#e7b23c;color:#fff;border-color:#e7b23c}li.erledigt{color:var(--muted)}
+hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+@media(max-width:760px){body{grid-template-columns:170px minmax(0,1fr)}main{padding:18px 16px 40px}article{padding:22px 18px}h1{font-size:26px}aside a{font-size:13px}}
+@media print{html,body{overflow:visible;display:block}aside{display:none}main{overflow:visible;padding:0}article{border:0;box-shadow:none}}
+</style>
+</head>
+<body>
+<aside aria-label="Navigation">
+<div class="marke">RECHT<small>DOKU</small></div>
+<div class="titel">Seiten</div>
+<a href="STRUKTUR.html" class="aktiv">STRUKTUR</a><a href="REGELN.html" class="">REGELN</a><a href="Datenmodell.html" class="">Datenmodell</a>
+<div class="titel">Abschnitte</div>
+<a class="abschnitt" href="#aufgabe-dieser-datei">Aufgabe dieser Datei</a><a class="abschnitt" href="#zielbild-in-einem-satz">Zielbild in einem Satz</a><a class="abschnitt" href="#zwei-schichten">Zwei Schichten</a><a class="abschnitt" href="#projektordner">Projektordner</a><a class="abschnitt" href="#fallakte-feste-ordnerstruktur">Fallakte: feste Ordnerstruktur</a><a class="abschnitt" href="#themenbereiche">Themenbereiche</a><a class="abschnitt" href="#datenmodell-aktejson">Datenmodell: akte.json</a><a class="abschnitt" href="#dienst-stufe-3">Dienst (Stufe 3)</a><a class="abschnitt" href="#aktenmappe-für-jede-ki-stufe-7">Aktenmappe für jede KI (Stufe 7)</a><a class="abschnitt" href="#oberfläche-stufe-4">Oberfläche (Stufe 4)</a><a class="abschnitt" href="#claude-schicht-stufe-5">Claude-Schicht (Stufe 5)</a><a class="abschnitt" href="#datenfluss">Datenfluss</a>
+</aside>
+<main>
+<article>
+<div class="stamp">aus md/STRUKTUR.md erzeugt am 16.09.2026 19:12</div>
+<h1>STRUKTUR</h1>
+<p><em>Stand: 16.09.2026</em></p>
+<h2 id="aufgabe-dieser-datei">Aufgabe dieser Datei</h2>
+<p>Hier steht, wie die Rechts-App aufgebaut ist und aufgebaut werden soll. Keine Aufgabenliste, keine Arbeitsregeln.</p>
+<h2 id="zielbild-in-einem-satz">Zielbild in einem Satz</h2>
+<p>Ein Ordner, in dem jede Rechtssache (Arbeit, Verkehr, Miete, Verträge, Behörden, Strafsachen und mehr) als eigene Fallakte liegt, bedient durch eine lokale Oberfläche im Browser und später als Desktop-App, mit einer getrennten Claude-Schicht für Prüfabläufe.</p>
+<h2 id="zwei-schichten">Zwei Schichten</h2>
+<pre><code>Schicht 2  Claude-Schicht      .claude/recht/  Skills, Hooks, Vorlagen
+               │  liest und schreibt akte.json, JOURNAL.md, Entwürfe
+               ▼
+Schicht 1  Aktenkern           02 Fälle/R-XXXX …/  festes Datenformat
+               ▲
+               │  liest und schreibt dasselbe Format
+           Dienst + Oberfläche   06 Werkzeuge/   Python-Standardbibliothek,
+                                                 HTML/CSS/JS, nur 127.0.0.1</code></pre>
+<p>Beide Schichten arbeiten auf denselben Dateien. Damit sie sich nicht in die Quere kommen, gilt: Der Dienst schreibt nur mit Revisionsprüfung (Prüfsumme der Datei vor dem Speichern), und Claude schreibt nur, wenn der Dienst nicht gerade dieselbe Datei hält (Sperrdatei im temporären Ordner).</p>
+<h2 id="projektordner">Projektordner</h2>
+<pre><code>Recht/
+├─ Start.command              startet den Dienst und öffnet den Browser
+├─ CLAUDE.md                  Arbeitsprofil, Quelle (Stufe 5)
+├─ AGENTS.md                  erzeugt aus CLAUDE.md für Codex, Cursor, Gemini CLI (Stufe 7)
+├─ .agents/skills/            erzeugte Kopien der Skills für Codex (Stufe 7)
+├─ .mcp.json                  MCP-Server für Claude Code (Stufe 7)
+├─ .codex/config.toml         MCP-Server für Codex, projektbezogen (Stufe 7, lädt noch nicht)
+├─ zentrale.json              Fallliste, Sicherungsziel, Einstellungen
+├─ 01 Eingang/                gemeinsame Post ohne Fallzuordnung
+├─ 02 Fälle/                  eine Fallakte je Vorgang, feste Kennung R-0001 …
+├─ 03 Verträge und Vorsorge/  Unterlagen ohne Streit (Finder-Ablage)
+├─ 04 Rechtsquellen/          Quellen.md, Zugangskatalog amtlicher Angebote
+├─ 05 Vorlagen/               Fallvorlage, Beispielakte
+├─ 06 Werkzeuge/
+│  ├─ dienst/                 server.py, store.py, dokumente.py, fristen.py,
+│  │                          bestand.py, sicherung.py, werkzeuge.py, cli.py
+│  ├─ oberflaeche/            index.html, app.js, style.css
+│  ├─ verteilen.py            AGENTS.md und .agents/skills/ aus den Quellen erzeugen
+│  └─ pruefen.py              Funktionstest mit künstlichen Akten
+├─ .claude/recht/      Claude-Schicht als Plugin „recht“ (Stufe 5): Skills,
+│                             Hooks, Vorlagen, Werkzeuge; lädt automatisch im Projekt
+└─ DOKU/                      md/ als Quelle, HTML-Ansichten daneben</code></pre>
+<h2 id="fallakte-feste-ordnerstruktur">Fallakte: feste Ordnerstruktur</h2>
+<p>Jeder Fall bekommt dieselben Ordner. Leere Ordner sind erlaubt. Die Nummern sind fest, damit Verweise stabil bleiben.</p>
+<pre><code>02 Fälle/R-0001 Beispiel/
+├─ akte.json          Ordnungsdaten des Falls (fachlich, siehe unten)
+├─ bestand.json       Prüfsummen und Verschiebungen (technisch, nur der Dienst)
+├─ JOURNAL.md         Verlauf des Falls als Markdown, nur anhängen, ersetzt das alte TODO.md
+├─ 01 Eingang/        neue Post; Unterordner Gelesen/ nach Bearbeitung
+├─ 02 Grundlagen/     Verträge, Vollmachten, Bescheide, Policen, Mietvertrag
+├─ 03 Schriftverkehr/ je Beteiligter ein Unterordner, dazu Versandnachweise/
+├─ 04 Verfahren/      je Verfahren ein nummerierter Unterordner
+├─ 05 Beweise/        Fotos, Zeugenlisten, Dienstpläne, Quittungen
+├─ 06 Entwürfe/       noch nicht versandte Texte, Dateiname endet auf _ENTWURF
+├─ 07 Recherche/      Prüfvermerke (md plus html), Gesetzessammlung des Falls
+└─ 08 Archiv/         alte Übersichten, frühere Arbeitsumgebung, unverändert</code></pre>
+<p>Ein Verfahren ist alles, was eine eigene Stelle und ein eigenes Aktenzeichen hat: Klage beim Arbeitsgericht, Bußgeldbescheid, Widerspruch gegen einen Bescheid, Mahnverfahren, Strafanzeige. Mehrere Verfahren in einem Konflikt bekommen getrennte Unterordner und getrennte Fristen.</p>
+<h2 id="themenbereiche">Themenbereiche</h2>
+<p>Ein Fall hat einen Hauptbereich und beliebig viele Themen. Die Bereiche sind Filter und Vorlagen, keine Ordner.</p>
+<table><thead><tr><th>Bereich</th><th>Beispiele</th></tr></thead><tbody><tr><td>Arbeit</td><td>Vertrag, Entgelt, Kündigung, Zeugnis, Arbeitsgericht</td></tr><tr><td>Verkehr und Bußgeld</td><td>Parkverstoß, Anhörung, Bußgeldbescheid, Unfall, Fahrerlaubnis</td></tr><tr><td>Verträge und Verbraucher</td><td>Kauf, Reparatur, Abo, Reise, Reklamation, Rückforderung</td></tr><tr><td>Wohnen und Eigentum</td><td>Miete, Nebenkosten, Kaution, Nachbarschaft, Handwerker</td></tr><tr><td>Behörden und Soziales</td><td>Bescheid, Antrag, Leistungen, Krankenkasse, Rente</td></tr><tr><td>Forderungen und Versicherungen</td><td>Rechnung, Mahnung, Inkasso, Schaden, Deckung</td></tr><tr><td>Familie, Vorsorge und Erbe</td><td>Vollmacht, Nachlass, Unterhalt, Verfügung</td></tr><tr><td>Strafsachen</td><td>Anzeige, Vorladung, Strafbefehl, eigene Rolle zuerst klären</td></tr><tr><td>Geschäftliches und Datenschutz</td><td>Geschäftsvertrag, Haftung, Auskunft, DSGVO</td></tr></tbody></table>
+<h2 id="datenmodell-aktejson">Datenmodell: akte.json</h2>
+<p>Eine Datei je Fall, UTF-8, lesbar eingerückt. Kennungen sind stabil und werden nie wiederverwendet.</p>
+<table><thead><tr><th>Block</th><th>Kennung</th><th>Felder (Auswahl)</th></tr></thead><tbody><tr><td><code>fall</code></td><td>R-0001</td><td>titel, bereich, themen, rolle, ziel, rechtsordnung, status (offen, ruhend, abgeschlossen), angelegt</td></tr><tr><td><code>beteiligte</code></td><td>P01 …</td><td>name, rolle (Gegner, Gericht, Behörde, Anwalt, Zeuge, Stelle), anschrift, kontakt, aktenzeichen</td></tr><tr><td><code>dokumente</code></td><td>D0001 …</td><td>pfad, titel, datum, art (Schreiben, E-Mail, Foto, Vertrag, Bescheid, Urteil, Entwurf), status (Original, Entwurf, Versandt, Zugegangen), themen, anlage (K 1), personen, verweise, notiz</td></tr><tr><td><code>verfahren</code></td><td>V01 …</td><td>art, stelle (P-Kennung), aktenzeichen, stand, ordner</td></tr><tr><td><code>ereignisse</code></td><td>E01 …</td><td>datum, titel, art (Zugang, Versand, Termin, Gespräch, Vorfall), quelle (D-Kennung), detail</td></tr><tr><td><code>fristen</code></td><td>F01 …</td><td>datum, titel, art (gesetzlich, selbst gesetzt, vorsorglich, Termin), ausloeser (E-Kennung), rechtsgrundlage, berechnung, pruefstatus (offen, bestätigt, erledigt), quelle</td></tr><tr><td><code>aufgaben</code></td><td>A01 …</td><td>titel, detail, faellig, erledigt, quelle</td></tr><tr><td><code>entwuerfe</code></td><td>W01 …</td><td>titel, datei, fassung, status (in Arbeit, geprüft, versandt), versandt_als (D-Kennung)</td></tr><tr><td><code>kosten</code></td><td></td><td>datum, posten, betrag, beleg</td></tr><tr><td><code>notizen</code></td><td>N01 …</td><td>titel, text, datum</td></tr><tr><td><code>quellen</code></td><td></td><td>titel, url, geprueft, verwendung (fallbezogene Rechtsquellen)</td></tr></tbody></table>
+<p>Regeln im Modell: Eine Frist ohne Auslöser, Rechtsgrundlage und Prüfstatus darf nicht als bestätigt gespeichert werden. Ein Entwurf wird beim Versand nicht gelöscht, sondern bekommt den Status versandt und einen Verweis auf den Versandbeleg. Ein Dokument beweist zunächst nur seinen Inhalt.</p>
+<p>Die feldgenaue Beschreibung steht in Datenmodell.md.</p>
+<p><code>bestand.json</code> führt je D-Kennung den Pfad, die erste Prüfsumme (SHA-256) und jede Verschiebung mit Zeitpunkt. Das schreibt nur der Dienst.</p>
+<h2 id="dienst-stufe-3">Dienst (Stufe 3)</h2>
+<p>Python-Standardbibliothek, ein Prozess, nur 127.0.0.1, Sitzungsschlüssel über Start.command, Schreibkennung gegen fremde Seiten. Kein Netzzugriff nach außen. Textauszug aus PDF über das vorhandene <code>pdftotext</code>, wenn installiert.</p>
+<table><thead><tr><th>Modul</th><th>Aufgabe</th></tr></thead><tbody><tr><td><code>server.py</code></td><td>HTTP-Dienst, Sitzungen, Routen, statische Oberfläche</td></tr><tr><td><code>store.py</code></td><td>akte.json und zentrale.json lesen und mit Revision schreiben, Sperre</td></tr><tr><td><code>dokumente.py</code></td><td>Dateien auflisten, Textauszug (txt, md, html, docx, eml, pdf), Suche</td></tr><tr><td><code>fristen.py</code></td><td>Fristen rechnen nach §§ 187, 188, 193 BGB, Feiertage Baden-Württemberg, Rechnung als Text</td></tr><tr><td><code>bestand.py</code></td><td>Prüfsummen, Verschiebungen erkennen, Bestand prüfen</td></tr><tr><td><code>sicherung.py</code></td><td>geprüfte ZIP-Sicherung außerhalb des Projekts, SHA-256, Kopie nach iCloud Drive</td></tr><tr><td><code>werkzeuge.py</code></td><td>Katalog aller Funktionen als beschriebene Werkzeuge (Name, Zweck, Parameter, lesend oder schreibend); Oberfläche und KI rufen dieselben Werkzeuge</td></tr><tr><td><code>cli.py</code></td><td>alle Werkzeuge über die Befehlszeile, für Claude Code, Codex und andere Assistenten</td></tr><tr><td><code>mcp_server.py</code></td><td>dieselben Werkzeuge als MCP-Server über die Standardeingabe (JSON-RPC 2.0), für Claude Code, Claude Desktop, Codex, Cursor, Gemini; schreibende nur mit <code>bestaetigt</code></td></tr></tbody></table>
+<p>Schnittstelle, Skizze:</p>
+<pre><code>GET  /api/zentrale                    Fälle, Eingang, Sicherungsstand
+GET  /api/fall/R-0001                 akte.json plus Dokumentliste
+POST /api/fall/R-0001                 akte.json speichern (mit Revision)
+GET  /api/fall/R-0001/text/D0038      Textauszug eines Dokuments
+GET  /raw/R-0001/D0038                Originaldatei anzeigen
+POST /api/fall/R-0001/verschieben     Datei einsortieren
+POST /api/fall                        neuen Fall anlegen
+POST /api/eingang/zuordnen            gemeinsame Post einem Fall zuordnen
+POST /api/fristen/berechnen           Frist rechnen, Ergebnis mit Rechnung
+GET  /api/bestand                     Prüfsummen aller Fälle prüfen
+POST /api/sicherung                   geprüfte ZIP erstellen
+GET  /api/werkzeuge                   Werkzeugkatalog (für Oberfläche und KI)
+GET  /api/einstellungen               Sicherungsziele
+POST /api/einstellungen               Sicherungsziele ändern</code></pre>
+<h2 id="aktenmappe-für-jede-ki-stufe-7">Aktenmappe für jede KI (Stufe 7)</h2>
+<p>Grundsatz: Die App enthält keine KI. Sie ist eine Aktenmappe, die jede KI benutzen kann, die der Nutzer schon hat: Claude Code, Codex und andere. Dafür gibt es drei Standards, die wir bedienen:</p>
+<table><thead><tr><th>Standard</th><th>Was er ist</th><th>Wer ihn liest</th><th>Bei uns</th></tr></thead><tbody><tr><td><code>AGENTS.md</code> und <code>CLAUDE.md</code></td><td>Arbeitsanweisung im Projektordner, Klartext</td><td>Codex, Cursor, Gemini CLI, viele Agenten (<code>AGENTS.md</code>); Claude Code (<code>CLAUDE.md</code>)</td><td>eine Quelle, beide Dateien daraus erzeugt</td></tr><tr><td>Agent Skills (<code>SKILL.md</code>)</td><td>Ordner mit Anleitung, offener Standard von Anthropic, von Codex übernommen</td><td>Claude Code (<code>.claude/skills/</code>), Codex (<code>.agents/skills/</code>)</td><td>Skills einmal gepflegt, für Codex kopiert</td></tr><tr><td>MCP (Model Context Protocol)</td><td>offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe</td><td>Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini</td><td>eigener MCP-Server <code>mcp_server.py</code> ohne Fremdpaket, stellt die 20 Werkzeuge bereit</td></tr><tr><td>Befehlszeile</td><td><code>cli.py</code></td><td>jede KI, die Befehle ausführen darf</td><td>vorhanden</td></tr></tbody></table>
+<p>Regeln für alle Wege: Lesen frei, Schreiben nur über die Werkzeuge mit Schema und Revision, Originale gesperrt, kein Versand, kein Löschen. Schlüssel oder Konten braucht die Mappe nicht; die KI bringt der Nutzer mit.</p>
+<p>Stand 16.09.2026: <code>06 Werkzeuge/verteilen.py</code> (Punkt 1) ist gebaut. Es erzeugt <code>AGENTS.md</code> aus <code>CLAUDE.md</code> über eine Liste benannter Ersetzungen (Titel, Zielgruppe, Hook-Hinweise werden zu Handlungsanweisungen; greift eine Ersetzung nicht mehr, bricht das Skript ab) und hängt einen Abschnitt „Für Assistenten außer Claude Code“ an. Die Skills werden Datei für Datei nach <code>.agents/skills/</code> kopiert, mit Kopfvermerk „erzeugt“ und <code>CLAUDE.md</code> zu <code>AGENTS.md</code>. <code>--pruefen</code> vergleicht nur und liefert Exit 1 bei Abweichung. Verwaiste Kopien werden gemeldet, nie gelöscht.</p>
+<p><code>06 Werkzeuge/dienst/mcp_server.py</code> (Punkt 2) ist gebaut. Der Client startet das Skript als Unterprozess; Nachrichten gehen zeilenweise als JSON-RPC 2.0 über Standardeingabe und -ausgabe, Meldungen auf die Standardfehlerausgabe. Zwei Protokoll-Zeitalter der Spezifikation (gelesen am 16.09.2026 auf modelcontextprotocol.io): die Fassungen bis 2025-11-25 mit Handshake (<code>initialize</code>, <code>notifications/initialized</code>) und die Fassung 2026-07-28 ohne Handshake, bei der jede Anfrage ihre Version in <code>params._meta</code> trägt und es <code>server/discover</code> gibt. Methoden: <code>initialize</code>, <code>server/discover</code>, <code>ping</code>, <code>tools/list</code>, <code>tools/call</code>. Werkzeuge aus <code>werkzeuge.fuer_agenten()</code> (20, ohne <code>fall_lesen</code> und <code>akte_speichern</code>), jedes mit <code>inputSchema</code> und <code>annotations.readOnlyHint</code>. Schreibende Werkzeuge tragen im Schema den Parameter <code>bestaetigt</code>; ohne <code>true</code> liefert der Aufruf nur die Rückfrage. Fehler: unbekanntes Werkzeug oder unbekannte Methode als Protokollfehler (JSON-RPC <code>error</code>), Werkzeugfehler als Ergebnis mit <code>isError</code>. Beim Schließen der Eingabe beendet sich der Server.</p>
+<h3 id="anbindung-je-assistent-punkt-3-geprüft-am-16092026">Anbindung je Assistent (Punkt 3, geprüft am 16.09.2026)</h3>
+<table><thead><tr><th>Assistent</th><th>Datei</th><th>Stand</th></tr></thead><tbody><tr><td>Claude Code 2.1.273</td><td><code>.mcp.json</code> im Projekt: <code>{"mcpServers":{"aka-recht":{"type":"stdio","command":"python3","args":["06 Werkzeuge/dienst/mcp_server.py"]}}}</code>. Der Server läuft im Projektordner, deshalb reicht der relative Pfad. Beim ersten interaktiven Start fragt Claude Code, ob es den Projekt-Server laden darf; Status mit <code>/mcp</code> oder <code>claude mcp get aka-recht</code>. Werkzeugnamen: <code>mcp__aka-recht__&lt;werkzeug&gt;</code>.</td><td>Geprüft: Testsitzung <code>claude -p</code> hat über <code>mcp__aka-recht__faelle_auflisten</code> „R-0001“ geliefert. Befund: <code>${CLAUDE_PROJECT_DIR}</code> in <code>.mcp.json</code> wird in dieser Version nicht ersetzt (Protokoll: Pfad wörtlich mit <code>${CLAUDE_PROJECT_DIR}</code>), deshalb kein Platzhalter.</td></tr><tr><td>Codex CLI 0.154.0</td><td>Skills: <code>.agents/skills/</code> wird gelesen. MCP: <code>.codex/config.toml</code> im Projekt mit <code>[mcp_servers.aka-recht]</code> (command, args, cwd) liegt bei.</td><td>Geprüft: Codex nennt alle sieben Skills. Der Server selbst läuft mit Codex (<code>codex exec -c 'mcp_servers.aka-recht.command="python3"' -c 'mcp_servers.aka-recht.args=["06 Werkzeuge/dienst/mcp_server.py"]'</code> liefert „R-0001“). Die Projektdatei <code>.codex/config.toml</code> hat Codex in drei Läufen nicht geladen (ohne git, mit Vertrauens-Override, mit git und Override). Gelöst über den globalen Eintrag <code>codex mcp add aka-recht -- python3 "/voller/Pfad/06 Werkzeuge/dienst/mcp_server.py"</code> (geprüft 16.09.2026). <code>[PRÜFEN: Bedingung für projektbezogene mcp_servers in Codex]</code></td></tr><tr><td>Claude Desktop</td><td><code>~/Library/Application Support/Claude/claude_desktop_config.json</code>, unter <code>mcpServers</code> ein Eintrag <code>aka-recht</code> mit <code>command</code> <code>python3</code> und <code>args</code> <code>["/voller/Pfad/06 Werkzeuge/dienst/mcp_server.py"]</code>, Pfade absolut, danach Claude Desktop ganz beenden und neu starten. Protokolle unter <code>~/Library/Logs/Claude/mcp-server-aka-recht.log</code>.</td><td>Geprüft (16.09.2026): Eintrag von Hand gesetzt, Neustart, Konnektor aka-recht aktiv; Protokoll zeigt <code>initialize</code>, <code>notifications/initialized</code>, <code>tools/list</code>. Claude Desktop hält je Fenster einen eigenen Serverprozess.</td></tr><tr><td>Cursor, Gemini CLI, andere</td><td>Eigene Konfigurationsdatei des Assistenten, gleicher Aufruf (<code>python3</code> mit dem Pfad zu <code>mcp_server.py</code>, Arbeitsverzeichnis Projektordner oder <code>--root &lt;Projektordner&gt;</code>).</td><td>Nicht geprüft.</td></tr></tbody></table>
+<p>Die Anleitung der Oberfläche (Seite „Anleitung“, Abschnitt „KI anbinden“) fasst das für Nutzer zusammen.</p>
+<h2 id="oberfläche-stufe-4">Oberfläche (Stufe 4)</h2>
+<p>Ein Frontend für Zentrale und Fallakte, reines HTML, CSS und JavaScript ohne Framework, damit es später unverändert in eine Desktop-Hülle passt. Seitenleiste links, Inhalt rechts, jeder Bereich scrollt für sich. Nach jeder Änderung an CSS oder JS wird die Versionsnummer im HTML-Link erhöht.</p>
+<p>Bereiche der Zentrale: Übersicht, Alle Fälle, Posteingang, Fristen aller Fälle, Rechtsquellen, Bestand und Sicherung, Einstellungen, Anleitung. Bereiche der Fallakte: Übersicht (mit Notizen und Angeheftetem), Dokumente mit Vorschau (Vorschau, Text, Angaben; Ordnen, Einsortieren, Öffnen, Finder), Beteiligte, Verfahren, Chronologie, Fristen (mit Rechner im Formular), Aufgaben, Entwürfe, Beweise und Anlagen, Journal.</p>
+<p>Die Oberfläche schreibt Ordnungsdaten über <code>/api/fall/&lt;id&gt;</code> mit Revision und nutzt für Dateivorgänge die Werkzeuge (Einsortieren, Journal, Fallstatus). Routen im Adressfeld: <code>#seite=dokumente&amp;fall=R-0001&amp;dok=D0004</code>.</p>
+<h2 id="claude-schicht-stufe-5">Claude-Schicht (Stufe 5)</h2>
+<p>Projekt-Skills unter <code>.claude/skills/&lt;name&gt;/SKILL.md</code>, Hooks in <code>.claude/settings.json</code>, Hilfsskripte unter <code>.claude/recht/</code>, Schreibvorlagen unter <code>05 Vorlagen/Schreiben/</code>. Skills heißen <code>/fallaufnahme</code>, <code>/sachverhalt</code>, <code>/recherche-de</code>, <code>/gegenpruefung</code>, <code>/fristencheck</code>, <code>/entwurf</code>, <code>/uebergabe</code>. Claude Code lädt Projekt-Skills und Projekt-Hooks nach Bestätigung des Arbeitsbereichs; Hook-Änderungen wirken nach Neustart der Sitzung.</p>
+<table><thead><tr><th>Teil</th><th>Inhalt</th></tr></thead><tbody><tr><td><code>skills/fallaufnahme</code></td><td>Rolle, Ziel, Rechtsordnung, Verfahrensart, Zugang, fehlende Angaben; trägt über die Werkzeuge ein</td></tr><tr><td><code>skills/sachverhalt</code></td><td>Chronologie und Beweistabelle aus den Originalen, Fundstellen je Aussage, Prüfvermerk in 07 Recherche</td></tr><tr><td><code>skills/recherche-de</code></td><td>deutsche Rechtsfrage am Originalvolltext, Fassung und Geltungszeitraum, Quellen in die Akte</td></tr><tr><td><code>skills/gegenpruefung</code></td><td>stärkste Gegenargumente, unbelegte Aussagen, unpassende Zitate, Zahlen, Anlagen, Fristen</td></tr><tr><td><code>skills/fristencheck</code></td><td>Fristkandidaten mit Auslöser, Zugang, Grundlage, Rechnung über <code>frist_berechnen</code>, Prüfstatus</td></tr><tr><td><code>skills/entwurf</code></td><td>Schreiben und Schriftsätze als Entwurf aus den Vorlagen, Markdown plus Word über <code>docx_erzeugen.py</code>, <code>entwurf_erfassen</code></td></tr><tr><td><code>skills/uebergabe</code></td><td>Übergabepaket als ZIP außerhalb des Projekts über <code>uebergabe_paket.py</code>, Begleitvermerk</td></tr><tr><td><code>.claude/settings.json</code></td><td>SessionStart: Eingang, nahe Fristen, offene Aufgaben je Fall. PreToolUse (Write, Edit): Schreiben in 02, 03, 04, 05, 08 und bestand.json gesperrt. Stop: Doku-Abgleich anmahnen</td></tr><tr><td><code>05 Vorlagen/Schreiben/</code></td><td>Briefkopf, Einspruch Bußgeld, Widerspruch Bescheid, Fristsetzung, Auskunft DSGVO, Klage Arbeitsgericht; interne Hinweise über der Trennlinie, Platzhalter 【 】, Marker</td></tr><tr><td><code>.claude/recht/werkzeuge/docx_erzeugen.py</code></td><td>Markdown oder Text nach Word ohne Fremdpaket; warnt vor offenen Markern</td></tr><tr><td><code>.claude/recht/werkzeuge/uebergabe_paket.py</code></td><td>ZIP mit Inhaltsverzeichnis, Chronologie, Fristen, Anlagen, Journal, Originalen</td></tr></tbody></table>
+<p>Claude arbeitet in der Sitzung mit denselben Werkzeugen wie die App, über <code>06 Werkzeuge/dienst/cli.py</code> (Schema, Revision, Sperre inklusive). Das Arbeitsprofil steht in <code>CLAUDE.md</code> im Projekt.</p>
+<p>Marker in allen Texten der Claude-Schicht: <code>[BELEG: …]</code> für fehlende Fundstelle, <code>[PRÜFEN: …]</code> für ungeprüfte Tatsache, <code>[QUELLE: …]</code> für eine noch nicht am Volltext gelesene Rechtsquelle.</p>
+<h2 id="datenfluss">Datenfluss</h2>
+<pre><code>Neue Post im Finder oder per Oberfläche
+  ↓
+01 Eingang/               Dienst vergibt D-Kennung und erste Prüfsumme
+  ↓
+Einsortieren              Pfad wandert, Kennung bleibt, bestand.json protokolliert
+  ↓
+akte.json                 Titel, Datum, Beteiligte, Verweise, Anlagen-Nummer
+  ↓
+Claude-Schicht            Fallaufnahme, Sachverhalt, Fristen, Entwürfe
+  ↓
+06 Entwürfe/ → Versand    Entwurf bekommt Status versandt, Beleg als Dokument
+  ↓
+JOURNAL.md                jeder Schritt mit Datum, nur anhängen</code></pre>
+</article>
+</main>
+</body>
+</html>

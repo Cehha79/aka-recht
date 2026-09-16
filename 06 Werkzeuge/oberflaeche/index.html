@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>AKA Recht</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='9' fill='%231d2b44'/%3E%3Ctext x='20' y='27' text-anchor='middle' font-family='Georgia' font-size='22' fill='white'%3ER%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css?v=3">
+  <script src="app.js?v=6" defer></script>
+</head>
+<body>
+  <a class="skip" href="#content">Zum Inhalt</a>
+  <aside class="sidebar" aria-label="Navigation">
+    <a class="marke" href="#seite=home"><span class="marke-zeichen">R</span><span>AKA Recht<small id="marke-unter">Dein Rechtsarbeitsplatz</small></span></a>
+    <a id="zurueck" class="zurueck" href="#seite=home" hidden>← Alle Fälle</a>
+    <nav id="navigation" aria-label="Bereiche"></nav>
+    <div class="sidebar-fuss"><span class="punkt"></span>Lokal auf deinem Mac<small>Kein Cloud-Dienst, keine fremden Schriften.</small><button class="leise" data-aktion="finder" data-ort="projekt">Projektordner im Finder</button></div>
+  </aside>
+  <div class="arbeit">
+    <header class="kopf">
+      <div class="kopf-titel"><span id="brotkrumen">AKA RECHT</span><h1 id="seitentitel">Wird geladen …</h1></div>
+      <div id="kopf-aktionen" class="aktionen"></div>
+    </header>
+    <div id="bereich" class="bereich"><main id="content" tabindex="-1"><div class="leer"><h2>AKA Recht öffnen</h2><p>Die lokale Verbindung wird geladen. Wenn du diese Datei direkt geöffnet hast, starte bitte Start.command im Rechtsordner.</p></div></main><aside id="vorschau" class="vorschau" aria-label="Dokumentvorschau" hidden></aside></div>
+  </div>
+  <dialog id="dialog"><form id="formular" novalidate><div class="dialog-kopf"><h2 id="dialog-titel"></h2><button class="symbol" id="dialog-schliessen" type="button" aria-label="Schließen">×</button></div><div id="dialog-inhalt" class="dialog-inhalt"></div><p id="dialog-fehler" class="fehler" role="alert" hidden></p><div class="dialog-aktionen"><button type="button" class="knopf" id="dialog-abbrechen">Abbrechen</button><button type="submit" class="knopf primaer" id="dialog-speichern">Speichern</button></div></form></dialog>
+  <input type="file" id="upload" multiple hidden>
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+  <noscript>Für die Oberfläche JavaScript einschalten. Deine Dateien bleiben im Finder zugänglich.</noscript>
+</body>
+</html>
