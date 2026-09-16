@@ -202,6 +202,7 @@ eine `.docx` und warnt vor offenen Platzhaltern und Markern.
 | `Einspruch_Steuerbescheid.md` | Einspruch gegen einen Steuerbescheid, mit Aussetzung der Vollziehung als Option |
 | `Fristsetzung.md` | Aufforderung mit Frist (Nacherfüllung, Zahlung, Antwort) |
 | `Klage_Arbeitsgericht.md` | Klage zum Arbeitsgericht, Grundgerüst mit Anträgen und Anlagen |
+| `Klage_Zivilgericht.md` | Zivilklage zum Amts- oder Landgericht, Zahlungsantrag mit Zinsen, Versäumnisurteil, Zuständigkeit |
 | `Widerspruch_Bescheid.md` | Widerspruch gegen einen Bescheid einer Behörde |
 
 <img src="bilder/kapitel-merkblaetter.svg" alt="Merkblätter: Verfahren am Volltext">
@@ -217,6 +218,7 @@ den Pflichtinhalt dagegen.
 | `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Einspruch gegen einen Steuerbescheid | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` | Klage zum Arbeitsgericht | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Widerspruch_Verwaltungsakt.md` | Widerspruch gegen einen Verwaltungsakt (Bescheid einer Behörde) | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Zivilklage.md` | Zivilklage vor dem Amtsgericht oder Landgericht | 16.09.2026 |
 
 > [!NOTE]
 > Rechtsinhalte altern. Welche Feiertage, Merkblätter und Vorlagen mit

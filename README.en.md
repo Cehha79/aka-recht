@@ -192,6 +192,7 @@ into a `.docx` and warns about open placeholders and markers.
 | `Einspruch_Steuerbescheid.md` | Objection to a tax assessment, with optional suspension of enforcement |
 | `Fristsetzung.md` | Demand with a deadline (performance, payment, reply) |
 | `Klage_Arbeitsgericht.md` | Labour court action, skeleton with motions and exhibits |
+| `Klage_Zivilgericht.md` | Civil action before the local or regional court, payment claim with interest, default judgment, jurisdiction |
 | `Widerspruch_Bescheid.md` | Administrative appeal against an authority decision |
 
 <img src="bilder/kapitel-merkblaetter-en.svg" alt="Fact sheets: procedures, full text">
@@ -207,6 +208,7 @@ from them, `/entwurf` checks the mandatory content against them.
 | `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Objection to a tax assessment (Abgabenordnung) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` | Action before the labour court (ArbGG, ZPO, KSchG, GKG) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Widerspruch_Verwaltungsakt.md` | Administrative appeal against an authority decision (VwGO) | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Zivilklage.md` | Civil action before the local or regional court (ZPO, GVG, GKG, BGB) | 16.09.2026 |
 
 > [!NOTE]
 > Legal content ages. Which holidays, fact sheets and templates ship with

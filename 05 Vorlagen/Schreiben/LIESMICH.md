@@ -10,7 +10,8 @@ Zu einigen Vorlagen gibt es ein Merkblatt unter `04 Rechtsquellen/Verfahren/`
 (Rechtsbehelf, Frist, Form, Pflichtinhalt, Adressat, Quellen mit Stand). Die
 Vorlage nennt es in der ersten Zeile; vor dem Entwurf lesen und den Pflichtinhalt
 dagegen prüfen. Vorhanden: Einspruch_Steuerbescheid, Widerspruch_Verwaltungsakt,
-Einspruch_Bussgeldbescheid, Klage_Arbeitsgericht.
+Einspruch_Bussgeldbescheid, Klage_Arbeitsgericht, Zivilklage (Vorlage
+Klage_Zivilgericht).
 
 Die Vorlagen setzen kein Rechtsgebiet voraus. Rechtsgrundlagen sind Beispiele
 und immer am Volltext zu prüfen; Fassung und Geltungszeitraum gehören dazu.

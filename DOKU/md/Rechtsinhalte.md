@@ -63,15 +63,17 @@ Verordnungen sind nicht erfasst.
 | Einspruch Steuerbescheid | §§ 347, 350, 355, 356, 357, 361, 367, 108, 110, 122, 172, 87a AO; § 47 FGO | AO i. d. F. v. 23.01.2025, zuletzt geändert 03.07.2026 | 16.09.2026 | AEAO zu § 357, BFH III R 26/14, Kostenerstattung, Kommunalabgaben |
 | Widerspruch Verwaltungsakt | §§ 58, 60, 68, 69, 70, 73, 74, 80 VwGO; §§ 3a, 41, 80 VwVfG; § 15 AGVwGO BW, § 41 LVwVfG BW | VwGO zuletzt geändert 23.04.2026; AGVwGO BW Fassung 18.03.2025 (gültig ab 01.01.2026); LVwVfG BW Fassung 28.01.2025 | 16.09.2026 | AGVwGO und Landes-VwVfG der übrigen 15 Länder, VwZG, § 57 VwGO mit § 222 ZPO, § 72, § 79 VwGO, § 29 VwVfG, § 41 Abs. 2a VwVfG, Gebührengesetze |
 | Klage Arbeitsgericht | §§ 2, 9, 11, 11a, 12a, 46, 46c, 46g, 48, 54, 59, 61, 61a, 61b, 64, 66 ArbGG; §§ 130a, 167, 253, 496 ZPO; §§ 4, 5, 7 KSchG; §§ 11, 42 GKG | ArbGG zuletzt geändert 27.04.2026 (Änderung 20.05.2026 noch nicht eingearbeitet); ZPO 22.12.2025; KSchG 14.06.2021; GKG 22.12.2025 | 16.09.2026 | §§ 12, 13, 17, 130, 222, 269, 330 ZPO, § 17b GVG, §§ 16, 11 Abs. 4, 61a Abs. 4 und 5 ArbGG, § 1 Abs. 2 KSchG, § 130 BGB, § 15 Abs. 4 AGG, § 159 SGB III, GKG-Kostenverzeichnis, Rechtsprechung (Zugang, Fax, „demnächst“, Weiterbeschäftigung) |
+| Zivilklage | §§ 3, 12, 13, 17, 29, 78, 79, 91, 93, 130, 130a, 130d, 167, 222, 233, 234, 253, 269, 271, 275, 276, 278, 331, 338, 339, 495a, 496, 511, 517 ZPO; §§ 23, 71 GVG; §§ 12, 34 GKG, KV 1210, 1211; §§ 195, 199, 204 BGB; § 15a EGZPO | ZPO 22.12.2025; GVG 09.01.2026; GKG 22.12.2025; BGB 23.07.2026 (Wertgrenzen: AG 10.000 Euro, § 495a und Berufung 1.000 Euro, am Rohtext bestätigt) | 16.09.2026 | §§ 29a, 29c, 32, 38, 92, 114 ff., 139, 330 ZPO, § 43 GKG, §§ 269, 270, 288, 438, 548, 634a BGB, RVG, Landesschlichtungsgesetze, Stand des EGZPO |
 | Einspruch Bußgeldbescheid | §§ 18, 31, 33, 46, 49, 51, 56, 62, 66 bis 74, 89, 105, 109, 110c OWiG; §§ 32a, 32d, 43, 44, 45, 297, 298, 300, 302 StPO; §§ 25, 25a, 26 StVG | OWiG zuletzt geändert 22.12.2025; StPO 03.07.2026; StVG 12.05.2026 (§ 26 Abs. 3 StVG: nur noch sechs Monate, Übergangsrecht offen) | 16.09.2026 | VwZG Bund und Länder (Ersatzzustellung), § 55, §§ 79, 80 OWiG, §§ 35a, 303, 410, 411 StPO, GKG-Kostenverzeichnis, BKatV, §§ 4, 28 StVG, Rechtsprechung zu Fax, E-Mail, Messunterlagen (BVerfG 2 BvR 1616/18), Beschränkung des Einspruchs |
 
 ### 2.3 Schreibvorlagen
 
-Sechs Vorlagen vom 16.09.2026 (Briefkopf, Einspruch Bußgeldbescheid,
-Widerspruch Bescheid, Fristsetzung, Auskunft DSGVO, Klage Arbeitsgericht) plus
-Einspruch Steuerbescheid. Die Normen darin tragen `[QUELLE]`, wo sie nicht
-am Volltext gelesen wurden; Merkblätter gibt es für Einspruch Steuerbescheid,
-Widerspruch Verwaltungsakt, Einspruch Bußgeldbescheid und Klage Arbeitsgericht.
+Acht Vorlagen vom 16.09.2026 (Briefkopf, Einspruch Bußgeldbescheid,
+Widerspruch Bescheid, Fristsetzung, Auskunft DSGVO, Klage Arbeitsgericht,
+Einspruch Steuerbescheid, Klage Zivilgericht). Die Normen darin tragen
+`[QUELLE]`, wo sie nicht am Volltext gelesen wurden; Merkblätter gibt es für
+Einspruch Steuerbescheid, Widerspruch Verwaltungsakt, Einspruch
+Bußgeldbescheid, Klage Arbeitsgericht und Zivilklage.
 
 ## 3. Wann prüfen
 
