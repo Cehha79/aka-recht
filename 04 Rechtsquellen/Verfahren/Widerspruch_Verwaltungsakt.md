@@ -6,7 +6,8 @@ Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Normen
 am amtlichen Volltext gelesen (gesetze-im-internet.de): Verwaltungsgerichts-
 ordnung (VwGO) in der Fassung der Bekanntmachung vom 19.03.1991, zuletzt
 geändert durch Art. 12a G v. 23.04.2026 I Nr. 111; Verwaltungsverfahrensgesetz
-des Bundes (VwVfG). Gilt für Bescheide von Behörden außerhalb von Steuern
+des Bundes (VwVfG); für Baden-Württemberg dazu § 15 AGVwGO und § 41 LVwVfG
+am Landesportal landesrecht-bw.de. Gilt für Bescheide von Behörden außerhalb von Steuern
 (dort: Einspruch, eigenes Merkblatt) und Sozialleistungen (dort: Widerspruch
 nach SGG, § 84 SGG `[QUELLE: eigenes Merkblatt]`). Wichtig: Ob es ein
 Widerspruchsverfahren gibt, hängt vom Land und vom Rechtsgebiet ab, siehe
@@ -19,7 +20,8 @@ Abschnitt 1.
 | Grundsatz | Vor der Anfechtungsklage sind „Rechtmäßigkeit und Zweckmäßigkeit des Verwaltungsakts in einem Vorverfahren nachzuprüfen“ | § 68 Abs. 1 Satz 1 VwGO |
 | Ausnahmen | Kein Widerspruch, „wenn ein Gesetz dies bestimmt“, bei Verwaltungsakten einer obersten Bundes- oder Landesbehörde, oder wenn erst der Abhilfe- oder Widerspruchsbescheid beschwert | § 68 Abs. 1 Satz 2 VwGO |
 | Ablehnter Antrag | Gilt entsprechend für die Verpflichtungsklage, wenn ein Antrag abgelehnt wurde | § 68 Abs. 2 VwGO |
-| Landesrecht | Mehrere Länder haben das Widerspruchsverfahren für viele Bereiche abgeschafft oder eingeschränkt (Ausführungsgesetze zur VwGO). Dann läuft die Klagefrist sofort ab Bekanntgabe, § 74 Abs. 1 Satz 2 VwGO | `[QUELLE: je Land das AGVwGO lesen, für Baden-Württemberg § 15 AGVwGO; Bayern Art. 15 AGVwGO; Nordrhein-Westfalen § 110 JustG; Niedersachsen § 80 NJG; Hessen § 16a HessAGVwGO]` |
+| Landesrecht | Mehrere Länder haben das Widerspruchsverfahren für viele Bereiche abgeschafft oder eingeschränkt (Ausführungsgesetze zur VwGO). Dann läuft die Klagefrist sofort ab Bekanntgabe, § 74 Abs. 1 Satz 2 VwGO | `[QUELLE: je Land das AGVwGO lesen; Bayern Art. 15 AGVwGO; Nordrhein-Westfalen § 110 JustG; Niedersachsen § 80 NJG; Hessen § 16a HessAGVwGO]` |
+| Baden-Württemberg | Das Widerspruchsverfahren gilt weiter als Regel. „Eines Vorverfahrens bedarf es nicht“, wenn „das Regierungspräsidium, Forst Baden-Württemberg oder der Landesbeauftragte für den Datenschutz den Verwaltungsakt erlassen oder diesen abgelehnt hat“ (Abs. 1 Satz 1; Ausnahmen: Bundesrecht schreibt es vor, Bewertung in berufsbezogener Prüfung, Beamtenklagen); ferner nicht im Landesdisziplinarrecht (Abs. 2), bei der Nationalparkverwaltung (Abs. 3), bei Windenergieanlagen an Land über 50 Meter Gesamthöhe (Abs. 4) und „in Angelegenheiten nach der Landesbauordnung und nach dem Denkmalschutzgesetz“ (Abs. 5 Satz 1). Übergang: Bei Bau- und Denkmalbescheiden, die vor dem 01.06.2025 bekannt gegeben wurden, ist noch Widerspruch einzulegen (Abs. 5 Satz 2). Bescheide von Gemeinden, Landratsämtern und sonstigen Landesbehörden: Widerspruch | § 15 Abs. 1 bis 5 AGVwGO BW (Fassung vom 18.03.2025, gültig ab 01.01.2026) |
 | Erste Prüfung | Die Rechtsbehelfsbelehrung des Bescheids lesen: Sie nennt Rechtsbehelf, Stelle und Frist. Fehlt sie oder ist sie falsch, gilt die Jahresfrist (Abschnitt 2) | § 58 VwGO |
 
 Praktische Folge: Steht in der Belehrung „Klage“, ist ein Widerspruch in der
@@ -31,7 +33,8 @@ Regel nicht vorgesehen; dann binnen eines Monats Klage beim Verwaltungsgericht
 | Punkt | Regel | Norm |
 |---|---|---|
 | Dauer | ein Monat, „nachdem der Verwaltungsakt dem Beschwerten bekanntgegeben worden ist“ | § 70 Abs. 1 Satz 1 VwGO |
-| Bekanntgabe bei Post im Inland | „am vierten Tag nach der Aufgabe zur Post“; elektronisch am vierten Tag nach Absendung; im Zweifel muss die Behörde Zugang und Zeitpunkt nachweisen | § 41 Abs. 2 VwVfG (Bund; Landes-VwVfG gleichlautend `[PRÜFEN: je Land]`) |
+| Bekanntgabe bei Post im Inland | „am vierten Tag nach der Aufgabe zur Post“; elektronisch am vierten Tag nach Absendung; im Zweifel muss die Behörde Zugang und Zeitpunkt nachweisen | § 41 Abs. 2 VwVfG (Bund); Baden-Württemberg wortgleich in § 41 Abs. 2 LVwVfG (Fassung ab 07.02.2025); übrige Länder `[PRÜFEN: je Land]` |
+| Bekanntgabe zum Abruf (Portal) | Mit Einwilligung kann der Bescheid zum Abruf bereitgestellt werden; er „gilt am Tag nach dem Abruf als bekannt gegeben“. Wird er nicht binnen zehn Tagen nach der Benachrichtigung abgerufen, endet die Bereitstellung und die Bekanntgabe ist nicht bewirkt | § 41 Abs. 2a LVwVfG BW (Bund gleichlautend `[PRÜFEN: § 41 Abs. 2a VwVfG]`) |
 | Förmliche Zustellung | Bei Zustellung nach dem Verwaltungszustellungsgesetz zählt der Zustellungstag (Postzustellungsurkunde, Einschreiben) | `[QUELLE: §§ 2 bis 5 VwZG]` |
 | Berechnung | §§ 187 bis 193 BGB über § 57 Abs. 2 VwGO, § 222 ZPO; Fristende an Samstag, Sonntag oder Feiertag verschiebt auf den nächsten Werktag | `[QUELLE: § 57 Abs. 2 VwGO, § 222 ZPO am Volltext]` |
 | Fehlende oder falsche Belehrung | Frist beginnt nicht; Widerspruch dann binnen eines Jahres seit Zustellung oder Eröffnung | § 58 Abs. 1 und 2 VwGO, § 70 Abs. 2 VwGO |
@@ -93,8 +96,10 @@ Tag der Aufgabe zur Post.
 | § 41 VwVfG Bekanntgabe (Abs. 1 und 2) | https://www.gesetze-im-internet.de/vwvfg/__41.html | VwVfG Bund `[PRÜFEN: Stand auf der Gesetzesseite]` |
 | § 3a VwVfG elektronische Kommunikation | https://www.gesetze-im-internet.de/vwvfg/__3a.html | wie oben |
 | § 80 VwVfG Kosten im Vorverfahren | https://www.gesetze-im-internet.de/vwvfg/__80.html | wie oben |
+| § 15 AGVwGO BW Ausschluss des Vorverfahrens (im Browser gelesen, Portal liefert per Skript nur den Titel) | https://www.landesrecht-bw.de/perma?j=VwGOAG_BW_!_15 | Gesetz vom 14.10.2008 (GBl. S. 343, 356), Fassung vom 18.03.2025, gültig ab 01.01.2026; Übergang für Abs. 4 laut Art. 2 G v. 11.05.2022 (GBl. S. 281) |
+| § 41 LVwVfG BW Bekanntgabe (im Browser gelesen) | https://www.landesrecht-bw.de/perma?j=VwVfG_BW_!_41 | LVwVfG i. d. F. v. 12.04.2005 (GBl. 2005, 350), Fassung vom 28.01.2025, gültig ab 07.02.2025 |
 
-Nicht gelesen: Landes-Ausführungsgesetze zur VwGO, Landes-VwVfG, VwZG,
-§ 57 VwGO mit § 222 ZPO, § 72 und § 79 VwGO, § 80 Abs. 5 VwGO, § 29 VwVfG,
-Gebührengesetze der Länder. Für Baden-Württemberg als Nächstes § 15 AGVwGO
-und § 41 LVwVfG am Portal landesrecht-bw.de lesen.
+Nicht gelesen: Ausführungsgesetze zur VwGO und Landes-VwVfG der übrigen
+15 Länder, VwZG, § 57 VwGO mit § 222 ZPO, § 72 und § 79 VwGO, § 80 Abs. 5
+VwGO, § 29 VwVfG, § 41 Abs. 2a VwVfG (Bund), Gebührengesetze der Länder.
+Baden-Württemberg ist gelesen (§ 15 AGVwGO, § 41 LVwVfG, 16.09.2026).

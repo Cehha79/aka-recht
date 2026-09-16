@@ -1,5 +1,6 @@
-Interne Hinweise (nicht im Sendetext): Klage beim Arbeitsgericht in erster Instanz ohne Anwaltszwang, § 11 Abs. 1 ArbGG [QUELLE: Fassung prüfen]. Inhalt der Klageschrift nach § 253 ZPO über § 46 Abs. 2 ArbGG.
-Fristen je nach Klageart gesondert prüfen (z. B. § 4 KSchG bei Kündigung, § 61b ArbGG bei AGG-Entschädigung) und in der Akte eintragen.
+Interne Hinweise (nicht im Sendetext): Merkblatt `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` lesen (Stand 16.09.2026).
+Klage in erster Instanz ohne Anwaltszwang, § 11 Abs. 1 Satz 1 ArbGG (Fassung 27.04.2026 gelesen); Inhalt der Klageschrift nach § 253 Abs. 2 ZPO über § 46 Abs. 2 ArbGG: Parteien, Gericht, Gegenstand und Grund, bestimmter Antrag. Form: schriftlich mit Unterschrift und Abschriften, zu Protokoll der Rechtsantragstelle (§ 496 ZPO) oder elektronisch nur mit qualifizierter Signatur oder über eBO/Nutzerkonto (§ 46c ArbGG); einfache E-Mail genügt nicht. Kein Gerichtskostenvorschuss (§ 11 GKG), keine Erstattung eigener Anwaltskosten in erster Instanz (§ 12a Abs. 1 ArbGG).
+Fristen je nach Klageart gesondert prüfen (drei Wochen ab Zugang der Kündigung, § 4 Satz 1 KSchG; drei Monate ab schriftlicher Geltendmachung, § 61b Abs. 1 ArbGG; Eingang bei Gericht wahrt, § 167 ZPO) und in der Akte eintragen. Zuständig auch das Arbeitsgericht am gewöhnlichen Arbeitsort, § 48 Abs. 1a ArbGG.
 Anträge bestimmt fassen, Tatsachen mit Beweisangeboten, Anlagen als K 1, K 2 … durchnummerieren und im Anlagenverzeichnis der Akte führen.
 Vor Abgabe: Gegenprüfung (/recht:gegenpruefung) und fachanwaltliche Kurzprüfung empfehlen.
 ---
