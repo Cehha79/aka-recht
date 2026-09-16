@@ -196,6 +196,7 @@ eine `.docx` und warnt vor offenen Platzhaltern und Markern.
 
 | Vorlage | Zweck |
 |---|---|
+| `Akteneinsicht.md` | Antrag auf Akteneinsicht bei Behörde, Gericht oder Arbeitgeber mit wählbarer Rechtsgrundlage |
 | `Auskunft_DSGVO.md` | Auskunftsantrag nach Art. 15 DSGVO |
 | `Briefkopf.md` | Grundgerüst für jedes Schreiben: Absender, Empfänger, Datum, Betreff |
 | `Einspruch_Bussgeldbescheid.md` | Einspruch gegen einen Bußgeldbescheid, mit Akteneinsicht |
@@ -203,6 +204,7 @@ eine `.docx` und warnt vor offenen Platzhaltern und Markern.
 | `Fristsetzung.md` | Aufforderung mit Frist (Nacherfüllung, Zahlung, Antwort) |
 | `Klage_Arbeitsgericht.md` | Klage zum Arbeitsgericht, Grundgerüst mit Anträgen und Anlagen |
 | `Klage_Zivilgericht.md` | Zivilklage zum Amts- oder Landgericht, Zahlungsantrag mit Zinsen, Versäumnisurteil, Zuständigkeit |
+| `Strafanzeige.md` | Strafanzeige mit oder ohne Strafantrag, Sachverhalt, Beweismittel, Bitte um Bestätigung |
 | `Widerspruch_Bescheid.md` | Widerspruch gegen einen Bescheid einer Behörde |
 
 <img src="bilder/kapitel-merkblaetter.svg" alt="Merkblätter: Verfahren am Volltext">
@@ -214,11 +216,16 @@ den Pflichtinhalt dagegen.
 
 | Merkblatt | Inhalt | Stand |
 |---|---|---|
+| `04 Rechtsquellen/Verfahren/Akteneinsicht.md` | Akteneinsicht und Auskunft | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Dienstaufsichtsbeschwerde.md` | Dienstaufsichtsbeschwerde, Fachaufsichtsbeschwerde, Petition | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Einspruch_Bussgeldbescheid.md` | Einspruch gegen einen Bußgeldbescheid | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Einspruch gegen einen Steuerbescheid | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` | Klage zum Arbeitsgericht | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Mahnverfahren.md` | Mahnverfahren (Mahnbescheid und Vollstreckungsbescheid) | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Strafanzeige.md` | Strafanzeige und Strafantrag | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Widerspruch_Verwaltungsakt.md` | Widerspruch gegen einen Verwaltungsakt (Bescheid einer Behörde) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Zivilklage.md` | Zivilklage vor dem Amtsgericht oder Landgericht | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Zustaendigkeit_finden.md` | Zuständige Stelle finden | 16.09.2026 |
 
 > [!NOTE]
 > Rechtsinhalte altern. Welche Feiertage, Merkblätter und Vorlagen mit

@@ -11,7 +11,12 @@ Zu einigen Vorlagen gibt es ein Merkblatt unter `04 Rechtsquellen/Verfahren/`
 Vorlage nennt es in der ersten Zeile; vor dem Entwurf lesen und den Pflichtinhalt
 dagegen prüfen. Vorhanden: Einspruch_Steuerbescheid, Widerspruch_Verwaltungsakt,
 Einspruch_Bussgeldbescheid, Klage_Arbeitsgericht, Zivilklage (Vorlage
-Klage_Zivilgericht).
+Klage_Zivilgericht), Mahnverfahren (keine Vorlage: Für Mahnantrag,
+Widerspruch und Vollstreckungsbescheid gilt Formularzwang, § 703c Abs. 2 ZPO;
+das Merkblatt nennt Inhalt und Fristen), Strafanzeige, Akteneinsicht,
+Dienstaufsichtsbeschwerde (keine Vorlage; formlos, Aufbau im Merkblatt
+Abschnitt 3) und Zustaendigkeit_finden (Regeln und Verzeichnisse, keine
+Vorlage).
 
 Die Vorlagen setzen kein Rechtsgebiet voraus. Rechtsgrundlagen sind Beispiele
 und immer am Volltext zu prüfen; Fassung und Geltungszeitraum gehören dazu.

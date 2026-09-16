@@ -186,6 +186,7 @@ into a `.docx` and warns about open placeholders and markers.
 
 | Template | Purpose |
 |---|---|
+| `Akteneinsicht.md` | Request for access to files at an authority, court or employer with selectable legal basis |
 | `Auskunft_DSGVO.md` | Data access request under Art. 15 GDPR |
 | `Briefkopf.md` | Skeleton for any letter: sender, recipient, date, subject |
 | `Einspruch_Bussgeldbescheid.md` | Objection to an administrative fine notice, with request for file access |
@@ -193,6 +194,7 @@ into a `.docx` and warns about open placeholders and markers.
 | `Fristsetzung.md` | Demand with a deadline (performance, payment, reply) |
 | `Klage_Arbeitsgericht.md` | Labour court action, skeleton with motions and exhibits |
 | `Klage_Zivilgericht.md` | Civil action before the local or regional court, payment claim with interest, default judgment, jurisdiction |
+| `Strafanzeige.md` | Criminal complaint with or without formal request for prosecution, facts, evidence, request for confirmation |
 | `Widerspruch_Bescheid.md` | Administrative appeal against an authority decision |
 
 <img src="bilder/kapitel-merkblaetter-en.svg" alt="Fact sheets: procedures, full text">
@@ -204,11 +206,16 @@ from them, `/entwurf` checks the mandatory content against them.
 
 | Fact sheet | Content | As of |
 |---|---|---|
+| `04 Rechtsquellen/Verfahren/Akteneinsicht.md` | Access to files and data: which legal basis applies (VwVfG, SGB X, AO, StPO, OWiG, ZPO, BetrVG, GDPR, IFG) | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Dienstaufsichtsbeschwerde.md` | Complaint to a supervisor, supervisory complaint, petition (Art. 17 GG, DRiG, BRAO) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Einspruch_Bussgeldbescheid.md` | Objection to an administrative fine notice (OWiG, StVG) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Objection to a tax assessment (Abgabenordnung) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` | Action before the labour court (ArbGG, ZPO, KSchG, GKG) | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Mahnverfahren.md` | Order-for-payment procedure: payment order and enforcement order (ZPO, GKG) | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Strafanzeige.md` | Criminal complaint and request for prosecution (StPO, StGB) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Widerspruch_Verwaltungsakt.md` | Administrative appeal against an authority decision (VwGO) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Zivilklage.md` | Civil action before the local or regional court (ZPO, GVG, GKG, BGB) | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Zustaendigkeit_finden.md` | Finding the competent court or authority: rules and official directories | 16.09.2026 |
 
 > [!NOTE]
 > Legal content ages. Which holidays, fact sheets and templates ship with

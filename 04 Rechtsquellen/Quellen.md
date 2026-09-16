@@ -1,6 +1,6 @@
 # Rechtsquellen – gemeinsamer Zugangskatalog
 
-Stand der Recherche: 10.09.2026. Diese Quelle pflegt ausschließlich die Zugänge,
+Stand der Recherche: 10.09.2026, Zuständigkeitsverzeichnisse ergänzt am 16.09.2026. Diese Quelle pflegt ausschließlich die Zugänge,
 nicht die aktuellen Gesetzestexte. Sie wird in der Quellenzentrale angezeigt.
 Ein Katalog-Prüfdatum besagt nicht, dass jedes Gesetz seitdem unverändert ist.
 
@@ -95,6 +95,33 @@ Einige Portale erfordern JavaScript oder blockieren automatische Abrufe.
     "url": "https://service.justiz.de/mein-Justizpostfach-einrichten",
     "limit": "Eigenes Konto erforderlich. Nachrichten und Versandnachweise selbst archivieren.",
     "catalog_checked": "2026-09-10"
+  },
+  {
+    "id": "Q10",
+    "title": "Orts- und Gerichtsverzeichnis",
+    "category": "Zuständigkeit",
+    "use": "Zuständiges Amts-, Land-, Arbeits-, Sozial-, Verwaltungs- und Finanzgericht sowie Staatsanwaltschaft zu einem Ort oder einer Postleitzahl, mit Anschrift.",
+    "url": "https://www.justizadressen.nrw.de/de/justiz/suche",
+    "limit": "Regeln zur Zuständigkeit stehen im Merkblatt Zuständigkeit finden; Anschrift vor jedem Versand erneut abrufen.",
+    "catalog_checked": "2026-09-16"
+  },
+  {
+    "id": "Q11",
+    "title": "Mahngerichte und Online-Mahnantrag",
+    "category": "Zuständigkeit",
+    "use": "Zentrale Mahngerichte der Länder und der amtliche Online-Mahnantrag (Formularzwang, § 703c ZPO).",
+    "url": "https://www.mahngerichte.de/",
+    "limit": "Zuständig ist das Mahngericht am Wohnsitz des Antragstellers, § 689 Abs. 2 ZPO; Antrag unter https://www.online-mahnantrag.de/.",
+    "catalog_checked": "2026-09-16"
+  },
+  {
+    "id": "Q12",
+    "title": "Zuständigkeitsfinder Baden-Württemberg (service-bw)",
+    "category": "Zuständigkeit",
+    "use": "Zuständige Behörde und Leistung nach Ort in Baden-Württemberg; andere Länder über ihr eigenes Serviceportal.",
+    "url": "https://www.service-bw.de/",
+    "limit": "Nur Baden-Württemberg. Der Behördenfinder des Bundes war am 16.09.2026 per Abruf nicht erreichbar.",
+    "catalog_checked": "2026-09-16"
   }
 ]
 ```

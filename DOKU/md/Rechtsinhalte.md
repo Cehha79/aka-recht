@@ -64,16 +64,24 @@ Verordnungen sind nicht erfasst.
 | Widerspruch Verwaltungsakt | §§ 58, 60, 68, 69, 70, 73, 74, 80 VwGO; §§ 3a, 41, 80 VwVfG; § 15 AGVwGO BW, § 41 LVwVfG BW | VwGO zuletzt geändert 23.04.2026; AGVwGO BW Fassung 18.03.2025 (gültig ab 01.01.2026); LVwVfG BW Fassung 28.01.2025 | 16.09.2026 | AGVwGO und Landes-VwVfG der übrigen 15 Länder, VwZG, § 57 VwGO mit § 222 ZPO, § 72, § 79 VwGO, § 29 VwVfG, § 41 Abs. 2a VwVfG, Gebührengesetze |
 | Klage Arbeitsgericht | §§ 2, 9, 11, 11a, 12a, 46, 46c, 46g, 48, 54, 59, 61, 61a, 61b, 64, 66 ArbGG; §§ 130a, 167, 253, 496 ZPO; §§ 4, 5, 7 KSchG; §§ 11, 42 GKG | ArbGG zuletzt geändert 27.04.2026 (Änderung 20.05.2026 noch nicht eingearbeitet); ZPO 22.12.2025; KSchG 14.06.2021; GKG 22.12.2025 | 16.09.2026 | §§ 12, 13, 17, 130, 222, 269, 330 ZPO, § 17b GVG, §§ 16, 11 Abs. 4, 61a Abs. 4 und 5 ArbGG, § 1 Abs. 2 KSchG, § 130 BGB, § 15 Abs. 4 AGG, § 159 SGB III, GKG-Kostenverzeichnis, Rechtsprechung (Zugang, Fax, „demnächst“, Weiterbeschäftigung) |
 | Zivilklage | §§ 3, 12, 13, 17, 29, 78, 79, 91, 93, 130, 130a, 130d, 167, 222, 233, 234, 253, 269, 271, 275, 276, 278, 331, 338, 339, 495a, 496, 511, 517 ZPO; §§ 23, 71 GVG; §§ 12, 34 GKG, KV 1210, 1211; §§ 195, 199, 204 BGB; § 15a EGZPO | ZPO 22.12.2025; GVG 09.01.2026; GKG 22.12.2025; BGB 23.07.2026 (Wertgrenzen: AG 10.000 Euro, § 495a und Berufung 1.000 Euro, am Rohtext bestätigt) | 16.09.2026 | §§ 29a, 29c, 32, 38, 92, 114 ff., 139, 330 ZPO, § 43 GKG, §§ 269, 270, 288, 438, 548, 634a BGB, RVG, Landesschlichtungsgesetze, Stand des EGZPO |
+| Mahnverfahren | §§ 167, 222, 338, 339, 688 bis 697, 699 bis 703c, 794 ZPO; § 12 Abs. 3, § 34 GKG, KV 1100 mit Anm. zu 1210; § 204 BGB | ZPO 22.12.2025; GKG 22.12.2025; BGB 23.07.2026 (Mindestgebühr KV 1100: 38 Euro, am Rohtext bestätigt) | 16.09.2026 | § 702 Abs. 2 Satz 2, §§ 703a, 703d, 707, 719, 750 ff. ZPO, § 204 Abs. 2 BGB, Landesverordnung zentrales Mahngericht, MahnVordrV, Rechtsprechung zur Individualisierung; keine Vorlage (Formularzwang) |
+| Strafanzeige | §§ 153, 153a, 158, 160, 163, 170, 171, 172, 374, 376, 380, 406d, 406e, 406h, 406i StPO; §§ 77, 77b, 77d, 145d, 164 StGB | StPO 03.07.2026; StGB 20.03.2026 | 16.09.2026 | § 78 StGB, Antragsnormen je Delikt, §§ 377 ff., 395 ff., 403 ff. StPO, Landesrecht zu Schiedsstellen und Online-Wachen, SGB XIV |
+| Akteneinsicht | § 29 VwVfG; § 25 SGB X; § 364 AO; § 49 OWiG; §§ 147, 406e StPO; § 299 ZPO; § 83 BetrVG; Art. 15 DSGVO; §§ 1, 9 IFG; § 12 GBO; § 9 HGB | VwVfG 15.07.2024 (Änderungen 2026 nachgewiesen); SGB X 21.07.2026; AO 03.07.2026; StPO 03.07.2026; ZPO 22.12.2025; BetrVG 19.07.2024; IFG 19.06.2020; GBO 22.06.2026; HGB 04.02.2026; DSGVO EUR-Lex | 16.09.2026 | Landes-VwVfG und LIFG, Art. 12, 77, 79 DSGVO, § 7 Abs. 5 IFG, § 44a VwGO, § 147 Abs. 5 und § 406e Abs. 4 bis 6 StPO, JVKostG, BFH-Rechtsprechung |
+| Dienstaufsichtsbeschwerde | Art. 17 GG; § 26 DRiG; § 73 BRAO | GG 22.03.2025; DRiG 22.10.2024; BRAO 22.12.2025 | 16.09.2026 | BVerfG zur Bescheidungspflicht, Art. 45c GG, Petitionsgesetze, Disziplinarrecht, §§ 146, 147 GVG, § 87 SGB IV, § 191f BRAO, Bürger- und Polizeibeauftragte der Länder |
+| Zuständigkeit finden | § 52 VwGO; § 57 SGG; § 38 FGO; § 36 OWiG; § 143 GVG; §§ 7, 8 StPO; Verweise auf die anderen Merkblätter; vier amtliche Verzeichnisse (Abruf geprüft) | VwGO 23.04.2026; SGG 09.04.2026; FGO 22.12.2025; OWiG 22.12.2025; GVG 09.01.2026; StPO 03.07.2026 | 16.09.2026 | § 52 Nr. 3 bis 5 VwGO, § 29a ZPO, § 17a GVG, § 281 ZPO, Landesverordnungen, Behördenfinder des Bundes (nicht erreichbar) |
 | Einspruch Bußgeldbescheid | §§ 18, 31, 33, 46, 49, 51, 56, 62, 66 bis 74, 89, 105, 109, 110c OWiG; §§ 32a, 32d, 43, 44, 45, 297, 298, 300, 302 StPO; §§ 25, 25a, 26 StVG | OWiG zuletzt geändert 22.12.2025; StPO 03.07.2026; StVG 12.05.2026 (§ 26 Abs. 3 StVG: nur noch sechs Monate, Übergangsrecht offen) | 16.09.2026 | VwZG Bund und Länder (Ersatzzustellung), § 55, §§ 79, 80 OWiG, §§ 35a, 303, 410, 411 StPO, GKG-Kostenverzeichnis, BKatV, §§ 4, 28 StVG, Rechtsprechung zu Fax, E-Mail, Messunterlagen (BVerfG 2 BvR 1616/18), Beschränkung des Einspruchs |
 
 ### 2.3 Schreibvorlagen
 
-Acht Vorlagen vom 16.09.2026 (Briefkopf, Einspruch Bußgeldbescheid,
+Zehn Vorlagen vom 16.09.2026 (Briefkopf, Einspruch Bußgeldbescheid,
 Widerspruch Bescheid, Fristsetzung, Auskunft DSGVO, Klage Arbeitsgericht,
-Einspruch Steuerbescheid, Klage Zivilgericht). Die Normen darin tragen
-`[QUELLE]`, wo sie nicht am Volltext gelesen wurden; Merkblätter gibt es für
-Einspruch Steuerbescheid, Widerspruch Verwaltungsakt, Einspruch
-Bußgeldbescheid, Klage Arbeitsgericht und Zivilklage.
+Einspruch Steuerbescheid, Klage Zivilgericht, Strafanzeige, Akteneinsicht).
+Die Normen darin tragen `[QUELLE]`, wo sie nicht am Volltext gelesen wurden.
+Zehn Merkblätter: Einspruch Steuerbescheid, Widerspruch Verwaltungsakt,
+Einspruch Bußgeldbescheid, Klage Arbeitsgericht, Zivilklage, Mahnverfahren
+(ohne Vorlage, Formularzwang), Strafanzeige, Akteneinsicht,
+Dienstaufsichtsbeschwerde (ohne Vorlage, formlos) und Zuständigkeit finden
+(Regeln und Verzeichnisse).
 
 ## 3. Wann prüfen
 
