@@ -10,6 +10,31 @@ enthält keine KI, braucht kein Konto, keinen Schlüssel und kein Netz.
 
 Version 0.1 · Stand 16.09.2026 · Autor: Hasan Tepegöz
 
+## Was deine KI damit kann
+
+Die Mappe bringt Anleitungen mit (Skills), die deiner KI sagen, wie sie
+einen Fall bearbeitet. Du rufst sie in Claude Code mit `/name` auf, in Codex
+mit `$name`:
+
+| Aufruf | Was passiert |
+|---|---|
+| `fallaufnahme` | Rolle, Ziel, Rechtsgebiet, Beteiligte, Zugang, fehlende Angaben; trägt in die Akte ein |
+| `sachverhalt` | Chronologie und Beweistabelle aus den Originalen, mit Fundstelle je Aussage |
+| `recherche-de` | Rechtsfrage am Originalvolltext, Fassung und Geltungszeitraum, Quellen in die Akte |
+| `fristencheck` | Fristen mit Auslöser, Zugang, Rechtsgrundlage und gezeigter Rechnung |
+| `entwurf` | Schreiben und Schriftsätze aus den Vorlagen, mit Belegen aus der Akte, als Markdown und Word |
+| `gegenpruefung` | Gegenargumente, unbelegte Aussagen, falsche Zitate, Zahlen, Anlagen |
+| `uebergabe` | Paket für Anwalt, Behörde oder Gericht als ZIP |
+
+Die Anleitungen legen fest, wie sorgfältig die KI arbeiten muss: jede
+Rechtsaussage mit Norm, Absatz und Gesetz oder Urteil mit Gericht, Datum und
+Aktenzeichen, am Volltext gelesen; Ungeprüftes bleibt als `[PRÜFEN]`,
+`[QUELLE]` oder `[BELEG]` sichtbar; die Gegenseite wird immer mitgedacht.
+Jeder Entwurf bleibt Entwurf, bis du ihn prüfst und selbst versendest.
+Schreibvorlagen liegen unter `05 Vorlagen/Schreiben/`, die Werkzeuge der
+Akte (Lesen, Ordnen, Fristen rechnen, Journal) erreicht die KI über MCP
+oder `cli.py`.
+
 ## Geltungsbereich
 
 Diese Fassung ist für deutsches Recht gebaut: Fristenrechner nach §§ 187,
@@ -56,10 +81,13 @@ für Versand, Löschen oder Ändern von Originalen gibt es nicht.
 
 ## Grenzen
 
-Die Mappe ist kein Rechtsanwalt und gibt keine Rechtsberatung. Sie ordnet
-Unterlagen, rechnet Fristen nach §§ 187, 188, 193 BGB mit sichtbarer Rechnung
-und hält fest, was belegt ist und was nicht. Ob eine Frist gilt und was zu tun
-ist, prüfst du oder eine Fachanwältin, ein Fachanwalt. Der Autor kennt und
+Die Mappe ist kein Rechtsanwalt und gibt keine Rechtsberatung. Sie hilft
+beim Ordnen, Prüfen und Formulieren: Sie ordnet Unterlagen, rechnet Fristen
+nach §§ 187, 188, 193 BGB mit sichtbarer Rechnung, hält fest, was belegt ist
+und was nicht, und gibt deiner KI Anleitungen für Sachverhalt, Recherche,
+Entwürfe und Gegenprüfung. Ob eine Frist gilt, ob ein Schreiben so
+hinausgehen kann und was zu tun ist, prüfst du oder eine Fachanwältin, ein
+Fachanwalt. Der Autor kennt und
 prüft keine Angelegenheit eines Nutzers; alles läuft auf deinem Rechner, und
 was deine KI aus den Anleitungen macht, geschieht in deiner eigenen Sache und
 Verantwortung.
