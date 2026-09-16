@@ -128,7 +128,7 @@ Rechtsberatung, die nur zugelassene Personen erbringen dürfen. Wende dich
 dafür an eine Fachanwältin, einen Fachanwalt oder eine Beratungsstelle.
 
 Wenn dir die Mappe geholfen hat und du etwas zurückgeben willst, freut sich
-der Autor über freiwillige Unterstützung. Kontakt: info@mika-tec.com.
+der Autor über freiwillige Unterstützung unter https://github.com/sponsors/Cehha79. Kontakt: info@mika-tec.com.
 
 ## Impressum
 
