@@ -9,6 +9,8 @@ arguments: [fall]
 Lies zuerst `CLAUDE.md` im Projekt (Arbeitsprofil). Arbeite nur an Fall `$fall`.
 Ist `$fall` leer oder „neu“, frage nach dem Vorgang oder lege nach Rücksprache
 einen Fall an (`cli.py fall_anlegen titel=… bereich=… rolle=… ziel=…`).
+Will der Nutzer nur ausprobieren, `cli.py beispiel_laden` (erfundener
+Kündigungsfall, jederzeit löschbar) statt eines echten Falls.
 
 ## Vorgehen
 
