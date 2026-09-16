@@ -41,6 +41,16 @@ Kündigungsfall, jederzeit löschbar) statt eines echten Falls.
      `cli.py dokument_verschieben fall=$fall dokument=D… bereich="03 Schriftverkehr" unterordner="…"`
 6. Journal: `cli.py journal_schreiben fall=$fall art=Eingang titel=… text=…`.
 
+## Fragen an den Nutzer
+
+Offen beginnen („Erzähl, was passiert ist“), nicht mit einem Fragebogen.
+Dann konkret machen: „Wann genau, wer war dabei, was steht in dem Schreiben,
+zeig mir das Dokument.“ Unbestimmtes nicht stehen lassen („bald“, „viel“,
+„die Firma“: wann, wie viel, welche Person). Bei zwei Lesarten die Wahl
+anbieten („meinst du A oder B?“). Zuletzt das Ziel: „Woran merkst du, dass es
+gut ausgegangen ist?“ Alle offenen Fragen gebündelt in einer Nachfrage,
+nummeriert, damit der Nutzer mit Ziffern antworten kann.
+
 ## Ergebnis an den Nutzer
 
 Aufnahmevermerk: Fall, Rolle, Ziel, Verfahrensstand (belegt), Unterlagen mit

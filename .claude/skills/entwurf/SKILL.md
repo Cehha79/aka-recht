@@ -38,6 +38,16 @@ Akte, nicht vorausgesetzt.
 7. Vor einer Endfassung `/gegenpruefung` vorschlagen. Journal:
    `cli.py journal_schreiben fall=$fall art=Arbeit titel="Entwurf: …" text=…`.
 
+## Sprache im Sendetext
+
+Kurze Sätze, ein Gedanke je Satz, Aktiv statt Passiv („ich beantrage“, nicht
+„es wird beantragt“), bestimmte Angaben statt Umschreibungen (Datum, Betrag,
+Kennung statt „kürzlich“, „ein gewisser Betrag“). Keine Drohungen, keine
+Wertungen der Person, keine Floskeln („hiermit möchte ich“). Rechtsbegriffe
+nur, wo sie tragen; jede Norm mit Absatz. Zuerst das Anliegen, dann die
+Begründung, zuletzt Antrag und Frist. Vor der Abgabe einmal laut lesen: Was
+ein Sachbearbeiter beim ersten Lesen nicht versteht, wird umformuliert.
+
 ## Nach Versand durch den Nutzer
 
 Nicht der Skill versendet. Wenn der Nutzer den Versand meldet: Beleg

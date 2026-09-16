@@ -26,6 +26,12 @@ anwaltliche Bestätigung.
    `[QUELLE]` auflisten.
 5. Fristangaben: Auslöser, Zugang, Grundlage, Rechnung gesondert prüfen
    (`cli.py frist_berechnen`). Ohne Voraussetzung keine Freigabe behaupten.
+6. Angriff in drei Schritten: (a) den Text in einzelne, prüfbare Behauptungen
+   zerlegen (Tatsache, Rechtssatz, Schluss); (b) jede Behauptung einzeln
+   angreifen, so wie es ein gegnerischer Anwalt täte; (c) die Gegenseite
+   in ihrer stärksten Form aufschreiben (nicht die schwache Fassung), dann
+   erst die eigene Antwort darauf. Befunde nach Schwere ordnen: verliert
+   den Anspruch, schwächt ihn, Schönheitsfehler.
 
 ## Ergebnis
 

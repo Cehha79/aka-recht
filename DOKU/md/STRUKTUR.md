@@ -274,7 +274,7 @@ Arbeitsbereichs; Hook-Änderungen wirken nach Neustart der Sitzung.
 | `skills/fristencheck` | Fristkandidaten mit Auslöser, Zugang, Grundlage, Rechnung über `frist_berechnen`, Prüfstatus |
 | `skills/entwurf` | Schreiben und Schriftsätze als Entwurf aus den Vorlagen, Markdown plus Word über `docx_erzeugen.py`, `entwurf_erfassen` |
 | `skills/uebergabe` | Übergabepaket als ZIP außerhalb des Projekts über `uebergabe_paket.py`, Begleitvermerk |
-| `.claude/settings.json` | SessionStart: Eingang, nahe Fristen, offene Aufgaben je Fall. PreToolUse (Write, Edit): Schreiben in 02, 03, 04, 05, 08 und bestand.json gesperrt. Stop: Doku-Abgleich anmahnen |
+| `.claude/settings.json` | SessionStart: Eingang, nahe Fristen, offene Aufgaben je Fall. PreToolUse (Write, Edit): Schreiben in 02, 03, 04, 05, 08 und bestand.json gesperrt. PostToolUse (Read, Bash, WebFetch, WebSearch): Fremdtext-Wächter meldet Sätze, die wie Anweisungen an die KI klingen (REGELN Nr. 17), blockiert nicht. Stop: Doku-Abgleich anmahnen |
 | `05 Vorlagen/Schreiben/` | Briefkopf, Einspruch Bußgeld, Widerspruch Bescheid, Fristsetzung, Auskunft DSGVO, Klage Arbeitsgericht; interne Hinweise über der Trennlinie, Platzhalter 【 】, Marker |
 | `.claude/recht/werkzeuge/docx_erzeugen.py` | Markdown oder Text nach Word ohne Fremdpaket; warnt vor offenen Markern |
 | `.claude/recht/werkzeuge/uebergabe_paket.py` | ZIP mit Inhaltsverzeichnis, Chronologie, Fristen, Anlagen, Journal, Originalen |
