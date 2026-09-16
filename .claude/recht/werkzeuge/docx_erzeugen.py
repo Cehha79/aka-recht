@@ -2,6 +2,7 @@
 """Erzeugt aus einem Entwurf (.md oder .txt) eine Word-Datei (.docx), ohne Fremdpaket.
 
 Aufruf:  python3 docx_erzeugen.py <Entwurf.md|.txt> [Ziel.docx]
+         python3 docx_erzeugen.py --pruefen <Entwurf.md|.txt>   nur der Vorabbericht, keine Datei (Exit 1 bei Befunden)
 Regeln:
   - Alles VOR der ersten Trennlinie (Zeile aus mindestens drei „---“ oder 20 „-“)
     sind interne Hinweise und werden nicht übernommen. Fehlt die Trennlinie,
@@ -10,6 +11,12 @@ Regeln:
   - Kopfzeilen (Von:, An:, Cc:, Betreff:, Datum:) werden fett gesetzt.
   - Marker wie [PRÜFEN: …], [BELEG: …], [QUELLE: …] bleiben sichtbar, damit
     nichts Ungeprüftes unbemerkt versandt wird.
+  - Vorabbericht (seit 17.09.2026, Prüfbericht F29): vor dem Schreiben wird der
+    Sendetext geprüft auf offene Marker (mit und ohne Doppelpunkt), Platzhalter
+    【…】, fehlende Trennlinie, interne Notizen im Sendetext, Kopfzeilen (Von, An,
+    Datum, Betreff), Anlagenliste und Anträge. Der Bericht wird immer ausgegeben.
+    Eine erzeugte Datei ist kein Nachweis der Versandfertigkeit; die Freigabe
+    trifft der Nutzer bewusst (entwurf_erfassen status=geprüft), nie das Skript.
 Ein .docx ist eine ZIP-Datei mit XML; hier wird sie direkt geschrieben.
 """
 import sys
@@ -36,9 +43,45 @@ def absatz(text, art='', fett=False, nach=120):
     return f'<w:p>{ppr}{laeufe(text)}</w:p>'
 
 def sendetext(quelle):
-    text = Path(quelle).read_text('utf-8')
+    return zerlegen(Path(quelle).read_text('utf-8'))[1]
+
+def zerlegen(text):
+    """(interne Hinweise, Sendetext, Trennlinie gefunden?)"""
     teile = re.split(r'\n(?:-{20,}|---)\s*\n', text, maxsplit=1)
-    return teile[1] if len(teile) == 2 else text
+    if len(teile) == 2: return teile[0], teile[1], True
+    return '', text, False
+
+MARKER = re.compile(r'\[(PRÜFEN|BELEG|QUELLE)\b[^\]]*\]?')
+PLATZHALTER = re.compile(r'【[^】]*】|\{\{[^}]*\}\}|<<[^>]*>>|\[\.\.\.\]|\[…\]')
+INTERN = re.compile(r'(?im)^(?:interne?\s+(?:hinweise?|notiz|anmerkung|vermerk)|hinweis an|notiz|todo|prüfnotiz)\b|nicht im sendetext')
+KOPF = ('Von', 'An', 'Datum', 'Betreff')
+
+def vorpruefung(text):
+    """Vorabbericht zum Sendetext: Liste von Befunden (Sätze) und Zahlen. Leer heißt: nichts gefunden, nicht: versandfertig."""
+    intern, send, trennung = zerlegen(text); befunde = []
+    if not trennung: befunde.append('Keine Trennlinie („---“) gefunden: der ganze Text gilt als Sendetext, interne Hinweise wären mit drin.')
+    marker = MARKER.findall(send)
+    if marker:
+        zaehl = {m: marker.count(m) for m in sorted(set(marker))}
+        befunde.append('Offene Marker im Sendetext: ' + ', '.join(f'{k} ×{v}' for k, v in zaehl.items()) + '. Vor Versand auflösen.')
+    ph = PLATZHALTER.findall(send)
+    if ph: befunde.append(f'{len(ph)} Platzhalter noch nicht ausgefüllt: ' + ', '.join(dict.fromkeys(p[:40] for p in ph[:6])) + ('…' if len(ph) > 6 else '') + '.')
+    m = INTERN.search(send)
+    if m: befunde.append('Interne Notiz im Sendetext („' + re.sub(r'\s+', ' ', send[max(0, m.start()-20):m.end()+30]).strip() + '“): gehört über die Trennlinie.')
+    for feld in KOPF:
+        mm = re.search(rf'(?m)^{feld}:\s*(.*)$', send)
+        if not mm: befunde.append(f'Kopfzeile „{feld}:“ fehlt.')
+        elif not mm[1].strip() or PLATZHALTER.search(mm[1]) or 'TT.MM.JJJJ' in mm[1]: befunde.append(f'Kopfzeile „{feld}:“ ist noch leer oder Platzhalter.')
+    if re.search(r'(?i)\baktenzeichen\b', send) and re.search(r'(?i)aktenzeichen\s*[:：]?\s*(【[^】]*】|…|\.\.\.)', send): befunde.append('Aktenzeichen ist noch Platzhalter.')
+    if re.search(r'(?im)^anlagen?:', send):
+        liste = re.split(r'(?im)^anlagen?:\s*$', send, maxsplit=1)
+        eintraege = [z for z in (liste[1] if len(liste) == 2 else '').split('\n') if z.strip().startswith('- ')]
+        if not eintraege: befunde.append('Anlagenliste ohne Einträge.')
+        elif all(PLATZHALTER.search(z) for z in eintraege): befunde.append('Anlagenliste besteht nur aus Platzhaltern.')
+    elif re.search(r'(?i)\banlage\b|\bbeigefügt\b|\banbei\b', send): befunde.append('Text nennt Anlagen, aber es gibt keine Anlagenliste („Anlagen:“ mit „- “-Zeilen).')
+    if re.search(r'(?i)\b(klage|widerspruch|einspruch|antrag)\b', send) and not re.search(r'(?i)\b(beantrage|beantragen|wird beantragt|antrag(e|es)?\b.*?(?:,|:)|lege .{0,40}ein|erhebe)', send):
+        befunde.append('Rechtsbehelf oder Antrag genannt, aber kein ausdrücklicher Antragssatz („Ich beantrage …“, „lege … ein“, „erhebe …“) gefunden.')
+    return befunde
 
 def dokument_xml(text):
     koerper = []
@@ -86,11 +129,16 @@ def erzeugen(quelle, ziel=None):
         z.writestr('[Content_Types].xml', CONTENT_TYPES); z.writestr('_rels/.rels', RELS)
         z.writestr('word/_rels/document.xml.rels', DOC_RELS); z.writestr('word/document.xml', dokument_xml(text))
         z.writestr('word/styles.xml', STYLES); z.writestr('word/numbering.xml', NUMBERING)
-    marker = re.findall(r'\[(PRÜFEN|BELEG|QUELLE):[^\]]*\]', text)
-    return ziel, marker
+    return ziel, vorpruefung(quelle.read_text('utf-8'))
+
+def bericht(befunde):
+    if not befunde: return 'Vorabbericht: keine Befunde. Das ist keine Freigabe; Sendetext, Empfänger und Anlagen bleiben Sache des Nutzers.'
+    return 'Vorabbericht, vor Versand klären:\n' + '\n'.join(f'  - {b}' for b in befunde)
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2: sys.exit(__doc__)
-    ziel, marker = erzeugen(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)
-    print('Word-Datei:', ziel)
-    if marker: print(f'Achtung: {len(marker)} offene Marker im Sendetext ({", ".join(sorted(set(marker)))}). Vor Versand auflösen.')
+    args = [a for a in sys.argv[1:] if a != '--pruefen']
+    if not args: sys.exit(__doc__)
+    if '--pruefen' in sys.argv:
+        befunde = vorpruefung(Path(args[0]).read_text('utf-8')); print(bericht(befunde)); sys.exit(1 if befunde else 0)
+    ziel, befunde = erzeugen(args[0], args[1] if len(args) > 1 else None)
+    print('Word-Datei:', ziel); print(bericht(befunde))

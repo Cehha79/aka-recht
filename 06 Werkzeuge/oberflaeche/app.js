@@ -23,7 +23,7 @@ const api = {
   csrf: '',
   async get(url) { return antwort(await fetch(url)); },
   async post(url, daten) { return antwort(await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-AKA-CSRF': api.csrf}, body: JSON.stringify(daten)})); },
-  werkzeug(name, parameter, bestaetigt = true) { return api.post('/api/werkzeug', {name, parameter, bestaetigt}); },
+  async werkzeug(name, parameter, bestaetigt = true) { const r = await api.post('/api/werkzeug', {name, parameter, bestaetigt}); S.zentrale = null; return r; },   // F14: nach jedem Werkzeugaufruf die Zentrale neu einlesen
 };
 async function antwort(r) {
   let d; try { d = await r.json(); } catch { throw new Error('Keine Verbindung zum Dienst. Bitte Start.command im Rechtsordner öffnen.'); }
@@ -331,6 +331,7 @@ function dialogZu() { if (dialogVeraendert && !confirm('Ungespeicherte Angaben v
 async function akteSpeichern(aendern, meldung = 'Gespeichert.') {
   const kopie = JSON.parse(JSON.stringify(akte())); aendern(kopie);
   const r = await api.post('/api/fall/' + fallId(), {akte: kopie, revision: S.fall.revision});
+  S.zentrale = null;   // F14: Fristen und Aufgaben der Zentrale sonst veraltet
   await ladeFall(fallId()); if (meldung) toast(meldung); await render();
 }
 const liste = s => s.split(/[;,]/).map(x => x.trim()).filter(Boolean);
@@ -465,7 +466,7 @@ document.addEventListener('click', async e => {
     else if (a === 'beispiel-laden') { const r = await api.werkzeug('beispiel_laden', {}); S.zentrale = null; toast(`Beispielfall ${r.id} angelegt.`); location.hash = `#seite=uebersicht&fall=${r.id}`; }
     else if (a === 'neu-laden') { S.zentrale = null; S.quellen = null; if (S.fall) await ladeFall(fallId()); await render(); toast('Neu eingelesen.'); }
     else if (a === 'finder') await api.post('/api/oeffnen', {fall: b.dataset.fall, dokument: b.dataset.dok, bereich: b.dataset.gruppe || b.dataset.ort, zeigen: !!b.dataset.dok});
-    else if (a === 'oeffnen') await api.post('/api/oeffnen', {fall: fallId(), dokument: S.auswahl});
+    else if (a === 'oeffnen') { const r = await api.post('/api/oeffnen', {fall: fallId(), dokument: S.auswahl}); if (r.hinweis) toast(r.hinweis); }
     else if (a === 'hochladen') { $('#upload').onchange = () => hochladen(b.dataset.ziel); $('#upload').click(); }
     else if (a === 'zuordnen') zuordnenDialog(b.dataset.name);
     else if (a === 'kopieren') { await navigator.clipboard.writeText(b.dataset.text); toast('Kopiert.'); }
@@ -514,5 +515,8 @@ $('#formular').onsubmit = async e => { e.preventDefault(); if (!dialogSpeichern)
   try { await dialogSpeichern(new FormData(e.target)); dialogVeraendert = false; if ($('#dialog').open) $('#dialog').close(); } catch (err) { $('#dialog-fehler').textContent = err.message; $('#dialog-fehler').hidden = false; } finally { k.disabled = false; } };
 $('#dialog-schliessen').onclick = dialogZu; $('#dialog-abbrechen').onclick = dialogZu; $('#dialog').addEventListener('cancel', e => { e.preventDefault(); dialogZu(); });
 window.addEventListener('hashchange', render);
+// F14: nach einem Tageswechsel bei lange geöffneter Anwendung stimmen „in n Tagen“ und die Fristenlisten nicht mehr; beim Zurückkommen neu einlesen
+let renderTag = heute();
+window.addEventListener('focus', async () => { if (heute() !== renderTag) { renderTag = heute(); S.zentrale = null; if (S.fall) await ladeFall(fallId()); await render(); } });
 window.addEventListener('beforeunload', e => { if (dialogVeraendert) { e.preventDefault(); e.returnValue = ''; } });
 render();

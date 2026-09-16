@@ -40,7 +40,12 @@ Akte, nicht vorausgesetzt.
    Feld `hinweise`, das dem Nutzer nennen.
 5. Word-Datei erzeugen (Pfad vom Projektordner aus):
    `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" "02 Fälle/<Fallordner>/06 Entwürfe/<Datei>.md"`
-   Die Warnung zu offenen Markern dem Nutzer nennen.
+   Das Skript gibt einen Vorabbericht aus (offene Marker, Platzhalter 【…】,
+   interne Notizen im Sendetext, fehlende Kopfzeilen Von, An, Datum, Betreff,
+   Aktenzeichen, Anlagenliste, Antragssatz, fehlende Trennlinie); mit
+   `--pruefen` nur der Bericht ohne Datei. Jeden Befund dem Nutzer nennen.
+   Eine erzeugte Datei ist kein Nachweis der Versandfertigkeit; die Freigabe
+   trifft der Nutzer (Schritt 4, `status=geprüft`).
 6. Setzt der Entwurf selbst eine Frist (Nacherfüllung, Antwort, Zahlung):
    `cli.py frist_eintragen fall=$fall datum=… titel=… art="selbst gesetzt" ausloeser="eigenes Schreiben, Versand offen" rechtsgrundlage="eigene Fristsetzung" berechnung=… pruefstatus=offen quelle=<D-Kennung des Entwurfs>`;
    nach dem Versand auf `bestätigt` setzen und `quelle` auf den Versandbeleg.

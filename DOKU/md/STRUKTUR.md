@@ -200,7 +200,7 @@ Codex und andere. Dafür gibt es drei Standards, die wir bedienen:
 |---|---|---|---|
 | `AGENTS.md` und `CLAUDE.md` | Arbeitsanweisung im Projektordner, Klartext | Codex, Cursor, Gemini CLI, viele Agenten (`AGENTS.md`); Claude Code (`CLAUDE.md`) | eine Quelle, beide Dateien daraus erzeugt |
 | Agent Skills (`SKILL.md`) | Ordner mit Anleitung, offener Standard von Anthropic, von Codex übernommen | Claude Code (`.claude/skills/`), Codex (`.agents/skills/`) | Skills einmal gepflegt, für Codex kopiert |
-| MCP (Model Context Protocol) | offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe | Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini | eigener MCP-Server `mcp_server.py` ohne Fremdpaket, stellt die 22 Werkzeuge für Assistenten bereit (24 im Katalog, ohne `fall_lesen` und `akte_speichern`) |
+| MCP (Model Context Protocol) | offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe | Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini | eigener MCP-Server `mcp_server.py` ohne Fremdpaket, stellt die Werkzeuge für Assistenten bereit (Katalog ohne `fall_lesen` und `akte_speichern`; Stand 17.09.2026: 23 Werkzeuge für Assistenten, 25 im Katalog; die Zahl prüft der Produktbau gegen den Katalog, maßgeblich ist `cli.py liste`) |
 | Befehlszeile | `cli.py` | jede KI, die Befehle ausführen darf | vorhanden |
 
 Regeln für alle Wege: Lesen frei und wirklich nur lesend (kein Werkzeug mit
@@ -229,8 +229,8 @@ modelcontextprotocol.io): die Fassungen bis 2025-11-25 mit Handshake
 (`initialize`, `notifications/initialized`) und die Fassung 2026-07-28 ohne
 Handshake, bei der jede Anfrage ihre Version in `params._meta` trägt und es
 `server/discover` gibt. Methoden: `initialize`, `server/discover`, `ping`,
-`tools/list`, `tools/call`. Werkzeuge aus `werkzeuge.fuer_agenten()` (21 seit
-`beispiel_laden`, ohne `fall_lesen` und `akte_speichern`), jedes mit `inputSchema` und
+`tools/list`, `tools/call`. Werkzeuge aus `werkzeuge.fuer_agenten()` (Katalog ohne `fall_lesen` und
+`akte_speichern`, Zahl siehe oben), jedes mit `inputSchema` und
 `annotations.readOnlyHint` (seit 17.09.2026 zutreffend: lesende Werkzeuge
 schreiben nichts). Schreibende Werkzeuge tragen im Schema den
 Parameter `bestaetigt`; ohne den JSON-Wahrheitswert `true` liefert der Aufruf
@@ -268,6 +268,12 @@ Aufgaben, Entwürfe, Beweise und Anlagen, Journal.
 
 Die Oberfläche schreibt Ordnungsdaten über `/api/fall/<id>` mit Revision und
 nutzt für Dateivorgänge die Werkzeuge (Einsortieren, Journal, Fallstatus).
+Nach jedem Speichern und jedem Werkzeugaufruf wird die Zentrale neu
+eingelesen, beim Zurückkommen nach einem Tageswechsel ebenfalls (seit
+17.09.2026, F14). „Öffnen“ startet nur bekannte Dokumentformate (PDF, Text,
+Office ohne Makros, Bilder, E-Mail, Ton, Video); Skripte, Programme,
+Webseiten, Archive und Unbekanntes werden nur im Dateimanager gezeigt, mit
+Hinweis (F36).
 Routen im Adressfeld: `#seite=dokumente&fall=R-0001&dok=D0004`.
 
 ## Claude-Schicht (Stufe 5)
@@ -288,9 +294,9 @@ Arbeitsbereichs; Hook-Änderungen wirken nach Neustart der Sitzung.
 | `skills/fristencheck` | Fristkandidaten mit Auslöser, Zugang, Grundlage, Rechnung über `frist_berechnen`, Prüfstatus |
 | `skills/entwurf` | Schreiben und Schriftsätze als Entwurf aus den Vorlagen, Markdown plus Word über `docx_erzeugen.py`, `entwurf_erfassen` |
 | `skills/uebergabe` | Übergabepaket als ZIP außerhalb des Projekts über `uebergabe_paket.py`, Begleitvermerk |
-| `.claude/settings.json` | SessionStart: Eingang, nahe Fristen, offene Aufgaben je Fall. PreToolUse (Write, Edit): Schreiben in 02, 03, 04, 05, 08 und bestand.json gesperrt. PostToolUse (Read, Bash, WebFetch, WebSearch): Fremdtext-Wächter meldet Sätze, die wie Anweisungen an die KI klingen (REGELN Nr. 17), blockiert nicht. Stop: Doku-Abgleich anmahnen |
+| `.claude/settings.json` | SessionStart: Eingang, nahe Fristen, offene Aufgaben je Fall. PreToolUse (Write, Edit, MultiEdit): Schreiben in 02, 03, 04, 05, 08 und bestand.json gesperrt; der Pfad wird gegen den Projektordner aufgelöst („..“ und Verknüpfungen), geprüft werden die Ordnerbestandteile (seit 17.09.2026, F06); Shell und MCP deckt der Hook nicht ab, dort schützt der Dienst. PostToolUse (Read, Bash, WebFetch, WebSearch und die MCP-Werkzeuge `mcp__aka-recht__*`): Fremdtext-Wächter meldet Sätze, die wie Anweisungen an die KI klingen (REGELN Nr. 17), mit Herkunft (Datei, Befehl, Adresse oder Werkzeug mit Fall und Dokumentkennung), blockiert nicht; Ausnahmen nur für aufgelöste Pfade in `.claude`, `.agents`, `DOKU`, `06 Werkzeuge` und den Profil- und README-Dateien (bei Bash nur reines Lesen, nie wenn ein Skript läuft), auch kurze Texte und Dateinamen werden geprüft (seit 17.09.2026, F07). Stop: Doku-Abgleich inhaltlich: jede HTML-Ansicht wird aus ihrer md-Quelle neu erzeugt und verglichen, AGENTS.md und `.agents/skills/` über `verteilen.py --pruefen`, dazu die Namen der Dateien, die jünger sind als die Live-Dokumentation; läuft ohne zentrale.json (seit 17.09.2026, F26) |
 | `05 Vorlagen/Schreiben/` | Briefkopf, Einspruch Bußgeld, Widerspruch Bescheid, Fristsetzung, Auskunft DSGVO, Klage Arbeitsgericht; interne Hinweise über der Trennlinie, Platzhalter 【 】, Marker |
-| `.claude/recht/werkzeuge/docx_erzeugen.py` | Markdown oder Text nach Word ohne Fremdpaket; warnt vor offenen Markern |
+| `.claude/recht/werkzeuge/docx_erzeugen.py` | Markdown oder Text nach Word ohne Fremdpaket; Vorabbericht zum Sendetext (offene Marker mit und ohne Doppelpunkt, Platzhalter 【…】, interne Notizen, Kopfzeilen Von, An, Datum, Betreff, Aktenzeichen, Anlagenliste, Antragssatz, Trennlinie), `--pruefen` nur Bericht mit Exit 1 bei Befunden; die Datei ist keine Freigabe (seit 17.09.2026, F29) |
 | `.claude/recht/werkzeuge/uebergabe_paket.py` | ZIP für einen benannten Empfänger: `--empfaenger anwalt` voll (Verzeichnis mit Chronologie, Fristen, Aufgaben, Journal, Originale 01 bis 05), `behoerde`, `gericht`, `gegenseite`, `beratung` nur die mit `--nur` gewählten Dokumente; `--vorschau`; unbekannte Kennungen brechen ab; Paket wird zurückgelesen und gegen `00 Manifest.json` geprüft (seit 17.09.2026, F08, F27) |
 
 Claude arbeitet in der Sitzung mit denselben Werkzeugen wie die App, über

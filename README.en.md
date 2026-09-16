@@ -34,7 +34,7 @@ AI helps you to organise, check and formulate.
 > Click **"Beispielfall laden"** in the UI, then browse case, documents,
 > deadlines and draft. Delete it whenever you like.
 
-Version 0.1 · as of 17.09.2026 · Author: Hasan Tepegöz · Deutsch: [README.md](README.md)
+Product version 0.1 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · as of 17.09.2026 · tested with Python 3.14.7 on macOS 26.7 · Author: Hasan Tepegöz · Deutsch: [README.md](README.md)
 
 **Contents:** [What it looks like](#what-it-looks-like) · [How your AI works with the folder](#how-your-ai-works-with-the-folder) · [What is inside](#what-is-inside) · [What you can rely on](#what-you-can-rely-on) · [Scope](#scope) · [Requirements](#requirements) · [First start](#first-start) · [Connecting an AI](#connecting-an-ai) · [Limits](#limits) · [Backup](#backup) · [Licence](#licence) · [Contributing](#contributing-and-supporting) · [Legal notice](#legal-notice-impressum)
 
@@ -175,9 +175,9 @@ assistants have no hooks; for them the rules are in `AGENTS.md`.
 | Event | What the hook does |
 |---|---|
 | `SessionStart` | reports new mail, near deadlines and open tasks per case at session start |
-| `PreToolUse` | original protection: writing into 02 to 05, 08 and bestand.json is refused |
-| `PostToolUse` | foreign-text guard: warns when read text contains sentences that look like instructions to the AI |
-| `Stop` | doc check: reminds to update the docs after code changes |
+| `PreToolUse` | original protection: writing into 02 to 05, 08 and bestand.json is refused, checked on the resolved path |
+| `PostToolUse` | foreign-text guard: warns with the source when read text (file, command, web or MCP tool) contains sentences that look like instructions to the AI |
+| `Stop` | doc check: compares the HTML views with their md sources and the copies for other assistants with CLAUDE.md and the skills, names every mismatch |
 
 <img src="bilder/kapitel-vorlagen-en.svg" alt="Templates: letters with placeholders">
 
@@ -234,7 +234,7 @@ from them, `/entwurf` checks the mandatory content against them.
 | `python3 "06 Werkzeuge/dienst/cli.py" liste` | list all tools with parameters; then `cli.py <tool> field=value` |
 | `python3 "06 Werkzeuge/dienst/cli.py" frist_berechnen start=2026-09-11 menge=1 einheit=monate land=BW` | calculate a deadline, with the calculation shown |
 | `python3 "06 Werkzeuge/akte_schema.py" "02 Fälle/<case>/akte.json"` | validate a case file against the data model |
-| `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" <draft.md>` | Word file from a draft |
+| `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" <draft.md>` | Word file from a draft, with a pre-check report (open markers, placeholders, header lines, attachments); `--pruefen` report only |
 | `python3 ".claude/recht/werkzeuge/uebergabe_paket.py" R-0001 --empfaenger anwalt --vorschau` | hand-over package per recipient (anwalt: everything; gericht, behoerde, gegenseite, beratung: only `--nur D0001,D0002`), preview first, then without `--vorschau` as a verified ZIP with manifest outside the folder |
 | `python3 "06 Werkzeuge/verteilen.py"` | generate `AGENTS.md` and `.agents/skills/` from `CLAUDE.md` and `.claude/skills/`; `--pruefen` compare only |
 | `python3 "06 Werkzeuge/dienst/pruefen.py"` | functional test with artificial cases in a temp folder |
@@ -261,6 +261,10 @@ code and checks them in the test suite:
   calculation names the end date, evidence and trigger are present and no
   `[PRÜFEN]`, `[QUELLE]` or `[BELEG]` marker is open; the confirmation carries
   review date and reviewer, and an appointment needs the summons as source.
+- **Foreign attachments do not run.** "Öffnen" calls the system program only
+  for known document formats (PDF, text, office, images, e-mail, audio,
+  video); scripts, programs, web pages, archives and unknown types are only
+  shown in the file manager, with a note.
 - **Hand-overs contain only what should go out.** The package is built for a
   named recipient, previews every file, aborts on unknown IDs and is read
   back against its manifest.
@@ -290,7 +294,8 @@ languages are planned to match the countries.
 
 ## Requirements
 
-- Python 3 (`python3 --version`), no other packages.
+- Python 3, tested with 3.14.7 (`python3 --version`); older versions are
+  untested. No other packages.
 - Built and tested on macOS. Linux and Windows: start scripts are included,
   the service uses only the standard library, but it has not been tested
   there yet. On Windows the command is usually `python` instead of
@@ -375,10 +380,11 @@ whole country packages are welcome. Please do not submit real case files,
 names or docket numbers. Contributions are licensed under the same licence
 (AGPL-3.0). How a contribution works is described in `CONTRIBUTING.md`.
 
-Issues and discussions are for the software only. Questions about a real
-case ("does this deadline apply to me?") are not answered there; that would
-be legal advice, which only licensed persons may give. Turn to a qualified
-lawyer or an advice centre instead.
+Issues and discussions are for the software and fictional examples only.
+Questions about a real case ("does this deadline apply to me?") are not
+answered there: advice on individual cases is not part of this project, and
+nobody here knows your matter. Turn to a qualified lawyer or an advice
+centre instead.
 
 If the folder has helped you and you want to give something back, the author
 welcomes voluntary support unter https://github.com/sponsors/Cehha79. Contact: info@mika-tec.com.

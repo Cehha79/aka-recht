@@ -19,9 +19,10 @@ ein Beitrag abläuft.
 
 ## Regeln
 
-1. Issues und Diskussionen sind nur für die Software. Keine Fragen und
-   keine Antworten zu echten Fällen; das wäre Rechtsberatung, die nur
-   zugelassene Personen erbringen dürfen.
+1. Issues und Diskussionen sind nur für die Software und erfundene
+   Beispiele. Keine Fragen und keine Antworten zu echten Fällen:
+   Fallberatung ist nicht Gegenstand des Projekts; dafür gibt es
+   Fachanwältinnen, Fachanwälte und Beratungsstellen.
 2. Keine echten Akten, Namen, Aktenzeichen oder Gesundheitsdaten einreichen,
    auch nicht in Screenshots oder Testdaten. Testfälle sind erfunden.
 3. Nur Python-Standardbibliothek, keine Fremdpakete. Oberfläche ohne

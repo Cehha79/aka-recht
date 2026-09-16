@@ -170,15 +170,32 @@ def _oeffnen_befehl(p, zeigen):
     if sys.platform.startswith('win'): return ['explorer', '/select,' + str(p)] if zeigen else ['explorer', str(p)]
     return ['xdg-open', str(p.parent if zeigen else p)]
 
+# Nur bekannte Dokumentformate werden direkt mit dem Systemprogramm geöffnet; alles andere (Skripte, Programme, Webseiten,
+# Archive, Office-Dateien mit Makros, Unbekanntes) wird nur im Dateimanager gezeigt (Prüfbericht 16.09.2026, F36).
+DOKUMENTFORMATE = {'.pdf', '.txt', '.md', '.rtf', '.docx', '.doc', '.odt', '.xlsx', '.xls', '.ods', '.csv', '.pptx', '.ppt', '.odp',
+                   '.jpg', '.jpeg', '.png', '.gif', '.heic', '.tif', '.tiff', '.bmp', '.webp', '.eml', '.msg',
+                   '.mp3', '.m4a', '.wav', '.aac', '.mp4', '.mov', '.m4v'}
+
+def oeffnen_art(pfad):
+    """(direkt öffnen?, Hinweis). Dateityp entscheidet; ohne Endung oder unbekannt gilt: nur zeigen."""
+    endung = Path(pfad).suffix.lower()
+    if endung in DOKUMENTFORMATE: return True, ''
+    art = 'ohne Endung' if not endung else f'Typ „{endung}“'
+    return False, f'Datei {art} wird nicht direkt geöffnet, sondern nur im Dateimanager gezeigt: kein bekanntes Dokumentformat, könnte ein Programm, Skript oder aktiver Inhalt sein. Bei Bedarf dort bewusst öffnen.'
+
 def oeffnen(fall=None, dokument=None, bereich=None, zeigen=False):
-    """Datei oder Ordner mit dem Dateimanager öffnen. Nicht für die KI, nur für die Oberfläche. Schreibt nichts."""
+    """Datei oder Ordner mit dem Dateimanager öffnen. Nicht für die KI, nur für die Oberfläche. Schreibt nichts.
+    Direkt geöffnet werden nur bekannte Dokumentformate (DOKUMENTFORMATE); sonst wird die Datei nur gezeigt und ein Hinweis geliefert."""
     import subprocess
+    hinweis = ''
     if fall and dokument:
         akte, _ = store.lese_akte(fall); d = akte['dokumente'].get(dokument)
         if not d: raise ValueError('Unbekannte Dokumentkennung. ' + ABGLEICH_HINWEIS)
         p = store.sicher(d['pfad'], store.fall_ordner(fall))
         if not p.exists(): raise ValueError('Datei fehlt am registrierten Ort.')
-        if not zeigen and p.suffix.lower() in ('.py', '.sh', '.json', '.html'): zeigen = True
+        if not zeigen:
+            direkt, hinweis = oeffnen_art(p)
+            if not direkt: zeigen = True
         args = _oeffnen_befehl(p, zeigen)
     elif fall:
         basis = store.fall_ordner(fall)
@@ -190,7 +207,7 @@ def oeffnen(fall=None, dokument=None, bereich=None, zeigen=False):
         args = _oeffnen_befehl(store.sicher(orte[bereich]), False)
     try: subprocess.run(args, check=True, timeout=8, capture_output=True)
     except FileNotFoundError: raise ValueError('Kein Dateimanager gefunden (' + args[0] + ').')
-    return {'ok': True}
+    return {'ok': True, 'gezeigt': zeigen, 'hinweis': hinweis}
 
 # ---------------------------------------------------------------- schreibend
 @werkzeug('fall_anlegen', 'Neuen Fall mit fester Kennung und Ordnerstruktur anlegen.',

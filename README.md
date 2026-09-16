@@ -34,7 +34,7 @@ es zu ordnen, zu prüfen und zu formulieren.
 > Arbeitgeber). In der Oberfläche auf **„Beispielfall laden“** klicken, dann
 > durch Akte, Dokumente, Fristen und Entwurf klicken. Jederzeit löschbar.
 
-Version 0.1 · Stand 17.09.2026 · Autor: Hasan Tepegöz
+Produkt Version 0.1 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · Stand 17.09.2026 · geprüft mit Python 3.14.7 auf macOS 26.7 · Autor: Hasan Tepegöz
 
 **Inhalt:** [So sieht es aus](#so-sieht-es-aus) · [So arbeitet deine KI mit der Mappe](#so-arbeitet-deine-ki-mit-der-mappe) · [Was in der Mappe steckt](#was-in-der-mappe-steckt) · [Worauf du dich verlassen kannst](#worauf-du-dich-verlassen-kannst) · [Geltungsbereich](#geltungsbereich) · [Voraussetzungen](#voraussetzungen) · [Erster Start](#erster-start) · [KI anbinden](#ki-anbinden) · [Grenzen](#grenzen) · [Sicherung](#sicherung) · [Lizenz](#lizenz) · [Mitmachen](#mitmachen-und-unterstützen) · [Impressum](#impressum)
 
@@ -189,9 +189,9 @@ Andere Assistenten kennen keine Hooks; für sie stehen die Regeln in
 | Zeitpunkt | Was der Hook tut |
 |---|---|
 | `SessionStart` | meldet beim Start Eingang, nahe Fristen und offene Aufgaben je Fall |
-| `PreToolUse` | Originalschutz: Schreiben in 02 Grundlagen, 03 Schriftverkehr, 04 Verfahren, 05 Beweise, 08 Archiv und in bestand.json wird abgewiesen |
-| `PostToolUse` | Fremdtext-Wächter: warnt, wenn gelesener Text Sätze enthält, die wie Anweisungen an die KI klingen |
-| `Stop` | Doku-Abgleich: erinnert daran, die Doku nach Code-Änderungen nachzuziehen |
+| `PreToolUse` | Originalschutz: Schreiben in 02 Grundlagen, 03 Schriftverkehr, 04 Verfahren, 05 Beweise, 08 Archiv und in bestand.json wird abgewiesen, geprüft am aufgelösten Pfad |
+| `PostToolUse` | Fremdtext-Wächter: warnt mit Herkunft, wenn gelesener Text (Datei, Befehl, Web oder MCP-Werkzeug) Sätze enthält, die wie Anweisungen an die KI klingen |
+| `Stop` | Doku-Abgleich: prüft HTML-Ansichten gegen ihre md-Quellen und die Kopien für andere Assistenten gegen CLAUDE.md und Skills, nennt jede Abweichung |
 
 <img src="bilder/kapitel-vorlagen.svg" alt="Vorlagen: Schreiben mit Platzhaltern">
 
@@ -248,7 +248,7 @@ den Pflichtinhalt dagegen.
 | `python3 "06 Werkzeuge/dienst/cli.py" liste` | alle Werkzeuge mit Parametern; danach `cli.py <werkzeug> feld=wert` |
 | `python3 "06 Werkzeuge/dienst/cli.py" frist_berechnen start=2026-09-11 menge=1 einheit=monate land=BW` | Frist rechnen, mit Rechenweg |
 | `python3 "06 Werkzeuge/akte_schema.py" "02 Fälle/<Fall>/akte.json"` | Akte gegen das Datenmodell prüfen |
-| `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" <Entwurf.md>` | Word-Datei aus einem Entwurf |
+| `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" <Entwurf.md>` | Word-Datei aus einem Entwurf, mit Vorabbericht (offene Marker, Platzhalter, Kopfzeilen, Anlagen); `--pruefen` nur der Bericht |
 | `python3 ".claude/recht/werkzeuge/uebergabe_paket.py" R-0001 --empfaenger anwalt --vorschau` | Übergabepaket je Empfänger (anwalt: alles; gericht, behoerde, gegenseite, beratung: nur `--nur D0001,D0002`), erst Vorschau, dann ohne `--vorschau` als geprüfte ZIP mit Manifest außerhalb der Mappe |
 | `python3 "06 Werkzeuge/verteilen.py"` | `AGENTS.md` und `.agents/skills/` aus `CLAUDE.md` und `.claude/skills/` erzeugen; `--pruefen` nur vergleichen |
 | `python3 "06 Werkzeuge/dienst/pruefen.py"` | Funktionstest mit künstlichen Akten in einem Temp-Ordner |
@@ -275,6 +275,10 @@ technisch durch und prüft sie im Funktionstest:
   Rechnung das Fristende nennt, Beleg und Auslöser da sind und kein Marker
   `[PRÜFEN]`, `[QUELLE]` oder `[BELEG]` offen ist; die Bestätigung trägt
   Prüfdatum und Prüfer, ein Termin braucht die Ladung als Quelle.
+- **Fremde Anlagen starten nichts.** „Öffnen“ ruft das Systemprogramm nur
+  für bekannte Dokumentformate (PDF, Text, Office, Bilder, E-Mail, Ton,
+  Video); Skripte, Programme, Webseiten, Archive und Unbekanntes werden nur
+  im Dateimanager gezeigt, mit Hinweis.
 - **Übergaben enthalten nur, was hin soll.** Das Paket wird für einen
   benannten Empfänger gebaut, zeigt vorher jede Datei, bricht bei
   unbekannten Kennungen ab und wird gegen sein Manifest zurückgelesen.
@@ -304,7 +308,8 @@ Weitere Sprachen sind geplant, passend zu den Ländern.
 
 ## Voraussetzungen
 
-- Python 3 (`python3 --version`), keine weiteren Pakete.
+- Python 3, geprüft mit 3.14.7 (`python3 --version`); ältere Fassungen
+  sind ungeprüft. Keine weiteren Pakete.
 - Gebaut und geprüft auf macOS. Linux und Windows: Startskripte liegen bei,
   der Dienst nutzt nur die Standardbibliothek, geprüft ist es dort noch
   nicht. Unter Windows heißt der Befehl meist `python` statt `python3`;
@@ -393,10 +398,11 @@ später ganze Länderpakete sind willkommen. Bitte keine echten Akten, Namen
 oder Aktenzeichen einreichen. Beiträge stehen unter derselben Lizenz
 (AGPL-3.0). Wie ein Beitrag abläuft, steht in `CONTRIBUTING.md`.
 
-Issues und Diskussionen sind nur für die Software da. Fragen zu einem echten
-Fall („Gilt bei mir die Frist?“) werden dort nicht beantwortet; das wäre
-Rechtsberatung, die nur zugelassene Personen erbringen dürfen. Wende dich
-dafür an eine Fachanwältin, einen Fachanwalt oder eine Beratungsstelle.
+Issues und Diskussionen sind nur für die Software und erfundene Beispiele
+da. Fragen zu einem echten Fall („Gilt bei mir die Frist?“) werden dort
+nicht beantwortet: Fallberatung ist nicht Gegenstand dieses Projekts, und
+niemand hier kennt deine Angelegenheit. Wende dich dafür an eine
+Fachanwältin, einen Fachanwalt oder eine Beratungsstelle.
 
 Wenn dir die Mappe geholfen hat und du etwas zurückgeben willst, freut sich
 der Autor über freiwillige Unterstützung unter https://github.com/sponsors/Cehha79. Kontakt: info@mika-tec.com.

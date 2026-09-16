@@ -38,7 +38,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Read|Bash|WebFetch|WebSearch",
+        "matcher": "Read|Bash|WebFetch|WebSearch|mcp__aka-recht__.*",
         "hooks": [
           {
             "type": "command",

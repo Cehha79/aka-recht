@@ -4,7 +4,7 @@ Jede Vorlage hat zwei Teile: interne Hinweise oberhalb der Trennlinie `---`
 (werden nicht in die Word-Datei übernommen) und den Sendetext darunter.
 Platzhalter stehen in 【 】 und müssen ersetzt werden. Marker `[QUELLE: …]`,
 `[PRÜFEN: …]`, `[BELEG: …]` bleiben stehen, bis sie am Original aufgelöst sind.
-Der Word-Erzeuger (`werkzeuge/docx_erzeugen.py`) warnt vor offenen Markern.
+Der Word-Erzeuger (`werkzeuge/docx_erzeugen.py`) gibt vor dem Schreiben einen Vorabbericht aus: offene Marker (auch ohne Doppelpunkt), Platzhalter 【…】, interne Notizen im Sendetext, fehlende Kopfzeilen, Aktenzeichen, Anlagenliste, Antragssatz, fehlende Trennlinie; `--pruefen` liefert nur den Bericht.
 
 Zu einigen Vorlagen gibt es ein Merkblatt unter `04 Rechtsquellen/Verfahren/`
 (Rechtsbehelf, Frist, Form, Pflichtinhalt, Adressat, Quellen mit Stand). Die
