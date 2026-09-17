@@ -34,7 +34,7 @@ AI helps you to organise, check and formulate.
 > Click **"Beispielfall laden"** in the UI, then browse case, documents,
 > deadlines and draft. Delete it whenever you like.
 
-Product version 0.1 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · as of 17.09.2026 · tested with Python 3.14.7 on macOS 26.7 · Author: Hasan Tepegöz · Deutsch: [README.md](README.md)
+Product version 0.2 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · as of 17.09.2026 · tested with Python 3.14.7 on macOS 26.7 · Author: Hasan Tepegöz · Deutsch: [README.md](README.md)
 
 **Contents:** [What it looks like](#what-it-looks-like) · [How your AI works with the folder](#how-your-ai-works-with-the-folder) · [What is inside](#what-is-inside) · [What you can rely on](#what-you-can-rely-on) · [Scope](#scope) · [Requirements](#requirements) · [First start](#first-start) · [Connecting an AI](#connecting-an-ai) · [Limits](#limits) · [Backup](#backup) · [Licence](#licence) · [Contributing](#contributing-and-supporting) · [Legal notice](#legal-notice-impressum)
 
@@ -215,7 +215,7 @@ from them, `/entwurf` checks the mandatory content against them.
 | `04 Rechtsquellen/Verfahren/Akteneinsicht.md` | Access to files and data: which legal basis applies (VwVfG, SGB X, AO, StPO, OWiG, ZPO, BetrVG, GDPR, IFG) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Dienstaufsichtsbeschwerde.md` | Complaint to a supervisor, supervisory complaint, petition (Art. 17 GG, DRiG, BRAO) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Einspruch_Bussgeldbescheid.md` | Objection to an administrative fine notice (OWiG, StVG) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Objection to a tax assessment (Abgabenordnung) | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Objection to a tax assessment (Abgabenordnung) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` | Action before the labour court (ArbGG, ZPO, KSchG, GKG) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Mahnverfahren.md` | Order-for-payment procedure: payment order and enforcement order (ZPO, GKG) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Strafanzeige.md` | Criminal complaint and request for prosecution (StPO, StGB) | 16.09.2026 |

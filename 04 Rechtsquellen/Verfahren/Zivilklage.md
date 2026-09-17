@@ -1,17 +1,21 @@
 # Merkblatt: Zivilklage vor dem Amtsgericht oder Landgericht
 
-*Rechtsordnung DE · Bereiche Verträge und Verbraucher, Forderungen und Inkasso, Wohnen und Miete, Bauen und Nachbarn, Versicherungen · Stand der Prüfung: 16.09.2026*
+*Rechtsordnung DE · Bereiche Verträge und Verbraucher, Forderungen und Inkasso, Wohnen und Miete, Bauen und Nachbarn, Versicherungen · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026*
 
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Normen
 am amtlichen Volltext gelesen (gesetze-im-internet.de): Zivilprozessordnung
-(ZPO), Bek. v. 05.12.2005, zuletzt geändert durch Art. 2 G v. 22.12.2025
-(BGBl. 2025 I Nr. 349; drei Änderungen durch G v. 20.05.2026 I Nr. 152 noch
-nicht abschließend bearbeitet); Gerichtsverfassungsgesetz (GVG), Bek. v.
-09.05.1975, zuletzt geändert durch Art. 4 G v. 09.01.2026 (BGBl. 2026 I Nr. 3;
-Änderungen vom 20.03.2026 und 02.07.2026 textlich nachgewiesen);
-Gerichtskostengesetz (GKG), Bek. v. 27.02.2014, zuletzt geändert 22.12.2025;
-Bürgerliches Gesetzbuch (BGB), Bek. v. 02.01.2002, zuletzt geändert durch
-Art. 6 G v. 23.07.2026 (BGBl. 2026 I Nr. 226). Gilt für die Klage des
+(ZPO), Bek. v. 05.12.2005, zuletzt geändert durch Art. 3 G v. 20.05.2026
+(BGBl. 2026 I Nr. 152; Vollzitat des Portals, die Zeile „Stand“ nennt
+22.12.2025, drei Änderungen vom 20.05.2026 sind dokumentarisch noch nicht
+abschließend bearbeitet); Gerichtsverfassungsgesetz (GVG), Bek. v.
+09.05.1975, zuletzt geändert durch Art. 5 G v. 02.07.2026 (BGBl. 2026 I
+Nr. 198; Vollzitat, Stand-Zeile 09.01.2026, Änderungen vom 20.03.2026 und
+02.07.2026 dokumentarisch noch nicht abschließend bearbeitet);
+Gerichtskostengesetz (GKG), Bek. v. 27.02.2014, zuletzt geändert durch Art. 11
+G v. 20.05.2026 I Nr. 152 (Vollzitat; Stand-Zeile 22.12.2025); Bürgerliches
+Gesetzbuch (BGB), Bek. v. 02.01.2002, zuletzt geändert durch Art. 6 G v.
+23.07.2026 (BGBl. 2026 I Nr. 226); Einführungsgesetz zur ZPO (EGZPO),
+zuletzt geändert durch Art. 17 G v. 08.12.2025 (BGBl. 2025 I Nr. 319). Gilt für die Klage des
 Bürgers in bürgerlichen Rechtsstreitigkeiten (Kauf, Werkvertrag, Miete,
 Darlehen, Schadensersatz, Nachbarn, Versicherung) in erster Instanz. Nicht
 erfasst: Arbeitssachen (eigenes Merkblatt), Familiensachen, Verwaltungs- und
@@ -23,13 +27,13 @@ Gerichtskosten bereithalten.
 | Punkt | Regel | Norm |
 |---|---|---|
 | Amtsgericht | zuständig für „Streitigkeiten über Ansprüche, deren Gegenstand an Geld oder Geldeswert die Summe von zehntausend Euro nicht übersteigt“; ohne Rücksicht auf den Wert bei Wohnraummiete („diese Zuständigkeit ist ausschließlich“), Wohnungseigentum, Wildschaden und Nachbarrecht nach §§ 906, 910, 911, 923 BGB | § 23 Nr. 1, Nr. 2 Buchst. a, c, d, e GVG |
-| Landgericht | „alle bürgerlichen Rechtsstreitigkeiten, die nicht den Amtsgerichten zugewiesen sind“, also in der Regel über 10.000 Euro | § 71 Abs. 1 GVG |
+| Landgericht | „alle bürgerlichen Rechtsstreitigkeiten, die nicht den Amtsgerichten zugewiesen sind“, also in der Regel über 10.000 Euro. Dazu „ohne Rücksicht auf den Wert des Streitgegenstandes ausschließlich“ unter anderem für Streitigkeiten „aus Heilbehandlungen“ (Nr. 9), „über Ansprüche aus Veröffentlichungen durch Druckerzeugnisse und Bild- und Tonträger jeder Art, insbesondere in Presse, Rundfunk, Film und Fernsehen sowie im Internet“ (Nr. 7), über das Anordnungsrecht des Bestellers beim Bauvertrag (Nr. 5) und gegen Richter und Beamte wegen Amtspflichtverletzung (Nr. 2). In diesen Fällen gilt der Anwaltszwang auch unter 10.000 Euro | § 71 Abs. 1, Abs. 2 Nr. 2, 5, 7 und 9 GVG |
 | Örtlich: allgemein | Gericht am allgemeinen Gerichtsstand des Beklagten: Wohnsitz einer Person; Sitz einer Gesellschaft, eines Vereins oder einer Gemeinde („Als Sitz gilt, wenn sich nichts anderes ergibt, der Ort, wo die Verwaltung geführt wird“) | § 12, § 13, § 17 Abs. 1 ZPO |
-| Örtlich: Erfüllungsort | „Für Streitigkeiten aus einem Vertragsverhältnis und über dessen Bestehen ist das Gericht des Ortes zuständig, an dem die streitige Verpflichtung zu erfüllen ist“; eine Vereinbarung über den Erfüllungsort zählt nur unter Kaufleuten | § 29 Abs. 1 und 2 ZPO `[QUELLE: Erfüllungsort je Vertragsart, §§ 269, 270 BGB]` |
+| Örtlich: Erfüllungsort | „Für Streitigkeiten aus einem Vertragsverhältnis und über dessen Bestehen ist das Gericht des Ortes zuständig, an dem die streitige Verpflichtung zu erfüllen ist“; eine Vereinbarung über den Erfüllungsort zählt nur, „wenn die Vertragsparteien Kaufleute, juristische Personen des öffentlichen Rechts oder öffentlich-rechtliche Sondervermögen sind“ | § 29 Abs. 1 und 2 ZPO `[QUELLE: Erfüllungsort je Vertragsart, §§ 269, 270 BGB]` |
 | Weitere Gerichtsstände | unerlaubte Handlung am Tatort, Verbraucherverträge, Miete am Ort der Wohnung (ausschließlich) | `[QUELLE: §§ 29a, 29c, 32 ZPO nicht gelesen]` |
 | Selbst klagen | Vor dem Amtsgericht: „Soweit eine Vertretung durch Rechtsanwälte nicht geboten ist, können die Parteien den Rechtsstreit selbst führen.“ Vertreten dürfen außer Anwälten nur Beschäftigte, „volljährige Familienangehörige …, Personen mit Befähigung zum Richteramt und Streitgenossen, wenn die Vertretung nicht im Zusammenhang mit einer entgeltlichen Tätigkeit steht“, Verbraucherzentralen für Verbraucherforderungen | § 79 Abs. 1 Satz 1, Abs. 2 ZPO |
-| Anwaltszwang | „Vor den Landgerichten und Oberlandesgerichten müssen sich die Parteien durch einen Rechtsanwalt vertreten lassen.“ Über 10.000 Euro also nur mit Anwalt | § 78 Abs. 1 Satz 1 ZPO |
-| Vorher schlichten? | Länder können für Streitigkeiten bis 750 Euro, Nachbarrecht, Ehrverletzungen und AGG-Sachen eine Gütestelle vorschalten; nicht bei Klagen mit gesetzlicher Frist und nicht nach einem Mahnverfahren | § 15a Abs. 1 Satz 1, Abs. 2 EGZPO `[QUELLE: Landesgesetz; Baden-Württemberg Schlichtungsgesetz nicht gelesen]` |
+| Anwaltszwang | „Vor den Landgerichten und Oberlandesgerichten müssen sich die Parteien durch einen Rechtsanwalt vertreten lassen.“ Über 10.000 Euro und in den Fällen des § 71 Abs. 2 GVG also nur mit Anwalt; ohne Anwalt bleiben nur Prozesshandlungen, „die vor dem Urkundsbeamten der Geschäftsstelle vorgenommen werden können“ | § 78 Abs. 1 Satz 1, Abs. 3 ZPO |
+| Vorher schlichten? | Länder können für Streitigkeiten bis 750 Euro, Nachbarrecht, Ehrverletzungen außerhalb von Presse und Rundfunk und AGG-Sachen eine Gütestelle vorschalten; die Bescheinigung über den erfolglosen Versuch ist „mit der Klage einzureichen“ und wird auch ausgestellt, wenn das Verfahren binnen drei Monaten nicht durchgeführt wurde. Nicht bei Klagen mit gesetzlicher oder gerichtlicher Frist, nicht nach einem Mahnverfahren und nicht, „wenn die Parteien nicht in demselben Land wohnen oder ihren Sitz oder eine Niederlassung haben“ | § 15a Abs. 1 Satz 1 bis 3, Abs. 2 Satz 1 Nr. 1 und 5, Satz 2 EGZPO `[QUELLE: Landesgesetz; Baden-Württemberg Schlichtungsgesetz nicht gelesen]` |
 | Alternative Mahnverfahren | Bei reinen Geldforderungen ohne erwarteten Widerspruch: Mahnbescheid statt Klage (eigenes Merkblatt); die Zustellung des Mahnbescheids hemmt die Verjährung ebenso | § 204 Abs. 1 Nr. 3 BGB `[QUELLE: §§ 688 ff. ZPO]` |
 
 ## 2. Fristen
@@ -41,8 +45,8 @@ Gerichtskosten bereithalten.
 | Rückwirkung auf den Eingang | Die Hemmung tritt „bereits mit Eingang des Antrags … ein, wenn die Zustellung demnächst erfolgt“; dafür den Kostenvorschuss sofort nach Anforderung zahlen und die Anschrift des Beklagten richtig angeben | § 167 ZPO `[PRÜFEN: Rechtsprechung zu „demnächst“, Zahlungsverzug beim Vorschuss]` |
 | Beispiel | Rechnung vom 10.03.2023 unbezahlt, Anspruch 2023 entstanden und bekannt: Verjährung beginnt 31.12.2023, 24:00 Uhr, endet 31.12.2026. Klage muss 2026 eingehen und „demnächst“ zugestellt werden | § 195, § 199 Abs. 1 BGB, § 167 ZPO |
 | Fristberechnung | „Für die Berechnung der Fristen gelten die Vorschriften des Bürgerlichen Gesetzbuchs“; Fristende an Samstag, Sonntag oder Feiertag verschiebt auf den nächsten Werktag. Rechnen mit `frist_berechnen … land=` (Feiertage am Gerichtsort) | § 222 Abs. 1 und 2 ZPO |
-| Notfristen im Verfahren | Verteidigungsanzeige des Beklagten: zwei Wochen nach Zustellung der Klage. Einspruch gegen ein Versäumnisurteil: „Die Einspruchsfrist beträgt zwei Wochen; sie ist eine Notfrist und beginnt mit der Zustellung des Versäumnisurteils.“ Berufung: ein Monat ab Zustellung des vollständigen Urteils, spätestens fünf Monate nach Verkündung | § 276 Abs. 1 Satz 1, § 339 Abs. 1, § 517 ZPO |
-| Frist versäumt | Wiedereinsetzung bei Notfristen, wenn „ohne ihr Verschulden verhindert“; Antrag binnen zwei Wochen ab Wegfall des Hindernisses, nach einem Jahr ausgeschlossen; fehlende oder falsche Rechtsbehelfsbelehrung lässt fehlendes Verschulden vermuten | § 233, § 234 Abs. 1 bis 3 ZPO |
+| Notfristen im Verfahren | Verteidigungsanzeige des Beklagten: zwei Wochen nach Zustellung der Klage. Einspruch gegen ein Versäumnisurteil: „Die Einspruchsfrist beträgt zwei Wochen; sie ist eine Notfrist und beginnt mit der Zustellung des Versäumnisurteils.“ Berufung: ein Monat ab Zustellung des vollständigen Urteils, spätestens fünf Monate nach Verkündung. Bei Zustellung im Ausland beträgt die Frist für die Verteidigungsanzeige und die Einspruchsfrist jeweils einen Monat | § 276 Abs. 1 Satz 1 und 3, § 339 Abs. 1 und 2, § 517 ZPO |
+| Frist versäumt | Wiedereinsetzung bei Notfristen, wenn „ohne ihr Verschulden verhindert“; Antrag binnen zwei Wochen ab Wegfall des Hindernisses (ein Monat bei der Frist zur Berufungsbegründung), nach einem Jahr ausgeschlossen; fehlende oder falsche Rechtsbehelfsbelehrung lässt fehlendes Verschulden vermuten | § 233, § 234 Abs. 1 bis 3 ZPO |
 
 ## 3. Form, Inhalt, Adressat
 
@@ -64,22 +68,22 @@ Gerichtskosten bereithalten.
 | Punkt | Regel | Norm |
 |---|---|---|
 | Vorschuss zuerst | „In bürgerlichen Rechtsstreitigkeiten soll die Klage erst nach Zahlung der Gebühr für das Verfahren im Allgemeinen zugestellt werden.“ Das Gericht schickt eine Kostenrechnung; erst nach Zahlung geht die Klage an den Beklagten | § 12 Abs. 1 Satz 1 GKG |
-| Zustellung | „Die Klageschrift ist unverzüglich zuzustellen“; der Beklagte wird aufgefordert, einen Anwalt zu bestellen, wenn Anwaltszwang besteht | § 271 ZPO |
+| Zustellung | „Die Klageschrift ist unverzüglich zuzustellen“; mit ihr wird der Beklagte aufgefordert, „einen Rechtsanwalt zu bestellen, wenn er eine Verteidigung gegen die Klage beabsichtigt“ (Wortlaut ohne Rücksicht auf den Anwaltszwang) | § 271 Abs. 1 und 2 ZPO |
 | Schriftliches Vorverfahren | Ohne frühen ersten Termin muss der Beklagte „binnen einer Notfrist von zwei Wochen nach Zustellung der Klageschrift“ anzeigen, ob er sich verteidigt; dazu „eine Frist von mindestens zwei weiteren Wochen zur schriftlichen Klageerwiderung“ | § 276 Abs. 1 ZPO |
 | Früher erster Termin | Alternativ Termin mit Frist zur Klageerwiderung | § 275 Abs. 1 und 3 ZPO |
-| Güteverhandlung | „Der mündlichen Verhandlung geht zum Zwecke der gütlichen Beilegung des Rechtsstreits eine Güteverhandlung voraus“, außer eine Gütestelle war schon befasst oder sie erscheint aussichtslos; persönliches Erscheinen der Parteien. Haltepunkt: Vergleich nur nach ausdrücklicher Entscheidung | § 278 Abs. 1 und 2 ZPO |
-| Versäumnisurteil | Erscheint der Beklagte im Termin nicht, gilt der Klagevortrag als zugestanden; ohne rechtzeitige Verteidigungsanzeige entscheidet das Gericht auf Antrag ohne mündliche Verhandlung. Umgekehrt gilt das auch gegen den Kläger, der nicht erscheint `[QUELLE: § 330 ZPO]` | § 331 Abs. 1 bis 3 ZPO |
+| Güteverhandlung | „Der mündlichen Verhandlung geht zum Zwecke der gütlichen Beilegung des Rechtsstreits eine Güteverhandlung voraus“, außer eine Gütestelle war schon befasst oder sie erscheint aussichtslos; „Die erschienenen Parteien sollen hierzu persönlich gehört werden“, das persönliche Erscheinen „soll“ angeordnet werden; erscheinen beide Parteien nicht, ruht das Verfahren. Haltepunkt: Vergleich nur nach ausdrücklicher Entscheidung | § 278 Abs. 1 bis 4 ZPO |
+| Versäumnisurteil | Erscheint der Beklagte im Termin nicht, gilt der Klagevortrag als zugestanden; ohne rechtzeitige Verteidigungsanzeige entscheidet das Gericht auf Antrag ohne mündliche Verhandlung. Umgekehrt: „Erscheint der Kläger im Termin zur mündlichen Verhandlung nicht, so ist auf Antrag das Versäumnisurteil dahin zu erlassen, dass der Kläger mit der Klage abzuweisen sei“ | § 331 Abs. 1 bis 3, § 330 ZPO |
 | Einspruch | „Der Partei, gegen die ein Versäumnisurteil erlassen ist, steht gegen das Urteil der Einspruch zu“; zwei Wochen ab Zustellung | § 338, § 339 Abs. 1 ZPO |
 | Kleine Streitwerte | Bis 1.000 Euro „kann [das Gericht] sein Verfahren nach billigem Ermessen bestimmen“; „Auf Antrag muss mündlich verhandelt werden“ | § 495a ZPO |
 | Klagerücknahme | ohne Einwilligung des Beklagten nur „bis zum Beginn der mündlichen Verhandlung des Beklagten zur Hauptsache“; Folge: „Der Kläger ist verpflichtet, die Kosten des Rechtsstreits zu tragen“. Haltepunkt | § 269 Abs. 1 und 3 ZPO |
-| Berufung | zum Landgericht (gegen Amtsgericht) oder Oberlandesgericht (gegen Landgericht), „nur zulässig, wenn der Wert des Beschwerdegegenstandes 1 000 Euro übersteigt oder das Gericht des ersten Rechtszuges die Berufung im Urteil zugelassen hat“; Frist ein Monat; Anwaltszwang in der Berufung | § 511 Abs. 1 und 2, § 517, § 78 Abs. 1 ZPO |
+| Berufung | zum Landgericht (gegen Amtsgericht: „Die Zivilkammern … sind die Berufungs- und Beschwerdegerichte in den vor den Amtsgerichten verhandelten bürgerlichen Rechtsstreitigkeiten“) oder Oberlandesgericht (gegen Landgericht), „nur zulässig, wenn der Wert des Beschwerdegegenstandes 1 000 Euro übersteigt oder das Gericht des ersten Rechtszuges die Berufung im Urteil zugelassen hat“; Frist ein Monat; Anwaltszwang in der Berufung | § 511 Abs. 1 und 2, § 517, § 78 Abs. 1 ZPO; § 72 Abs. 1 Satz 1, § 119 Abs. 1 Nr. 2 GVG |
 
 ## 5. Kosten
 
 | Punkt | Regel | Norm |
 |---|---|---|
 | Gerichtsgebühr | 3,0 Gebühren nach dem Streitwert („Verfahren im Allgemeinen“); bei Klagerücknahme vor Schluss der mündlichen Verhandlung, Anerkenntnisurteil oder gerichtlichem Vergleich ermäßigt sich die Gebühr auf 1,0 | KV Nr. 1210, 1211 zum GKG |
-| Höhe einer Gebühr | „bei einem Streitwert bis 500 Euro die Gebühr 40 Euro“, dann je angefangene 500 Euro plus 21 Euro bis 2.000 Euro, je angefangene 1.000 Euro plus 22,50 Euro bis 10.000 Euro (weitere Stufen im Gesetz) | § 34 Abs. 1 GKG |
+| Höhe einer Gebühr | „bei einem Streitwert bis 500 Euro die Gebühr 40 Euro“, dann je angefangene 500 Euro plus 21 Euro bis 2.000 Euro, je angefangene 1.000 Euro plus 22,50 Euro bis 10.000 Euro (weitere Stufen im Gesetz); „Der Mindestbetrag einer Gebühr ist 15 Euro“ | § 34 Abs. 1 und 2 GKG |
 | Beispiel | Streitwert 2.000 Euro: eine Gebühr 103 Euro (40 + 3 × 21), Vorschuss 3,0 = 309 Euro. Streitwert 10.000 Euro: eine Gebühr 283 Euro (103 + 8 × 22,50), Vorschuss 849 Euro; Tabelle am Rohtext des § 34 geprüft, Anlage 2 zum GKG enthält die fertige Tabelle | § 34 Abs. 1 GKG, KV 1210 |
 | Wer am Ende zahlt | „Die unterliegende Partei hat die Kosten des Rechtsstreits zu tragen, insbesondere die dem Gegner erwachsenen Kosten zu erstatten“; dazu gehören „die gesetzlichen Gebühren und Auslagen des Rechtsanwalts der obsiegenden Partei“. Anders als vor dem Arbeitsgericht zahlt der Verlierer also auch den gegnerischen Anwalt; bei Teilerfolg Quote | § 91 Abs. 1 Satz 1, Abs. 2 Satz 1 ZPO `[QUELLE: § 92 ZPO]` |
 | Sofortiges Anerkenntnis | Hat der Beklagte „nicht durch sein Verhalten zur Erhebung der Klage Veranlassung gegeben“, trägt der Kläger die Kosten, wenn der Beklagte sofort anerkennt. Deshalb vor der Klage mahnen und Frist setzen (Vorlage Fristsetzung) | § 93 ZPO |
@@ -98,19 +102,21 @@ Gerichtskosten bereithalten.
 - Verfügungen des Gerichts: Fristen zur Erwiderung, Termine, Hinweise nach
   § 139 ZPO `[QUELLE]` eintragen; Versäumnisurteil mit Zustelldatum.
 
-## 7. Geprüfte Quellen (alle 16.09.2026 gelesen)
+## 7. Geprüfte Quellen (16.09.2026 gelesen; 17.09.2026 von einer zweiten Instanz am Rohtext gegengeprüft, Ergänzungen am Rohtext)
 
 | Quelle | URL | Stand |
 |---|---|---|
-| § 23 GVG Zuständigkeit der Amtsgerichte | https://www.gesetze-im-internet.de/gvg/__23.html | GVG, Bek. 09.05.1975, zuletzt geändert 09.01.2026 |
-| § 71 GVG Zuständigkeit der Landgerichte (Abs. 1) | https://www.gesetze-im-internet.de/gvg/__71.html | wie oben |
-| Stand des GVG | https://www.gesetze-im-internet.de/gvg/BJNR005130950.html | Neugefasst Bek. v. 09.05.1975 I 1077; zuletzt geändert Art. 4 G v. 09.01.2026 I Nr. 3; Änderungen 20.03.2026 und 02.07.2026 textlich nachgewiesen |
-| § 3 ZPO Wertfestsetzung | https://www.gesetze-im-internet.de/zpo/__3.html | ZPO, Bek. 05.12.2005, zuletzt geändert 22.12.2025 |
+| § 23 GVG Zuständigkeit der Amtsgerichte | https://www.gesetze-im-internet.de/gvg/__23.html | GVG, Bek. 09.05.1975, Vollzitat zuletzt geändert 02.07.2026 (Stand-Zeile 09.01.2026) |
+| § 71 GVG Zuständigkeit der Landgerichte (Abs. 1, 2) | https://www.gesetze-im-internet.de/gvg/__71.html | wie oben |
+| § 72 GVG Berufungsgericht (Abs. 1 Satz 1) | https://www.gesetze-im-internet.de/gvg/__72.html | wie oben (17.09.2026) |
+| § 119 GVG Oberlandesgericht (Abs. 1 Nr. 2) | https://www.gesetze-im-internet.de/gvg/__119.html | wie oben (17.09.2026) |
+| Stand des GVG | https://www.gesetze-im-internet.de/gvg/BJNR005130950.html | Neugefasst Bek. v. 09.05.1975 I 1077; Vollzitat: zuletzt geändert Art. 5 G v. 02.07.2026 I Nr. 198; Stand-Zeile: Art. 4 G v. 09.01.2026 I Nr. 3, Änderungen 20.03.2026 und 02.07.2026 dokumentarisch noch nicht abschließend bearbeitet |
+| § 3 ZPO Wertfestsetzung | https://www.gesetze-im-internet.de/zpo/__3.html | ZPO, Bek. 05.12.2005, Vollzitat zuletzt geändert 20.05.2026 (Stand-Zeile 22.12.2025) |
 | § 12 ZPO Allgemeiner Gerichtsstand | https://www.gesetze-im-internet.de/zpo/__12.html | wie oben |
 | § 13 ZPO Wohnsitz | https://www.gesetze-im-internet.de/zpo/__13.html | wie oben |
 | § 17 ZPO Gerichtsstand juristischer Personen | https://www.gesetze-im-internet.de/zpo/__17.html | wie oben |
 | § 29 ZPO Erfüllungsort | https://www.gesetze-im-internet.de/zpo/__29.html | wie oben |
-| § 78 ZPO Anwaltsprozess (Abs. 1) | https://www.gesetze-im-internet.de/zpo/__78.html | wie oben |
+| § 78 ZPO Anwaltsprozess (Abs. 1, 3) | https://www.gesetze-im-internet.de/zpo/__78.html | wie oben |
 | § 79 ZPO Parteiprozess (Abs. 1 und 2) | https://www.gesetze-im-internet.de/zpo/__79.html | wie oben |
 | § 91 ZPO Kostenpflicht (Abs. 1, Abs. 2 Satz 1) | https://www.gesetze-im-internet.de/zpo/__91.html | wie oben |
 | § 93 ZPO Sofortiges Anerkenntnis | https://www.gesetze-im-internet.de/zpo/__93.html | wie oben |
@@ -125,24 +131,25 @@ Gerichtskosten bereithalten.
 | § 269 ZPO Klagerücknahme (Abs. 1 bis 3) | https://www.gesetze-im-internet.de/zpo/__269.html | wie oben |
 | § 271 ZPO Zustellung der Klageschrift | https://www.gesetze-im-internet.de/zpo/__271.html | wie oben |
 | § 275 ZPO Früher erster Termin (Abs. 1, 3) | https://www.gesetze-im-internet.de/zpo/__275.html | wie oben |
-| § 276 ZPO Schriftliches Vorverfahren (Abs. 1, 2) | https://www.gesetze-im-internet.de/zpo/__276.html | wie oben |
-| § 278 ZPO Gütliche Streitbeilegung (Abs. 1, 2) | https://www.gesetze-im-internet.de/zpo/__278.html | wie oben |
+| § 276 ZPO Schriftliches Vorverfahren (Abs. 1 Satz 1 bis 3, Abs. 2) | https://www.gesetze-im-internet.de/zpo/__276.html | wie oben |
+| § 278 ZPO Gütliche Streitbeilegung (Abs. 1 bis 4) | https://www.gesetze-im-internet.de/zpo/__278.html | wie oben |
+| § 330 ZPO Versäumnisurteil gegen den Kläger | https://www.gesetze-im-internet.de/zpo/__330.html | wie oben (17.09.2026) |
 | § 331 ZPO Versäumnisurteil gegen den Beklagten | https://www.gesetze-im-internet.de/zpo/__331.html | wie oben |
 | § 338 ZPO Einspruch | https://www.gesetze-im-internet.de/zpo/__338.html | wie oben |
-| § 339 ZPO Einspruchsfrist (Abs. 1) | https://www.gesetze-im-internet.de/zpo/__339.html | wie oben |
+| § 339 ZPO Einspruchsfrist (Abs. 1, 2) | https://www.gesetze-im-internet.de/zpo/__339.html | wie oben |
 | § 495a ZPO Verfahren nach billigem Ermessen | https://www.gesetze-im-internet.de/zpo/__495a.html | wie oben |
 | § 496 ZPO Einreichung | https://www.gesetze-im-internet.de/zpo/__496.html | wie oben |
 | § 511 ZPO Statthaftigkeit der Berufung | https://www.gesetze-im-internet.de/zpo/__511.html | wie oben |
 | § 517 ZPO Berufungsfrist | https://www.gesetze-im-internet.de/zpo/__517.html | wie oben |
-| Stand der ZPO | https://www.gesetze-im-internet.de/zpo/BJNR005330950.html | Neugefasst Bek. v. 05.12.2005 I 3202; zuletzt geändert Art. 2 G v. 22.12.2025 I Nr. 349 |
-| § 12 GKG Zustellung nach Vorschuss (Abs. 1) | https://www.gesetze-im-internet.de/gkg_2004/__12.html | GKG, Bek. 27.02.2014, zuletzt geändert 22.12.2025 |
-| § 34 GKG Wertgebühr (Abs. 1) | https://www.gesetze-im-internet.de/gkg_2004/__34.html | wie oben |
+| Stand der ZPO | https://www.gesetze-im-internet.de/zpo/BJNR005330950.html | Neugefasst Bek. v. 05.12.2005 I 3202; Vollzitat: zuletzt geändert Art. 3 G v. 20.05.2026 I Nr. 152; Stand-Zeile: Art. 2 G v. 22.12.2025 I Nr. 349 |
+| § 12 GKG Zustellung nach Vorschuss (Abs. 1) | https://www.gesetze-im-internet.de/gkg_2004/__12.html | GKG, Bek. 27.02.2014, Vollzitat zuletzt geändert 20.05.2026 (Stand-Zeile 22.12.2025) |
+| § 34 GKG Wertgebühr (Abs. 1, 2) | https://www.gesetze-im-internet.de/gkg_2004/__34.html | wie oben |
 | Kostenverzeichnis Nr. 1210, 1211 | https://www.gesetze-im-internet.de/gkg_2004/anlage_1.html | wie oben |
 | § 195 BGB Regelmäßige Verjährungsfrist | https://www.gesetze-im-internet.de/bgb/__195.html | BGB, Bek. 02.01.2002, zuletzt geändert 23.07.2026 |
 | § 199 BGB Beginn der Verjährung (Abs. 1) | https://www.gesetze-im-internet.de/bgb/__199.html | wie oben |
 | § 204 BGB Hemmung durch Rechtsverfolgung (Abs. 1 Nr. 1, 3) | https://www.gesetze-im-internet.de/bgb/__204.html | wie oben |
 | Stand des BGB | https://www.gesetze-im-internet.de/bgb/BJNR001950896.html | Neugefasst Bek. v. 02.01.2002 I 42, 2909; 2003 I 738; zuletzt geändert Art. 6 G v. 23.07.2026 I Nr. 226 |
-| § 15a EGZPO Gütestellen (Abs. 1 Satz 1, Abs. 2) | https://www.gesetze-im-internet.de/zpoeg/__15a.html | `[PRÜFEN: Stand des EGZPO auf der Gesetzesseite]` |
+| § 15a EGZPO Gütestellen (Abs. 1, Abs. 2) | https://www.gesetze-im-internet.de/zpoeg/__15a.html | EGZPO, zuletzt geändert Art. 17 G v. 08.12.2025 I Nr. 319 (17.09.2026 gelesen) |
 
 Befund 16.09.2026: Die Wertgrenzen sind neuer als das verbreitete Wissen.
 Amtsgericht bis 10.000 Euro (§ 23 Nr. 1 GVG, früher 5.000), vereinfachtes
@@ -150,7 +157,7 @@ Verfahren bis 1.000 Euro (§ 495a ZPO, früher 600), Berufung ab 1.000 Euro
 (§ 511 Abs. 2 ZPO, früher 600); alle drei am Rohtext der Gesetzesseite
 bestätigt.
 
-Nicht gelesen: §§ 29a, 29c, 32, 38, 92, 114 ff., 139, 330 ZPO, § 4 ZPO und
+Nicht gelesen: §§ 29a, 29c, 32, 38, 92, 114 ff., 139 ZPO, § 4 ZPO und
 § 43 GKG (Nebenforderungen), §§ 269, 270, 288, 438, 548, 634a BGB, RVG,
 Landesschlichtungsgesetze, §§ 688 ff. ZPO (Mahnverfahren, eigenes Merkblatt),
 Rechtsprechung zu „demnächst“ und zum Vorschuss. Die Ansprüche selbst sind

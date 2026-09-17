@@ -1,6 +1,6 @@
 # Rechtsinhalte
 
-*Stand: 16.09.2026*
+*Stand: 17.09.2026*
 
 ## Aufgabe dieser Datei
 
@@ -58,18 +58,24 @@ Verordnungen sind nicht erfasst.
 
 ### 2.2 Merkblätter
 
-| Merkblatt | Normen | Rechtsstand | Geprüft | Offen |
+Alle zehn am 17.09.2026 von einer zweiten Instanz (drei unabhängige
+Prüfer) am Rohtext von gesetze-im-internet.de gegengeprüft, Befunde
+eingearbeitet. Landesrecht war per Skript nicht prüfbar.
+Fassungen seit 17.09.2026 nach dem Vollzitat des Portals (Abschnitt 4,
+Nr. 2).
+
+| Merkblatt | Normen | Rechtsstand (Vollzitat) | Geprüft | Offen |
 |---|---|---|---|---|
-| Einspruch Steuerbescheid | §§ 347, 350, 355, 356, 357, 361, 367, 108, 110, 122, 122a, 172, 87a AO; Art. 97 § 28 EGAO; § 47 FGO | AO i. d. F. v. 23.01.2025, zuletzt geändert 03.07.2026 (§ 122a: Bereitstellung zum Abruf, vier Tage, ab 2026 ohne Einwilligung; Übergang Art. 97 § 28 EGAO) | 17.09.2026 | AEAO zu § 357, § 87a Abs. 6 bis 8 AO, Vorfassung § 122a, BFH III R 26/14, Kostenerstattung, Kommunalabgaben |
-| Widerspruch Verwaltungsakt | §§ 58, 60, 68, 69, 70, 73, 74, 80 VwGO; §§ 3a, 41, 80 VwVfG; § 15 AGVwGO BW, § 41 LVwVfG BW | VwGO zuletzt geändert 23.04.2026; AGVwGO BW Fassung 18.03.2025 (gültig ab 01.01.2026); LVwVfG BW Fassung 28.01.2025 | 16.09.2026 | AGVwGO und Landes-VwVfG der übrigen 15 Länder, VwZG, § 57 VwGO mit § 222 ZPO, § 72, § 79 VwGO, § 29 VwVfG, § 41 Abs. 2a VwVfG, Gebührengesetze |
-| Klage Arbeitsgericht | §§ 2, 9, 11, 11a, 12a, 46, 46c, 46g, 48, 54, 59, 61, 61a, 61b, 64, 66 ArbGG; §§ 130a, 167, 253, 496 ZPO; §§ 4, 5, 7 KSchG; §§ 11, 42 GKG | ArbGG zuletzt geändert 27.04.2026 (Änderung 20.05.2026 noch nicht eingearbeitet); ZPO 22.12.2025; KSchG 14.06.2021; GKG 22.12.2025 | 16.09.2026 | §§ 12, 13, 17, 130, 222, 269, 330 ZPO, § 17b GVG, §§ 16, 11 Abs. 4, 61a Abs. 4 und 5 ArbGG, § 1 Abs. 2 KSchG, § 130 BGB, § 15 Abs. 4 AGG, § 159 SGB III, GKG-Kostenverzeichnis, Rechtsprechung (Zugang, Fax, „demnächst“, Weiterbeschäftigung) |
-| Zivilklage | §§ 3, 12, 13, 17, 29, 78, 79, 91, 93, 130, 130a, 130d, 167, 222, 233, 234, 253, 269, 271, 275, 276, 278, 331, 338, 339, 495a, 496, 511, 517 ZPO; §§ 23, 71 GVG; §§ 12, 34 GKG, KV 1210, 1211; §§ 195, 199, 204 BGB; § 15a EGZPO | ZPO 22.12.2025; GVG 09.01.2026; GKG 22.12.2025; BGB 23.07.2026 (Wertgrenzen: AG 10.000 Euro, § 495a und Berufung 1.000 Euro, am Rohtext bestätigt) | 16.09.2026 | §§ 29a, 29c, 32, 38, 92, 114 ff., 139, 330 ZPO, § 43 GKG, §§ 269, 270, 288, 438, 548, 634a BGB, RVG, Landesschlichtungsgesetze, Stand des EGZPO |
-| Mahnverfahren | §§ 167, 222, 338, 339, 688 bis 697, 699 bis 703c, 794 ZPO; § 12 Abs. 3, § 34 GKG, KV 1100 mit Anm. zu 1210; § 204 BGB | ZPO 22.12.2025; GKG 22.12.2025; BGB 23.07.2026 (Mindestgebühr KV 1100: 38 Euro, am Rohtext bestätigt) | 16.09.2026 | § 702 Abs. 2 Satz 2, §§ 703a, 703d, 707, 719, 750 ff. ZPO, § 204 Abs. 2 BGB, Landesverordnung zentrales Mahngericht, MahnVordrV, Rechtsprechung zur Individualisierung; keine Vorlage (Formularzwang) |
-| Strafanzeige | §§ 153, 153a, 158, 160, 163, 170, 171, 172, 374, 376, 380, 406d, 406e, 406h, 406i StPO; §§ 77, 77b, 77d, 145d, 164 StGB | StPO 03.07.2026; StGB 20.03.2026 | 16.09.2026 | § 78 StGB, Antragsnormen je Delikt, §§ 377 ff., 395 ff., 403 ff. StPO, Landesrecht zu Schiedsstellen und Online-Wachen, SGB XIV |
-| Akteneinsicht | § 29 VwVfG; § 25 SGB X; § 364 AO; § 49 OWiG; §§ 147, 406e StPO; § 299 ZPO; § 83 BetrVG; Art. 15 DSGVO; §§ 1, 9 IFG; § 12 GBO; § 9 HGB | VwVfG 15.07.2024 (Änderungen 2026 nachgewiesen); SGB X 21.07.2026; AO 03.07.2026; StPO 03.07.2026; ZPO 22.12.2025; BetrVG 19.07.2024; IFG 19.06.2020; GBO 22.06.2026; HGB 04.02.2026; DSGVO EUR-Lex | 16.09.2026 | Landes-VwVfG und LIFG, Art. 12, 77, 79 DSGVO, § 7 Abs. 5 IFG, § 44a VwGO, § 147 Abs. 5 und § 406e Abs. 4 bis 6 StPO, JVKostG, BFH-Rechtsprechung |
-| Dienstaufsichtsbeschwerde | Art. 17 GG; § 26 DRiG; § 73 BRAO | GG 22.03.2025; DRiG 22.10.2024; BRAO 22.12.2025 | 16.09.2026 | BVerfG zur Bescheidungspflicht, Art. 45c GG, Petitionsgesetze, Disziplinarrecht, §§ 146, 147 GVG, § 87 SGB IV, § 191f BRAO, Bürger- und Polizeibeauftragte der Länder |
-| Zuständigkeit finden | § 52 VwGO; § 57 SGG; § 38 FGO; § 36 OWiG; § 143 GVG; §§ 7, 8 StPO; Verweise auf die anderen Merkblätter; vier amtliche Verzeichnisse (Abruf geprüft) | VwGO 23.04.2026; SGG 09.04.2026; FGO 22.12.2025; OWiG 22.12.2025; GVG 09.01.2026; StPO 03.07.2026 | 16.09.2026 | § 52 Nr. 3 bis 5 VwGO, § 29a ZPO, § 17a GVG, § 281 ZPO, Landesverordnungen, Behördenfinder des Bundes (nicht erreichbar) |
-| Einspruch Bußgeldbescheid | §§ 18, 31, 33, 46, 49, 51, 56, 62, 66 bis 74, 89, 105, 109, 110c OWiG; §§ 32a, 32d, 43, 44, 45, 297, 298, 300, 302 StPO; §§ 25, 25a, 26 StVG | OWiG zuletzt geändert 22.12.2025; StPO 03.07.2026; StVG 12.05.2026 (§ 26 Abs. 3 StVG: nur noch sechs Monate, Übergangsrecht offen) | 16.09.2026 | VwZG Bund und Länder (Ersatzzustellung), § 55, §§ 79, 80 OWiG, §§ 35a, 303, 410, 411 StPO, GKG-Kostenverzeichnis, BKatV, §§ 4, 28 StVG, Rechtsprechung zu Fax, E-Mail, Messunterlagen (BVerfG 2 BvR 1616/18), Beschränkung des Einspruchs |
+| Einspruch Steuerbescheid | §§ 347, 350, 355, 356, 357, 361, 362, 367, 108, 110, 122, 122a, 172, 87a AO; Art. 97 § 28 EGAO; § 47 FGO; §§ 187, 188 BGB | AO i. d. F. v. 23.01.2025, zuletzt geändert 03.07.2026; EGAO 29.06.2026; FGO 29.06.2026 (Stand-Zeile 22.12.2025) | 17.09.2026 (Fristbeispiel berichtigt: § 188 Abs. 2 BGB ergibt den Sonntag, § 108 Abs. 3 AO den Montag) | AEAO zu §§ 172, 357, § 87a Abs. 6 bis 8 AO, Vorfassung § 122a, BFH III R 26/14, Kostenerstattung, Kommunalabgaben |
+| Widerspruch Verwaltungsakt | §§ 57, 58, 60, 68, 69, 70, 72, 73, 74, 79, 80 VwGO; §§ 3a, 29, 31, 41, 80 VwVfG; § 222 ZPO; § 15 AGVwGO BW, § 41 LVwVfG BW | VwGO 20.05.2026 (Stand-Zeile 23.04.2026); VwVfG 22.07.2026 (Stand-Zeile 15.07.2024); AGVwGO BW 18.03.2025 (gültig ab 01.01.2026); LVwVfG BW 28.01.2025 | 17.09.2026 (De-Mail aus § 3a Abs. 3 gestrichen, § 80 Abs. 6, Fristbeispiel) | Landesrecht der übrigen Länder und zweite Lesung BW, § 80 LVwVfG BW, VwZG, § 9a OZG, Gebührengesetze, Rechtsprechung |
+| Klage Arbeitsgericht | §§ 2, 9, 11, 11a, 12a, 46, 46c, 46g, 48, 54, 59, 61, 61a, 61b, 64, 66 ArbGG; §§ 12, 13, 17, 130, 130a, 167, 222, 253, 330, 496 ZPO; §§ 1, 4, 5, 7 KSchG; §§ 6, 9, 11, 42 GKG, KV 8210, 8211; §§ 17a, 17b GVG; § 15 AGG | ArbGG 20.05.2026 (Stand-Zeile 27.04.2026); ZPO 20.05.2026 (Stand-Zeile 22.12.2025); KSchG 14.06.2021; GKG 20.05.2026; AGG 22.12.2023 | 17.09.2026 (Fünf-Monats-Grenze § 66 Abs. 1 S. 2, Ausschluss verspäteten Vorbringens § 61a Abs. 5) | § 269 ZPO, § 16 ArbGG, § 1 Abs. 1 und § 23 KSchG, § 130 BGB, § 168 SGB IX, § 17 MuSchG, § 159 SGB III, Rechtsprechung |
+| Zivilklage | §§ 3, 12, 13, 17, 29, 78, 79, 91, 93, 130, 130a, 130d, 167, 222, 233, 234, 253, 269, 271, 275, 276, 278, 330, 331, 338, 339, 495a, 496, 511, 517 ZPO; §§ 23, 71, 72, 119 GVG; §§ 12, 34 GKG, KV 1210, 1211; §§ 195, 199, 204 BGB; § 15a EGZPO | ZPO 20.05.2026; GVG 02.07.2026 (Stand-Zeile 09.01.2026); GKG 20.05.2026; BGB 23.07.2026; EGZPO 08.12.2025 (Wertgrenzen: AG 10.000 Euro, § 495a und Berufung 1.000 Euro, am Rohtext bestätigt) | 17.09.2026 (§ 71 Abs. 2 GVG, Auslandsfristen, § 234 Abs. 1 S. 2) | §§ 29a, 29c, 32, 38, 92, 114 ff., 139 ZPO, § 43 GKG, §§ 269, 270, 288, 438, 548, 634a BGB, RVG, Landesschlichtungsgesetze |
+| Mahnverfahren | §§ 167, 222, 338, 339, 688 bis 697, 699 bis 703c, 794 ZPO; § 12 Abs. 3, § 34 GKG, KV 1100 mit Anm. zu 1210; § 204 BGB | ZPO 20.05.2026; GKG 20.05.2026; BGB 23.07.2026 (Mindestgebühr KV 1100: 38 Euro, am Rohtext bestätigt) | 17.09.2026 (Ende der Verjährungshemmung § 204 Abs. 2 BGB, Online-Antrag ohne Unterschrift) | §§ 703a, 703d, 707, 719, 750 ff. ZPO, Landesverordnung zentrales Mahngericht, MahnVordrV, Rechtsprechung zur Individualisierung; keine Vorlage (Formularzwang) |
+| Strafanzeige | §§ 153, 153a, 158, 160, 163, 170, 171, 172, 374, 376, 379, 379a, 380, 406d, 406e, 406h, 406i, 471 StPO; §§ 77, 77b, 77d, 145d, 164, 194, 230, 247, 303c StGB | StPO 03.07.2026 (Stand-Zeile 23.02.2026); StGB 20.03.2026 | 17.09.2026 („Sachbeschädigung unter Angehörigen“ berichtigt, Klageerzwingung, Kostenrisiko Privatklage) | § 78 StGB, § 123 Abs. 2 StGB, §§ 377, 378, 381 ff., 395 ff., 403 ff. StPO, Landesrecht zu Schiedsstellen und Online-Wachen, SGB XIV |
+| Akteneinsicht | § 29 VwVfG; § 25 SGB X; § 364 AO; § 49 OWiG; §§ 147, 406e StPO; § 299 ZPO; § 83 BetrVG; Art. 12, 15, 77, 79 DSGVO; §§ 1, 7, 9 IFG; § 12 GBO; § 9 HGB | VwVfG 22.07.2026 (Stand-Zeile 15.07.2024); SGB X 21.07.2026; AO 03.07.2026; StPO 03.07.2026; ZPO 20.05.2026; BetrVG 19.07.2024; IFG 19.06.2020; GBO 22.06.2026; HGB 04.02.2026; DSGVO EUR-Lex | 17.09.2026 (§ 406e Abs. 3, Verweis auf einen nicht vorhandenen Abs. 6 entfernt, IFG-Frist als Soll-Frist) | Landes-VwVfG und LIFG, § 25 Abs. 5 SGB X, § 44a VwGO, § 406e Abs. 4, § 32f StPO, § 241 Abs. 2 BGB, JVKostG, Rechtsprechung BFH und BAG |
+| Dienstaufsichtsbeschwerde | Art. 17 GG; § 26 DRiG; § 73 BRAO; § 62 OWiG; § 164 StGB | GG 22.03.2025; DRiG 22.10.2024; BRAO 22.12.2025 | 17.09.2026 (§ 73 Abs. 3 und 5 BRAO, Marker zu E-Mail und anonymen Beschwerden) | BVerfG zur Bescheidungspflicht, Art. 45c GG, Petitionsgesetze, Disziplinarrecht, §§ 146, 147 GVG, § 87 SGB IV, § 191f BRAO, § 98 StPO, § 43 VwGO |
+| Zuständigkeit finden | § 52 VwGO; § 57 SGG; § 38 FGO; §§ 36, 50, 52, 68 OWiG; § 143, §§ 17a, 17b, § 71 GVG; §§ 7, 8 StPO; §§ 29a, 281 ZPO; Verweise auf die anderen Merkblätter; sieben amtliche Verzeichnisse (Abruf geprüft) | VwGO 20.05.2026; SGG 20.05.2026; FGO 29.06.2026; OWiG 22.12.2025; GVG 02.07.2026; StPO 03.07.2026 | 17.09.2026 (Jahresfrist bei fehlender Belehrung gilt nicht für Bußgeldbescheide, Verweisung nur beim Rechtsweg von Amts wegen) | § 52 Nr. 4 VwGO, Landesverordnungen, Behördenfinder des Bundes (nicht erreichbar) |
+| Einspruch Bußgeldbescheid | §§ 18, 31, 33, 46, 49, 50, 51, 52, 55, 56, 62, 66 bis 74, 79, 80, 89, 105, 109, 110c OWiG; §§ 32a, 32d, 43, 44, 45, 297, 298, 300, 302, 303, 410, 411 StPO; §§ 25, 25a, 26 StVG | OWiG 22.12.2025; StPO 03.07.2026 (Stand-Zeile 23.02.2026); StVG 12.05.2026 (§ 26 Abs. 3 StVG: sechs Monate, Übergangsrecht offen) | 17.09.2026 (Zustellung an den Verteidiger, § 52 OWiG, Fahrverbotsbeginn § 25 Abs. 3 StVG) | VwZG Bund und Länder, § 107, § 111 OWiG, §§ 35a, 341, 344, 345 StPO, GKG-Kostenverzeichnis, BKatV, §§ 4, 28 StVG, Änderungshistorie § 26 Abs. 3 StVG, Rechtsprechung (Fax, E-Mail, Messunterlagen, Beschränkung des Einspruchs) |
 
 ### 2.3 Schreibvorlagen
 
@@ -77,6 +83,9 @@ Zehn Vorlagen vom 16.09.2026 (Briefkopf, Einspruch Bußgeldbescheid,
 Widerspruch Bescheid, Fristsetzung, Auskunft DSGVO, Klage Arbeitsgericht,
 Einspruch Steuerbescheid, Klage Zivilgericht, Strafanzeige, Akteneinsicht).
 Die Normen darin tragen `[QUELLE]`, wo sie nicht am Volltext gelesen wurden.
+Am 17.09.2026 gegen die berichtigten Merkblätter durchgesehen: nur die
+Formzeile der Vorlage Widerspruch_Bescheid war zu ergänzen (§ 3a Abs. 3
+VwVfG ohne De-Mail, § 9a Abs. 5 OZG über § 70 Abs. 1 VwGO).
 Zehn Merkblätter: Einspruch Steuerbescheid, Widerspruch Verwaltungsakt,
 Einspruch Bußgeldbescheid, Klage Arbeitsgericht, Zivilklage, Mahnverfahren
 (ohne Vorlage, Formularzwang), Strafanzeige, Akteneinsicht,
@@ -104,6 +113,14 @@ Mappe nutzt, prüft die Norm für seinen Fall selbst (README „Grenzen“).
    sind nur Hinweise, wo zu suchen ist.
 2. Fassung und Geltungszeitraum notieren („gültig ab“, „zuletzt geändert
    durch“). Bei Feiertagen auch einmalige und regionale Tage prüfen.
+   gesetze-im-internet.de zeigt zwei Angaben: das Vollzitat (jüngste
+   Änderung, auch wenn „textlich nachgewiesen, dokumentarisch noch nicht
+   abschließend bearbeitet“) und die Zeile „Stand“ (nur dokumentarisch
+   fertig eingearbeitete Änderung). Regel seit 17.09.2026: immer das
+   Vollzitat nennen und, wenn die Stand-Zeile älter ist, diese mit dem
+   Hinweis „dokumentarisch noch nicht abschließend bearbeitet“ dazusetzen.
+   Der Paragraf selbst wird immer am rohen Seitentext (curl) gelesen, nie
+   aus einer Zusammenfassung übernommen.
 3. Änderung an genau einer Stelle: Feiertage in `fristen.py` (Kommentarzeile
    mit Quelle und Datum daneben), Merkblatt im Abschnitt „Geprüfte Quellen“,
    Vorlage in den internen Hinweisen. Prüfdatum im Kopf der Datei setzen.

@@ -34,7 +34,7 @@ es zu ordnen, zu prüfen und zu formulieren.
 > Arbeitgeber). In der Oberfläche auf **„Beispielfall laden“** klicken, dann
 > durch Akte, Dokumente, Fristen und Entwurf klicken. Jederzeit löschbar.
 
-Produkt Version 0.1 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · Stand 17.09.2026 · geprüft mit Python 3.14.7 auf macOS 26.7 · Autor: Hasan Tepegöz
+Produkt Version 0.2 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · Stand 17.09.2026 · geprüft mit Python 3.14.7 auf macOS 26.7 · Autor: Hasan Tepegöz
 
 **Inhalt:** [So sieht es aus](#so-sieht-es-aus) · [So arbeitet deine KI mit der Mappe](#so-arbeitet-deine-ki-mit-der-mappe) · [Was in der Mappe steckt](#was-in-der-mappe-steckt) · [Worauf du dich verlassen kannst](#worauf-du-dich-verlassen-kannst) · [Geltungsbereich](#geltungsbereich) · [Voraussetzungen](#voraussetzungen) · [Erster Start](#erster-start) · [KI anbinden](#ki-anbinden) · [Grenzen](#grenzen) · [Sicherung](#sicherung) · [Lizenz](#lizenz) · [Mitmachen](#mitmachen-und-unterstützen) · [Impressum](#impressum)
 
@@ -228,7 +228,7 @@ den Pflichtinhalt dagegen.
 | `04 Rechtsquellen/Verfahren/Akteneinsicht.md` | Akteneinsicht und Auskunft | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Dienstaufsichtsbeschwerde.md` | Dienstaufsichtsbeschwerde, Fachaufsichtsbeschwerde, Petition | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Einspruch_Bussgeldbescheid.md` | Einspruch gegen einen Bußgeldbescheid | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Einspruch gegen einen Steuerbescheid | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Einspruch gegen einen Steuerbescheid | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` | Klage zum Arbeitsgericht | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Mahnverfahren.md` | Mahnverfahren (Mahnbescheid und Vollstreckungsbescheid) | 16.09.2026 |
 | `04 Rechtsquellen/Verfahren/Strafanzeige.md` | Strafanzeige und Strafantrag | 16.09.2026 |
