@@ -1,6 +1,6 @@
 # Merkblatt: Dienstaufsichtsbeschwerde, Fachaufsichtsbeschwerde, Petition
 
-*Rechtsordnung DE · Bereich Behörden und Bescheide (auch Gerichte, Polizei, Anwälte) · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen*
+*Rechtsordnung DE · Bereich Behörden und Bescheide (auch Gerichte, Polizei, Anwälte) · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen, Bundesnormen daraus am 17.09.2026 abends ergänzt*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -13,7 +13,9 @@ auf dem Petitionsrecht. Normen am amtlichen Volltext gelesen
 zuletzt geändert 22.12.2025; Gerichtsverfassungsgesetz (GVG), Bek. v.
 09.05.1975, zuletzt geändert 02.07.2026 (Vollzitat; Stand-Zeile 09.01.2026);
 Bundesnotarordnung (BNotO), zuletzt geändert 16.07.2026; Beamtenstatusgesetz
-(BeamtStG) vom 17.06.2008, zuletzt geändert 20.12.2023; SGB IV, Bek. v.
+(BeamtStG) vom 17.06.2008, zuletzt geändert 20.12.2023; Bundesbeamtengesetz
+(BBG) vom 05.02.2009, zuletzt geändert 03.07.2026; Gesetz nach Artikel 45c des
+Grundgesetzes vom 19.07.1975, geändert 05.05.2004; SGB IV, Bek. v.
 12.11.2009, zuletzt geändert 24.07.2026; ZPO, StPO, StGB, VwGO, OWiG mit den
 Ständen der jeweiligen Merkblätter. Vor der Verwendung: prüfen, ob ein förmlicher
 Rechtsbehelf mit Frist läuft (Abschnitt 1); die Beschwerde ersetzt ihn nie.
@@ -26,7 +28,7 @@ Rechtsbehelf mit Frist läuft (Abschnitt 1); die Beschwerde ersetzt ihn nie.
 | Dienstaufsichtsbeschwerde | richtet sich gegen das persönliche Verhalten eines Bediensteten (Ton, Untätigkeit, Verzögerung, Unhöflichkeit, Verstoß gegen Dienstpflichten) an dessen Dienstvorgesetzten | Art. 17 GG; Beamten- und Disziplinarrecht der Länder `[QUELLE]` |
 | Fachaufsichtsbeschwerde | richtet sich gegen den Inhalt einer Entscheidung an die Aufsichtsbehörde (etwa Regierungspräsidium über die Kommune); Prüfung, ob die Entscheidung rechtmäßig und zweckmäßig war | Art. 17 GG; Aufsichtsrecht des Landes `[QUELLE: Gemeindeordnung, Landesorganisationsrecht]` |
 | Gegenvorstellung | Bitte an dieselbe Stelle, die eigene Entscheidung noch einmal zu überdenken; formlos, ohne Frist, ohne Anspruch | Art. 17 GG |
-| Petition an den Landtag oder Bundestag | Beschwerde an die Volksvertretung: „Der Bundestag bestellt einen Petitionsausschuß, dem die Behandlung der nach Artikel 17 an den Bundestag gerichteten Bitten und Beschwerden obliegt“; seine Befugnisse regelt ein Bundesgesetz. Der Ausschuss verlangt Stellungnahmen der Behörde und kann Abhilfe empfehlen, aber nicht anordnen. Bundestag nur für Bundesbehörden; für Landesbehörden, Kommunen, Polizei und Gerichte der Landtag | Art. 17, Art. 45c Abs. 1 und 2 GG `[QUELLE: Gesetz nach Art. 45c Abs. 2 GG, Landesverfassung und Petitionsgesetz des Landes, nicht gelesen]` |
+| Petition an den Landtag oder Bundestag | Beschwerde an die Volksvertretung: „Der Bundestag bestellt einen Petitionsausschuß, dem die Behandlung der nach Artikel 17 an den Bundestag gerichteten Bitten und Beschwerden obliegt“; seine Befugnisse regelt ein Bundesgesetz. Das Bundesgesetz dazu verpflichtet „die Bundesregierung und die Behörden des Bundes“, dem Ausschuss „Akten vorzulegen, Auskunft zu erteilen und Zutritt zu ihren Einrichtungen zu gestatten“, ebenso bundesunmittelbare Körperschaften, soweit sie der Bundesaufsicht unterstehen; verweigert werden darf das nur, „wenn der Vorgang nach einem Gesetz geheimgehalten werden muß oder sonstige zwingende Geheimhaltungsgründe bestehen“, mit begründeter Entscheidung der obersten Aufsichtsbehörde. Der Ausschuss „ist berechtigt, den Petenten, Zeugen und Sachverständige anzuhören“; Gerichte und Behörden leisten Amtshilfe. Eine Befugnis, Abhilfe anzuordnen, enthält das Gesetz nicht. Bundestag nur für Bundesbehörden; für Landesbehörden, Kommunen, Polizei und Gerichte der Landtag | Art. 17, Art. 45c Abs. 1 und 2 GG; §§ 1 bis 4, 7 Gesetz nach Artikel 45c des Grundgesetzes `[QUELLE: Landesverfassung und Petitionsgesetz des Landes, nicht gelesen]` |
 | Kein Rechtsbehelf | Sie hemmt keine Frist, hindert keine Vollstreckung und gibt keinen Anspruch auf eine bestimmte Entscheidung. Widerspruch, Einspruch, Klage laufen daneben mit ihren Fristen weiter (Merkblätter Widerspruch, Einspruch, Klagen) | – |
 | Drei Merkmale | formlos (keine Formvorschrift), fristlos (keine Frist), ohne Rechtsmittel (gegen die Antwort gibt es keinen Rechtsweg; Ausnahme: der Bescheid greift selbst in Rechte ein) `[PRÜFEN: Rechtsprechung, ob die Ablehnung einer Fachaufsichtsbeschwerde ein Verwaltungsakt sein kann]` | Art. 17 GG |
 
@@ -41,7 +43,7 @@ Rechtsbehelf mit Frist läuft (Abschnitt 1); die Beschwerde ersetzt ihn nie.
 | Notare | Aufsicht: „dem Präsidenten des Landgerichts über die Notare und Notarassessoren des Landgerichtsbezirks“, dem Präsidenten des Oberlandesgerichts und der Landesjustizverwaltung; Beschwerde also an den Landgerichtspräsidenten | § 92 Abs. 1 Nr. 1 bis 3 BNotO |
 | Gerichtsvollzieher | Gegen die Art und Weise der Zwangsvollstreckung der förmliche Weg: „Über Anträge, Einwendungen und Erinnerungen, welche die Art und Weise der Zwangsvollstreckung oder das vom Gerichtsvollzieher bei ihr zu beobachtende Verfahren betreffen, entscheidet das Vollstreckungsgericht“, auch wenn der Gerichtsvollzieher einen Auftrag verweigert oder wegen seiner Kosten (Vollstreckungserinnerung, Amtsgericht). Die Dienstaufsicht über Gerichtsvollzieher regelt Landesrecht `[QUELLE: Gerichtsvollzieherordnung des Landes, nicht gelesen; in der Regel der Amtsgerichtsdirektor]` | § 766 Abs. 1 Satz 1 und Abs. 2 ZPO |
 | Ärzte, Steuerberater | jeweils die Kammer (Landesärztekammer, Steuerberaterkammer) | `[QUELLE: Kammergesetze, nicht gelesen]` |
-| Sozialleistungsträger, Krankenkassen | Beschwerde an den Vorstand; daneben Widerspruch gegen Bescheide. Aufsicht: „Die Versicherungsträger unterliegen staatlicher Aufsicht. Sie erstreckt sich auf die Beachtung von Gesetz und sonstigem Recht“ (Rechtsaufsicht, keine Prüfung der Zweckmäßigkeit); zuständig Bundesamt für Soziale Sicherung oder Landesministerium `[QUELLE: § 90 SGB IV zur Zuständigkeit, nicht gelesen]` | § 87 Abs. 1 SGB IV |
+| Sozialleistungsträger, Krankenkassen | Beschwerde an den Vorstand; daneben Widerspruch gegen Bescheide. Aufsicht: „Die Versicherungsträger unterliegen staatlicher Aufsicht. Sie erstreckt sich auf die Beachtung von Gesetz und sonstigem Recht“ (Rechtsaufsicht, keine Prüfung der Zweckmäßigkeit); zuständig ist bei Trägern, deren Bereich „sich über das Gebiet eines Landes hinaus erstreckt (bundesunmittelbare Versicherungsträger)“, das Bundesamt für Soziale Sicherung (auch für die Deutsche Rentenversicherung Bund), bei Trägern innerhalb eines Landes „die für die Sozialversicherung zuständigen obersten Verwaltungsbehörden der Länder oder die von den Landesregierungen durch Rechtsverordnung bestimmten Behörden“; bei Trägern über höchstens drei Länder führt das Land die Aufsicht, das die beteiligten Länder bestimmt haben. Welche Aufsicht zuständig ist, steht meist auf der Internetseite des Trägers | § 87 Abs. 1, § 90 Abs. 1 bis 3 SGB IV |
 
 ## 3. Form und Inhalt
 
@@ -50,7 +52,7 @@ Rechtsbehelf mit Frist läuft (Abschnitt 1); die Beschwerde ersetzt ihn nie.
 | Form | „schriftlich“; ob E-Mail und Online-Formular genügen, sagt Art. 17 GG nicht, in der Praxis nehmen die Stellen sie an `[PRÜFEN: Rechtsprechung zur Schriftlichkeit bei Art. 17 GG; im Zweifel Brief]`; Name und Anschrift angeben; dass anonyme Beschwerden keine Antwortpflicht auslösen, folgt aus der Rechtsprechung, nicht aus dem Wortlaut `[QUELLE: BVerfG, nicht gelesen]` | Art. 17 GG |
 | Adressat | Dienstvorgesetzter der betroffenen Person (Behördenleitung, Gerichtspräsident, Polizeipräsidium); nicht die Person selbst. Bei Unsicherheit an die Behördenleitung mit Bitte um Weiterleitung | – |
 | Inhalt | Wer, gegen wen (Name, Dienststelle, Aktenzeichen), was geschah (Datum, Ort, Wortlaut soweit möglich, Zeugen), warum das eine Pflichtverletzung ist, was verlangt wird (Prüfung, Entschuldigung, Beschleunigung, Abhilfe), Bitte um schriftliche Antwort mit Ergebnis | Art. 17 GG |
-| Ton | sachlich, Tatsachen und Bewertung trennen; keine Beleidigungen: „Die Beleidigung wird mit Freiheitsstrafe bis zu einem Jahr oder mit Geldstrafe“ bestraft, öffentlich oder durch Verbreiten eines Inhalts bis zu zwei Jahren; keine falschen Tatsachenbehauptungen (§ 164 StGB, Merkblatt Strafanzeige). Ob eine scharfe Kritik in einer Beschwerde als Wahrnehmung berechtigter Interessen straflos bleibt, ist Einzelfallfrage `[QUELLE: § 193 StGB, nicht gelesen]` | § 185, § 164 Abs. 1 StGB |
+| Ton | sachlich, Tatsachen und Bewertung trennen; keine Beleidigungen: „Die Beleidigung wird mit Freiheitsstrafe bis zu einem Jahr oder mit Geldstrafe“ bestraft, öffentlich oder durch Verbreiten eines Inhalts bis zu zwei Jahren; keine falschen Tatsachenbehauptungen (§ 164 StGB, Merkblatt Strafanzeige). Äußerungen, die „zur Ausführung oder Verteidigung von Rechten oder zur Wahrnehmung berechtigter Interessen vorgenommen werden“, sind als Beleidigung „nur insofern strafbar, als das Vorhandensein einer Beleidigung aus der Form der Äußerung oder aus den Umständen, unter welchen sie geschah, hervorgeht“. Wer sachlich bleibt, bewegt sich im Schutz dieser Regel; wo schon Form oder Umstände die Beleidigung zeigen (Schimpfwörter, Herabwürdigungen), hilft sie nicht; die Grenze zieht die Rechtsprechung im Einzelfall `[PRÜFEN: Rechtsprechung zu § 193 StGB, nicht gelesen]`. Nach seinem Wortlaut betrifft § 193 nur die Beleidigung, nicht die falsche Verdächtigung (§ 164) | § 185, § 193, § 164 Abs. 1 StGB |
 | Parallel | Den förmlichen Rechtsbehelf (Widerspruch, Einspruch, Klage, Befangenheitsantrag) getrennt und fristgerecht einlegen; in der Beschwerde erwähnen, dass er läuft | Merkblätter Widerspruch, Einspruch, Klagen |
 
 ## 4. Was danach geschieht
@@ -67,7 +69,7 @@ Rechtsbehelf mit Frist läuft (Abschnitt 1); die Beschwerde ersetzt ihn nie.
   Personalaktendaten dürfen ohne Einwilligung der Beamtin oder des Beamten nur
   für Zwecke der Personalverwaltung oder Personalwirtschaft verarbeitet
   werden“ (§ 50 Satz 3 und 4 BeamtStG, gilt für Landes- und Kommunalbeamte;
-  für Bundesbeamte `[QUELLE: § 106 BBG, nicht gelesen]`).
+  für Bundesbeamte ebenso: die Personalakte „ist vertraulich zu behandeln“, Personalaktendaten „dürfen ohne Einwilligung der Beamtin oder des Beamten nur für Zwecke der Personalverwaltung oder der Personalwirtschaft verarbeitet werden“, § 106 Abs. 1 Satz 2 und Abs. 3 BBG).
 - Haltepunkt: Die Beschwerde ist eine Erklärung gegenüber Dritten und kann
   das Verhältnis zur Behörde belasten; sie wird nur nach ausdrücklicher
   Entscheidung des Nutzers versandt (REGELN Nr. 16).
@@ -102,10 +104,13 @@ Rechtsbehelf mit Frist läuft (Abschnitt 1); die Beschwerde ersetzt ihn nie.
 | § 92 BNotO Aufsichtsbehörden (Abs. 1) | https://www.gesetze-im-internet.de/bnoto/__92.html | BNotO, zuletzt geändert Art. 3 G v. 16.07.2026 I Nr. 212 (17.09.2026) |
 | § 87 SGB IV Umfang der Aufsicht (Abs. 1) | https://www.gesetze-im-internet.de/sgb_4/__87.html | SGB IV, Bek. 12.11.2009, zuletzt geändert 24.07.2026 (17.09.2026) |
 | § 50 BeamtStG Personalakte | https://www.gesetze-im-internet.de/beamtstg/__50.html | BeamtStG vom 17.06.2008, zuletzt geändert 20.12.2023 (17.09.2026) |
+| §§ 1 bis 9 Gesetz nach Artikel 45c des Grundgesetzes | https://www.gesetze-im-internet.de/ggart45cg/__1.html | vom 19.07.1975, geändert durch Art. 4 Abs. 5 G v. 05.05.2004 (BGBl. I S. 718) (17.09.2026 abends) |
+| § 90 SGB IV Aufsichtsbehörden (Abs. 1 bis 3) | https://www.gesetze-im-internet.de/sgb_4/__90.html | SGB IV, Bek. 12.11.2009, zuletzt geändert 24.07.2026 (17.09.2026 abends) |
+| § 193 StGB Wahrnehmung berechtigter Interessen | https://www.gesetze-im-internet.de/stgb/__193.html | StGB, zuletzt geändert 20.03.2026 (17.09.2026 abends) |
+| § 106 BBG Personalakte (Abs. 1 und 3) | https://www.gesetze-im-internet.de/bbg_2009/__106.html | BBG vom 05.02.2009, zuletzt geändert durch Art. 2 G v. 03.07.2026 (BGBl. 2026 I Nr. 199) (17.09.2026 abends) |
 
 Nicht gelesen: Rechtsprechung des Bundesverfassungsgerichts zur
-Bescheidungspflicht, das Gesetz nach Art. 45c Abs. 2 GG, Landesverfassungen
-und Petitionsgesetze, Beamten- und Disziplinargesetze, § 106 BBG, § 90
-SGB IV, § 193 StGB, Gerichtsvollzieherordnungen der Länder, Kammergesetze,
+Bescheidungspflicht und zu § 193 StGB, Landesverfassungen und
+Petitionsgesetze, Beamten- und Disziplinargesetze, Gerichtsvollzieherordnungen der Länder, Kammergesetze,
 Landesgesetze zu Bürger- und Polizeibeauftragten (Baden-Württemberg seit
 2016), Gemeindeordnungen zur Kommunalaufsicht.

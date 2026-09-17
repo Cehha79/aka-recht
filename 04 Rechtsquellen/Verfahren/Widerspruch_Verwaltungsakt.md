@@ -1,6 +1,6 @@
 # Merkblatt: Widerspruch gegen einen Verwaltungsakt (Bescheid einer Behörde)
 
-*Rechtsordnung DE · Bereich Behörden und Bescheide · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz gegengeprüft 17.09.2026 (Bundesrecht am Rohtext; Landesrecht BW nur im Browser vom 16.09.2026), förmliche Zustellung (VwZG) am 17.09.2026 nachgelesen*
+*Rechtsordnung DE · Bereich Behörden und Bescheide · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz gegengeprüft 17.09.2026 (Bundesrecht am Rohtext; Landesrecht BW nur im Browser vom 16.09.2026), förmliche Zustellung (VwZG) am 17.09.2026 nachgelesen, § 9 VwZG, § 9a OZG und § 79 VwGO am 17.09.2026 abends ergänzt*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -14,7 +14,9 @@ des Bundes (VwVfG) i. d. F. v. 23.01.2003, zuletzt geändert durch Art. 11 G v.
 22.07.2026 I Nr. 224 (Vollzitat; Stand-Zeile 15.07.2024, drei Änderungen 2026
 dokumentarisch noch nicht abschließend bearbeitet); Verwaltungszustellungsgesetz
 (VwZG) vom 12.08.2005 (BGBl. I S. 2354), zuletzt geändert durch Art. 15 Abs. 3
-G v. 03.07.2026 I Nr. 199 (Vollzitat; Stand-Zeile 15.07.2024); für Baden-Württemberg dazu § 15 AGVwGO und § 41 LVwVfG
+G v. 03.07.2026 I Nr. 199 (Vollzitat; Stand-Zeile 15.07.2024); Onlinezugangsgesetz (OZG)
+vom 14.08.2017, zuletzt geändert durch Art. 21 G v. 22.07.2026 I Nr. 224 (Vollzitat;
+Stand-Zeile 19.07.2024); für Baden-Württemberg dazu § 15 AGVwGO und § 41 LVwVfG
 am Landesportal landesrecht-bw.de. Gilt für Bescheide von Behörden außerhalb von Steuern
 (dort: Einspruch, eigenes Merkblatt) und Sozialleistungen (dort: Widerspruch
 nach SGG, § 84 SGG `[QUELLE: eigenes Merkblatt]`). Wichtig: Ob es ein
@@ -49,6 +51,7 @@ Regel nicht vorgesehen; dann binnen eines Monats Klage beim Verwaltungsgericht
 | Elektronische Zustellung | nur an einen vom Empfänger eröffneten Zugang, mit dem Hinweis „Zustellung gegen Empfangsbekenntnis“; Nachweis ist das unterschriebene Empfangsbekenntnis. Fiktion „am vierten Tag nach der Absendung“ nur, wenn das Verfahren auf Verlangen des Empfängers elektronisch läuft, nach Belehrung | § 5 Abs. 5 bis 7 VwZG |
 | Zustellungsmangel | Lässt sich die formgerechte Zustellung nicht nachweisen oder wurden zwingende Vorschriften verletzt, gilt das Dokument „als in dem Zeitpunkt zugestellt, in dem es dem Empfangsberechtigten tatsächlich zugegangen ist“; der Fehler verschiebt also nur den Fristbeginn | § 8 VwZG |
 | Öffentliche Zustellung | bei unbekanntem Aufenthalt durch Aushang oder Bundesanzeiger; „gilt als zugestellt, wenn seit dem Tag der Bekanntmachung der Benachrichtigung zwei Wochen vergangen sind“. Nach einem Umzug die Anschrift mitteilen | § 10 Abs. 1 Satz 1 Nr. 1, Abs. 2 VwZG |
+| Zustellung im Ausland | Nach dem VwZG (Bundesbehörden; Landesbehörden nach Landesrecht) „durch Einschreiben mit Rückschein, soweit die Zustellung von Dokumenten unmittelbar durch die Post völkerrechtlich zulässig ist“, sonst über die Behörden des fremden Staates oder die deutsche Auslandsvertretung, oder elektronisch, soweit völkerrechtlich zulässig; Nachweis ist der Rückschein oder das Zeugnis der ersuchten Behörde. Bei Zustellung über fremde Behörden kann die Behörde verlangen, einen Zustellungsbevollmächtigten im Inland zu benennen; geschieht das nicht, wird später per Post an die Auslandsanschrift zugestellt, und das Dokument „gilt am siebenten Tag nach Aufgabe zur Post als zugestellt, wenn nicht feststeht, dass es den Empfänger nicht oder zu einem späteren Zeitpunkt erreicht hat“ | § 9 Abs. 1 bis 3 VwZG |
 | Berechnung | Für die Widerspruchsfrist im Verwaltungsverfahren gelten „die §§ 187 bis 193 des Bürgerlichen Gesetzbuchs entsprechend“; „Fällt das Ende einer Frist auf einen Sonntag, einen gesetzlichen Feiertag oder einen Sonnabend, so endet die Frist mit dem Ablauf des nächstfolgenden Werktags.“ Für gerichtliche Fristen dasselbe Ergebnis über § 57 Abs. 2 VwGO mit § 222 Abs. 1 und 2 ZPO | § 31 Abs. 1 und 3 VwVfG (Bund; Landes-VwVfG `[PRÜFEN: je Land]`); § 57 Abs. 2 VwGO, § 222 ZPO |
 | Fehlende oder falsche Belehrung | Frist beginnt nicht; Widerspruch dann binnen eines Jahres seit Zustellung oder Eröffnung | § 58 Abs. 1 und 2 VwGO, § 70 Abs. 2 VwGO |
 | Frist versäumt | Wiedereinsetzung auf Antrag, wenn ohne Verschulden; Antrag binnen zwei Wochen nach Wegfall des Hindernisses, Handlung nachholen, Gründe glaubhaft machen; nach einem Jahr ausgeschlossen | § 60 Abs. 1 bis 3 VwGO, § 70 Abs. 2 VwGO |
@@ -69,7 +72,7 @@ Tag der Aufgabe zur Post.
 |---|---|---|
 | Form | „schriftlich, in elektronischer Form nach § 3a Absatz 2 des Verwaltungsverfahrensgesetzes, schriftformersetzend nach § 3a Absatz 3 des Verwaltungsverfahrensgesetzes und § 9a Absatz 5 des Onlinezugangsgesetzes oder zur Niederschrift bei der Behörde“ | § 70 Abs. 1 Satz 1 VwGO |
 | Schriftlich | Brief mit Unterschrift; Telefax gilt als schriftlich `[QUELLE: Rechtsprechung zum Fax]` | § 70 Abs. 1 VwGO |
-| Elektronisch | Einfache E-Mail genügt nicht: § 3a Abs. 2 VwVfG verlangt „ein elektronisches Dokument, das mit einer qualifizierten elektronischen Signatur versehen ist“. Schriftformersatz nach § 3a Abs. 3 VwVfG: (1) ein elektronisches Formular der Behörde, bei Eingabe über das Internet mit elektronischem Identitätsnachweis (Online-Ausweis); (2) eine elektronisch signierte Erklärung aus einem besonderen elektronischen Anwaltspostfach oder gleichgestellten Postfach, aus einem Behördenpostfach oder aus einem nach Identifizierung eingerichteten Postfach einer natürlichen Person (etwa eBO). De-Mail ist keine Ersatzform mehr, der frühere Buchstabe d ist „(weggefallen)“. Der Weg über ein Nutzerkonto nach § 9a Abs. 5 OZG steht nicht in § 3a, sondern gesondert in § 70 Abs. 1 Satz 1 VwGO `[QUELLE: § 9a OZG nicht gelesen]`. Vor dem Versand prüfen, welchen Zugang die Behörde eröffnet hat (§ 3a Abs. 1 VwVfG); im Zweifel Brief oder Fax mit Beleg | § 3a Abs. 1, 2 und 3 Nr. 1 und 2 VwVfG; § 70 Abs. 1 Satz 1 VwGO |
+| Elektronisch | Einfache E-Mail genügt nicht: § 3a Abs. 2 VwVfG verlangt „ein elektronisches Dokument, das mit einer qualifizierten elektronischen Signatur versehen ist“. Schriftformersatz nach § 3a Abs. 3 VwVfG: (1) ein elektronisches Formular der Behörde, bei Eingabe über das Internet mit elektronischem Identitätsnachweis (Online-Ausweis); (2) eine elektronisch signierte Erklärung aus einem besonderen elektronischen Anwaltspostfach oder gleichgestellten Postfach, aus einem Behördenpostfach oder aus einem nach Identifizierung eingerichteten Postfach einer natürlichen Person (etwa eBO). De-Mail ist keine Ersatzform mehr, der frühere Buchstabe d ist „(weggefallen)“. Der Weg über ein Nutzerkonto steht nicht in § 3a, sondern gesondert in § 70 Abs. 1 Satz 1 VwGO mit § 9a Abs. 5 OZG: Hat der Nutzer „über ein Nutzerkonto den Identitätsnachweis erbracht und gibt er über ein Verwaltungsportal mittels Online-Formular eine Erklärung ab, für die durch Rechtsvorschrift die Schriftform angeordnet ist, so wird dadurch zugleich die Schriftform ersetzt“. Das Portal muss vor der Abgabe eine Prüfung der ganzen Erklärung erlauben und danach „eine Kopie seiner Erklärung zum Abruf“ bereitstellen; diese Kopie ist der Beleg. § 9a gilt für Leistungen zur Ausführung von Bundesgesetzen und EU-Recht über Verwaltungsportale, „soweit nicht durch Bundesgesetz etwas anderes bestimmt ist“ `[PRÜFEN: Landes-Onlinezugangsgesetze für reine Landesleistungen]`. Vor dem Versand prüfen, welchen Zugang die Behörde eröffnet hat (§ 3a Abs. 1 VwVfG); im Zweifel Brief oder Fax mit Beleg | § 3a Abs. 1, 2 und 3 Nr. 1 und 2 VwVfG; § 70 Abs. 1 Satz 1 VwGO; § 9a Abs. 1, 2, 4 und 5 OZG |
 | Adressat | die Behörde, die den Verwaltungsakt erlassen hat; fristwahrend auch bei der Widerspruchsbehörde | § 70 Abs. 1 Satz 1 und 2 VwGO |
 | Pflichtinhalt | Erkennbar: wer, gegen welchen Bescheid, dass Widerspruch gewollt ist. Eine Begründung ist nicht Voraussetzung, kann nachgereicht werden | § 70 VwGO nennt keinen Begründungszwang; Begründung empfohlen wegen § 68 Abs. 1 (Rechtmäßigkeit und Zweckmäßigkeit) |
 | Sinnvoller Inhalt | Bescheid mit Datum und Aktenzeichen, Bekanntgabetag, Antrag (Aufhebung oder Änderung), Begründung mit Belegen, Bitte um Akteneinsicht: „Die Behörde hat den Beteiligten Einsicht in die das Verfahren betreffenden Akten zu gestatten, soweit deren Kenntnis zur Geltendmachung oder Verteidigung ihrer rechtlichen Interessen erforderlich ist“ | § 29 Abs. 1 Satz 1 VwVfG (Merkblatt Akteneinsicht) |
@@ -84,8 +87,8 @@ Tag der Aufgabe zur Post.
 | Wer entscheidet | „Hält die Behörde den Widerspruch für begründet, so hilft sie ihm ab und entscheidet über die Kosten.“ Sonst Widerspruchsbescheid der nächsthöheren Behörde; ist das eine oberste Bundes- oder Landesbehörde, entscheidet die Ausgangsbehörde selbst; in Selbstverwaltungsangelegenheiten die Selbstverwaltungsbehörde; ein Gesetz kann die Ausgangsbehörde auch sonst für zuständig erklären | § 72, § 73 Abs. 1 Satz 2 Nr. 1 bis 3, Satz 3 VwGO |
 | Widerspruchsbescheid | ist zu begründen, mit Rechtsmittelbelehrung zu versehen und zuzustellen; er bestimmt, wer die Kosten trägt | § 73 Abs. 3 VwGO |
 | Kosten | Bei Erfolg erstattet der Rechtsträger der Behörde die notwendigen Aufwendungen; Anwaltskosten nur, „wenn die Zuziehung eines Bevollmächtigten notwendig war“. Bei Misserfolg hat der Widerspruchsführer die notwendigen Aufwendungen der Behörde zu erstatten (Abs. 1 Satz 3), dazu können Gebühren nach Landesrecht anfallen. Das VwVfG des Bundes gilt für Bundesbehörden; für Landesbehörden das jeweilige Landes-VwVfG | § 80 Abs. 1 Satz 1 und 3, Abs. 2 VwVfG `[QUELLE: § 80 LVwVfG BW und Gebührengesetz des Landes, nicht gelesen]` |
-| Verböserung | Eine Änderung zum Nachteil ist nicht ausdrücklich geregelt; sie gilt als möglich, wenn das Landesrecht sie zulässt | `[QUELLE: Rechtsprechung zur reformatio in peius, § 79 Abs. 2 VwGO]` |
-| Danach | Anfechtungsklage „innerhalb eines Monats nach Zustellung des Widerspruchsbescheids“ beim Verwaltungsgericht | § 74 Abs. 1 Satz 1 VwGO |
+| Verböserung | Ob die Widerspruchsbehörde zum Nachteil ändern darf, regelt die VwGO nicht ausdrücklich `[QUELLE: Rechtsprechung zur reformatio in peius, nicht gelesen]`. Geschieht es, kann der Widerspruchsbescheid „auch dann alleiniger Gegenstand der Anfechtungsklage sein, wenn und soweit er gegenüber dem ursprünglichen Verwaltungsakt eine zusätzliche selbständige Beschwer enthält“; als solche gilt auch eine wesentliche Verfahrensverletzung, auf der er beruht | § 79 Abs. 2 VwGO |
+| Danach | Anfechtungsklage „innerhalb eines Monats nach Zustellung des Widerspruchsbescheids“ beim Verwaltungsgericht. Gegenstand ist „der ursprüngliche Verwaltungsakt in der Gestalt, die er durch den Widerspruchsbescheid gefunden hat“; der Widerspruchs- oder Abhilfebescheid selbst, „wenn dieser erstmalig eine Beschwer enthält“ | § 74 Abs. 1 Satz 1, § 79 Abs. 1 VwGO |
 
 ## 5. Anlagen und Belege für die Akte
 
@@ -110,6 +113,8 @@ Tag der Aufgabe zur Post.
 | § 72 VwGO Abhilfe | https://www.gesetze-im-internet.de/vwgo/__72.html | wie oben |
 | § 73 VwGO Widerspruchsbescheid (Abs. 1, 3) | https://www.gesetze-im-internet.de/vwgo/__73.html | wie oben |
 | § 74 VwGO Klagefrist | https://www.gesetze-im-internet.de/vwgo/__74.html | wie oben |
+| § 79 VwGO Gegenstand der Anfechtungsklage (Abs. 1, 2) | https://www.gesetze-im-internet.de/vwgo/__79.html | wie oben (17.09.2026 abends) |
+| § 9a OZG Elektronische Abwicklung über Verwaltungsportale, Schriftformersatz (Abs. 1 bis 6) | https://www.gesetze-im-internet.de/ozg/__9a.html | OZG vom 14.08.2017, Vollzitat zuletzt geändert Art. 21 G v. 22.07.2026 (BGBl. 2026 I Nr. 224); Stand-Zeile Art. 1 G v. 19.07.2024, die Änderung 2026 dokumentarisch noch nicht abschließend bearbeitet (17.09.2026 abends) |
 | § 58 VwGO Rechtsbehelfsbelehrung | https://www.gesetze-im-internet.de/vwgo/__58.html | wie oben |
 | § 60 VwGO Wiedereinsetzung (Abs. 1 bis 3) | https://www.gesetze-im-internet.de/vwgo/__60.html | wie oben |
 | § 80 VwGO aufschiebende Wirkung (Abs. 1, 2 Satz 1, 4, 5, 6) | https://www.gesetze-im-internet.de/vwgo/__80.html | wie oben |
@@ -129,11 +134,12 @@ Tag der Aufgabe zur Post.
 | § 5 VwZG Zustellung durch die Behörde, elektronisch (Abs. 5 bis 7) | https://www.gesetze-im-internet.de/vwzg_2005/__5.html | wie oben |
 | § 8 VwZG Heilung von Zustellungsmängeln | https://www.gesetze-im-internet.de/vwzg_2005/__8.html | wie oben |
 | § 10 VwZG Öffentliche Zustellung (Abs. 1 Satz 1 Nr. 1, Abs. 2) | https://www.gesetze-im-internet.de/vwzg_2005/__10.html | wie oben |
+| § 9 VwZG Zustellung im Ausland (Abs. 1 bis 3) | https://www.gesetze-im-internet.de/vwzg_2005/__9.html | wie oben (17.09.2026 abends) |
 | Stand des VwZG | https://www.gesetze-im-internet.de/vwzg_2005/BJNR235410005.html | Vollzitat: G v. 12.08.2005 (BGBl. I S. 2354), zuletzt geändert Art. 15 Abs. 3 G v. 03.07.2026 (BGBl. 2026 I Nr. 199); Stand-Zeile Art. 3 G v. 15.07.2024, die Änderung 2026 dokumentarisch noch nicht abschließend bearbeitet |
 | §§ 177 bis 181 ZPO Zustellung, Ersatzzustellung | https://www.gesetze-im-internet.de/zpo/__178.html | ZPO, Vollzitat zuletzt geändert 20.05.2026 (Stand-Zeile 22.12.2025) (17.09.2026) |
 
 Nicht gelesen: Ausführungsgesetze zur VwGO und Landes-VwVfG der übrigen
 15 Länder, § 80 LVwVfG BW, Landes-Verwaltungszustellungsgesetze außer §§ 2
-bis 4 LVwZG BW, § 9 VwZG (Ausland), § 9a OZG, § 79 VwGO, Gebührengesetze der
+bis 4 LVwZG BW, Onlinezugangsgesetze der Länder, Gebührengesetze der
 Länder, Rechtsprechung (Fax, reformatio in peius). Baden-Württemberg ist im
 Browser zweimal gelesen (§ 15 AGVwGO, § 41 LVwVfG, 16.09. und 17.09.2026).
