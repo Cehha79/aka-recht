@@ -321,7 +321,13 @@ languages are planned to match the countries.
 
 ## First start
 
-1. Put the folder wherever you like.
+1. Get it: `git clone https://github.com/Cehha79/aka-recht` or on GitHub
+   "Code", "Download ZIP" and extract; put the folder wherever you like. To
+   pass it on, share the GitHub link and do not re-pack the folder yourself:
+   archives from `zip` and `ditto` on a Mac carry no UTF-8 flag, and
+   depending on the extractor "06 Entwürfe" turns into a broken folder name
+   (tested 17 Sep 2026 with Python; Finder not tested, so avoid it too).
+   The GitHub ZIP is clean.
 2. Start: macOS double-click `Start.command`, Linux run `Start.sh`, Windows
    double-click `Start.bat`. The service binds to 127.0.0.1 only and your
    default browser opens the UI. `zentrale.json` is created on first start.

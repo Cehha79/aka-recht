@@ -6,8 +6,8 @@
   <meta name="color-scheme" content="light">
   <title>AKA Recht</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='9' fill='%231d2b44'/%3E%3Ctext x='20' y='27' text-anchor='middle' font-family='Georgia' font-size='22' fill='white'%3ER%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=4">
-  <script src="app.js?v=20" defer></script>
+  <link rel="stylesheet" href="style.css?v=6">
+  <script src="app.js?v=22" defer></script>
 </head>
 <body>
   <a class="skip" href="#content">Zum Inhalt</a>
@@ -15,7 +15,7 @@
     <a class="marke" href="#seite=home"><span class="marke-zeichen">R</span><span>AKA Recht<small id="marke-unter">Dein Rechtsarbeitsplatz</small></span></a>
     <a id="zurueck" class="zurueck" href="#seite=home" hidden>← Alle Fälle</a>
     <nav id="navigation" aria-label="Bereiche"></nav>
-    <div class="sidebar-fuss"><span class="punkt"></span>Lokal auf deinem Mac<small>Kein Cloud-Dienst, keine fremden Schriften.</small><button class="leise" data-aktion="finder" data-ort="projekt">Projektordner im Finder</button></div>
+    <div class="sidebar-fuss"><span class="punkt"></span>Lokal auf diesem Rechner<small>Kein Cloud-Dienst, keine fremden Schriften.</small><button class="leise" id="projektordner-knopf" data-aktion="finder" data-ort="projekt">Projektordner im Dateimanager</button></div>
   </aside>
   <div class="arbeit">
     <header class="kopf">
@@ -27,6 +27,6 @@
   <dialog id="dialog"><form id="formular" novalidate><div class="dialog-kopf"><h2 id="dialog-titel"></h2><button class="symbol" id="dialog-schliessen" type="button" aria-label="Schließen">×</button></div><div id="dialog-inhalt" class="dialog-inhalt"></div><p id="dialog-fehler" class="fehler" role="alert" hidden></p><div class="dialog-aktionen"><button type="button" class="knopf" id="dialog-abbrechen">Abbrechen</button><button type="submit" class="knopf primaer" id="dialog-speichern">Speichern</button></div></form></dialog>
   <input type="file" id="upload" multiple hidden>
   <div id="toast" role="status" aria-live="polite" hidden></div>
-  <noscript>Für die Oberfläche JavaScript einschalten. Deine Dateien bleiben im Finder zugänglich.</noscript>
+  <noscript>Für die Oberfläche JavaScript einschalten. Deine Dateien bleiben im Dateimanager zugänglich.</noscript>
 </body>
 </html>

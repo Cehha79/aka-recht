@@ -5,6 +5,8 @@
 
 // ---------------------------------------------------------------- Hilfen
 const $ = (s, r = document) => r.querySelector(s);
+// Name des Dateimanagers für Beschriftungen; der Browser läuft auf demselben Rechner wie der Dienst (nur 127.0.0.1).
+const DATEIMANAGER = /Mac/i.test(navigator.userAgent) ? 'Finder' : /Windows/i.test(navigator.userAgent) ? 'Explorer' : 'Dateimanager';
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const datum = iso => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ''); return m ? `${m[3]}.${m[2]}.${m[1]}` : (iso || ''); };
 const heute = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
@@ -159,13 +161,13 @@ const ZENTRALE = {
   async faelle() {
     const inhalt = `<div class="filter"><input id="fall-suche" type="search" placeholder="Fall suchen …" aria-label="Fälle suchen"><select id="fall-filter" aria-label="Nach Status filtern">${opt(['Alle', 'offen', 'ruhend', 'abgeschlossen'], 'Alle')}</select></div>
       <div class="raster" id="fall-liste">${S.zentrale.faelle.map(fallKarte).join('') || '<div class="leer"><h2>Noch kein Fall</h2></div>'}</div>
-      <section class="tafel u-mt18"><h2>Verträge und Vorsorge</h2><p class="untertitel u-mb8">Unterlagen ohne Streit liegen in der allgemeinen Ablage. Sobald du sie bearbeiten willst, wird daraus ein Fall.</p><button class="knopf klein" data-aktion="finder" data-ort="vertraege">Ablage im Finder</button></section>`;
+      <section class="tafel u-mt18"><h2>Verträge und Vorsorge</h2><p class="untertitel u-mb8">Unterlagen ohne Streit liegen in der allgemeinen Ablage. Sobald du sie bearbeiten willst, wird daraus ein Fall.</p><button class="knopf klein" data-aktion="finder" data-ort="vertraege">Ablage im ${DATEIMANAGER}</button></section>`;
     return ['Deine Fallakten', 'Ein Vorgang, eine feste Kennung. Abgeschlossene Fälle bleiben am gleichen Ort.', inhalt, '<button class="knopf primaer" data-aktion="neuer-fall">Neuer Fall</button>'];
   },
   async eingang() {
     const e = S.zentrale.eingang;
     const inhalt = `<section class="tafel">${e.length ? e.map(f => `<div class="zeile"><div class="zeile-text"><h3>${esc(f.name)}</h3><p>${groesse(f.groesse)}</p></div><div class="aktionen"><button class="knopf klein" data-aktion="zuordnen" data-name="${esc(f.name)}">Fall zuordnen</button></div></div>`).join('') : '<div class="leer"><h2>Der Eingang ist frei.</h2><p>Neue PDFs, Briefe und E-Mails hier sammeln, wenn der Fall noch nicht feststeht. Ist er bekannt, direkt in der Akte unter Dokumente hinzufügen.</p></div>'}</section>`;
-    return ['Gemeinsamer Posteingang', 'Unterlagen sammeln und dem passenden Fall zuordnen. Die Datei wird dabei einmal verschoben, nie überschrieben.', inhalt, '<button class="knopf" data-aktion="finder" data-ort="eingang">Eingang im Finder</button><button class="knopf primaer" data-aktion="hochladen" data-ziel="eingang">Dateien hinzufügen</button>'];
+    return ['Gemeinsamer Posteingang', 'Unterlagen sammeln und dem passenden Fall zuordnen. Die Datei wird dabei einmal verschoben, nie überschrieben.', inhalt, '<button class="knopf" data-aktion="finder" data-ort="eingang">Eingang im ' + DATEIMANAGER + '</button><button class="knopf primaer" data-aktion="hochladen" data-ziel="eingang">Dateien hinzufügen</button>'];
   },
   async fristen() {
     const alle = fristenAllerFaelle();
@@ -177,7 +179,7 @@ const ZENTRALE = {
     const karten = l => l.map(q => `<article class="karte">${badge(q.category || q.kategorie)}<h2><a href="${/^https:\/\//.test(q.url) ? esc(q.url) : '#'}" target="_blank" rel="noopener noreferrer">${esc(q.title || q.titel)} ↗</a></h2><p>${esc(q.use || q.verwendung)}</p><div class="hinweis">${esc(q.limit || q.grenze || '')}</div><span class="pfad">${esc(q.url)}</span><div class="karte-fuss"><button class="knopf klein" data-aktion="kopieren" data-text="${esc(q.url)}">Adresse kopieren</button><small class="u-muted-klein">Katalog geprüft: ${esc(datum(q.catalog_checked || q.geprueft))}</small></div></article>`).join('') || '<div class="leer">Kein passender Zugang.</div>';
     const inhalt = `<div class="filter"><input id="quellen-suche" type="search" placeholder="Zum Beispiel Bundesrecht, Gericht, Bußgeld …" aria-label="Rechtsquellen suchen"></div><div class="raster" id="quellen-liste">${karten(S.quellen.quellen)}</div>`;
     S._quellenKarten = karten;
-    return ['Gesetze, Gerichte und Dienste', 'Direkte Zugänge zu amtlichen Angeboten. Die App lädt keine Gesetzestexte nach. Fassung und Geltungszeitraum bei jeder Rechtsfrage am Volltext prüfen.', inhalt, '<button class="knopf" data-aktion="finder" data-ort="quellen">Katalog im Finder</button>'];
+    return ['Gesetze, Gerichte und Dienste', 'Direkte Zugänge zu amtlichen Angeboten. Die App lädt keine Gesetzestexte nach. Fassung und Geltungszeitraum bei jeder Rechtsfrage am Volltext prüfen.', inhalt, '<button class="knopf" data-aktion="finder" data-ort="quellen">Katalog im ' + DATEIMANAGER + '</button>'];
   },
   async bestand() {
     const s = S.zentrale.sicherung;
@@ -202,15 +204,15 @@ const ZENTRALE = {
     return ['Einstellungen', '', inhalt, ''];
   },
   async anleitung() {
-    const inhalt = `<article class="tafel anleitung"><h2>Was AKA Recht ist</h2><p>Ein lokaler Ordner mit einer Oberfläche im Browser. Jede Rechtssache ist ein Fall mit fester Kennung (R-0001, R-0002 …), egal ob Arbeitsrecht, Bußgeld, Miete, Vertrag oder Behörde. Alles bleibt auf diesem Mac.</p>
-      <h2>Ein Fall entsteht</h2><ul><li>„Neuer Fall“: Bezeichnung, Bereich, eigene Rolle, Ziel.</li><li>Die Akte bekommt feste Ordner 01 Eingang bis 08 Archiv, eine Datei akte.json für alle Ordnungsangaben und ein Journal.</li><li>Post in „Dokumente“ hinzufügen oder im Finder in 01 Eingang legen. Jede Datei bekommt eine Kennung (D0001 …) und eine Prüfsumme.</li></ul>
-      <h2>Ordnen ohne Originale zu ändern</h2><ul><li>„Ordnen“ ändert nur Titel, Datum, Art, Stand, Themen, Anlage, Personen und Verweise.</li><li>„Einsortieren“ verschiebt die Datei in einen Aktenbereich. Kennung und Inhalt bleiben.</li><li>Verschiebst du im Finder, findet die App die Datei über ihre Prüfsumme wieder.</li></ul>
+    const inhalt = `<article class="tafel anleitung"><h2>Was AKA Recht ist</h2><p>Ein lokaler Ordner mit einer Oberfläche im Browser. Jede Rechtssache ist ein Fall mit fester Kennung (R-0001, R-0002 …), egal ob Arbeitsrecht, Bußgeld, Miete, Vertrag oder Behörde. Alles bleibt auf diesem Rechner.</p>
+      <h2>Ein Fall entsteht</h2><ul><li>„Neuer Fall“: Bezeichnung, Bereich, eigene Rolle, Ziel.</li><li>Die Akte bekommt feste Ordner 01 Eingang bis 08 Archiv, eine Datei akte.json für alle Ordnungsangaben und ein Journal.</li><li>Post in „Dokumente“ hinzufügen oder im ${DATEIMANAGER} in 01 Eingang legen. Jede Datei bekommt eine Kennung (D0001 …) und eine Prüfsumme.</li></ul>
+      <h2>Ordnen ohne Originale zu ändern</h2><ul><li>„Ordnen“ ändert nur Titel, Datum, Art, Stand, Themen, Anlage, Personen und Verweise.</li><li>„Einsortieren“ verschiebt die Datei in einen Aktenbereich. Kennung und Inhalt bleiben.</li><li>Verschiebst du im ${DATEIMANAGER}, findet die App die Datei über ihre Prüfsumme wieder.</li></ul>
       <h2>Fristen</h2><ul><li>Eine Frist braucht Auslöser (Zugang), Rechtsgrundlage, Rechnung und Quelle. Erst dann darf sie „bestätigt“ sein.</li><li>Der Rechner zeigt jede Rechnung nach §§ 187, 188, 193 BGB. Er entscheidet nicht, welche Frist gilt.</li></ul>
       <h2>Sicherung</h2><ul><li>„Geprüfte Sicherung erstellen“ schreibt eine ZIP außerhalb des Projekts, liest sie zurück und vergleicht jede Datei. Eine Kopie geht an das zweite Ziel, wenn eingerichtet.</li><li>„Wiederherstellung prüfen“ entpackt die letzte Sicherung in einen Zwischenordner, prüft Akten und Prüfsummen und räumt ihn wieder ab. Echte Wiederherstellung in einen neuen Ordner: <code>python3 "06 Werkzeuge/dienst/server.py" --restore &lt;ZIP&gt; &lt;neuer Ordner&gt;</code>, nie über die laufende Mappe.</li><li>Drei Ebenen, die nicht dasselbe sind: Ablage auf diesem Rechner; Synchronisation durch das Betriebssystem, wenn ein Ziel in iCloud Drive oder einem anderen Cloud-Ordner liegt (die ZIP ist unverschlüsselt); Verarbeitung durch die KI, die du anbindest, bei deren Anbieter.</li><li>Vor jedem Speichern der Ordnungsdaten wird die alte Fassung außerhalb des Projekts abgelegt.</li></ul>
       <h2>Arbeiten mit einer KI</h2><ul><li>Die App enthält keine KI. Sie ist eine Aktenmappe, die jede KI benutzen kann: Claude Code, Codex und andere lesen die Anleitung im Ordner (CLAUDE.md, AGENTS.md) und arbeiten mit denselben Werkzeugen wie diese Oberfläche.</li><li>Schreiben darf eine KI nur über die Werkzeuge; Originale bleiben gesperrt. Schreibende Werkzeuge laufen erst, wenn du den Aufruf bestätigt hast.</li></ul>
-      <h2>KI anbinden (MCP)</h2><p>MCP ist die Schnittstelle, über die eine KI die Werkzeuge der Mappe aufruft. Der Server ist die Datei „06 Werkzeuge/dienst/mcp_server.py“; er braucht nur Python 3.</p><ul><li><b>Claude Code:</b> Sitzung im Projektordner starten. Die Datei „.mcp.json“ liegt bei; beim ersten Start fragt Claude Code, ob es den Server aus dem Projekt laden darf. Prüfen mit „/mcp“. Skills wie „/fristencheck R-0001“ liegen unter „.claude/skills/“.</li><li><b>Codex:</b> einmalig im Terminal „codex mcp add aka-recht -- python3 "voller Pfad zu mcp_server.py"“ eingeben, dann Codex im Projektordner starten und mit „/mcp“ prüfen. Die beigelegte „.codex/config.toml“ hat Codex 0.154 noch nicht geladen. Skills liegen unter „.agents/skills/“ und werden mit „$fristencheck“ aufgerufen.</li><li><b>Claude Desktop:</b> Menü Claude, Einstellungen, Entwickler, „Konfiguration bearbeiten“. In der Datei claude_desktop_config.json unter „mcpServers“ einen Eintrag „aka-recht“ mit command „python3“ und args [voller Pfad zu mcp_server.py] eintragen, Pfade absolut. Claude Desktop danach ganz beenden und neu starten.</li><li><b>Ohne MCP:</b> Jede KI, die Befehle ausführen darf, nutzt „python3 06 Werkzeuge/dienst/cli.py liste“.</li></ul>
+      <h2>KI anbinden (MCP)</h2><p>MCP ist die Schnittstelle, über die eine KI die Werkzeuge der Mappe aufruft. Der Server ist die Datei „06 Werkzeuge/dienst/mcp_server.py“; er braucht nur Python 3.</p><ul><li><b>Claude Code:</b> Sitzung im Projektordner starten. Die Datei „.mcp.json“ liegt bei; beim ersten Start fragt Claude Code, ob es den Server aus dem Projekt laden darf. Prüfen mit „/mcp“. Skills wie „/fristencheck R-0001“ liegen unter „.claude/skills/“.</li><li><b>Codex:</b> einmalig im Terminal „codex mcp add aka-recht -- python3 "voller Pfad zu mcp_server.py"“ eingeben, dann Codex im Projektordner starten und mit „/mcp“ prüfen. Die beigelegte „.codex/config.toml“ lädt Codex nur, wenn genau dieser Projektordner in „~/.codex/config.toml“ als vertraut eingetragen ist; dann ist „codex mcp add“ nicht nötig. Skills liegen unter „.agents/skills/“ und werden mit „$fristencheck“ aufgerufen.</li><li><b>Claude Desktop:</b> Menü Claude, Einstellungen, Entwickler, „Konfiguration bearbeiten“. In der Datei claude_desktop_config.json unter „mcpServers“ einen Eintrag „aka-recht“ mit command „python3“ und args [voller Pfad zu mcp_server.py] eintragen, Pfade absolut. Claude Desktop danach ganz beenden und neu starten.</li><li><b>Ohne MCP:</b> Jede KI, die Befehle ausführen darf, nutzt „python3 06 Werkzeuge/dienst/cli.py liste“.</li></ul>
       <h2>Grenzen</h2><p>Die App ist kein Rechtsanwalt. Prüfsummen belegen Gleichheit, nicht Echtheit. Ein Datum im Kalender ist keine bestätigte gesetzliche Frist. Versand, Einreichung und Löschen macht die App nicht.</p></article>`;
-    return ['So arbeitest du mit AKA Recht', '', inhalt, '<button class="knopf" data-aktion="finder" data-ort="doku">Projektdoku im Finder</button>'];
+    return ['So arbeitest du mit AKA Recht', '', inhalt, '<button class="knopf" data-aktion="finder" data-ort="doku">Projektdoku im ' + DATEIMANAGER + '</button>'];
   },
 };
 
@@ -247,13 +249,13 @@ const FALL = {
       <section class="tafel"><div class="tafel-kopf"><h2>Angeheftet</h2></div>${f.angeheftet.length ? f.angeheftet.map(id => dok(id) ? `<div class="zeile"><div class="zeile-text"><h3><a href="${fallLink(f.id, 'dokumente', id)}">${esc(dok(id).titel)}</a></h3><p>${esc(id)} · ${esc(dok(id).pfad)}</p></div></div>` : '').join('') : '<p class="untertitel u-m0">Wichtige Dokumente über „Ordnen“ anheften.</p>'}
       <div class="tafel-kopf u-mt16"><h2>Zuletzt im Journal</h2><a href="${fallLink(f.id, 'journal')}">Journal</a></div>${j ? `<div class="zeile"><div class="datumsbox"><b>${datum(j.datum).slice(0, 5)}</b>${datum(j.datum).slice(6)}</div><div class="zeile-text"><h3>${esc(j.titel)}</h3><p>${esc(j.text)}</p></div></div>` : '<p class="untertitel u-m0">Noch kein Eintrag.</p>'}</section></div>
       <section class="tafel u-mt18"><div class="tafel-kopf"><h2>Notizen</h2><button class="knopf klein" data-aktion="neu" data-art="notiz">Notiz</button></div>${a.notizen.length ? a.notizen.map(n => `<div class="zeile"><div class="zeile-text"><h3>${esc(n.titel)}</h3><p>${esc(n.text)}</p><p>${esc(datum(n.datum))}</p></div><div class="aktionen"><button class="knopf klein" data-aktion="bearbeiten" data-art="notiz" data-id="${esc(n.id)}">Bearbeiten</button></div></div>`).join('') : '<p class="untertitel u-m0">Keine Notizen.</p>'}</section>`;
-    return [f.titel, '', inhalt, `<button class="knopf still" data-aktion="neu-laden">Neu einlesen</button><button class="knopf" data-aktion="finder" data-fall="${esc(f.id)}">Ordner im Finder</button><button class="knopf primaer" data-aktion="hochladen" data-ziel="fall">Dokument hinzufügen</button>`];
+    return [f.titel, '', inhalt, `<button class="knopf still" data-aktion="neu-laden">Neu einlesen</button><button class="knopf" data-aktion="finder" data-fall="${esc(f.id)}">Ordner im ${DATEIMANAGER}</button><button class="knopf primaer" data-aktion="hochladen" data-ziel="fall">Dokument hinzufügen</button>`];
   },
   async dokumente() {
     const l = gefilterteDoks(); const typen = [...new Set(dokListe().map(d => d.typ).filter(Boolean))].sort();
     const inhalt = `<div class="filter"><input id="dok-suche" type="search" value="${esc(S.filter.q)}" placeholder="Dokumente, Personen oder Inhalte suchen …" aria-label="Akte durchsuchen"><select id="f-gruppe" aria-label="Bereich">${opt(GRUPPEN, S.filter.gruppe, 'Alle Bereiche')}</select><select id="f-typ" aria-label="Dateityp">${opt(typen, S.filter.typ, 'Alle Typen')}</select><select id="f-stand" aria-label="Stand">${opt(DOK_STAND, S.filter.stand, 'Jeder Stand')}</select><span class="zaehler">${l.length} von ${dokListe().length}</span></div>
-      <div class="dok-tabelle"><div class="dok-kopf"><span>Dokument</span><span>Datum</span><span>Stand</span></div>${l.map(dokZeile).join('') || '<div class="leer"><h2>Nichts gefunden</h2><p>Andere Suche oder Filter zurücksetzen. Neue Dateien mit „Dokument hinzufügen“ oder im Finder in 01 Eingang ablegen.</p></div>'}</div>`;
-    return ['Dokumente', '', inhalt, `<button class="knopf still" data-aktion="neu-laden">Neu einlesen</button><button class="knopf" data-aktion="finder" data-fall="${esc(fallId())}" data-gruppe="01 Eingang">Eingang im Finder</button><button class="knopf primaer" data-aktion="hochladen" data-ziel="fall">Dokument hinzufügen</button>`];
+      <div class="dok-tabelle"><div class="dok-kopf"><span>Dokument</span><span>Datum</span><span>Stand</span></div>${l.map(dokZeile).join('') || '<div class="leer"><h2>Nichts gefunden</h2><p>Andere Suche oder Filter zurücksetzen. Neue Dateien mit „Dokument hinzufügen“ oder im ${DATEIMANAGER} in 01 Eingang ablegen.</p></div>'}</div>`;
+    return ['Dokumente', '', inhalt, `<button class="knopf still" data-aktion="neu-laden">Neu einlesen</button><button class="knopf" data-aktion="finder" data-fall="${esc(fallId())}" data-gruppe="01 Eingang">Eingang im ${DATEIMANAGER}</button><button class="knopf primaer" data-aktion="hochladen" data-ziel="fall">Dokument hinzufügen</button>`];
   },
   async beteiligte() {
     const l = akte().beteiligte;
@@ -308,10 +310,10 @@ async function vorschau(zeigen) {
   const d = dok(S.auswahl); v.hidden = false; b.classList.add('hat-vorschau'); b.classList.toggle('breit', S.breit);
   const tab = S.tab, id = fallId();
   const kopf = `<div class="vorschau-kopf"><div class="tafel-kopf"><span class="kennung">${esc(d.id)}${d.anlage ? ' · ' + esc(d.anlage) : ''}</span><button class="symbol" data-aktion="vorschau-zu" aria-label="Vorschau schließen">×</button></div><h2>${esc(d.titel)}</h2>
-    <div class="aktionen"><button class="knopf klein primaer" data-aktion="ordnen">Ordnen</button><button class="knopf klein" data-aktion="einsortieren">Einsortieren</button><button class="knopf klein" data-aktion="oeffnen">Öffnen</button><button class="knopf klein" data-aktion="finder" data-fall="${esc(id)}" data-dok="${esc(d.id)}">Im Finder zeigen</button><button class="knopf klein still" data-aktion="breit">${S.breit ? 'Geteilte Ansicht' : 'Groß lesen'}</button></div>
+    <div class="aktionen"><button class="knopf klein primaer" data-aktion="ordnen">Ordnen</button><button class="knopf klein" data-aktion="einsortieren">Einsortieren</button><button class="knopf klein" data-aktion="oeffnen">Öffnen</button><button class="knopf klein" data-aktion="finder" data-fall="${esc(id)}" data-dok="${esc(d.id)}">Im ${DATEIMANAGER} zeigen</button><button class="knopf klein still" data-aktion="breit">${S.breit ? 'Geteilte Ansicht' : 'Groß lesen'}</button></div>
     <div class="tabs u-mt12">${[['vorschau', 'Vorschau'], ['text', 'Text'], ['angaben', 'Angaben']].map(([k, n]) => `<button data-tab="${k}" class="${tab === k ? 'aktiv' : ''}">${n}</button>`).join('')}</div></div>`;
   let inhalt = '', klasse = 'vorschau-inhalt';
-  if (d.fehlt) inhalt = '<div class="hinweis rot">Die Datei fehlt am registrierten Ort. Bestand neu einlesen oder im Finder nachsehen.</div>';
+  if (d.fehlt) inhalt = '<div class="hinweis rot">Die Datei fehlt am registrierten Ort. Bestand neu einlesen oder im ' + DATEIMANAGER + ' nachsehen.</div>';
   else if (tab === 'vorschau') {
     klasse += ' dokument';
     if (['JPG', 'JPEG', 'PNG', 'GIF'].includes(d.typ)) inhalt = `<img src="/raw/${id}/${d.id}" alt="${esc(d.titel)}">`;
@@ -330,6 +332,14 @@ async function vorschau(zeigen) {
 
 // ---------------------------------------------------------------- Dialoge und Speichern
 let dialogSpeichern = null, dialogVeraendert = false;
+// Personen im Ordnen-Dialog: Angekreuzte oben; ab sieben Beteiligten ein Suchfeld (Kennung, Name, Rolle), das nur filtert und nichts speichert.
+function personenAuswahl(beteiligte, gewaehlt) {
+  if (!beteiligte.length) return '<div class="hinweis u-m6-0">Noch keine Beteiligten erfasst.</div>';
+  const an = b => gewaehlt.includes(b.id);
+  const zeilen = [...beteiligte.filter(an), ...beteiligte.filter(b => !an(b))].map(b => `<label class="u-block-normal" data-suchtext="${esc((b.id + ' ' + b.name + ' ' + (b.rolle || '')).toLocaleLowerCase('de'))}"><input type="checkbox" name="personen" value="${esc(b.id)}" ${an(b) ? 'checked' : ''}> ${esc(b.id)} · ${esc(b.name)}${b.rolle ? ` <span class="u-muted">${esc(b.rolle)}</span>` : ''}</label>`).join('');
+  const suche = beteiligte.length > 6 ? '<input type="search" id="personen-suche" placeholder="Person suchen: Kennung, Name oder Rolle" autocomplete="off" aria-label="Person suchen">' : '';
+  return `${suche}<div class="hinweis u-m6-0 personen-liste">${zeilen}<p class="personen-leer u-muted" hidden>Keine passende Person.</p></div>`;
+}
 function feld(name, label, wert = '', art = 'text', extra = {}) {
   const hinweis = extra.hinweis ? `<small>${esc(extra.hinweis)}</small>` : '';
   if (art === 'textarea') return `<label class="feld">${esc(label)}<textarea name="${name}" ${extra.rows ? `rows="${extra.rows}"` : ''}>${esc(wert)}</textarea>${hinweis}</label>`;
@@ -374,7 +384,7 @@ function eintragDialog(art, id) {
 }
 function ordnenDialog(d) {
   dialog('Ordnen: ' + d.id, `<div class="hinweis">Nur Ordnungsangaben. Datei, Dateiname und Inhalt bleiben unverändert.</div>${feld('titel', 'Anzeigetitel', d.titel)}<div class="feld-reihe drei">${feld('datum', 'Dokumentdatum', d.datum, 'date', {hinweis: 'kein Zugangsnachweis'})}${feld('art', 'Art', d.art, 'select', {optionen: opt(DOK_ART, d.art, 'Keine Angabe')})}${feld('stand', 'Stand', d.stand, 'select', {optionen: opt(DOK_STAND, d.stand)})}</div><div class="feld-reihe">${feld('textstand', 'Textstand', d.textstand, 'select', {optionen: opt(DOK_TEXTSTAND, d.textstand, 'Keine Angabe'), hinweis: 'was vom Inhalt tatsächlich gelesen wurde'})}</div><div class="feld-reihe">${feld('themen', 'Themen', d.themen.join(', '), 'text', {hinweis: 'durch Komma getrennt'})}${feld('anlage', 'Anlagenkennung', d.anlage, 'text', {hinweis: 'z. B. K 8 oder B 1, so wie im Schriftsatz'})}</div>
-    <label class="feld">Personen<div class="hinweis u-m6-0">${akte().beteiligte.length ? akte().beteiligte.map(b => `<label class="u-block-normal"><input type="checkbox" name="personen" value="${esc(b.id)}" ${d.personen.includes(b.id) ? 'checked' : ''}> ${esc(b.id)} · ${esc(b.name)}</label>`).join('') : 'Noch keine Beteiligten erfasst.'}</div></label>
+    <div class="feld">Personen${personenAuswahl(akte().beteiligte, d.personen)}</div>
     ${feld('verweise', 'Verweise auf Dokumente', d.verweise.join(', '), 'text', {hinweis: 'D-Kennungen, durch Komma getrennt'})}${feld('notiz', 'Ordnungsnotiz', d.notiz, 'textarea')}${feld('angeheftet', 'Auf der Übersicht anheften', akte().fall.angeheftet.includes(d.id) ? 'ja' : 'nein', 'select', {optionen: opt([['nein', 'Nein'], ['ja', 'Ja']], akte().fall.angeheftet.includes(d.id) ? 'ja' : 'nein')})}`,
     async f => { await akteSpeichern(a => { const x = a.dokumente[d.id]; Object.assign(x, {titel: f.get('titel').trim(), datum: f.get('datum'), art: f.get('art'), stand: f.get('stand'), themen: liste(f.get('themen')), anlage: f.get('anlage').trim(), personen: f.getAll('personen'), verweise: liste(f.get('verweise')).map(s => s.toUpperCase()), notiz: f.get('notiz').trim(), textstand: f.get('textstand') || ''});
       const p = a.fall.angeheftet.filter(i => i !== d.id); if (f.get('angeheftet') === 'ja') p.push(d.id); a.fall.angeheftet = p; }); });
@@ -465,7 +475,7 @@ async function hochladen(ziel) {
   const dateien = [...$('#upload').files]; $('#upload').value = ''; let n = 0;
   try {
     for (const f of dateien) {
-      if (f.size > 25 * 1024 * 1024) throw new Error(f.name + ': über 25 MB, bitte im Finder ablegen.');
+      if (f.size > 25 * 1024 * 1024) throw new Error(f.name + ': über 25 MB, bitte im ' + DATEIMANAGER + ' ablegen.');
       const inhalt = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
       await api.post(ziel === 'fall' ? `/api/fall/${fallId()}/eingang` : '/api/eingang', {name: f.name, inhalt}); n++;
     }
@@ -509,10 +519,11 @@ document.addEventListener('click', async e => {
     else toast('Unbekannte Aktion „' + a + '“. Das ist ein Fehler in der Oberfläche.', true);   // still nichts tun war F01 aus dem Prüfbericht
   } catch (err) { toast(err.message, true); }
 });
-document.addEventListener('keydown', e => { const z = e.target.closest && e.target.closest('[data-dok]'); if (z && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); z.click(); } if ((e.metaKey || e.ctrlKey) && e.key === 'k' && $('#dok-suche')) { e.preventDefault(); $('#dok-suche').focus(); } });
+document.addEventListener('keydown', e => { if (e.target.id === 'personen-suche' && e.key === 'Enter') { e.preventDefault(); return; } const z = e.target.closest && e.target.closest('[data-dok]'); if (z && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); z.click(); } if ((e.metaKey || e.ctrlKey) && e.key === 'k' && $('#dok-suche')) { e.preventDefault(); $('#dok-suche').focus(); } });
 let suchTimer;
 document.addEventListener('input', e => {
-  if (e.target.closest('#formular')) dialogVeraendert = true;
+  if (e.target.closest('#formular') && e.target.id !== 'personen-suche') dialogVeraendert = true;
+  if (e.target.id === 'personen-suche') { const q = e.target.value.trim().toLocaleLowerCase('de'); let sichtbar = 0; document.querySelectorAll('.personen-liste label').forEach(l => { l.hidden = !!q && !l.dataset.suchtext.includes(q); if (!l.hidden) sichtbar++; }); $('.personen-leer').hidden = sichtbar > 0; }
   if (e.target.id === 'dok-suche') { S.filter.q = e.target.value; clearTimeout(suchTimer); suchTimer = setTimeout(async () => { try { S.treffer = S.filter.q.trim().length > 1 ? (await api.get(`/api/fall/${fallId()}/suche?q=${encodeURIComponent(S.filter.q.trim())}`)).treffer : null; } catch (err) { toast(err.message, true); } const f = $('#dok-suche'); const pos = f && f.selectionStart; await render(); const g = $('#dok-suche'); if (g) { g.focus(); g.setSelectionRange(pos, pos); } }, 300); }
   if (e.target.id === 'fall-suche' || e.target.id === 'fall-filter') { const q = $('#fall-suche').value.toLocaleLowerCase('de'), s = $('#fall-filter').value; $('#fall-liste').innerHTML = S.zentrale.faelle.filter(c => (c.id + ' ' + c.titel + ' ' + (c.bereich || '')).toLocaleLowerCase('de').includes(q) && (s === 'Alle' || c.status === s)).map(fallKarte).join('') || '<div class="leer">Kein passender Fall.</div>'; }
   if (e.target.id === 'quellen-suche') { const q = e.target.value.toLocaleLowerCase('de'); $('#quellen-liste').innerHTML = S._quellenKarten(S.quellen.quellen.filter(x => JSON.stringify(x).toLocaleLowerCase('de').includes(q))); }
@@ -535,6 +546,7 @@ document.addEventListener('submit', async e => {
 });
 $('#formular').onsubmit = async e => { e.preventDefault(); if (!dialogSpeichern) return; const k = $('#dialog-speichern'); k.disabled = true; $('#dialog-fehler').hidden = true;
   try { await dialogSpeichern(new FormData(e.target)); dialogVeraendert = false; if ($('#dialog').open) $('#dialog').close(); } catch (err) { $('#dialog-fehler').textContent = err.message; $('#dialog-fehler').hidden = false; } finally { k.disabled = false; } };
+$('#projektordner-knopf').textContent = 'Projektordner im ' + DATEIMANAGER;
 $('#dialog-schliessen').onclick = dialogZu; $('#dialog-abbrechen').onclick = dialogZu; $('#dialog').addEventListener('cancel', e => { e.preventDefault(); dialogZu(); });
 window.addEventListener('hashchange', render);
 // F14: nach einem Tageswechsel bei lange geöffneter Anwendung stimmen „in n Tagen“ und die Fristenlisten nicht mehr; beim Zurückkommen neu einlesen

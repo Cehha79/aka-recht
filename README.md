@@ -334,7 +334,13 @@ Weitere Sprachen sind geplant, passend zu den Ländern.
 
 ## Erster Start
 
-1. Ordner an einen Ort deiner Wahl legen.
+1. Holen: `git clone https://github.com/Cehha79/aka-recht` oder auf GitHub
+   „Code“, „Download ZIP“ und entpacken; den Ordner an einen Ort deiner Wahl
+   legen. Zum Weitergeben den GitHub-Link teilen, den Ordner nicht selbst
+   neu packen: Archive von `zip` und `ditto` auf dem Mac tragen keine
+   UTF-8-Kennung, und je nach Entpackprogramm wird dann aus „06 Entwürfe“
+   ein kaputter Ordnername (am 17.09.2026 mit Python geprüft; den Finder
+   nicht getestet, also auch nicht verwenden). Das ZIP von GitHub ist sauber.
 2. Starten: macOS `Start.command` doppelklicken, Linux `Start.sh`
    ausführen, Windows `Start.bat` doppelklicken. Der Dienst läuft nur auf
    127.0.0.1, der Standardbrowser öffnet die Oberfläche. Beim ersten Start

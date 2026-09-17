@@ -1,6 +1,6 @@
 # STRUKTUR
 
-*Stand: 16.09.2026*
+*Stand: 17.09.2026*
 
 ## Aufgabe dieser Datei
 
@@ -11,7 +11,7 @@ Keine Aufgabenliste, keine Arbeitsregeln.
 
 Ein Ordner, in dem jede Rechtssache (Arbeit, Verkehr, Miete, Verträge,
 Behörden, Strafsachen und mehr) als eigene Fallakte liegt, bedient durch eine
-lokale Oberfläche im Browser und später als Desktop-App, mit einer getrennten
+lokale Oberfläche im Browser (eine Desktop-Hülle ist vorerst nicht geplant), mit einer getrennten
 Claude-Schicht für Prüfabläufe.
 
 ## Zwei Schichten
@@ -276,12 +276,12 @@ Seitenleiste links, Inhalt rechts, jeder Bereich scrollt für sich. Nach jeder
 Änderung an CSS oder JS wird die Versionsnummer im HTML-Link erhöht. Der
 Dienst setzt `style-src 'self'`; die Oberfläche erzeugt deshalb keine
 Inline-Stile, Abstände und Farben liegen als Hilfsklassen `u-…` in style.css
-(seit 17.09.2026, F37).
+(seit 17.09.2026, F37). Beschriftungen nennen den Dateimanager des Systems (Finder, Explorer, sonst „Dateimanager“), erkannt am Browser, der auf demselben Rechner läuft (seit 17.09.2026).
 
 Bereiche der Zentrale: Übersicht, Alle Fälle, Posteingang, Fristen aller
 Fälle, Rechtsquellen, Bestand und Sicherung, Einstellungen, Anleitung.
 Bereiche der Fallakte: Übersicht (mit Notizen und Angeheftetem), Dokumente
-mit Vorschau (Vorschau, Text, Angaben; Ordnen, Einsortieren, Öffnen, Finder),
+mit Vorschau (Vorschau, Text, Angaben; Ordnen, Einsortieren, Öffnen, im Dateimanager zeigen; Personen im Ordnen-Dialog mit Suchfeld ab sieben Beteiligten),
 Beteiligte, Verfahren, Chronologie, Fristen (mit Rechner im Formular),
 Aufgaben, Entwürfe (mit „Entwurf aus Vorlage“: Dialog ruft `vorlage_fuellen`),
 Beweise und Anlagen, Journal.

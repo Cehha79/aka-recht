@@ -85,7 +85,7 @@ table.tabelle{width:100%;border-collapse:separate;border-spacing:0;background:#f
 dialog{width:min(720px,92vw);max-height:88vh;border:1px solid #cbd5e3;border-radius:12px;padding:0;color:var(--text);box-shadow:0 20px 90px #17203340}dialog::backdrop{background:#17203366}
 dialog form{display:flex;flex-direction:column;max-height:88vh}.dialog-kopf{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 14px;border-bottom:1px solid var(--line)}.dialog-kopf h2{font-size:1.15rem}
 .dialog-inhalt{padding:18px 24px;overflow:auto;min-height:0}.dialog-aktionen{display:flex;justify-content:flex-end;gap:8px;padding:14px 24px;border-top:1px solid var(--line);background:#f8fafc}
-label.feld{display:block;font-size:.8rem;font-weight:600;margin-bottom:14px}.feld input,.feld select,.feld textarea{display:block;width:100%;margin-top:5px;font-weight:400}.feld small{display:block;font-weight:400;color:var(--muted);font-size:.72rem;margin-top:4px}
+label.feld,div.feld{display:block;font-size:.8rem;font-weight:600;margin-bottom:14px}.feld input,.feld select,.feld textarea{display:block;width:100%;margin-top:5px;font-weight:400}.feld small{display:block;font-weight:400;color:var(--muted);font-size:.72rem;margin-top:4px}
 .feld-reihe{display:grid;grid-template-columns:1fr 1fr;gap:14px}.feld-reihe.drei{grid-template-columns:1fr 1fr 1fr}
 .fehler{color:var(--rot);font-size:.82rem;background:#fbecea;padding:10px 24px;margin:0}
 .rechner{background:#f3f6fa;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:14px}.rechner h3{font-size:.85rem;margin-bottom:8px}.rechner .ergebnis{font-size:.8rem;white-space:pre-wrap;margin-top:8px}
@@ -94,6 +94,7 @@ label.feld{display:block;font-size:.8rem;font-weight:600;margin-bottom:14px}.fel
 .anleitung{max-width:860px;line-height:1.7}.anleitung h2{margin:22px 0 8px;font-size:1.05rem}.anleitung p,.anleitung li{font-size:.9rem}.anleitung ul{padding-left:22px}
 /* Hilfsklassen statt Inline-Stilen (CSP style-src self, Prüfbericht F37, 17.09.2026) */
 .u-m0{margin:0}.u-mt18{margin-top:18px}.u-mb8{margin-bottom:8px}.u-mb10{margin-bottom:10px}.u-nowrap{white-space:nowrap}.u-minw0{min-width:0}.u-m6-0{margin:6px 0}.u-m12-16{margin:12px 16px}.u-mt12{margin:12px 0 0}.u-mt8{margin-top:8px}.u-mt6{margin-top:6px}.u-mt16{margin-top:16px}.u-mt14{margin-top:14px}.u-fs95{font-size:.95rem}.u-block-normal{display:block;font-weight:400}.u-rot{color:var(--rot)}.u-muted{color:var(--muted)}.u-muted-klein{color:var(--muted);font-size:.7rem}
+#personen-suche{display:block;width:100%;margin-top:6px;font-weight:400}.personen-liste{max-height:240px;overflow-y:auto}.personen-liste input[type=checkbox]{display:inline-block;width:auto;margin:0 6px 0 0;vertical-align:middle}.personen-liste label{padding:3px 0}.personen-liste label[hidden],.personen-liste p[hidden]{display:none}.personen-leer{margin:4px 0}
 /* Schmale Fenster */
 @media(max-width:1100px){body{grid-template-columns:215px minmax(0,1fr)}main{padding:22px 22px 40px}.kopf{padding:14px 22px}.kacheln{gap:10px}.kachel{padding:13px}.raster,.raster.drei{gap:12px}.vorschau{width:48%;min-width:320px}}
 @media(max-width:920px){.vorschau{position:absolute;right:0;top:0;bottom:0;width:66%;box-shadow:-12px 0 35px #1d2b4430;max-width:none}.raster.drei{grid-template-columns:1fr 1fr}.zs-zeile{grid-template-columns:80px 1fr;gap:12px}}

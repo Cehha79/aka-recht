@@ -1,6 +1,6 @@
 # Datenmodell
 
-*Stand: 16.09.2026*
+*Stand: 17.09.2026*
 
 ## Aufgabe dieser Datei
 
