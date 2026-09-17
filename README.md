@@ -332,6 +332,9 @@ Weitere Sprachen sind geplant, passend zu den Ländern.
   arbeitet, sieht diese drei Dateien danach als geändert.
 - Für die Textauszüge aus PDF optional `pdftotext` (Paket poppler). Scans
   ohne Textschicht liest die Mappe nicht; dafür braucht es OCR außerhalb.
+  Windows bringt `pdftotext` nicht mit (auf der Testmaschine Windows 11
+  fehlte es); ohne das Programm zeigt die Mappe bei PDFs die Textquelle „werkzeug-fehlt“
+  und liest keinen Text aus.
 
 ## Erster Start
 
@@ -359,8 +362,8 @@ Weitere Sprachen sind geplant, passend zu den Ländern.
 | Assistent | Was zu tun ist |
 |---|---|
 | Claude Code | Sitzung im Ordner starten; `.mcp.json` liegt bei; Dialog bestätigen; `/mcp` prüfen. Skills unter `.claude/skills/` (`/fallaufnahme`, `/fristencheck`, `/entwurf` …), Hooks aus `.claude/settings.json`. |
-| Codex | einmalig `codex mcp add aka-recht -- python3 "<voller Pfad>/06 Werkzeuge/dienst/mcp_server.py"`; Skills unter `.agents/skills/` (`$fristencheck` …). |
-| Claude Desktop | Einstellungen, Entwickler, Konfiguration bearbeiten: Eintrag `aka-recht` mit `command` `python3` und `args` `["<voller Pfad>/06 Werkzeuge/dienst/mcp_server.py"]`; Claude Desktop neu starten. |
+| Codex | Weg A: einmalig `codex mcp add aka-recht -- python3 "<voller Pfad>/06 Werkzeuge/dienst/mcp_server.py"`. Weg B ohne diesen Eintrag: den Projektordner in `~/.codex/config.toml` als vertraut eintragen (`[projects."<voller Pfad zum Projektordner>"]` mit `trust_level = "trusted"`), dann lädt Codex die mitgelieferte `.codex/config.toml`; ein Eintrag für einen übergeordneten Ordner genügt nicht. Prüfen im Projektordner mit `codex mcp list`. Unter Windows `python` statt `python3`. Skills unter `.agents/skills/` (`$fristencheck` …). |
+| Claude Desktop | Einstellungen, Entwickler, Konfiguration bearbeiten: Eintrag `aka-recht` mit `command` `python3` (unter Windows `python`) und `args` `["<voller Pfad>/06 Werkzeuge/dienst/mcp_server.py"]`; Claude Desktop neu starten. |
 | andere mit MCP | gleicher Aufruf in der Konfigurationsdatei des Assistenten; Arbeitsprofil in `AGENTS.md`. |
 | ohne MCP, mit Befehlen | `python3 "06 Werkzeuge/dienst/cli.py" liste` |
 

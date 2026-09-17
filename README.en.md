@@ -319,6 +319,9 @@ languages are planned to match the countries.
   show as modified.
 - Optional for text extraction from PDF: `pdftotext` (poppler). Scanned PDFs
   without a text layer are not read; that needs OCR outside the folder.
+  Windows does not ship `pdftotext` (it was missing on the Windows 11 test
+  machine); without it the
+  folder reports the text source "werkzeug-fehlt" for PDFs and extracts no text.
 
 ## First start
 
@@ -344,8 +347,8 @@ languages are planned to match the countries.
 | Assistant | What to do |
 |---|---|
 | Claude Code | start a session in the folder; `.mcp.json` is included; confirm the dialog; check with `/mcp`. Skills under `.claude/skills/` (`/fallaufnahme`, `/fristencheck`, `/entwurf` …), hooks from `.claude/settings.json`. |
-| Codex | once: `codex mcp add aka-recht -- python3 "<full path>/06 Werkzeuge/dienst/mcp_server.py"`; skills under `.agents/skills/` (`$fristencheck` …). |
-| Claude Desktop | Settings, Developer, edit config: entry `aka-recht` with `command` `python3` and `args` `["<full path>/06 Werkzeuge/dienst/mcp_server.py"]`; restart Claude Desktop. |
+| Codex | Option A: once `codex mcp add aka-recht -- python3 "<full path>/06 Werkzeuge/dienst/mcp_server.py"`. Option B without that entry: mark the project folder as trusted in `~/.codex/config.toml` (`[projects."<full path to the project folder>"]` with `trust_level = "trusted"`); Codex then loads the bundled `.codex/config.toml`; an entry for a parent folder is not enough. Check inside the project folder with `codex mcp list`. On Windows use `python` instead of `python3`. Skills under `.agents/skills/` (`$fristencheck` …). |
+| Claude Desktop | Settings, Developer, edit config: entry `aka-recht` with `command` `python3` (on Windows `python`) and `args` `["<full path>/06 Werkzeuge/dienst/mcp_server.py"]`; restart Claude Desktop. |
 | others with MCP | same call in the assistant's configuration file; work profile in `AGENTS.md`. |
 | without MCP, with commands | `python3 "06 Werkzeuge/dienst/cli.py" liste` |
 
