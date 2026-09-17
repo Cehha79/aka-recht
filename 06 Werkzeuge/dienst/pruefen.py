@@ -329,15 +329,6 @@ def run():
         fr = anfrage('/api/fristen/berechnen', {'start': '2026-10-30', 'menge': 2, 'einheit': 'tage'}); assert fr['ende'] == '2026-11-02' and fr['feiertagsland'] == 'NW'
         anfrage('/api/fristen/berechnen', {'start': '2026-06-03', 'menge': 1, 'einheit': 'tage', 'land': 'XX'}, erwartet=400)
         ok('Feiertage je Bundesland (Fronleichnam BW, nicht BE), Einstellung Bundesland, unbekanntes Land abgewiesen')
-        # Stufe 11: Weiche je Rechtsordnung. Heute nur DE; unbekannte Kennung wird abgewiesen, die Antwort nennt Rechtsordnung und Regelwerk.
-        # (eigene Variablennamen: `fr` wird weiter unten für die Testfrist F02 gebraucht und muss das Ergebnis vom 30.10.2026 behalten)
-        w1 = anfrage('/api/fristen/berechnen', {'start': '2026-08-21', 'menge': 3, 'einheit': 'wochen'}); assert w1['rechtsordnung'] == 'DE' and w1['rechtsordnung_name'] == 'Deutschland' and '§§ 187, 188, 193 BGB' in w1['regelwerk'], w1
-        w2 = anfrage('/api/fristen/berechnen', {'start': '2026-08-21', 'menge': 3, 'einheit': 'wochen', 'rechtsordnung': 'de'}); assert w2['ende'] == w1['ende'] == '2026-09-11' and w2['rechtsordnung'] == 'DE'
-        f = anfrage('/api/fristen/berechnen', {'start': '2026-08-21', 'menge': 3, 'einheit': 'wochen', 'rechtsordnung': 'AT'}, erwartet=400); assert 'Unbekannte Rechtsordnung: AT' in f['fehler'] and 'DE (Deutschland)' in f['fehler'], f
-        assert fristen.berechne('2026-01-31', 1, 'monate', ereignisfrist=False, werktagsregel=False, rechtsordnung='DE')['ende'] == '2026-02-28'
-        fb = next(w for w in anfrage('/api/werkzeuge') if w['name'] == 'frist_berechnen')
-        assert fb['parameter']['properties']['rechtsordnung']['enum'] == ['DE'], fb['parameter']['properties'].get('rechtsordnung')
-        ok('Fristenrechner mit Weiche je Rechtsordnung: DE als Standard und Kleinschreibung, Antwort nennt Rechtsordnung und Regelwerk, unbekannte Rechtsordnung 400 mit Liste, Parameter im Katalog')
         # Stufe 11: Sprache der Oberfläche. Sprachdateien nur aus dem Ordner sprachen/, eingestellte Sprache unter „aktuell“, Deutsch als Rückfall,
         # unbekannte Sprache abgewiesen; jede Kennung, die app.js oder index.html benutzt, steht in de.json und umgekehrt.
         sp = anfrage('/sprachen/aktuell.json', mit_kopf=True); assert sp[0] == 200 and sp[1].get('X-AKA-Sprache') == 'de' and json.loads(sp[2])['app.titel'] == 'AKA Recht', sp[:2]

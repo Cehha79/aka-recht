@@ -53,7 +53,7 @@ Beitrag steht.
 
 ## Sprache
 
-Deutsch ist die Arbeitssprache des Projekts. Beiträge auf Englisch oder
-Türkisch sind willkommen; die Anleitung dazu folgt mit den Übersetzungen.
+Deutsch ist die Arbeitssprache des Projekts. Beiträge auf Englisch sind
+willkommen.
 
 Kontakt: info@mika-tec.com

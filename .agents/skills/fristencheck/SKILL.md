@@ -20,12 +20,7 @@ Lies `AGENTS.md` und die Akte (`python3 "06 Werkzeuge/dienst/cli.py" fall_lesen 
 2. Je Kandidat drei Dinge belegen: Auslöser (welches Ereignis), Zugang oder
    Bekanntgabe (Datum mit Nachweis, D-Kennung), Rechtsgrundlage (Norm mit
    Absatz, am Volltext gelesen, Fassung und Geltungszeitraum; sonst `[QUELLE: …]`).
-3. Rechnen: `cli.py frist_berechnen start=JJJJ-MM-TT menge=… einheit=tage|wochen|monate|jahre ereignisfrist=true werktagsregel=true land=BW rechtsordnung=DE`.
-   `rechtsordnung` wählt die Fristregeln; heute gibt es nur `DE` (§§ 187, 188,
-   193 BGB, Standard). Für einen Fall mit anderer Rechtsordnung (Feld
-   `rechtsordnung` der Akte) meldet der Rechner „unbekannt“; dann nicht mit DE
-   rechnen, sondern die Frist als Kandidat mit `[QUELLE: Fristregeln <Land>]`
-   offen lassen.
+3. Rechnen: `cli.py frist_berechnen start=JJJJ-MM-TT menge=… einheit=tage|wochen|monate|jahre ereignisfrist=true werktagsregel=true land=BW`.
    `land` ist das Bundesland des Ortes, an dem die Leistung zu erbringen ist
    (§ 193 BGB: Sitz des Gerichts, der Behörde oder des Empfängers), Kürzel
    wie BW, BY, NW; ohne Angabe gilt die Einstellung der Mappe. Nur

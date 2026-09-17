@@ -52,7 +52,7 @@ Recht/
 ├─ 06 Werkzeuge/
 │  ├─ dienst/                 server.py, store.py, dokumente.py, fristen.py,
 │  │                          bestand.py, sicherung.py, werkzeuge.py, cli.py
-│  ├─ oberflaeche/            index.html, app.js, style.css, sprachen/ (de.json und anleitung.de.html je Sprache, Stufe 11)
+│  ├─ oberflaeche/            index.html, app.js, style.css, sprachen/ (de.json und anleitung.de.html; Englisch später)
 │  ├─ verteilen.py            AGENTS.md und .agents/skills/ aus den Quellen erzeugen
 │  ├─ einrichten_windows.py   nur Windows: python3 in .mcp.json, .claude/settings.json, .codex/config.toml durch python ersetzen (ruft Start.bat)
 │  └─ pruefen.py              Funktionstest mit künstlichen Akten
@@ -167,7 +167,7 @@ Sicherungsziel iCloud Drive wird nur vorgeschlagen, wo es den Ordner gibt. Texta
 | `server.py` | HTTP-Dienst, Sitzungen, Routen, statische Oberfläche |
 | `store.py` | akte.json und zentrale.json lesen und mit Revision schreiben, Sperre |
 | `dokumente.py` | Dateien auflisten, Textauszug (txt, md, html, docx, eml, pdf) mit Herkunft (`befund()`: textquelle, Seiten, Zeichen; Bildscan und Foto gelten als nicht gelesen, seit 17.09.2026, F34), Suche |
-| `fristen.py` | Fristen rechnen mit Weiche je Rechtsordnung (`REGELWERKE`, Parameter `rechtsordnung`, Standard `DE`; seit 17.09.2026, Stufe 11): heute nur DE nach §§ 187, 188, 193 BGB mit den landesweiten Feiertagen aller 16 Bundesländer (Kürzel, Einstellung `feiertagsland` in zentrale.json, Standard BW), Rechnung als Text; die Antwort nennt Rechtsordnung und Regelwerk, eine unbekannte Rechtsordnung wird abgewiesen. Neue Rechtsordnungen nur als eigene Rechenfunktion mit eigenen Grenzfällen im Funktionstest und Prüfvermerk in Rechtsinhalte.md |
+| `fristen.py` | Fristen rechnen nach §§ 187, 188, 193 BGB, landesweite Feiertage aller 16 Bundesländer (Kürzel, Einstellung `feiertagsland` in zentrale.json, Standard BW), Rechnung als Text |
 | `bestand.py` | Prüfsummen, Verschiebungen erkennen, Bestand prüfen |
 | `texterkennung.py` | Texterkennung (OCR, Stufe 13) über das freiwillige Zusatzprogramm `tesseract` (PDF-Seiten vorher mit `pdftoppm` gerastert, HEIC unter macOS mit `sips`); ohne Programm klare Meldung mit Installationsweg. Das Werkzeug `texterkennung` legt das Ergebnis als eigene Textdatei unter `07 Recherche/Texterkennung/D…_Texterkennung_JJJJ-MM-TT.txt` an (Kopf mit Quelle, Prüfsumme, Programm, Sprache, Datum, Warnhinweis; eigene D-Kennung mit Verweis auf das Original; überschreibt nie), setzt beim Original den Textstand „OCR-erkannt“ nur, wenn keiner steht; `dokument_text` zeigt den erkannten Text mit Textquelle `ocr`, die Suche findet Original und Ableitung. Keine Erkennung beim bloßen Lesen |
 | `pflege.py` | Pflege der Rechtsinhalte (Stufe 12): meldet nur lesend und ohne Netz, was wieder am Volltext zu prüfen ist; Merkblätter zwölf Monate nach der Kopfzeile „Letzte vollständige Prüfung: TT.MM.JJJJ“, Feiertagstabelle ab 1. Dezember (`fristen.FEIERTAGE_GEPRUEFT`), Quellenkatalog sechs Monate nach `catalog_checked`; „bald fällig“ 30 Tage vorher; Werkzeug `rechtsinhalte_pruefen`, Meldung im Sitzungsstart (seit 17.09.2026) |
@@ -282,7 +282,7 @@ Dienst setzt `style-src 'self'`; die Oberfläche erzeugt deshalb keine
 Inline-Stile, Abstände und Farben liegen als Hilfsklassen `u-…` in style.css
 (seit 17.09.2026, F37). Beschriftungen nennen den Dateimanager des Systems (Finder, Explorer, sonst „Dateimanager“), erkannt am Browser, der auf demselben Rechner läuft (seit 17.09.2026).
 
-Sprache der Oberfläche (Stufe 11, seit 17.09.2026): Alle Beschriftungen
+Sprache der Oberfläche (seit 17.09.2026; vorgesehen sind Deutsch und Englisch, heute nur Deutsch): Alle Beschriftungen
 stehen in `oberflaeche/sprachen/<kürzel>.json` (eine Kennung je Text,
 Platzhalter `{name}`), die Anleitung als HTML-Fragment in
 `sprachen/anleitung.<kürzel>.html` (`{dm}` wird zum Dateimanager). `app.js`
@@ -297,7 +297,10 @@ für die eingestellte Sprache, gilt Deutsch, und fehlende Kennungen fallen in
 der Oberfläche auf die deutschen Texte zurück. Der Funktionstest gleicht jede
 in `app.js` und `index.html` benutzte Kennung mit `de.json` ab und umgekehrt.
 Nicht übersetzt sind die Meldungen des Dienstes, der Werkzeugkatalog, Skills,
-Vorlagen, Merkblätter und das README (eigene Schritte, wenn Türkisch kommt).
+Vorlagen, Merkblätter und das README. Englisch kommt als `en.json` plus
+`anleitung.en.html` dazu, ohne `app.js` anzufassen. Die Mappe kennt nur
+deutsches Recht; andere Rechtsordnungen sind nicht vorgesehen (Entscheidung
+vom 17.09.2026).
 
 Bereiche der Zentrale: Übersicht, Alle Fälle, Posteingang, Fristen aller
 Fälle, Rechtsquellen, Bestand und Sicherung, Einstellungen, Anleitung.

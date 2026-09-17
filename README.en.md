@@ -289,10 +289,10 @@ against the original.
 </details>
 
 <details>
-<summary><b>Does it work for Austria, Switzerland or Turkey?</b></summary>
+<summary><b>Does it work for other countries?</b></summary>
 
-Not yet. Deadline calculator, fact sheets and templates apply to German law
-only. More countries are planned, see [Scope](#scope).
+No. Deadline calculator, fact sheets and templates apply to German law
+only, see [Scope](#scope).
 
 </details>
 
@@ -422,7 +422,7 @@ change to `akte.json` is validated against the data model and saved with a revis
 | `fall_uebersicht` | reads | Compact overview of one case: parties, proceedings, open deadlines and tasks, events, document list, unregistered files |
 | `dokument_text` | reads | Text of one document (Word, e-mail, PDF, text, HTML) with its source: read directly, from the PDF text layer or not at all (scan, photo); the extract is derived, check figures and deadlines against the original |
 | `dokumente_suchen` | reads | Full-text search in titles, metadata and document contents of a case |
-| `frist_berechnen` | reads | Deadline end under the rules of a jurisdiction, today only DE (§§ 187, 188, 193 BGB with the public holidays of a federal state); shows the calculation and names jurisdiction and rule set, does not decide which deadline applies |
+| `frist_berechnen` | reads | Deadline end under §§ 187, 188, 193 BGB with the public holidays of a federal state; shows the calculation, does not decide which deadline applies |
 | `beispiel_laden` | writes | Create the bundled sample case (fictional) as a new case |
 | `bestand_pruefen` | reads | Compare checksums of all registered files of a case with their first state; also reports unregistered and moved files; writes nothing |
 | `journal_lesen` | reads | Read the case journal, newest entries last |
@@ -605,13 +605,11 @@ count, one-off holidays such as Berlin 2025 and 2028 are included), a
 catalogue of official German sources, letter templates and fact sheets for
 German procedures.
 
-Further jurisdictions are planned, in this order: Austria, Switzerland,
-Turkey, then England and Wales, France, USA, China, Russia and more. Until
-then the folder can be used elsewhere to organise documents, but deadlines
-and templates apply to Germany only.
+Other jurisdictions are not planned. Outside Germany the folder can be used to
+organise documents, but deadlines and templates apply to Germany only.
 
-The UI, templates, manual and skills are currently German only. Further
-languages are planned, Turkish first, then English.
+The UI, templates, manual and skills are currently German only. An English
+UI is planned.
 
 ## Limits
 
