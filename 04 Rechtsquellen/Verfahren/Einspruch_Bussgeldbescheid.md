@@ -1,6 +1,6 @@
 # Merkblatt: Einspruch gegen einen Bußgeldbescheid
 
-*Rechtsordnung DE · Bereich Verkehr und Bußgeld (gilt für jeden Bußgeldbescheid nach dem OWiG) · Stand der Prüfung: 16.09.2026, gegengeprüft 17.09.2026, Zustellung, Gebühren und Rechtsbeschwerde am 17.09.2026 nachgelesen, Regelsätze, Punkte und Auslandszustellung am 17.09.2026 abends ergänzt*
+*Rechtsordnung DE · Bereich Verkehr und Bußgeld (gilt für jeden Bußgeldbescheid nach dem OWiG) · Stand der Prüfung: 16.09.2026, gegengeprüft 17.09.2026, Zustellung, Gebühren und Rechtsbeschwerde am 17.09.2026 nachgelesen, Regelsätze, Punkte und Auslandszustellung am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -31,6 +31,7 @@ Verwendung in einem Fall: Fassung erneut prüfen, Zustellung belegen, Frist mit
 | Punkt | Regel | Norm |
 |---|---|---|
 | Rechtsbehelf | Einspruch gegen den Bußgeldbescheid, bei der Verwaltungsbehörde, die ihn erlassen hat | § 67 Abs. 1 Satz 1 OWiG |
+| Welche Behörde, Baden-Württemberg | Zuständig für Ordnungswidrigkeiten nach Bundesrecht sind grundsätzlich „die unteren Verwaltungsbehörden“ (nach § 15 Abs. 1 LVwG, wie das OLG Stuttgart es beschreibt: Landratsamt, Stadtkreise, Große Kreisstädte, bestimmte Verwaltungsgemeinschaften `[QUELLE: § 15 LVwG BW nicht selbst gelesen]`); Gemeinden für Verstöße nach § 24 StVG, „soweit sie als örtliche Straßenverkehrsbehörden für den Vollzug der Straßenverkehrs-Ordnung (StVO) zuständig sind“; für Verstöße nach §§ 24, 24a StVG, die „auf Bundesautobahnen begangen oder entdeckt werden“, das Regierungspräsidium Karlsruhe. Das OLG Stuttgart hält fest, dass nur ein offenkundiger Zuständigkeitsfehler den Bescheid unwirksam machen würde. Der Einspruch geht an die Behörde, die den Bescheid erlassen hat | § 2 Abs. 1, § 4 Abs. 2 Satz 1 Nr. 1, § 5 Abs. 1 Nr. 7 OWiZuVO BW; OLG Stuttgart, 09.11.2017, 4 Rb 25 Ss 833/17, Rn. 8, 12 `[QUELLE: Zuständigkeitsverordnungen der übrigen Länder]` |
 | Was ein Bußgeldbescheid ist | Er muss enthalten: Angaben zur Person, Name und Anschrift des Verteidigers, „die Bezeichnung der Tat, die dem Betroffenen zur Last gelegt wird, Zeit und Ort ihrer Begehung, die gesetzlichen Merkmale der Ordnungswidrigkeit und die angewendeten Bußgeldvorschriften“, die Beweismittel, „die Geldbuße und die Nebenfolgen“ | § 66 Abs. 1 Nr. 1 bis 5 OWiG |
 | Pflichthinweise im Bescheid | dass er „rechtskräftig und vollstreckbar wird, wenn kein Einspruch nach § 67 eingelegt wird“ und dass „bei einem Einspruch auch eine für den Betroffenen nachteiligere Entscheidung getroffen werden kann“; Zahlungsaufforderung binnen zwei Wochen nach Rechtskraft; Belehrung über Erzwingungshaft | § 66 Abs. 2 Nr. 1 Buchst. a und b, Nr. 2, Nr. 3 OWiG |
 | Keine weitere Begründung nötig | „Über die Angaben nach Absatz 1 Nr. 3 und 4 hinaus braucht der Bußgeldbescheid nicht begründet zu werden“ | § 66 Abs. 3 OWiG |
@@ -198,10 +199,12 @@ genügt nicht.
 | § 9 VwZG Zustellung im Ausland (Abs. 1 bis 3) | https://www.gesetze-im-internet.de/vwzg_2005/__9.html | wie oben (17.09.2026 abends) |
 | Stand des VwZG | https://www.gesetze-im-internet.de/vwzg_2005/BJNR235410005.html | Vollzitat: G v. 12.08.2005 (BGBl. I S. 2354), zuletzt geändert Art. 15 Abs. 3 G v. 03.07.2026 (BGBl. 2026 I Nr. 199); Stand-Zeile Art. 3 G v. 15.07.2024, die Änderung 2026 dokumentarisch noch nicht abschließend bearbeitet |
 | §§ 2, 3, 4 LVwZG BW (im Browser gelesen, Portal liefert per Skript nur den Titel) | https://www.landesrecht-bw.de/perma?j=VwZG_BW_!_3 | LVwZG vom 03.07.2007 (GBl. S. 293); § 2 gültig ab 01.01.2016, § 3 ab 01.10.2007, § 4 ab 07.02.2025 (17.09.2026) |
+| §§ 2, 4 Abs. 2, 5 Abs. 1 Nr. 7 OWiZuVO BW (im Browser gelesen) | https://www.landesrecht-bw.de/perma?j=OWiGZustV_BW_!_2 | OWiZuVO i. d. F. v. 02.02.1990; § 2 und § 4 gültig ab 30.07.2026, § 5 ab 01.11.2020 (17.09.2026 abends) |
+| OLG Stuttgart, Beschluss vom 09.11.2017, 4 Rb 25 Ss 833/17 (Zuständigkeit der Bußgeldbehörden in Baden-Württemberg) | https://www.landesrecht-bw.de/perma?d=NJRE001323976 | Volltext am Landesportal gelesen (17.09.2026 abends) |
 | §§ 177 bis 182 ZPO Zustellung, Ersatzzustellung, Zustellungsurkunde | https://www.gesetze-im-internet.de/zpo/__178.html | ZPO i. d. F. v. 05.12.2005, Vollzitat zuletzt geändert Art. 3 G v. 20.05.2026 I Nr. 152 (Stand-Zeile 22.12.2025) (17.09.2026) |
 
 Nicht gelesen: Landes-Verwaltungszustellungsgesetze außer §§ 2 bis 4 LVwZG BW, Kostenverzeichnis zum
 GKG, Änderungshistorie des § 26 Abs. 3 StVG, Anlage zur BKatV (einzelne Tatbestände und Beträge), § 28a und Tilgung nach § 29 StVG, Punktebewertung in der Fahrerlaubnis-Verordnung, Rechtsprechung zu Fax, E-Mail, Messunterlagen und zur Beschränkung des
-Einspruchs. Landesrecht: welche Behörde im Land Bußgeldbehörde ist (§ 26 Abs. 1
-StVG mit Landesverordnung) und ob eine Verordnung nach § 68 Abs. 3 OWiG das
-Amtsgericht abweichend bestimmt.
+Einspruchs. Landesrecht außer Baden-Württemberg: welche Behörde Bußgeldbehörde ist;
+für alle Länder, ob eine Verordnung nach § 68 Abs. 3 OWiG das Amtsgericht abweichend
+bestimmt.

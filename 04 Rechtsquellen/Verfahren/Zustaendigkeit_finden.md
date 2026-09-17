@@ -1,6 +1,6 @@
 # Merkblatt: Zuständige Stelle finden
 
-*Rechtsordnung DE · alle Bereiche · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, § 52 Nr. 4 VwGO am 17.09.2026 nachgelesen*
+*Rechtsordnung DE · alle Bereiche · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, § 52 Nr. 4 VwGO am 17.09.2026 nachgelesen, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -39,13 +39,13 @@ ermittelt werden.
 | Weg | Wer ist zuständig | Norm |
 |---|---|---|
 | Zivilklage | Amtsgericht bis 10.000 Euro, sonst Landgericht (ohne Rücksicht auf den Wert das Landgericht unter anderem bei Heilbehandlungen und Presse- oder Internetveröffentlichungen, § 71 Abs. 2 GVG); Ort: Wohnsitz oder Sitz des Beklagten, bei Verträgen auch Erfüllungsort; Miete oder Pacht von Räumen: „das Gericht ausschließlich zuständig, in dessen Bezirk sich die Räume befinden“, Wohnraummiete dabei immer Amtsgericht | § 23 Nr. 1 und 2a, § 71 Abs. 1 und 2 GVG; §§ 12, 13, 17, 29, 29a Abs. 1 ZPO (Merkblatt Zivilklage) |
-| Mahnverfahren | Amtsgericht am allgemeinen Gerichtsstand des Antragstellers, gebündelt bei zentralen Mahngerichten der Länder | § 689 Abs. 2 und 3 ZPO (Merkblatt Mahnverfahren) `[QUELLE: Landesverordnung]` |
+| Mahnverfahren | Amtsgericht am allgemeinen Gerichtsstand des Antragstellers, gebündelt bei zentralen Mahngerichten der Länder (Baden-Württemberg: Amtsgericht Stuttgart für das ganze Land) | § 689 Abs. 2 und 3 ZPO (Merkblatt Mahnverfahren); § 2 Abs. 1 ZuVOJu BW `[QUELLE: Landesverordnungen der übrigen Länder]` |
 | Arbeitsgericht | Arbeitsgericht am allgemeinen Gerichtsstand des Arbeitgebers (Wohnsitz oder Sitz, §§ 12, 13, 17 ZPO über § 46 Abs. 2 ArbGG) oder am gewöhnlichen Arbeitsort („auch das Arbeitsgericht zuständig, in dessen Bezirk der Arbeitnehmer gewöhnlich seine Arbeit verrichtet oder zuletzt gewöhnlich verrichtet hat“) | § 48 Abs. 1a ArbGG; §§ 12, 13, 17 ZPO (Merkblatt Klage Arbeitsgericht) |
 | Verwaltungsgericht | Bei Streit um Grundstücke oder ortsgebundene Rechte das Gericht des Ortes (Nr. 1); gegen Bundesbehörden am Sitz der Behörde (Nr. 2); bei allen anderen Anfechtungsklagen das Verwaltungsgericht, „in dessen Bezirk der Verwaltungsakt erlassen wurde“, bei einer Behörde mit Zuständigkeit für mehrere Gerichtsbezirke das Gericht, „in dessen Bezirk der Beschwerte seinen Sitz oder Wohnsitz hat“ (Nr. 3); Beamte, Richter, Wehr- und Zivildienst: „das Verwaltungsgericht örtlich zuständig, in dessen Bezirk der Kläger oder Beklagte seinen dienstlichen Wohnsitz oder in Ermangelung dessen seinen Wohnsitz hat“ (Nr. 4); „In allen anderen Fällen“ das Gericht am Sitz oder Wohnsitz des Beklagten (Nr. 5) | § 52 Nr. 1 bis 5 VwGO |
 | Sozialgericht | „das Sozialgericht, in dessen Bezirk der Kläger zur Zeit der Klageerhebung seinen Sitz oder Wohnsitz … hat“; Beschäftigte auch am Beschäftigungsort | § 57 Abs. 1 Satz 1 SGG |
 | Finanzgericht | „das Finanzgericht, in dessen Bezirk die Behörde, gegen welche die Klage gerichtet ist, ihren Sitz hat“; bei Kindergeld der Wohnsitz des Klägers | § 38 Abs. 1 und 2a FGO |
 | Widerspruch, Einspruch | immer bei der Behörde, die den Bescheid erlassen hat (Widerspruch fristwahrend auch bei der Widerspruchsbehörde; Steuer-Einspruch auch bei einer anderen zuständigen Finanzbehörde) | § 70 Abs. 1 VwGO, § 357 Abs. 2 AO, § 67 Abs. 1 OWiG (Merkblätter) |
-| Bußgeldbehörde | „die Verwaltungsbehörde, die durch Gesetz bestimmt wird“, sonst die fachlich zuständige oberste Landesbehörde mit Übertragung durch Verordnung; im Verkehr die von der Landesregierung bestimmte Polizeibehörde oder Dienststelle; Gericht: Amtsgericht am Sitz der Behörde, die Landesregierung kann das durch Verordnung nach Begehungs- oder Wohnort abweichend bestimmen | § 36 Abs. 1 und 2 OWiG, § 26 Abs. 1 StVG, § 68 Abs. 1 und 3 OWiG (Merkblatt Einspruch Bußgeldbescheid) |
+| Bußgeldbehörde | „die Verwaltungsbehörde, die durch Gesetz bestimmt wird“, sonst die fachlich zuständige oberste Landesbehörde mit Übertragung durch Verordnung; im Verkehr die von der Landesregierung bestimmte Polizeibehörde oder Dienststelle; Gericht: Amtsgericht am Sitz der Behörde, die Landesregierung kann das durch Verordnung nach Begehungs- oder Wohnort abweichend bestimmen. Baden-Württemberg: grundsätzlich die untere Verwaltungsbehörde, Gemeinden als örtliche Straßenverkehrsbehörde für § 24 StVG, auf Autobahnen das Regierungspräsidium Karlsruhe | § 36 Abs. 1 und 2 OWiG, § 26 Abs. 1 StVG, § 68 Abs. 1 und 3 OWiG (Merkblatt Einspruch Bußgeldbescheid); §§ 2, 4 Abs. 2, 5 Abs. 1 Nr. 7 OWiZuVO BW `[QUELLE: übrige Länder, Verordnung nach § 68 Abs. 3 OWiG]` |
 | Strafanzeige | jede Staatsanwaltschaft, Polizeidienststelle oder jedes Amtsgericht nimmt sie an; zuständig ist die Staatsanwaltschaft beim Gericht des Tatorts; der Gerichtsstand „ist auch bei dem Gericht begründet, in dessen Bezirk der Angeschuldigte … seinen Wohnsitz hat“ (gleichrangig, nicht nur hilfsweise) | § 158 Abs. 1 StPO, § 143 Abs. 1 GVG, § 7 Abs. 1, § 8 Abs. 1 StPO (Merkblatt Strafanzeige) |
 | Akteneinsicht | die aktenführende Stelle | § 29 Abs. 3 VwVfG (Merkblatt Akteneinsicht) |
 | Dienstaufsichtsbeschwerde | der Dienstvorgesetzte der betroffenen Person | Art. 17 GG (Merkblatt Dienstaufsichtsbeschwerde) |
@@ -99,5 +99,5 @@ ermittelt werden.
 | handelsregister.de, verwaltung.bund.de | https://www.handelsregister.de/, https://verwaltung.bund.de/ | Abruf 17.09.2026, Antwort 200 |
 
 Nicht gelesen: Landesverordnungen zu Mahngerichten und
-Bußgeldbehörden, Behördenfinder des Bundes (behoerdenfinder.de am 16.09. und
+Bußgeldbehörden außer Baden-Württemberg, Behördenfinder des Bundes (behoerdenfinder.de am 16.09. und
 17.09.2026 per Abruf nicht erreichbar).
