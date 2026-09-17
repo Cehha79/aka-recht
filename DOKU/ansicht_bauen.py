@@ -12,7 +12,6 @@ import html, re, sys
 for _strom in (sys.stdin, sys.stdout, sys.stderr):
     if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 from pathlib import Path
-from datetime import datetime
 
 DOKU = Path(__file__).resolve().parent
 MD = DOKU / 'md'
@@ -148,15 +147,20 @@ def seite(name, inhalt, abschnitte, alle, stand):
 </html>
 '''
 
+def stand(text):
+    """Stempel der Ansicht: die Zeile „*Stand: TT.MM.JJJJ*“ der Quelle, weder Bauzeit noch Dateizeit. Entpacken und git clone
+    setzen neue Dateizeiten; der Doku-Abgleich meldete sonst Abweichungen ohne Inhaltsänderung (Windows-Test 17.09.2026).
+    Der Doku-Abgleich-Hook ruft dieselbe Funktion."""
+    m = re.search(r'^\*Stand:\s*([^*\n]+)\*\s*$', text, re.M)
+    return m.group(1).strip() if m else 'ohne Stand-Zeile'
+
 def main():
     vorhanden = [n for n in REIHENFOLGE if (MD / f'{n}.md').exists()]
     vorhanden += sorted(p.stem for p in MD.glob('*.md') if p.stem not in vorhanden)
     for n in vorhanden:
-        # Stempel ist das Änderungsdatum der Quelle, nicht die Bauzeit: so ändert sich die HTML nur mit dem Inhalt
-        stand = datetime.fromtimestamp((MD / f'{n}.md').stat().st_mtime).strftime('%d.%m.%Y %H:%M')
         text = (MD / f'{n}.md').read_text('utf-8')
         inhalt, abschnitte = render(text)
-        (DOKU / f'{n}.html').write_text(seite(n, inhalt, abschnitte, vorhanden, stand), 'utf-8')
+        (DOKU / f'{n}.html').write_text(seite(n, inhalt, abschnitte, vorhanden, stand(text)), 'utf-8')
         print('erzeugt:', f'DOKU/{n}.html')
     return 0
 

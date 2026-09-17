@@ -73,7 +73,7 @@ def main():
         pfad = root / datei
         if not pfad.is_file():
             print(f'{datei}: fehlt, übersprungen.'); continue
-        text = pfad.read_text(encoding='utf-8')
+        text = pfad.read_bytes().decode('utf-8')   # als Bytes lesen: read_text() machte aus CRLF stillschweigend LF (Windows-Test 17.09.2026)
         try: vorher = befehle(datei, text)
         except Exception as e:
             print(f'{datei}: nicht lesbar ({e}), nichts geändert.'); offen += 1; continue

@@ -29,9 +29,8 @@ def ansichten_pruefen(root):
     abweichend = []
     for n in vorhanden:
         quelle = modul.MD / f'{n}.md'; ziel = modul.DOKU / f'{n}.html'
-        stand = modul.datetime.fromtimestamp(quelle.stat().st_mtime).strftime('%d.%m.%Y %H:%M')
-        inhalt, abschnitte = modul.render(quelle.read_text('utf-8'))
-        soll = modul.seite(n, inhalt, abschnitte, vorhanden, stand)
+        text = quelle.read_text('utf-8'); inhalt, abschnitte = modul.render(text)
+        soll = modul.seite(n, inhalt, abschnitte, vorhanden, modul.stand(text))   # Stempel aus der Stand-Zeile, nicht aus der Dateizeit
         ist = ziel.read_text('utf-8') if ziel.is_file() else None
         if ist != soll: abweichend.append(f'DOKU/{n}.html' + ('' if ist is not None else ' (fehlt)'))
     return abweichend

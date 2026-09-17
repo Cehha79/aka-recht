@@ -593,6 +593,8 @@ def run():
             win = base / 'Windows Probe ß'
             for datei in ('.mcp.json', '.claude/settings.json', '.codex/config.toml'):
                 (win / datei).parent.mkdir(parents=True, exist_ok=True); shutil.copy2(QUELLE / datei, win / datei)
+                # Unter Windows kann Start.bat die Quelle schon auf python gestellt haben: Kopien zuerst auf den Auslieferungsstand python3 zurücksetzen
+                b = (win / datei).read_bytes(); (win / datei).write_bytes(b.replace(b'"command": "python"', b'"command": "python3"').replace(b'command = "python"', b'command = "python3"'))
             def einrichten_lauf(*extra):
                 r = subprocess.run([sys.executable, str(einrichten), '--root', str(win), *extra], capture_output=True, text=True, encoding='utf-8', timeout=30); return r.returncode, r.stdout
             vorher = {d: (win / d).read_bytes() for d in ('.mcp.json', '.claude/settings.json', '.codex/config.toml')}
@@ -615,7 +617,10 @@ def run():
             code, aus = einrichten_lauf('--erzwingen'); assert code == 1 and 'unerwartet' in aus and '"python3"' in (win / '.mcp.json').read_text('utf-8'), (code, aus)
             (win / '.mcp.json').write_text('{kaputt', encoding='utf-8')
             code, aus = einrichten_lauf('--erzwingen'); assert code == 1 and 'nicht lesbar' in aus and (win / '.mcp.json').read_text('utf-8') == '{kaputt', (code, aus)
-            ok('Windows einrichten: Hooks in Exec-Form mit ${CLAUDE_PROJECT_DIR}; einrichten_windows.py ersetzt in .mcp.json, settings.json und config.toml nur python3 durch python, zweiter Lauf ändert nichts, keine Zwischendateien; außerhalb von Windows ohne --erzwingen nichts, unerwartete Schreibweise und kaputte Datei bleiben unverändert')
+            crlf = b'{\r\n  "mcpServers": {\r\n    "aka-recht": {\r\n      "command": "python3",\r\n      "args": ["06 Werkzeuge/dienst/mcp_server.py"]\r\n    }\r\n  }\r\n}\r\n'
+            (win / '.mcp.json').write_bytes(crlf)
+            code, aus = einrichten_lauf('--erzwingen'); assert code == 0 and (win / '.mcp.json').read_bytes() == crlf.replace(b'"python3"', b'"python"'), (code, aus, (win / '.mcp.json').read_bytes()[:80])   # Windows-Zeilenenden bleiben
+            ok('Windows einrichten: Hooks in Exec-Form mit ${CLAUDE_PROJECT_DIR}; einrichten_windows.py ersetzt in .mcp.json, settings.json und config.toml nur python3 durch python, zweiter Lauf ändert nichts, keine Zwischendateien; außerhalb von Windows ohne --erzwingen nichts, unerwartete Schreibweise und kaputte Datei bleiben unverändert, Windows-Zeilenenden (CRLF) bleiben erhalten')
         # Pflege der Rechtsinhalte (Stufe 12): Fälligkeiten mit festen Stichtagen, Merkblatt ohne oder mit kaputtem Datum, Feiertage ab Dezember,
         #    Quellenkatalog nach sechs Monaten; das Werkzeug schreibt nichts
         verfahren = root / '04 Rechtsquellen/Verfahren'; verfahren.mkdir(parents=True)
