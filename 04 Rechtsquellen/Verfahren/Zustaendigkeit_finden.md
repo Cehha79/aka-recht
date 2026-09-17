@@ -1,6 +1,6 @@
 # Merkblatt: Zuständige Stelle finden
 
-*Rechtsordnung DE · alle Bereiche · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, § 52 Nr. 4 VwGO am 17.09.2026 nachgelesen, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt*
+*Rechtsordnung DE · alle Bereiche · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, § 52 Nr. 4 VwGO am 17.09.2026 nachgelesen, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, Behördensuche des Bundes am 17.09.2026 abends geprüft und ersetzt*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -57,7 +57,7 @@ ermittelt werden.
 |---|---|---|
 | Alle Gerichte und Staatsanwaltschaften in Deutschland, Suche nach Ort und Postleitzahl | Orts- und Gerichtsverzeichnis des Justizportals: https://www.justizadressen.nrw.de/de/justiz/suche | Ergebnis nennt Amts-, Land-, Arbeits-, Sozial-, Verwaltungs- und Finanzgericht für den Ort; am 16.09.2026 erreichbar |
 | Justizportal des Bundes und der Länder | https://justiz.de/ | Einstieg zu Landesjustizportalen, Formularen, Online-Diensten |
-| Behörden und Leistungen in Baden-Württemberg | https://www.service-bw.de/ | Zuständigkeitsfinder je Leistung und Ort; andere Länder: eigenes Serviceportal; Bundesportal https://verwaltung.bund.de/ (am 17.09.2026 erreichbar), behoerdenfinder.de antwortete am 16.09. und 17.09.2026 nicht |
+| Behörden und Leistungen in Baden-Württemberg | https://www.service-bw.de/ | Zuständigkeitsfinder je Leistung und Ort; andere Länder: eigenes Serviceportal; Bundesportal https://verwaltung.bund.de/ (am 17.09.2026 erreichbar). Für Behörden des Bundes die amtliche Behördensuche https://service.bund.de/Content/DE/Behoerden/Suche/Formular.html (am 17.09.2026 abends geprüft, Filter nach Ressort und Einordnung). Der frühere Behördenfinder behoerdenfinder.de antwortet seit dem 16.09.2026 nicht mehr und wird nicht weiter genannt |
 | Zentrale Mahngerichte, Online-Mahnantrag | https://www.mahngerichte.de/ und https://www.online-mahnantrag.de/ | Adressen der Mahngerichte je Land, Antrag online; am 16.09.2026 erreichbar |
 | Handelsregister (Rechtsform, Vertreter, Sitz des Gegners) | https://www.handelsregister.de/ | § 9 HGB, Abruf zu Informationszwecken; am 17.09.2026 erreichbar (Antwort 200) |
 | Gesetze des Bundes | https://www.gesetze-im-internet.de/ | amtlich, mit Stand |
@@ -99,5 +99,5 @@ ermittelt werden.
 | handelsregister.de, verwaltung.bund.de | https://www.handelsregister.de/, https://verwaltung.bund.de/ | Abruf 17.09.2026, Antwort 200 |
 
 Nicht gelesen: Landesverordnungen zu Mahngerichten und
-Bußgeldbehörden außer Baden-Württemberg, Behördenfinder des Bundes (behoerdenfinder.de am 16.09. und
-17.09.2026 per Abruf nicht erreichbar).
+Bußgeldbehörden außer Baden-Württemberg, Serviceportale der übrigen Länder
+(nur Baden-Württemberg geprüft).

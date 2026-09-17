@@ -203,6 +203,8 @@ Zugang mit Datum und Uhrzeit vermerken, Umschlag aufheben.
 
 Nicht gelesen: Kostenverzeichnis zum GKG außer Nr. 8210 und 8211, Fachliche
 Weisungen der Bundesagentur zu anderen Vorschriften als § 159 SGB III,
-Rechtsprechung zur Unterschrift, zum Einwurf-Einschreiben, zum
-Weiterbeschäftigungsantrag und zur Sperrzeit beim gerichtlichen Vergleich. Ansprüche selbst (Kündigungsgründe, Lohn,
+Rechtsprechung zur Unterschrift, zum Einwurf-Einschreiben und zur Sperrzeit
+beim gerichtlichen Vergleich; der Beschluss des Großen Senats des BAG zum
+allgemeinen Weiterbeschäftigungsanspruch (GS 1/84) ist auf der amtlichen Seite
+nicht abrufbar (Prüfung am 17.09.2026 abends). Ansprüche selbst (Kündigungsgründe, Lohn,
 Zeugnis, Entschädigung) sind nicht Gegenstand dieses Merkblatts.

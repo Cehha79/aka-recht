@@ -219,6 +219,15 @@ Bestätigung. zentrale.json legt der Dienst beim ersten Start an, nie ein
 lesender Aufruf.
 Schlüssel oder Konten braucht die Mappe nicht; die KI bringt der Nutzer mit.
 
+Kalender und E-Mail (Entscheidung 17.09.2026): Die Mappe bekommt keine
+Anbindung an Google, Microsoft oder einen anderen Dienst. Wer Fristen im
+Kalender haben oder ein Schreiben versenden will, macht das über die
+Anbindungen seiner eigenen KI (bei Claude Code die Konnektoren für Kalender
+und Mail) oder von Hand. Gründe: Die App bleibt ohne Netz und ohne Konten,
+Aktendaten verlassen den Rechner nicht ungefragt, und Versand bleibt ein
+Haltepunkt beim Nutzer (REGELN Nr. 16). Die Mappe liefert dafür nur Text:
+Fristen stehen in `akte.json` und im Journal, Entwürfe in 06 Entwürfe.
+
 Stand 16.09.2026: `06 Werkzeuge/verteilen.py` (Punkt 1) ist gebaut. Es
 erzeugt `AGENTS.md` aus `CLAUDE.md` über eine Liste benannter Ersetzungen
 (Titel, Zielgruppe, Hook-Hinweise werden zu Handlungsanweisungen; greift eine

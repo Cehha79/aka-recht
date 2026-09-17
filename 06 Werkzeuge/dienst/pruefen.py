@@ -335,9 +335,9 @@ def run():
         an = anfrage('/sprachen/anleitung.aktuell.html', mit_kopf=True); assert an[0] == 200 and b'<h2>' in an[2] and b'${' not in an[2] and b'<script' not in an[2].lower(), an[:2]
         anfrage('/sprachen/xx.json', erwartet=404); anfrage('/sprachen/de.txt', erwartet=404); anfrage('/sprachen/../06%20Werkzeuge/dienst/store.py', erwartet=404)
         anfrage('/api/einstellungen', {'einstellungen': {'sprache': 'xx'}}, erwartet=400)
-        e = anfrage('/api/einstellungen'); assert e['sprache'] == 'de' and e['sprachen'] == ['de'] and e['einstellungen']['sprache'] == 'de', e
+        e = anfrage('/api/einstellungen'); assert e['sprache'] == 'de' and e['sprachen'] == ['de', 'en'] and e['einstellungen']['sprache'] == 'de', e
         (root / '06 Werkzeuge/oberflaeche/sprachen/zz.json').write_text(json.dumps({'app.titel': 'Probe'}), encoding='utf-8')   # Probesprache ohne Anleitung
-        anfrage('/api/einstellungen', {'einstellungen': {'sprache': 'ZZ'}}); e = anfrage('/api/einstellungen'); assert e['sprache'] == 'zz' and e['sprachen'] == ['de', 'zz'], e
+        anfrage('/api/einstellungen', {'einstellungen': {'sprache': 'ZZ'}}); e = anfrage('/api/einstellungen'); assert e['sprache'] == 'zz' and e['sprachen'] == ['de', 'en', 'zz'], e
         sp = anfrage('/sprachen/aktuell.json', mit_kopf=True); assert sp[1].get('X-AKA-Sprache') == 'zz' and json.loads(sp[2]) == {'app.titel': 'Probe'}, sp[:2]
         an = anfrage('/sprachen/anleitung.aktuell.html', mit_kopf=True); assert an[0] == 200 and an[1].get('X-AKA-Sprache') == 'de', an[:2]   # Rückfall auf Deutsch
         anfrage('/api/einstellungen', {'einstellungen': {'sprache': 'de'}}); assert anfrage('/api/einstellungen')['sprache'] == 'de'
@@ -351,8 +351,21 @@ def run():
         unbenutzt = sorted(k for k in texte if k not in benutzt and not dynamisch.match(k))
         assert not unbenutzt, 'Kennungen in de.json ohne Verwendung: ' + ', '.join(unbenutzt)
         assert all(isinstance(v, str) and v.strip() and not re.search(r'\{[^}]*[^\w}][^}]*\}', v) for v in texte.values()), 'Sprachdatei: leerer Text oder Platzhalter, der nicht {wort} ist'
+        # Jede weitere Sprache: dieselben Kennungen wie Deutsch, dieselben Platzhalter je Kennung, kein leerer Text; dazu eine Anleitung.
+        de_voll = json.loads((QUELLE / '06 Werkzeuge/oberflaeche/sprachen/de.json').read_text(encoding='utf-8'))
+        for datei in sorted((QUELLE / '06 Werkzeuge/oberflaeche/sprachen').glob('*.json')):
+            if datei.stem == 'de': continue
+            fremd = json.loads(datei.read_text(encoding='utf-8'))
+            assert set(fremd) == set(de_voll), f'{datei.name}: Kennungen weichen von de.json ab'
+            for k, v in fremd.items():
+                assert isinstance(v, str) and v.strip(), f'{datei.name}: leerer Text bei {k}'
+                assert sorted(re.findall(r'\{(\w+)\}', v)) == sorted(re.findall(r'\{(\w+)\}', de_voll[k])), f'{datei.name}: andere Platzhalter bei {k}'
+            anleitung = datei.with_name(f'anleitung.{datei.stem}.html')
+            assert anleitung.is_file(), f'Anleitung fehlt: {anleitung.name}'
+            roh = anleitung.read_text(encoding='utf-8')
+            assert '<h2>' in roh and '<script' not in roh.lower() and '${' not in roh, f'{anleitung.name}: kein Fragment ohne Skript'
         assert 'DATEIMANAGER' not in js and "t('" in js, 'app.js muss die Texte über t() holen'
-        ok(f'Sprache der Oberfläche: aktuell.json und Anleitung mit Kennung der Sprache, nur Dateien aus sprachen/, unbekannte Sprache 400, Probesprache zz mit Rückfall der Anleitung auf Deutsch, {len(texte)} Kennungen in de.json vollständig und ohne Reste')
+        ok(f'Sprache der Oberfläche: aktuell.json und Anleitung mit Kennung der Sprache, nur Dateien aus sprachen/, unbekannte Sprache 400, Probesprache zz mit Rückfall der Anleitung auf Deutsch, {len(texte)} Kennungen in de.json vollständig und ohne Reste; weitere Sprachen mit gleichen Kennungen, gleichen Platzhaltern und eigener Anleitung')
         r = anfrage('/api/werkzeug', {'name': 'beispiel_laden', 'parameter': {}, 'bestaetigt': True}); beispiel = r['id']
         b = anfrage('/api/fall/' + beispiel); assert b['akte']['fall']['id'] == beispiel and b['akte']['fall']['bereich'] == 'Arbeit'
         assert set(b['akte']['dokumente']) == {d['id'] for d in b['dokumente']}
