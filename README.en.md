@@ -35,7 +35,7 @@ AI helps you to organise, check and formulate.
   the calculation under §§ 187, 188, 193 BGB with the holidays of your state.
 - **Your AI works with it:** Claude Code, Claude Desktop, Codex or any other
   that speaks MCP (Model Context Protocol) or can run commands. 7 guides
-  take it from case intake to a reviewed draft, 26 tools let it read
+  take it from case intake to a reviewed draft, 27 tools let it read
   the case and, after your confirmation, write to it.
 - **Everything stays with you:** no AI inside the app, no account, no key, no
   network. The service runs only on your machine.
@@ -100,13 +100,19 @@ no outside access.
   Windows 11 with Python 3.14: test suite, service via the start script, MCP
   server, sample case in a folder with umlauts on each.
 - Optional for text extraction from PDF: the program `pdftotext` (poppler).
-  Scanned PDFs without a text layer are not read; that needs text recognition
-  (OCR) outside the folder.
+- Optional for photos and scans without a text layer: text recognition (OCR)
+  with `tesseract` and German language data; scanned PDFs also need
+  `pdftoppm` (poppler as well). Without these programs nothing changes, the
+  folder just reports that no text was read.
 
 <details>
 <summary><b>macOS</b></summary>
 
 - Start with `Start.command` (double-click).
+- Text recognition with Homebrew: `brew install poppler tesseract tesseract-lang`.
+  On Intel Macs with a recent macOS there are sometimes no prebuilt packages;
+  Homebrew then builds from source, which can take a long time (seen on
+  macOS 26.7 on 17 Sep 2026).
 - Do not re-pack the folder with `zip` or `ditto`: those archives carry no
   UTF-8 flag, and depending on the extractor "06 Entwürfe" turns into a
   broken folder name (tested 17 Sep 2026 with Python; Finder not tested, so
@@ -119,6 +125,8 @@ no outside access.
 
 - Start with `Start.sh`.
 - Tested on Ubuntu 24.04 with Python 3.12; `xdg-open` serves as file manager.
+- Text recognition, e.g. on Ubuntu: `sudo apt install poppler-utils tesseract-ocr tesseract-ocr-deu`
+  (distribution package names; not yet tested on Linux).
 
 </details>
 
@@ -135,6 +143,8 @@ no outside access.
 - Windows does not ship `pdftotext` (it was missing on the Windows 11 test
   machine); without it the folder reports the text source "werkzeug-fehlt"
   for PDFs and extracts no text.
+- On Windows `tesseract` for text recognition is only available through
+  third-party installers; not yet tested with the folder on Windows.
 
 </details>
 
@@ -268,9 +278,13 @@ your system uploads the backup there.
 <details>
 <summary><b>Can the folder read scanned letters?</b></summary>
 
-Only if the PDF has a text layer and `pdftotext` is installed. Photos and
-scans without a text layer are not read; the tool `dokument_text` then says
-honestly that no text was read. Text recognition is planned.
+If the PDF has a text layer, `pdftotext` reads it directly. For photos and
+scans without a text layer there is text recognition: "Texterkennung starten"
+at the document in the UI, or the tool `texterkennung`, provided `tesseract`
+is installed. The result is stored as a separate text file under
+`07 Recherche/Texterkennung/`, the original stays unchanged. Recognised text
+can mix up characters and drop lines; always check dates, amounts and names
+against the original.
 
 </details>
 
@@ -391,7 +405,7 @@ blocks that for the AI. New texts go to 06, memos to 07.
 
 <img src="bilder/kapitel-werkzeuge-en.svg" alt="Tools: MCP and command line">
 
-The same 26 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+The same 27 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 and on the command line (`python3 "06 Werkzeuge/dienst/cli.py" <tool> field=value`).
 Over MCP, writing tools run only with your confirmation (only the JSON value
 `true` counts); on the command line the AI is told to ask first. Reading tools
@@ -400,7 +414,7 @@ through `bestand_abgleichen`; the UI does that when you open a case. Every
 change to `akte.json` is validated against the data model and saved with a revision.
 
 <details>
-<summary><b>All 26 tools</b></summary>
+<summary><b>All 27 tools</b></summary>
 
 | Tool | Kind | Purpose |
 |---|---|---|
@@ -424,6 +438,7 @@ change to `akte.json` is validated against the data model and saved with a revis
 | `ereignis_eintragen` | writes | Add an event to the case timeline |
 | `notiz_anlegen` | writes | Add a note to a case |
 | `entwurf_erfassen` | writes | Register a draft or a new version; with status "geprüft" or "versandt" the file is frozen as a read-only copy under 06 Entwürfe/Fassungen with checksum and its own id |
+| `texterkennung` | writes | Text recognition (OCR) for a photo or a PDF without text layer via the optional program tesseract; stores the result as a separate text file under 07 Recherche/Texterkennung with its own id, a reference to the original and a warning header; marks the original as "OCR-erkannt" if no reading quality is set; never overwrites; the recognised text is derived, check figures and dates against the original |
 | `bestand_abgleichen` | writes | Sync the inventory of a case with its files: new files get an id, moved files are found by checksum; the only way new files are registered |
 | `dokument_ordnen` | writes | Change metadata of a document (title, date, kind, state, topics, exhibit, persons, references, note, reading quality); the file stays untouched |
 | `dokument_verschieben` | writes | File a document into another section; id and content stay, nothing is overwritten |
@@ -509,6 +524,7 @@ from them, `/entwurf` checks the mandatory content against them.
 | `python3 "06 Werkzeuge/dienst/cli.py" liste` | list all tools with parameters; then `cli.py <tool> field=value` |
 | `python3 "06 Werkzeuge/dienst/cli.py" frist_berechnen start=2026-09-11 menge=1 einheit=monate land=BW` | calculate a deadline, with the calculation shown |
 | `python3 "06 Werkzeuge/dienst/cli.py" rechtsinhalte_pruefen` | which fact sheets, holidays and sources are due for a new check against the full text |
+| `python3 "06 Werkzeuge/dienst/cli.py" texterkennung fall=R-0001 dokument=D0005` | text recognition for a photo or scan, result under 07 Recherche/Texterkennung; `python3 "06 Werkzeuge/dienst/texterkennung.py"` shows whether tesseract and which languages are present |
 | `python3 "06 Werkzeuge/akte_schema.py" "02 Fälle/<case>/akte.json"` | validate a case file against the data model |
 | `python3 "06 Werkzeuge/dienst/cli.py" vorlage_fuellen fall=R-0001 vorlage=Widerspruch_Bescheid` | create a draft from a template under 06 Entwürfe, with sender (settings or the party with role "Ich"), signature and date; `vorlagen_auflisten` lists the names |
 | `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" <draft.md>` | Word file from a draft, with a pre-check report (open markers, placeholders, header lines, attachments); `--pruefen` report only |

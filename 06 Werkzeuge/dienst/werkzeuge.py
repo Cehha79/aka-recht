@@ -11,7 +11,7 @@ import json, re, shutil, sys
 from datetime import date
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import akte_schema, bestand, dokumente, fristen, pflege, sicherung, store
+import akte_schema, bestand, dokumente, fristen, pflege, sicherung, store, texterkennung as ocr
 
 KATALOG = []
 
@@ -118,9 +118,19 @@ def dokument_text(fall, dokument):
     p = store.sicher(d['pfad'], ordner)
     if not p.is_file(): raise ValueError('Datei fehlt am registrierten Ort. Falls sie verschoben wurde: bestand_abgleichen ausführen.')
     b = dokumente.befund(p)
-    return {'dokument': dokument, 'titel': d['titel'], 'pfad': d['pfad'], 'text': b['text'], 'hinweis': (b['hinweis'] + ' ' if b['hinweis'] else '') + dokumente.ABLEITUNG,
-            'textquelle': b['textquelle'], 'textquelle_text': b['textquelle_text'], 'seiten': b['seiten'], 'zeichen': b['zeichen'], 'textstand': d.get('textstand', ''),
-            'gelesen': b['textquelle'] in ('direkt', 'pdf-text')}
+    antwort = {'dokument': dokument, 'titel': d['titel'], 'pfad': d['pfad'], 'text': b['text'], 'hinweis': (b['hinweis'] + ' ' if b['hinweis'] else '') + dokumente.ABLEITUNG,
+               'textquelle': b['textquelle'], 'textquelle_text': b['textquelle_text'], 'seiten': b['seiten'], 'zeichen': b['zeichen'], 'textstand': d.get('textstand', ''),
+               'gelesen': b['textquelle'] in ('direkt', 'pdf-text'), 'texterkennung': ''}
+    if b['textquelle'] in ('bild', 'kein-text'):   # Stufe 13: vorhandene Texterkennung zeigen, gekennzeichnet als Ableitung
+        ableitungen = sorted((x['pfad'], k) for k, x in akte['dokumente'].items() if dokument in x.get('verweise', []) and x['pfad'].startswith(dokumente.OCR_ORDNER + '/'))
+        for rel, k in reversed(ableitungen):
+            q = store.sicher(rel, ordner)
+            if not q.is_file(): continue
+            inhalt = q.read_text('utf-8', errors='replace'); text = inhalt.split('\n' + dokumente.OCR_TRENNER + '\n', 1)[-1].strip()
+            antwort.update({'text': text, 'textquelle': 'ocr', 'textquelle_text': dokumente.TEXTQUELLEN['ocr'], 'zeichen': len(text), 'texterkennung': k,
+                            'hinweis': f'Erkannter Text aus {k} ({rel}), nicht aus dem Original. {ocr.WARNUNG} {dokumente.ABLEITUNG}'})
+            break
+    return antwort
 
 @werkzeug('dokumente_suchen', 'Volltextsuche in Titeln, Ordnungsangaben und Dokumentinhalten eines Falls.',
           {'fall': {'type': 'string'}, 'frage': {'type': 'string', 'description': 'Suchbegriff, mindestens zwei Zeichen'}}, pflicht=['fall', 'frage'])
@@ -412,6 +422,45 @@ def _akte_mit_dokument(fall, dokument=''):
         _, ergaenzt, _ = dokumente.katalog(fall, akte)
         if ergaenzt: rev = store.speichere_akte(fall, akte, rev, ohne_sicherung=True)
     return akte, rev
+
+@werkzeug('texterkennung', 'Texterkennung (OCR) für ein Foto oder eine PDF ohne Textschicht, über das freiwillige Zusatzprogramm tesseract auf diesem Rechner. Legt den erkannten Text als neue Textdatei unter 07 Recherche/Texterkennung an (eigene D-Kennung, Verweis auf das Original, Kopf mit Quelle, Prüfsumme, Programm, Sprache, Datum und Warnhinweis) und vermerkt beim Original den Textstand „OCR-erkannt“, wenn dort noch keiner steht. Das Original bleibt unverändert, nichts wird überschrieben. Erkannter Text ist eine Ableitung: Zahlen, Daten, Fristen, Beträge und Namen am Original prüfen.',
+          {'fall': {'type': 'string'}, 'dokument': {'type': 'string', 'description': 'D-Kennung eines Fotos oder einer PDF ohne Textschicht'},
+           'sprache': {'type': 'string', 'description': 'tesseract-Sprachkürzel, Standard deu; mehrere mit +, etwa deu+eng'}},
+          schreibend=True, pflicht=['fall', 'dokument'])
+def texterkennung(fall, dokument, sprache='deu'):
+    from datetime import datetime
+    dokument = (dokument or '').strip().upper(); akte, rev = _akte_mit_dokument(fall, dokument); ordner = store.fall_ordner(fall)
+    d = akte['dokumente'].get(dokument)
+    if not d: raise ValueError('Unbekannte Dokumentkennung. ' + ABGLEICH_HINWEIS)
+    if d['pfad'].startswith(dokumente.OCR_ORDNER + '/'): raise ValueError('Das ist selbst schon eine Texterkennung.')
+    p = store.sicher(d['pfad'], ordner)
+    if not p.is_file(): raise ValueError('Datei fehlt am registrierten Ort. Falls sie verschoben wurde: bestand_abgleichen ausführen.')
+    quelle = dokumente.befund(p)['textquelle']
+    if quelle in ('direkt', 'pdf-text'): raise ValueError(f'{dokument} hat schon lesbaren Text ({dokumente.TEXTQUELLEN[quelle]}); die Texterkennung ist für Fotos und PDF ohne Textschicht.')
+    jetzt = datetime.now(); rel = f'{dokumente.OCR_ORDNER}/{dokument}_Texterkennung_{jetzt:%Y-%m-%d}.txt'; ziel = store.sicher(rel, ordner)
+    if ziel.exists(): raise ValueError(f'{rel} gibt es schon (heute bereits erkannt). Nichts wird überschrieben.')
+    sha = bestand.sha_datei(p)
+    e = ocr.erkennen(p, (sprache or ocr.SPRACHE_STANDARD).strip())
+    zeichen = len(re.sub(r'--- Seite \d+ ---', '', e['text']).strip())
+    if not zeichen: raise ValueError('Die Texterkennung hat keine Schrift gefunden. Nichts angelegt; das Dokument bitte ansehen.')
+    kopf = [f'Texterkennung (OCR) zu {dokument}: Ableitung, kein Original',
+            f'Quelle: {dokument}, {d["pfad"]}',
+            f'Prüfsumme der Quelle (SHA-256): {sha}',
+            f'Programm: {e["programm"]}, Sprache {e["sprache"]}' + (f', PDF-Seiten mit {e["dpi"]} dpi gerastert' if e['dpi'] else ''),
+            f'Erstellt: {jetzt:%d.%m.%Y, %H:%M} Uhr · Seiten: {e["seiten"]} · erkannte Zeichen: {zeichen}',
+            f'Achtung: {ocr.WARNUNG}', dokumente.OCR_TRENNER]
+    ziel.parent.mkdir(parents=True, exist_ok=True); ziel.write_text('\n'.join(kopf) + '\n' + e['text'].strip() + '\n', 'utf-8')
+    bestand.abgleichen(ordner, weg='Texterkennung'); dokumente.katalog(fall, akte)
+    neu = next((k for k, x in akte['dokumente'].items() if x['pfad'] == rel), '')
+    if neu:
+        akte['dokumente'][neu].update({'titel': f'Texterkennung zu {dokument}: {d["titel"]}'[:200], 'art': 'Sonstiges', 'stand': 'Vermerk', 'verweise': [dokument],
+                                       'notiz': f'Ableitung durch Texterkennung ({e["programm"]}, {e["sprache"]}), kein Original; am Original {dokument} prüfen.'})
+        if neu not in d.setdefault('verweise', []): d['verweise'].append(neu)
+    textstand_gesetzt = not d.get('textstand')
+    if textstand_gesetzt: d['textstand'] = 'OCR-erkannt'
+    rev = store.speichere_akte(fall, akte, rev)
+    return {'dokument': dokument, 'texterkennung': neu, 'datei': rel, 'seiten': e['seiten'], 'zeichen': zeichen, 'programm': e['programm'], 'sprache': e['sprache'],
+            'textstand': d.get('textstand', ''), 'textstand_gesetzt': textstand_gesetzt, 'hinweis': ocr.WARNUNG, 'revision': rev}
 
 @werkzeug('bestand_abgleichen', 'Bestand eines Falls mit den Dateien abgleichen: neue Dateien in 01 bis 08 bekommen eine Kennung, im Finder verschobene werden über die Prüfsumme wiedergefunden, fehlende Ordnungsangaben werden in der Akte ergänzt. Der einzige Weg, auf dem neue Dateien registriert werden.',
           {'fall': {'type': 'string'}}, schreibend=True, pflicht=['fall'])

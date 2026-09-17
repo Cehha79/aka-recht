@@ -2,8 +2,9 @@
 """Dokumente eines Falls: Katalog, Textauszug, Suche. Liest nur.
 
 Textauszug für txt, md, json, xml, html, docx (Word), eml (E-Mail) und pdf
-(über das vorhandene Programm pdftotext, wenn installiert). Fotos haben
-keinen Text; sie sind über Titel und Ordnungsangaben auffindbar.
+(über das vorhandene Programm pdftotext, wenn installiert). Fotos und Scans
+haben keinen Text; das Werkzeug texterkennung legt auf Wunsch eine erkannte
+Textfassung unter 07 Recherche/Texterkennung an (Stufe 13).
 Nur Standardbibliothek.
 """
 import re, shutil, subprocess, unicodedata, zipfile
@@ -17,6 +18,8 @@ import bestand, store
 TEXT_EXT = {'.md', '.txt', '.json', '.xml', '.py', '.sh', '.csv'}
 BILD_EXT = {'.jpg', '.jpeg', '.png', '.heic', '.gif'}
 TEXT_CACHE = {}
+OCR_ORDNER = '07 Recherche/Texterkennung'   # Ablage erkannter Texte (Stufe 13)
+OCR_TRENNER = '=' * 72                     # trennt den Kopf der Ableitung vom erkannten Text
 
 def normalisieren(s):
     return unicodedata.normalize('NFKD', str(s).casefold()).encode('ascii', 'ignore').decode()
@@ -42,7 +45,8 @@ TEXTQUELLEN = {   # woher der Auszug stammt (Prüfbericht 16.09.2026, F34): der 
     'pdf-text': 'Text aus der Textschicht der PDF (pdftotext); Spalten und Tabellen können in falscher Reihenfolge stehen',
     'kein-text': 'PDF ohne Textschicht (Bildscan): kein Text ausgelesen, Inhalt nur in der Ansicht lesbar',
     'werkzeug-fehlt': 'PDF, aber pdftotext ist nicht installiert: kein Text ausgelesen',
-    'bild': 'Foto oder Bildschirmaufnahme: kein Text ausgelesen, keine Texterkennung (OCR) in der Mappe',
+    'bild': 'Foto oder Bildschirmaufnahme: kein Text ausgelesen; Texterkennung (OCR) mit dem Werkzeug texterkennung möglich',
+    'ocr': 'Text aus der Texterkennung (OCR): Ableitung mit möglichen Fehlern, am Original prüfen',
     'kein-auszug': 'Dateiformat ohne Textvorschau',
     'fehler': 'Textvorschau konnte nicht erstellt werden',
 }
@@ -83,11 +87,11 @@ def befund(pfad):
                 t = r.stdout.decode('utf-8', 'replace'); seiten = t.count('\f') + 1 if t.strip() else 0
             if len(t.strip()) < 25:
                 quelle = 'kein-text' if prog else 'werkzeug-fehlt'; t = ''
-                hinweis = ('Kein Textinhalt gefunden (Bildscan). Inhalt in der PDF-Ansicht lesen; das Dokument gilt als nicht gelesen.' if prog
+                hinweis = ('Kein Textinhalt gefunden (Bildscan). Inhalt in der PDF-Ansicht lesen oder das Werkzeug texterkennung nutzen; das Dokument gilt als nicht gelesen.' if prog
                            else 'pdftotext ist nicht installiert, kein Text ausgelesen. Inhalt in der PDF-Ansicht lesen.')
             else:
                 quelle = 'pdf-text'; hinweis = f'Textschicht der PDF, {seiten} Seite(n). Spalten, Tabellen und Stempel können in falscher Reihenfolge stehen; Unterschriften und handschriftliche Vermerke fehlen.'
-        elif ext in BILD_EXT: quelle = 'bild'; hinweis = 'Foto oder Bildschirmaufnahme: kein Text, keine Texterkennung in der Mappe. Bild öffnen und ansehen; Ergebnis als Textstand „visuell geprüft“ eintragen.'
+        elif ext in BILD_EXT: quelle = 'bild'; hinweis = 'Foto oder Bildschirmaufnahme: kein Text ausgelesen. Bild öffnen und ansehen oder das Werkzeug texterkennung nutzen; Textstand „visuell geprüft“ erst nach dem eigenen Abgleich eintragen.'
         else: quelle = 'kein-auszug'; hinweis = 'Für dieses Dateiformat gibt es keine Textvorschau.'
     except Exception:
         quelle = 'fehler'; hinweis = 'Textvorschau konnte nicht erstellt werden. Das Original bleibt verfügbar.'
@@ -130,4 +134,8 @@ def suche(fall_id, akte, frage):
         heu = normalisieren(' '.join([d['titel'], d['pfad'], d.get('notiz', ''), ' '.join(d.get('themen', [])), d.get('anlage', '')]))
         if q in heu: treffer.append(d['id']); continue
         if not d['fehlt'] and q in normalisieren(text(ordner / d['pfad'])[0]): treffer.append(d['id'])
+    # Trifft die Suche eine Texterkennung, gehört das Original dazu (Stufe 13)
+    for d in liste:
+        if d['id'] in treffer and d['pfad'].startswith(OCR_ORDNER + '/'):
+            treffer += [k for k in d.get('verweise', []) if k not in treffer]
     return treffer

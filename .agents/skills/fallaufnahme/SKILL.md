@@ -25,7 +25,10 @@ Kündigungsfall, jederzeit löschbar) statt eines echten Falls.
 2. Jedes neue Schreiben vollständig lesen (`cli.py dokument_text fall=$fall dokument=D…`),
    bei Fotos und Bildscans das Bild öffnen (`textquelle` `bild` oder
    `kein-text` heißt: nicht gelesen; nach der Sichtprüfung `textstand` über
-   `dokument_ordnen` setzen). Fehlende Seiten, Umschläge und
+   `dokument_ordnen` setzen). Texterkennung (`cli.py texterkennung fall=$fall
+   dokument=D…`, braucht das Programm tesseract) nur nach Freigabe anbieten;
+   ihr Ergebnis ist eine Ableitung mit möglichen Fehlern, `textquelle` `ocr`
+   ist kein gelesener Text. Fehlende Seiten, Umschläge und
    schlecht lesbare Stellen benennen; Zahlen und Fristen am Original prüfen. Aus Dateinamen keine Zustellung ableiten.
 3. Feststellen und getrennt notieren: Dokumentart nach Inhalt (Anhörung,
    Bescheid, Mahnung, Kündigung, Vertrag, Klage, gerichtliche Verfügung …),

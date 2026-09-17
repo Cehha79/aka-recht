@@ -35,7 +35,7 @@ es zu ordnen, zu prüfen und zu formulieren.
   Rechenweg nach §§ 187, 188, 193 BGB, mit den Feiertagen deines Bundeslands.
 - **Deine KI arbeitet mit:** Claude Code, Claude Desktop, Codex oder jede andere,
   die MCP (Model Context Protocol) oder Befehle ausführen kann. 7 Anleitungen
-  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 26 Werkzeuge
+  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 27 Werkzeuge
   lassen sie in der Akte lesen und, nach deiner Bestätigung, schreiben.
 - **Alles bleibt bei dir:** keine KI in der App, kein Konto, kein Schlüssel,
   kein Netz. Der Dienst läuft nur auf deinem Rechner.
@@ -100,13 +100,19 @@ Framework und braucht keinen Zugang nach außen.
   Windows 11 mit Python 3.14: jeweils Funktionstest, Dienst über das
   Startskript, MCP-Server, Beispielfall in einem Ordner mit Umlauten.
 - Für Textauszüge aus PDF optional das Programm `pdftotext` (Paket poppler).
-  Scans ohne Textschicht liest die Mappe nicht; dafür braucht es
-  Texterkennung (OCR) außerhalb der Mappe.
+- Für Fotos und Scans ohne Textschicht optional die Texterkennung (OCR)
+  `tesseract` mit deutscher Sprache; PDF-Scans brauchen dazu `pdftoppm` (auch
+  Paket poppler). Ohne diese Programme bleibt alles wie bisher, die Mappe
+  meldet nur, dass kein Text gelesen wurde.
 
 <details>
 <summary><b>macOS</b></summary>
 
 - Start mit `Start.command` (Doppelklick).
+- Texterkennung mit Homebrew: `brew install poppler tesseract tesseract-lang`.
+  Auf Intel-Macs mit neuem macOS gibt es dafür teils keine fertigen Pakete;
+  Homebrew baut dann aus dem Quelltext, das kann lange dauern (am 17.09.2026
+  auf macOS 26.7 so erlebt).
 - Den Ordner nicht mit dem Befehl `zip` oder `ditto` neu packen: Diese
   Archive tragen keine UTF-8-Kennung, und je nach Entpackprogramm wird aus
   „06 Entwürfe“ ein kaputter Ordnername (am 17.09.2026 mit Python geprüft;
@@ -120,6 +126,8 @@ Framework und braucht keinen Zugang nach außen.
 
 - Start mit `Start.sh`.
 - Geprüft auf Ubuntu 24.04 mit Python 3.12; als Dateimanager dient `xdg-open`.
+- Texterkennung, etwa unter Ubuntu: `sudo apt install poppler-utils tesseract-ocr tesseract-ocr-deu`
+  (Paketnamen der Distribution; unter Linux noch nicht geprüft).
 
 </details>
 
@@ -137,6 +145,9 @@ Framework und braucht keinen Zugang nach außen.
 - Windows bringt `pdftotext` nicht mit (auf der Testmaschine Windows 11 fehlte
   es); ohne das Programm zeigt die Mappe bei PDFs die Textquelle
   „werkzeug-fehlt“ und liest keinen Text aus.
+- Für die Texterkennung gibt es unter Windows `tesseract` nur über
+  Installationsprogramme von Dritten; mit der Mappe unter Windows noch nicht
+  geprüft.
 
 </details>
 
@@ -274,9 +285,13 @@ Cloud-Ordner, lädt dein System die Sicherung dorthin hoch.
 <details>
 <summary><b>Kann die Mappe eingescannte Briefe lesen?</b></summary>
 
-Nur, wenn das PDF eine Textschicht hat und `pdftotext` installiert ist. Fotos
-und Scans ohne Textschicht liest sie nicht; das Werkzeug `dokument_text`
-meldet dann ehrlich, dass kein Text gelesen wurde. Texterkennung ist geplant.
+Hat das PDF eine Textschicht, liest `pdftotext` den Text direkt. Für Fotos und
+Scans ohne Textschicht gibt es die Texterkennung: in der Oberfläche beim
+Dokument „Texterkennung starten“ oder das Werkzeug `texterkennung`, sofern
+`tesseract` installiert ist. Das Ergebnis landet als eigene Textdatei unter
+`07 Recherche/Texterkennung/`, das Original bleibt unverändert. Erkannter Text
+kann Zeichen verwechseln und Zeilen auslassen; Daten, Beträge und Namen immer
+am Original prüfen.
 
 </details>
 
@@ -400,7 +415,7 @@ ein Hook sperrt das für die KI. Neue Texte entstehen in 06, Vermerke in 07.
 
 <img src="bilder/kapitel-werkzeuge.svg" alt="Werkzeuge: MCP und Befehlszeile">
 
-Dieselben 26 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+Dieselben 27 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 oder über die Befehlszeile (`python3 "06 Werkzeuge/dienst/cli.py" <werkzeug> feld=wert`).
 Schreibende Werkzeuge laufen über MCP nur mit deiner Bestätigung (es zählt
 allein der JSON-Wert `true`); über die Befehlszeile soll die KI vorher
@@ -411,7 +426,7 @@ selbst. Jede Änderung an `akte.json` wird gegen das Datenmodell geprüft
 und mit Revision gespeichert.
 
 <details>
-<summary><b>Alle 26 Werkzeuge</b></summary>
+<summary><b>Alle 27 Werkzeuge</b></summary>
 
 | Werkzeug | Art | Zweck |
 |---|---|---|
@@ -435,6 +450,7 @@ und mit Revision gespeichert.
 | `ereignis_eintragen` | schreibend | Ereignis in die Chronologie eines Falls eintragen. |
 | `notiz_anlegen` | schreibend | Ordnungsnotiz in einem Fall anlegen. |
 | `entwurf_erfassen` | schreibend | Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung. |
+| `texterkennung` | schreibend | Texterkennung (OCR) für ein Foto oder eine PDF ohne Textschicht, über das freiwillige Zusatzprogramm tesseract auf diesem Rechner. Legt den erkannten Text als neue Textdatei unter 07 Recherche/Texterkennung an (eigene D-Kennung, Verweis auf das Original, Kopf mit Quelle, Prüfsumme, Programm, Sprache, Datum und Warnhinweis) und vermerkt beim Original den Textstand „OCR-erkannt“, wenn dort noch keiner steht. Das Original bleibt unverändert, nichts wird überschrieben. Erkannter Text ist eine Ableitung: Zahlen, Daten, Fristen, Beträge und Namen am Original prüfen. |
 | `bestand_abgleichen` | schreibend | Bestand eines Falls mit den Dateien abgleichen: neue Dateien in 01 bis 08 bekommen eine Kennung, im Finder verschobene werden über die Prüfsumme wiedergefunden, fehlende Ordnungsangaben werden in der Akte ergänzt. Der einzige Weg, auf dem neue Dateien registriert werden. |
 | `dokument_ordnen` | schreibend | Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz, Textstand: direkt ausgelesen, OCR-erkannt, visuell geprüft, teilweise lesbar, nicht lesbar). Die Datei selbst bleibt unverändert. |
 | `dokument_verschieben` | schreibend | Datei in einen anderen Aktenbereich einsortieren. Kennung und Inhalt bleiben, nichts wird überschrieben. |
@@ -520,6 +536,7 @@ den Pflichtinhalt dagegen.
 | `python3 "06 Werkzeuge/dienst/cli.py" liste` | alle Werkzeuge mit Parametern; danach `cli.py <werkzeug> feld=wert` |
 | `python3 "06 Werkzeuge/dienst/cli.py" frist_berechnen start=2026-09-11 menge=1 einheit=monate land=BW` | Frist rechnen, mit Rechenweg |
 | `python3 "06 Werkzeuge/dienst/cli.py" rechtsinhalte_pruefen` | welche Merkblätter, Feiertage und Quellen wieder am Volltext zu prüfen sind |
+| `python3 "06 Werkzeuge/dienst/cli.py" texterkennung fall=R-0001 dokument=D0005` | Texterkennung für ein Foto oder einen Scan, Ergebnis unter 07 Recherche/Texterkennung; `python3 "06 Werkzeuge/dienst/texterkennung.py"` zeigt, ob tesseract und welche Sprachen vorhanden sind |
 | `python3 "06 Werkzeuge/akte_schema.py" "02 Fälle/<Fall>/akte.json"` | Akte gegen das Datenmodell prüfen |
 | `python3 "06 Werkzeuge/dienst/cli.py" vorlage_fuellen fall=R-0001 vorlage=Widerspruch_Bescheid` | Entwurf aus einer Vorlage unter 06 Entwürfe anlegen, mit Absender (Einstellungen oder Beteiligter „Ich“), Unterschrift, Datum; `vorlagen_auflisten` zeigt die Namen |
 | `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" <Entwurf.md>` | Word-Datei aus einem Entwurf, mit Vorabbericht (offene Marker, Platzhalter, Kopfzeilen, Anlagen); `--pruefen` nur der Bericht |

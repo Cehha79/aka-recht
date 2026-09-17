@@ -22,9 +22,14 @@ vollständig lesbar, teilweise lesbar, nicht lesbar, unvollständig.
   Schreiben nennen: fehlende Anlagen, fehlende Rückseiten, fehlende Seiten
   (Seitenzahl im Auszug gegen „Seite x von y“ im Text), fehlende Umschläge.
 - `textquelle` und `textstand` beachten (siehe unten). Bildscan und Foto
-  sind ungelesen, bis der Nutzer den Inhalt gesichtet hat; keine
-  Texterkennung (OCR) in der Mappe, eine solche wäre ein eigenes Werkzeug
-  außerhalb der Standardbibliothek und läuft nur nach Entscheidung des Nutzers.
+  sind ungelesen, bis der Nutzer den Inhalt gesichtet hat. Texterkennung
+  (OCR) gibt es als schreibendes Werkzeug `texterkennung` (Programm tesseract
+  auf dem Rechner, nur nach Freigabe); sie legt eine Ableitung unter
+  `07 Recherche/Texterkennung/` an und kann Zeichen verwechseln, Zeilen
+  auslassen oder verwürfeln, ohne es zu melden. Erkannter Text hilft beim
+  Finden und Vorsortieren, belegt aber nichts: Daten, Beträge, Aktenzeichen
+  und Namen daraus bleiben `[PRÜFEN: am Original]`, bis der Nutzer sie am
+  Original gesichtet hat.
 - Datums- und Betragsangaben, Aktenzeichen und Namen aus dem Auszug am
   Original prüfen (zweimal lesen, bei PDF-Textschicht auf verdrehte
   Spalten und Tabellen achten). Eine unsichere Zahl bleibt `[PRÜFEN: …]`,
@@ -47,7 +52,7 @@ Original ändern; ein Textauszug ist eine Ableitung.
 - Zu jedem Ereignis: Dokumentkennung und Fundstelle (Seite, Absatz, Kopfzeile).
   Texte mit `cli.py dokument_text`, Bilder öffnen. Die Antwort nennt die
   `textquelle`: nur `direkt` und `pdf-text` sind gelesener Text; bei `bild`,
-  `kein-text` (Bildscan) oder `werkzeug-fehlt` gilt das Dokument als nicht
+  `kein-text` (Bildscan), `ocr` (Texterkennung, siehe oben) oder `werkzeug-fehlt` gilt das Dokument als nicht
   gelesen, in der Beweistabelle als „nicht lesbar“ führen und den Nutzer um
   Sichtprüfung bitten; danach `cli.py dokument_ordnen … felder='{"textstand":
   "visuell geprüft"}'` (Werte: direkt ausgelesen, OCR-erkannt, visuell

@@ -12,7 +12,7 @@ import sys
 for _strom in (sys.stdin, sys.stdout, sys.stderr):
     if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
-import base64, hashlib, json, os, shutil, subprocess, sys, tempfile, time, urllib.error, urllib.request, zipfile
+import base64, hashlib, json, os, re, shutil, subprocess, sys, tempfile, time, urllib.error, urllib.request, zipfile, zlib
 from pathlib import Path
 
 QUELLE = Path(__file__).resolve().parents[2]
@@ -30,6 +30,38 @@ def vorbereiten(base):
          'verbindungen': {}}
     (root / 'zentrale.json').write_text(json.dumps(z, ensure_ascii=False, indent=2), encoding='utf-8')
     return root
+
+def _pdf(objekte):
+    """Kleinste gültige PDF aus Objektrümpfen (Nummer = Position ab 1)."""
+    aus = bytearray(b'%PDF-1.4\n'); lagen = []
+    for i, rumpf in enumerate(objekte, 1):
+        lagen.append(len(aus)); aus += f'{i} 0 obj\n'.encode() + rumpf + b'\nendobj\n'
+    xref = len(aus)
+    aus += f'xref\n0 {len(objekte) + 1}\n0000000000 65535 f \n'.encode() + b''.join(f'{o:010d} 00000 n \n'.encode() for o in lagen)
+    aus += f'trailer\n<< /Size {len(objekte) + 1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n'.encode()
+    return bytes(aus)
+
+def pdf_mit_text(seiten):
+    """Erfundenes Probeblatt als PDF mit Textschicht (Helvetica), je Seite eine Liste von Zeilen."""
+    objekte = [b'<< /Type /Catalog /Pages 2 0 R >>', b'', b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>']; kinder = []
+    for zeilen in seiten:
+        text = b'BT /F1 28 Tf 40 TL 60 720 Td ' + b' '.join(b'(' + z.encode('cp1252').replace(b'\\', b'\\\\').replace(b'(', b'\\(').replace(b')', b'\\)') + b') Tj T*' for z in zeilen) + b' ET'
+        objekte.append(b'<< /Length %d >>\nstream\n' % len(text) + text + b'\nendstream')
+        objekte.append(b'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents %d 0 R >>' % len(objekte)); kinder.append(len(objekte))
+    objekte[1] = b'<< /Type /Pages /Kids [' + b' '.join(b'%d 0 R' % k for k in kinder) + b'] /Count %d >>' % len(kinder)
+    return _pdf(objekte)
+
+def pdf_aus_bildern(ppm_dateien):
+    """PDF nur aus Seitenbildern (PPM von pdftoppm), also ohne Textschicht: ein künstlicher Scan."""
+    objekte = [b'<< /Type /Catalog /Pages 2 0 R >>', b'']; kinder = []
+    for ppm in ppm_dateien:
+        roh = ppm.read_bytes(); m = re.match(rb'P6\s+(\d+)\s+(\d+)\s+(\d+)\s', roh); daten = zlib.compress(roh[m.end():])
+        objekte.append(b'<< /Type /XObject /Subtype /Image /Width %d /Height %d /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode /Length %d >>\nstream\n' % (int(m[1]), int(m[2]), len(daten)) + daten + b'\nendstream'); bild = len(objekte)
+        inhalt = b'q 612 0 0 792 0 0 cm /Im0 Do Q'
+        objekte.append(b'<< /Length %d >>\nstream\n' % len(inhalt) + inhalt + b'\nendstream')
+        objekte.append(b'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /XObject << /Im0 %d 0 R >> >> /Contents %d 0 R >>' % (bild, len(objekte))); kinder.append(len(objekte))
+    objekte[1] = b'<< /Type /Pages /Kids [' + b' '.join(b'%d 0 R' % k for k in kinder) + b'] /Count %d >>' % len(kinder)
+    return _pdf(objekte)
 
 def run():
     base = Path(tempfile.mkdtemp(prefix='aka-recht-pruefung-', dir='/private/tmp' if Path('/private/tmp').is_dir() else None)).resolve(); root = vorbereiten(base)
@@ -621,6 +653,55 @@ def run():
             (win / '.mcp.json').write_bytes(crlf)
             code, aus = einrichten_lauf('--erzwingen'); assert code == 0 and (win / '.mcp.json').read_bytes() == crlf.replace(b'"python3"', b'"python"'), (code, aus, (win / '.mcp.json').read_bytes()[:80])   # Windows-Zeilenenden bleiben
             ok('Windows einrichten: Hooks in Exec-Form mit ${CLAUDE_PROJECT_DIR}; einrichten_windows.py ersetzt in .mcp.json, settings.json und config.toml nur python3 durch python, zweiter Lauf ändert nichts, keine Zwischendateien; außerhalb von Windows ohne --erzwingen nichts, unerwartete Schreibweise und kaputte Datei bleiben unverändert, Windows-Zeilenenden (CRLF) bleiben erhalten')
+        # Texterkennung (Stufe 13): ohne tesseract klare Meldung; mit tesseract an einem erfundenen Foto und einem zweiseitigen Scan ohne Textschicht
+        import texterkennung as _ocr
+        pfad_vorher = os.environ.get('PATH', ''); os.environ['PATH'] = str(base / 'kein-programm')
+        try:
+            try: _ocr.erkennen(base / 'Foto.jpg'); raise AssertionError('Texterkennung ohne tesseract gelaufen')
+            except ValueError as ex: assert 'tesseract' in str(ex) and 'brew install' in str(ex), ex
+        finally: os.environ['PATH'] = pfad_vorher
+        try: _ocr.erkennen(base / 'Foto.jpg', 'deu; echo'); raise AssertionError('Sprachangabe mit Befehl angenommen')
+        except ValueError as ex: assert 'Kürzel' in str(ex), ex
+        pp = shutil.which('pdftoppm'); prog = _ocr.programme(); kann = bool(prog['tesseract'] and 'deu' in prog['sprachen'] and pp)
+        if pp:
+            (base / 'probe.pdf').write_bytes(pdf_mit_text([['Landratsamt Musterstadt', 'Aktenzeichen 4711', 'Einspruch binnen zwei Wochen'], ['Seite zwei', 'Betrag 128 Euro']]))
+            subprocess.run([pp, '-r', '150', '-png', '-f', '1', '-l', '1', str(base / 'probe.pdf'), str(base / 'foto')], check=True, capture_output=True)
+            subprocess.run([pp, '-r', '100', str(base / 'probe.pdf'), str(base / 'seite')], check=True, capture_output=True)
+            foto_png = next(base.glob('foto*.png')); scan_pdf = pdf_aus_bildern(sorted(base.glob('seite*.ppm')))
+            foto = anfrage('/api/fall/R-0002/eingang', {'name': 'Brief Foto.png', 'inhalt': base64.b64encode(foto_png.read_bytes()).decode()})['dokument']
+            scan = anfrage('/api/fall/R-0002/eingang', {'name': 'Bescheid Scan.pdf', 'inhalt': base64.b64encode(scan_pdf).decode()})['dokument']
+            anfrage('/api/werkzeug', {'name': 'bestand_abgleichen', 'parameter': {'fall': 'R-0002'}, 'bestaetigt': True})
+            assert anfrage(f'/api/fall/R-0002/text/{foto}')['textquelle'] == 'bild'
+            assert anfrage(f'/api/fall/R-0002/text/{scan}')['textquelle'] == 'kein-text'
+            fall2 = root / f2['ordner']; akte2 = lambda: json.loads((fall2 / 'akte.json').read_text('utf-8'))
+            originale = {k: (fall2 / akte2()['dokumente'][k]['pfad']).read_bytes() for k in (foto, scan)}
+            if kann:
+                assert anfrage('/api/werkzeug', {'name': 'texterkennung', 'parameter': {'fall': 'R-0002', 'dokument': foto}}).get('bestaetigung_noetig')
+                r = anfrage('/api/werkzeug', {'name': 'texterkennung', 'parameter': {'fall': 'R-0002', 'dokument': foto}, 'bestaetigt': True})
+                inhalt = (fall2 / r['datei']).read_text('utf-8')
+                assert r['datei'].startswith('07 Recherche/Texterkennung/') and r['seiten'] == 1 and 'Ableitung, kein Original' in inhalt and 'Achtung:' in inhalt, r
+                assert all(w in inhalt for w in ('Musterstadt', 'Aktenzeichen', 'Einspruch')), inhalt
+                a = akte2(); neu = a['dokumente'][r['texterkennung']]
+                assert neu['verweise'] == [foto] and neu['stand'] == 'Vermerk' and r['texterkennung'] in a['dokumente'][foto]['verweise'] and a['dokumente'][foto]['textstand'] == 'OCR-erkannt', (neu, a['dokumente'][foto])
+                t = anfrage(f'/api/fall/R-0002/text/{foto}')
+                assert t['textquelle'] == 'ocr' and t['texterkennung'] == r['texterkennung'] and 'Einspruch' in t['text'] and 'Ableitung, kein Original' not in t['text'] and t['gelesen'] is False and 'am Original' in t['hinweis'], t
+                treffer = anfrage('/api/fall/R-0002/suche?q=einspruch')['treffer']; assert foto in treffer and r['texterkennung'] in treffer, treffer
+                anfrage('/api/werkzeug', {'name': 'texterkennung', 'parameter': {'fall': 'R-0002', 'dokument': foto}, 'bestaetigt': True}, erwartet=400)
+                anfrage('/api/werkzeug', {'name': 'texterkennung', 'parameter': {'fall': 'R-0002', 'dokument': r['texterkennung']}, 'bestaetigt': True}, erwartet=400)
+                anfrage('/api/werkzeug', {'name': 'texterkennung', 'parameter': {'fall': 'R-0001', 'dokument': 'D0001'}, 'bestaetigt': True}, erwartet=400)
+                anfrage('/api/werkzeug', {'name': 'dokument_ordnen', 'parameter': {'fall': 'R-0002', 'dokument': scan, 'felder': {'textstand': 'visuell geprüft'}}, 'bestaetigt': True})
+                r2 = anfrage('/api/werkzeug', {'name': 'texterkennung', 'parameter': {'fall': 'R-0002', 'dokument': scan}, 'bestaetigt': True})
+                inhalt2 = (fall2 / r2['datei']).read_text('utf-8')
+                assert r2['seiten'] == 2 and 'Musterstadt' in inhalt2 and '--- Seite 2 ---\nSeite zwei' in inhalt2 and 'Betrag' in inhalt2 and '300 dpi' in inhalt2 and r2['textstand_gesetzt'] is False and akte2()['dokumente'][scan]['textstand'] == 'visuell geprüft', (r2, inhalt2)
+                assert all((fall2 / akte2()['dokumente'][k]['pfad']).read_bytes() == b for k, b in originale.items()), 'Original verändert'
+                ok(f'Texterkennung ({r["programm"]}): Foto und zweiseitiger Scan ohne Textschicht erkannt, Ergebnis als eigene Datei unter 07 Recherche/Texterkennung mit Kopf und Verweis, Textstand „OCR-erkannt“ nur wenn leer, dokument_text zeigt den erkannten Text als Ableitung, Suche findet Original und Ableitung; kein Überschreiben am selben Tag, nicht für Ableitungen und Dokumente mit Text; Originale unverändert; ohne tesseract und mit unsicherer Sprachangabe klare Meldung')
+            else:
+                a = anfrage('/api/werkzeug', {'name': 'texterkennung', 'parameter': {'fall': 'R-0002', 'dokument': foto}, 'bestaetigt': True}, erwartet=400)
+                assert 'tesseract' in a['fehler'] and not (fall2 / '07 Recherche/Texterkennung').exists() and akte2()['dokumente'][foto].get('textstand', '') == '', a
+                assert all((fall2 / akte2()['dokumente'][k]['pfad']).read_bytes() == b for k, b in originale.items())
+                ok('Texterkennung ohne tesseract (oder ohne deutsche Sprache): klare Meldung mit Installationsweg, nichts angelegt, Akte und Original unverändert; unsichere Sprachangabe abgewiesen')
+        else:
+            ok('Texterkennung ohne pdftoppm: Probebilder nicht erzeugbar; ohne tesseract und mit unsicherer Sprachangabe klare Meldung')
         # Pflege der Rechtsinhalte (Stufe 12): Fälligkeiten mit festen Stichtagen, Merkblatt ohne oder mit kaputtem Datum, Feiertage ab Dezember,
         #    Quellenkatalog nach sechs Monaten; das Werkzeug schreibt nichts
         verfahren = root / '04 Rechtsquellen/Verfahren'; verfahren.mkdir(parents=True)

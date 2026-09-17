@@ -77,7 +77,7 @@ sind fest, damit Verweise stabil bleiben.
 ├─ 04 Verfahren/      je Verfahren ein nummerierter Unterordner
 ├─ 05 Beweise/        Fotos, Zeugenlisten, Dienstpläne, Quittungen
 ├─ 06 Entwürfe/       noch nicht versandte Texte, Dateiname endet auf _ENTWURF; Fassungen/ mit eingefrorenen Kopien geprüfter und versandter Fassungen
-├─ 07 Recherche/      Prüfvermerke (md plus html), Gesetzessammlung des Falls
+├─ 07 Recherche/      Prüfvermerke (md plus html), Gesetzessammlung des Falls; Texterkennung/ mit erkannten Texten von Fotos und Scans (Ableitungen)
 └─ 08 Archiv/         alte Übersichten, frühere Arbeitsumgebung, unverändert
 ```
 
@@ -169,6 +169,7 @@ Sicherungsziel iCloud Drive wird nur vorgeschlagen, wo es den Ordner gibt. Texta
 | `dokumente.py` | Dateien auflisten, Textauszug (txt, md, html, docx, eml, pdf) mit Herkunft (`befund()`: textquelle, Seiten, Zeichen; Bildscan und Foto gelten als nicht gelesen, seit 17.09.2026, F34), Suche |
 | `fristen.py` | Fristen rechnen nach §§ 187, 188, 193 BGB, landesweite Feiertage aller 16 Bundesländer (Kürzel, Einstellung `feiertagsland` in zentrale.json, Standard BW), Rechnung als Text |
 | `bestand.py` | Prüfsummen, Verschiebungen erkennen, Bestand prüfen |
+| `texterkennung.py` | Texterkennung (OCR, Stufe 13) über das freiwillige Zusatzprogramm `tesseract` (PDF-Seiten vorher mit `pdftoppm` gerastert, HEIC unter macOS mit `sips`); ohne Programm klare Meldung mit Installationsweg. Das Werkzeug `texterkennung` legt das Ergebnis als eigene Textdatei unter `07 Recherche/Texterkennung/D…_Texterkennung_JJJJ-MM-TT.txt` an (Kopf mit Quelle, Prüfsumme, Programm, Sprache, Datum, Warnhinweis; eigene D-Kennung mit Verweis auf das Original; überschreibt nie), setzt beim Original den Textstand „OCR-erkannt“ nur, wenn keiner steht; `dokument_text` zeigt den erkannten Text mit Textquelle `ocr`, die Suche findet Original und Ableitung. Keine Erkennung beim bloßen Lesen |
 | `pflege.py` | Pflege der Rechtsinhalte (Stufe 12): meldet nur lesend und ohne Netz, was wieder am Volltext zu prüfen ist; Merkblätter zwölf Monate nach der Kopfzeile „Letzte vollständige Prüfung: TT.MM.JJJJ“, Feiertagstabelle ab 1. Dezember (`fristen.FEIERTAGE_GEPRUEFT`), Quellenkatalog sechs Monate nach `catalog_checked`; „bald fällig“ 30 Tage vorher; Werkzeug `rechtsinhalte_pruefen`, Meldung im Sitzungsstart (seit 17.09.2026) |
 | `sicherung.py` | geprüfte ZIP-Sicherung außerhalb des Projekts, SHA-256, Kopie an das zweite Ziel (Rechte 0600); Status prüft beide Archive und nennt die Ziele mit Cloud-Hinweis; `wiederherstellen()` entpackt in einen neuen, leeren Ordner außerhalb und prüft Schema und Prüfsummen, `probe()` dasselbe in einem Zwischenordner (seit 17.09.2026, F19, F20) |
 | `werkzeuge.py` | Katalog aller Funktionen als beschriebene Werkzeuge (Name, Zweck, Parameter, lesend oder schreibend); Oberfläche und KI rufen dieselben Werkzeuge |
@@ -205,7 +206,7 @@ Codex und andere. Dafür gibt es drei Standards, die wir bedienen:
 |---|---|---|---|
 | `AGENTS.md` und `CLAUDE.md` | Arbeitsanweisung im Projektordner, Klartext | Codex, Cursor, Gemini CLI, viele Agenten (`AGENTS.md`); Claude Code (`CLAUDE.md`) | eine Quelle, beide Dateien daraus erzeugt |
 | Agent Skills (`SKILL.md`) | Ordner mit Anleitung, offener Standard von Anthropic, von Codex übernommen | Claude Code (`.claude/skills/`), Codex (`.agents/skills/`) | Skills einmal gepflegt, für Codex kopiert |
-| MCP (Model Context Protocol) | offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe | Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini | eigener MCP-Server `mcp_server.py` ohne Fremdpaket, stellt die Werkzeuge für Assistenten bereit (Katalog ohne `fall_lesen` und `akte_speichern`; Stand 17.09.2026: 26 Werkzeuge für Assistenten, 28 im Katalog; die Zahl prüft der Produktbau gegen den Katalog, maßgeblich ist `cli.py liste`) |
+| MCP (Model Context Protocol) | offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe | Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini | eigener MCP-Server `mcp_server.py` ohne Fremdpaket, stellt die Werkzeuge für Assistenten bereit (Katalog ohne `fall_lesen` und `akte_speichern`; Stand 17.09.2026: 27 Werkzeuge für Assistenten, 29 im Katalog; die Zahl prüft der Produktbau gegen den Katalog, maßgeblich ist `cli.py liste`) |
 | Befehlszeile | `cli.py` | jede KI, die Befehle ausführen darf | vorhanden |
 
 Regeln für alle Wege: Lesen frei und wirklich nur lesend (kein Werkzeug mit
