@@ -11,7 +11,7 @@ import json, re, shutil, sys
 from datetime import date
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import akte_schema, bestand, dokumente, fristen, sicherung, store
+import akte_schema, bestand, dokumente, fristen, pflege, sicherung, store
 
 KATALOG = []
 
@@ -163,6 +163,13 @@ def quellen_katalog():
         liste = json.loads(teil.removeprefix('```json').removesuffix('```').strip())
         return {'quellen': liste, 'text': text.split('<!-- RECHT:ANFANG -->', 1)[0].strip()}
     return {'quellen': [], 'text': text}
+
+@werkzeug('rechtsinhalte_pruefen', 'Meldet, welche mitgelieferten Rechtsinhalte wieder am amtlichen Volltext zu prüfen sind: Merkblätter (zwölf Monate nach „Letzte vollständige Prüfung“), Feiertagstabelle (ab 1. Dezember fürs Folgejahr), Quellenkatalog (sechs Monate). Status je Eintrag: fällig, bald fällig (30 Tage), unbekannt, in Ordnung. Schreibt nichts, ohne Netz.',
+          {'stichtag': {'type': 'string', 'description': 'Datum JJJJ-MM-TT, auf das gerechnet wird; leer: heute'}})
+def rechtsinhalte_pruefen(stichtag=''):
+    try: tag = date.fromisoformat(stichtag) if stichtag else date.today()
+    except ValueError: raise ValueError('„stichtag“ muss ein Datum JJJJ-MM-TT sein.')
+    return pflege.faelligkeiten(store.ROOT, tag, fristen.FEIERTAGE_GEPRUEFT)
 
 def _oeffnen_befehl(p, zeigen):
     """Befehl für den Dateimanager des Systems: macOS Finder, Linux xdg-open, Windows Explorer.

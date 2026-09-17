@@ -2,6 +2,8 @@
 
 *Rechtsordnung DE · Bereich Steuern und Abgaben · Stand der Prüfung: 16.09.2026, ergänzt und von einer zweiten Instanz gegengeprüft 17.09.2026*
 
+*Letzte vollständige Prüfung: 17.09.2026*
+
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Jede
 Angabe ist am amtlichen Volltext gelesen (gesetze-im-internet.de, Abgabenordnung
 in der Fassung der Bekanntmachung vom 23.01.2025, zuletzt geändert durch

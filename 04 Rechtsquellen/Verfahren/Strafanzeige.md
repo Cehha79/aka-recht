@@ -2,6 +2,8 @@
 
 *Rechtsordnung DE · Bereich Strafsachen und Anzeigen · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, Verjährung (§§ 78 bis 78c StGB) am 17.09.2026 nachgelesen*
 
+*Letzte vollständige Prüfung: 17.09.2026*
+
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Normen
 am amtlichen Volltext gelesen (gesetze-im-internet.de): Strafprozeßordnung
 (StPO), Bek. v. 07.04.1987, zuletzt geändert durch Art. 15 Abs. 16 G v.

@@ -2,6 +2,8 @@
 
 *Rechtsordnung DE · alle Bereiche · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen*
 
+*Letzte vollständige Prüfung: 17.09.2026*
+
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Es
 gibt kein allgemeines Recht auf Akteneinsicht; die Grundlage hängt davon ab,
 wer die Akte führt und in welcher Rolle man steht. Normen am amtlichen Volltext

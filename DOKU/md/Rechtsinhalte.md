@@ -116,6 +116,8 @@ Dienstaufsichtsbeschwerde (ohne Vorlage, formlos) und Zuständigkeit finden
 | Zugangskatalog | halbjährlich: jede Adresse einmal aufrufen | Portal antwortet nicht mehr |
 | Fristenregeln (§§ 187 ff. BGB) | bei jeder Änderung des BGB-Allgemeinen Teils | Prüfvermerk in einem Fall widerspricht dem Rechner |
 
+Das Werkzeug `rechtsinhalte_pruefen` (Befehlszeile: `python3 "06 Werkzeuge/dienst/cli.py" rechtsinhalte_pruefen`, optional `stichtag=JJJJ-MM-TT`) rechnet diese Regeln nach und meldet je Inhalt „fällig“, „bald fällig“ (30 Tage vorher), „unbekannt“ (kein lesbares Prüfdatum) oder „in Ordnung“; der Sitzungsstart meldet es, sobald etwas ansteht. Es liest nur: Merkblätter über die Kopfzeile „Letzte vollständige Prüfung: TT.MM.JJJJ“ (fällig nach zwölf Monaten), Feiertagstabelle über `FEIERTAGE_GEPRUEFT` in `fristen.py` (fällig ab 1. Dezember, wenn das Folgejahr noch nicht geprüft ist), Quellenkatalog über `catalog_checked` je Eintrag (fällig nach sechs Monaten).
+
 Der Prüfrhythmus ist eine Vorgabe für die Pflege, keine Garantie. Wer die
 Mappe nutzt, prüft die Norm für seinen Fall selbst (README „Grenzen“).
 
@@ -137,7 +139,10 @@ Mappe nutzt, prüft die Norm für seinen Fall selbst (README „Grenzen“).
    aus einer Zusammenfassung übernommen.
 3. Änderung an genau einer Stelle: Feiertage in `fristen.py` (Kommentarzeile
    mit Quelle und Datum daneben), Merkblatt im Abschnitt „Geprüfte Quellen“,
-   Vorlage in den internen Hinweisen. Prüfdatum im Kopf der Datei setzen.
+   Vorlage in den internen Hinweisen. Prüfdatum im Kopf der Datei setzen. Nach einer
+   vollständigen Prüfung die eigene Kopfzeile „*Letzte vollständige Prüfung:
+   TT.MM.JJJJ*“ erneuern (Feiertage: `FEIERTAGE_GEPRUEFT` in `fristen.py`,
+   Quellen: `catalog_checked`); das Nachlesen einzelner Normen ändert sie nicht.
 4. Funktionstest laufen lassen (`pruefen.py`); Feiertage haben eigene
    Prüfpunkte (Fronleichnam BW und BE, 08.05.2025 BE gegen BB).
 5. Diese Datei fortschreiben (Tabelle in Abschnitt 2), dann

@@ -2,6 +2,8 @@
 
 *Rechtsordnung DE · Bereich Behörden und Bescheide (auch Gerichte, Polizei, Anwälte) · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen*
 
+*Letzte vollständige Prüfung: 17.09.2026*
+
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Die
 Dienstaufsichtsbeschwerde ist in keinem Verfahrensgesetz geregelt; sie beruht
 auf dem Petitionsrecht. Normen am amtlichen Volltext gelesen

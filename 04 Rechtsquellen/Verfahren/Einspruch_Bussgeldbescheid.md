@@ -2,6 +2,8 @@
 
 *Rechtsordnung DE · Bereich Verkehr und Bußgeld (gilt für jeden Bußgeldbescheid nach dem OWiG) · Stand der Prüfung: 16.09.2026, gegengeprüft 17.09.2026, Zustellung, Gebühren und Rechtsbeschwerde am 17.09.2026 nachgelesen*
 
+*Letzte vollständige Prüfung: 17.09.2026*
+
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Normen
 am amtlichen Volltext gelesen (gesetze-im-internet.de): Gesetz über
 Ordnungswidrigkeiten (OWiG) in der Fassung der Bekanntmachung vom 19.02.1987

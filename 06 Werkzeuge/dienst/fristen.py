@@ -27,6 +27,10 @@ def ostersonntag(jahr):
     monat, tag = divmod(h + l - 7 * m + 114, 31)
     return date(jahr, monat, tag + 1)
 
+# Letzte vollständige Prüfung der Feiertagstabelle am amtlichen Volltext (alle 16 Länder; Bremen zuletzt am 17.09.2026).
+# Nach jeder vollständigen Prüfung hier setzen; pflege.py meldet ab 1. Dezember, wenn das Folgejahr noch nicht geprüft ist.
+FEIERTAGE_GEPRUEFT = '2026-09-17'
+
 LAENDER = {'BW': 'Baden-Württemberg', 'BY': 'Bayern', 'BE': 'Berlin', 'BB': 'Brandenburg', 'HB': 'Bremen',
            'HH': 'Hamburg', 'HE': 'Hessen', 'MV': 'Mecklenburg-Vorpommern', 'NI': 'Niedersachsen',
            'NW': 'Nordrhein-Westfalen', 'RP': 'Rheinland-Pfalz', 'SL': 'Saarland', 'SN': 'Sachsen',

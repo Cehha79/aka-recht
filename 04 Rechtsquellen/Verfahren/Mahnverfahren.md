@@ -2,6 +2,8 @@
 
 *Rechtsordnung DE · Bereiche Forderungen und Inkasso, Verträge und Verbraucher · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen*
 
+*Letzte vollständige Prüfung: 17.09.2026*
+
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Normen
 am amtlichen Volltext gelesen (gesetze-im-internet.de): Zivilprozessordnung
 (ZPO), Bek. v. 05.12.2005, zuletzt geändert durch Art. 3 G v. 20.05.2026

@@ -2,6 +2,8 @@
 
 *Rechtsordnung DE · alle Bereiche · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, § 52 Nr. 4 VwGO am 17.09.2026 nachgelesen*
 
+*Letzte vollständige Prüfung: 17.09.2026*
+
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Dieses
 Merkblatt enthält keine Adressen (sie veralten), sondern die Regeln, nach denen
 sich die zuständige Stelle bestimmt, und die amtlichen Verzeichnisse, in denen

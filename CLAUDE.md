@@ -19,7 +19,8 @@ Strafsachen und mehr). Die Regeln aus `~/.claude/CLAUDE.md` gelten weiter.
   Vermerke nach 07 Recherche.
 - Änderungen an der Akte über die Werkzeuge, nie akte.json von Hand:
   `python3 "06 Werkzeuge/dienst/cli.py" liste` zeigt alle.
-  Lesen: `fall_lesen`, `dokument_text`, `dokumente_suchen`, `frist_berechnen`
+  Lesen: `fall_lesen`, `dokument_text`, `dokumente_suchen`, `frist_berechnen`,
+  `rechtsinhalte_pruefen` (welche Merkblätter, Feiertage, Quellen fällig sind)
   (lesende Werkzeuge schreiben nichts; neue oder verschobene Dateien melden
   sie nur als Abweichung).
   Schreiben: `bestand_abgleichen` (registriert neue und verschobene Dateien),

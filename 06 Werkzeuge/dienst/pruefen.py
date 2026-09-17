@@ -616,6 +616,31 @@ def run():
             (win / '.mcp.json').write_text('{kaputt', encoding='utf-8')
             code, aus = einrichten_lauf('--erzwingen'); assert code == 1 and 'nicht lesbar' in aus and (win / '.mcp.json').read_text('utf-8') == '{kaputt', (code, aus)
             ok('Windows einrichten: Hooks in Exec-Form mit ${CLAUDE_PROJECT_DIR}; einrichten_windows.py ersetzt in .mcp.json, settings.json und config.toml nur python3 durch python, zweiter Lauf ändert nichts, keine Zwischendateien; außerhalb von Windows ohne --erzwingen nichts, unerwartete Schreibweise und kaputte Datei bleiben unverändert')
+        # Pflege der Rechtsinhalte (Stufe 12): Fälligkeiten mit festen Stichtagen, Merkblatt ohne oder mit kaputtem Datum, Feiertage ab Dezember,
+        #    Quellenkatalog nach sechs Monaten; das Werkzeug schreibt nichts
+        verfahren = root / '04 Rechtsquellen/Verfahren'; verfahren.mkdir(parents=True)
+        (verfahren / 'A_Gut.md').write_text('# Merkblatt: A\n\n*Rechtsordnung DE · Stand der Prüfung: 01.01.2026, nachgelesen 01.03.2027*\n\n*Letzte vollständige Prüfung: 17.09.2026*\n', encoding='utf-8')
+        (verfahren / 'B_Ohne.md').write_text('# Merkblatt: B\n\n*Rechtsordnung DE · Stand der Prüfung: 17.09.2026*\n', encoding='utf-8')
+        (verfahren / 'C_Kaputt.md').write_text('# Merkblatt: C\n\n*Letzte vollständige Prüfung: 31.02.2026*\n', encoding='utf-8')
+        katalog = [{'id': 'Q01', 'title': 'Probe', 'catalog_checked': '2026-09-10'}, {'id': 'Q02', 'title': 'Ohne Datum'}]
+        (root / '04 Rechtsquellen/Quellen.md').write_text('# Quellen\n\n<!-- RECHT:ANFANG -->\n```json\n' + json.dumps(katalog) + '\n```\n<!-- RECHT:ENDE -->\n', encoding='utf-8')
+        vorher_pflege = {p: p.read_bytes() for p in (root / '04 Rechtsquellen').rglob('*') if p.is_file()}
+        def pflege_lauf(stichtag):
+            r = anfrage('/api/werkzeug', {'name': 'rechtsinhalte_pruefen', 'parameter': {'stichtag': stichtag}}); return {e['name']: e['status'] for e in r['eintraege']}, r
+        s, _ = pflege_lauf('2027-08-17'); assert s['A_Gut.md'] == 'in Ordnung' and s['B_Ohne.md'] == 'unbekannt' and s['C_Kaputt.md'] == 'unbekannt', s
+        s, _ = pflege_lauf('2027-08-18'); assert s['A_Gut.md'] == 'bald fällig', s
+        s, r = pflege_lauf('2027-09-17'); assert s['A_Gut.md'] == 'fällig' and s['Q01 Probe'] == 'fällig' and s['Q02 Ohne Datum'] == 'unbekannt' and r['unbekannt'] == 3, (s, r)
+        s, _ = pflege_lauf('2027-02-08'); assert s['Q01 Probe'] == 'bald fällig', s
+        s, _ = pflege_lauf('2027-02-07'); assert s['Q01 Probe'] == 'in Ordnung', s
+        anfrage('/api/werkzeug', {'name': 'rechtsinhalte_pruefen', 'parameter': {'stichtag': '2027-02-30'}}, erwartet=400)
+        assert all(p.read_bytes() == b for p, b in vorher_pflege.items()) and len(vorher_pflege) == len([p for p in (root / '04 Rechtsquellen').rglob('*') if p.is_file()])
+        sys.path.insert(0, str(QUELLE / '06 Werkzeuge/dienst')); import pflege
+        from datetime import date as _d
+        assert pflege.monate_spaeter(_d(2026, 8, 31), 6) == _d(2027, 2, 28) and pflege.monate_spaeter(_d(2028, 2, 29), 12) == _d(2029, 2, 28)
+        feier = lambda tag, am: pflege.feiertage(_d.fromisoformat(tag), am)[0]
+        assert feier('2026-10-31', '2026-09-17')['status'] == 'in Ordnung' and feier('2026-11-01', '2026-09-17')['status'] == 'bald fällig' and feier('2026-12-01', '2026-09-17')['status'] == 'fällig'
+        assert feier('2026-12-20', '2026-12-05')['faellig_ab'] == '2027-12-01' and feier('2026-12-20', '2026-12-05')['status'] == 'in Ordnung' and feier('2026-12-20', '')['status'] == 'unbekannt'
+        ok('Pflege der Rechtsinhalte: rechtsinhalte_pruefen meldet Merkblätter zwölf Monate nach „Letzte vollständige Prüfung“ (bald fällig 30 Tage vorher), ohne Zeile und mit 31.02. als unbekannt, Quellenkatalog nach sechs Monaten, Feiertage ab 1. Dezember; Monatsende und Schalttag; falscher Stichtag 400; schreibt nichts')
 
         ergebnis = {'bestanden': len(bestanden), 'punkte': bestanden, 'ordner': str(base)}
         (base / 'Ergebnis.json').write_text(json.dumps(ergebnis, ensure_ascii=False, indent=2), encoding='utf-8')

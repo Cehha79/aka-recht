@@ -24,7 +24,7 @@ es zu ordnen, zu prüfen und zu formulieren.
   Rechenweg nach §§ 187, 188, 193 BGB, mit den Feiertagen deines Bundeslands.
 - **Deine KI arbeitet mit:** Claude Code, Claude Desktop, Codex oder jede andere,
   die MCP (Model Context Protocol) oder Befehle ausführen kann. 7 Anleitungen
-  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 25 Werkzeuge
+  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 26 Werkzeuge
   lassen sie in der Akte lesen und, nach deiner Bestätigung, schreiben.
 - **Alles bleibt bei dir:** keine KI in der App, kein Konto, kein Schlüssel,
   kein Netz. Der Dienst läuft nur auf deinem Rechner.
@@ -138,7 +138,7 @@ ein Hook sperrt das für die KI. Neue Texte entstehen in 06, Vermerke in 07.
 
 <img src="bilder/kapitel-werkzeuge.svg" alt="Werkzeuge: MCP und Befehlszeile">
 
-Dieselben 25 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+Dieselben 26 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 oder über die Befehlszeile (`python3 "06 Werkzeuge/dienst/cli.py" <werkzeug> feld=wert`).
 Schreibende Werkzeuge laufen über MCP nur mit deiner Bestätigung (es zählt
 allein der JSON-Wert `true`); über die Befehlszeile soll die KI vorher
@@ -149,7 +149,7 @@ selbst. Jede Änderung an `akte.json` wird gegen das Datenmodell geprüft
 und mit Revision gespeichert.
 
 <details>
-<summary>Alle 25 Werkzeuge anzeigen</summary>
+<summary>Alle 26 Werkzeuge anzeigen</summary>
 
 | Werkzeug | Art | Zweck |
 |---|---|---|
@@ -162,6 +162,7 @@ und mit Revision gespeichert.
 | `bestand_pruefen` | lesend | Prüfsummen aller registrierten Dateien eines Falls mit dem ersten Stand vergleichen; meldet auch nicht erfasste und verschobene Dateien. Schreibt nichts. |
 | `journal_lesen` | lesend | Verlauf eines Falls aus JOURNAL.md, neueste Einträge zuletzt. |
 | `quellen_katalog` | lesend | Gemeinsamer Zugangskatalog amtlicher Rechtsquellen aus 04 Rechtsquellen/Quellen.md. |
+| `rechtsinhalte_pruefen` | lesend | Meldet, welche mitgelieferten Rechtsinhalte wieder am amtlichen Volltext zu prüfen sind: Merkblätter (zwölf Monate nach „Letzte vollständige Prüfung“), Feiertagstabelle (ab 1. Dezember fürs Folgejahr), Quellenkatalog (sechs Monate). Status je Eintrag: fällig, bald fällig (30 Tage), unbekannt, in Ordnung. Schreibt nichts, ohne Netz. |
 | `fall_anlegen` | schreibend | Neuen Fall mit fester Kennung und Ordnerstruktur anlegen. |
 | `fall_status_setzen` | schreibend | Fallstatus auf offen, ruhend oder abgeschlossen setzen. Der Fall bleibt am gleichen Ort. |
 | `aufgabe_anlegen` | schreibend | Aufgabe in einem Fall anlegen. |
@@ -225,16 +226,16 @@ den Pflichtinhalt dagegen.
 
 | Merkblatt | Inhalt | Stand |
 |---|---|---|
-| `04 Rechtsquellen/Verfahren/Akteneinsicht.md` | Akteneinsicht und Auskunft | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Dienstaufsichtsbeschwerde.md` | Dienstaufsichtsbeschwerde, Fachaufsichtsbeschwerde, Petition | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Einspruch_Bussgeldbescheid.md` | Einspruch gegen einen Bußgeldbescheid | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Einspruch gegen einen Steuerbescheid | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` | Klage zum Arbeitsgericht | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Mahnverfahren.md` | Mahnverfahren (Mahnbescheid und Vollstreckungsbescheid) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Strafanzeige.md` | Strafanzeige und Strafantrag | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Widerspruch_Verwaltungsakt.md` | Widerspruch gegen einen Verwaltungsakt (Bescheid einer Behörde) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Zivilklage.md` | Zivilklage vor dem Amtsgericht oder Landgericht | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Zustaendigkeit_finden.md` | Zuständige Stelle finden | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Akteneinsicht.md` | Akteneinsicht und Auskunft | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Dienstaufsichtsbeschwerde.md` | Dienstaufsichtsbeschwerde, Fachaufsichtsbeschwerde, Petition | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Einspruch_Bussgeldbescheid.md` | Einspruch gegen einen Bußgeldbescheid | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Einspruch gegen einen Steuerbescheid | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` | Klage zum Arbeitsgericht | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Mahnverfahren.md` | Mahnverfahren (Mahnbescheid und Vollstreckungsbescheid) | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Strafanzeige.md` | Strafanzeige und Strafantrag | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Widerspruch_Verwaltungsakt.md` | Widerspruch gegen einen Verwaltungsakt (Bescheid einer Behörde) | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Zivilklage.md` | Zivilklage vor dem Amtsgericht oder Landgericht | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Zustaendigkeit_finden.md` | Zuständige Stelle finden | 17.09.2026 |
 
 > [!NOTE]
 > Rechtsinhalte altern. Welche Feiertage, Merkblätter und Vorlagen mit

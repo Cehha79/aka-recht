@@ -2,6 +2,8 @@
 
 *Rechtsordnung DE · Bereich Arbeit · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen*
 
+*Letzte vollständige Prüfung: 17.09.2026*
+
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Normen
 am amtlichen Volltext gelesen (gesetze-im-internet.de): Arbeitsgerichtsgesetz
 (ArbGG), neugefasst durch Bek. v. 02.07.1979 (BGBl. I S. 853, 1036), zuletzt

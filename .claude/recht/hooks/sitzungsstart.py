@@ -33,6 +33,11 @@ def main():
             teile.append(f'offene Aufgaben: {f["offene_aufgaben"]}')
             zeilen.append(' · '.join(teile))
         if not werkzeuge.faelle_auflisten(): zeilen.append('Noch kein Fall im neuen Format eingetragen (zentrale.json).')
+        try:   # Stufe 12: Rechtsinhalte, die wieder am Volltext zu prüfen sind; nur melden, wenn etwas ansteht
+            r = werkzeuge.rechtsinhalte_pruefen()
+            offen = [e for e in r['eintraege'] if e['status'] != 'in Ordnung']
+            if offen: zeilen.append(f'Rechtsinhalte: {r["faellig"]} fällig, {r["bald_faellig"]} bald fällig, {r["unbekannt"]} ohne lesbares Prüfdatum (rechtsinhalte_pruefen): ' + '; '.join(f'{e["name"]} {e["status"]}' + (f' ab {e["faellig_ab"]}' if e['faellig_ab'] else '') for e in offen[:6]) + (f' und {len(offen) - 6} weitere' if len(offen) > 6 else '') + '.')
+        except Exception as e: zeilen.append(f'Rechtsinhalte: Prüfung nicht möglich ({e}).')
         zeilen.append('Regeln: Originale nie ändern; Fristen nur mit Auslöser, Grundlage, Rechnung; nichts versenden; Werkzeuge über 06 Werkzeuge/dienst/cli.py.')
         print(json.dumps({'hookSpecificOutput': {'hookEventName': 'SessionStart', 'additionalContext': '\n'.join(zeilen)}}, ensure_ascii=False))
     except Exception as e:

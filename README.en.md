@@ -24,7 +24,7 @@ AI helps you to organise, check and formulate.
   the calculation under §§ 187, 188, 193 BGB with the holidays of your state.
 - **Your AI works with it:** Claude Code, Claude Desktop, Codex or any other
   that speaks MCP (Model Context Protocol) or can run commands. 7 guides
-  take it from case intake to a reviewed draft, 25 tools let it read
+  take it from case intake to a reviewed draft, 26 tools let it read
   the case and, after your confirmation, write to it.
 - **Everything stays with you:** no AI inside the app, no account, no key, no
   network. The service runs only on your machine.
@@ -129,14 +129,14 @@ blocks that for the AI. New texts go to 06, memos to 07.
 
 <img src="bilder/kapitel-werkzeuge-en.svg" alt="Tools: MCP and command line">
 
-The same 25 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+The same 26 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 and on the command line (`python3 "06 Werkzeuge/dienst/cli.py" <tool> field=value`).
 Over MCP, writing tools run only with your confirmation; on the command line
 the AI is told to ask first. Every change to `akte.json` is validated against
 the data model and saved with a revision.
 
 <details>
-<summary>Show all 25 tools</summary>
+<summary>Show all 26 tools</summary>
 
 | Tool | Kind | Purpose |
 |---|---|---|
@@ -149,6 +149,7 @@ the data model and saved with a revision.
 | `bestand_pruefen` | reads | Compare checksums of all registered files of a case with their first state |
 | `journal_lesen` | reads | Read the case journal, newest entries last |
 | `quellen_katalog` | reads | Catalogue of official legal sources from 04 Rechtsquellen/Quellen.md |
+| `rechtsinhalte_pruefen` | reads | Meldet, welche mitgelieferten Rechtsinhalte wieder am amtlichen Volltext zu prüfen sind: Merkblätter (zwölf Monate nach „Letzte vollständige Prüfung“), Feiertagstabelle (ab 1. Dezember fürs Folgejahr), Quellenkatalog (sechs Monate). Status je Eintrag: fällig, bald fällig (30 Tage), unbekannt, in Ordnung. Schreibt nichts, ohne Netz. |
 | `fall_anlegen` | writes | Create a new case with a fixed id and folder structure |
 | `fall_status_setzen` | writes | Set case status to open, dormant or closed |
 | `aufgabe_anlegen` | writes | Add a task to a case |
@@ -212,16 +213,16 @@ from them, `/entwurf` checks the mandatory content against them.
 
 | Fact sheet | Content | As of |
 |---|---|---|
-| `04 Rechtsquellen/Verfahren/Akteneinsicht.md` | Access to files and data: which legal basis applies (VwVfG, SGB X, AO, StPO, OWiG, ZPO, BetrVG, GDPR, IFG) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Dienstaufsichtsbeschwerde.md` | Complaint to a supervisor, supervisory complaint, petition (Art. 17 GG, DRiG, BRAO) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Einspruch_Bussgeldbescheid.md` | Objection to an administrative fine notice (OWiG, StVG) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Objection to a tax assessment (Abgabenordnung) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` | Action before the labour court (ArbGG, ZPO, KSchG, GKG) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Mahnverfahren.md` | Order-for-payment procedure: payment order and enforcement order (ZPO, GKG) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Strafanzeige.md` | Criminal complaint and request for prosecution (StPO, StGB) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Widerspruch_Verwaltungsakt.md` | Administrative appeal against an authority decision (VwGO) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Zivilklage.md` | Civil action before the local or regional court (ZPO, GVG, GKG, BGB) | 16.09.2026 |
-| `04 Rechtsquellen/Verfahren/Zustaendigkeit_finden.md` | Finding the competent court or authority: rules and official directories | 16.09.2026 |
+| `04 Rechtsquellen/Verfahren/Akteneinsicht.md` | Access to files and data: which legal basis applies (VwVfG, SGB X, AO, StPO, OWiG, ZPO, BetrVG, GDPR, IFG) | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Dienstaufsichtsbeschwerde.md` | Complaint to a supervisor, supervisory complaint, petition (Art. 17 GG, DRiG, BRAO) | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Einspruch_Bussgeldbescheid.md` | Objection to an administrative fine notice (OWiG, StVG) | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Einspruch_Steuerbescheid.md` | Objection to a tax assessment (Abgabenordnung) | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Klage_Arbeitsgericht.md` | Action before the labour court (ArbGG, ZPO, KSchG, GKG) | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Mahnverfahren.md` | Order-for-payment procedure: payment order and enforcement order (ZPO, GKG) | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Strafanzeige.md` | Criminal complaint and request for prosecution (StPO, StGB) | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Widerspruch_Verwaltungsakt.md` | Administrative appeal against an authority decision (VwGO) | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Zivilklage.md` | Civil action before the local or regional court (ZPO, GVG, GKG, BGB) | 17.09.2026 |
+| `04 Rechtsquellen/Verfahren/Zustaendigkeit_finden.md` | Finding the competent court or authority: rules and official directories | 17.09.2026 |
 
 > [!NOTE]
 > Legal content ages. Which holidays, fact sheets and templates ship with

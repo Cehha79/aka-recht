@@ -2,6 +2,8 @@
 
 *Rechtsordnung DE · Bereich Behörden und Bescheide · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz gegengeprüft 17.09.2026 (Bundesrecht am Rohtext; Landesrecht BW nur im Browser vom 16.09.2026), förmliche Zustellung (VwZG) am 17.09.2026 nachgelesen*
 
+*Letzte vollständige Prüfung: 17.09.2026*
+
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Normen
 am amtlichen Volltext gelesen (gesetze-im-internet.de): Verwaltungsgerichts-
 ordnung (VwGO) in der Fassung der Bekanntmachung vom 19.03.1991, zuletzt
