@@ -1,6 +1,6 @@
 # Merkblatt: Klage zum Arbeitsgericht
 
-*Rechtsordnung DE · Bereich Arbeit · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen, Prozesskostenhilfe, § 24 KSchG und § 174 SGB IX am 17.09.2026 abends ergänzt*
+*Rechtsordnung DE · Bereich Arbeit · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen, Prozesskostenhilfe, § 24 KSchG und § 174 SGB IX am 17.09.2026 abends ergänzt, Rechtsprechung zu Zugang, Fax und „demnächst“ am 17.09.2026 abends ergänzt*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -53,7 +53,7 @@ Zugang der Kündigung belegen, Frist mit `frist_berechnen` rechnen.
 | Folge der Versäumung | „so gilt die Kündigung als von Anfang an rechtswirksam; ein vom Arbeitnehmer nach § 2 erklärter Vorbehalt erlischt“ | § 7 KSchG |
 | Nachträgliche Zulassung | Wer „trotz Anwendung aller ihm nach Lage der Umstände zuzumutenden Sorgfalt verhindert“ war, kann die nachträgliche Zulassung beantragen: Antrag mit Klage verbinden, Hinderungsgründe angeben und glaubhaft machen, „nur innerhalb von zwei Wochen nach Behebung des Hindernisses“, spätestens sechs Monate nach Fristende. Gleiches gilt, „wenn eine Frau von ihrer Schwangerschaft aus einem von ihr nicht zu vertretenden Grund erst nach Ablauf der Frist“ Kenntnis erlangt | § 5 Abs. 1 bis 3 KSchG |
 | AGG-Entschädigung | „innerhalb von drei Monaten, nachdem der Anspruch schriftlich geltend gemacht worden ist“; davor die Geltendmachung: Der Anspruch „muss innerhalb einer Frist von zwei Monaten schriftlich geltend gemacht werden, es sei denn, die Tarifvertragsparteien haben etwas anderes vereinbart“; die Frist beginnt bei Bewerbung oder Aufstieg „mit dem Zugang der Ablehnung und in den sonstigen Fällen einer Benachteiligung zu dem Zeitpunkt, in dem der oder die Beschäftigte von der Benachteiligung Kenntnis erlangt“ | § 61b Abs. 1 ArbGG; § 15 Abs. 4 AGG |
-| Fristwahrung durch Eingang | Die Frist ist gewahrt, wenn die Klage rechtzeitig bei Gericht eingeht und die Zustellung „demnächst erfolgt“; Verzögerungen des Gerichts schaden nicht, eigene (falsche Anschrift des Beklagten) können schaden | § 167 ZPO über § 46 Abs. 2 ArbGG `[PRÜFEN: Rechtsprechung zu „demnächst“]` |
+| Fristwahrung durch Eingang | Die Frist ist gewahrt, wenn die Klage rechtzeitig bei Gericht eingeht und die Zustellung „demnächst erfolgt“. Der BGH: Die Zustellung ist „jedenfalls dann noch demnächst erfolgt, wenn die durch den Kläger zu vertretende Verzögerung der Zustellung den Zeitraum von 14 Tagen nicht überschreitet“; gezählt wird nur die Zeit, um die sich die Zustellung „als Folge der Nachlässigkeit des Klägers verzögert“. Verzögerungen im Geschäftsablauf des Gerichts oder der Post werden nicht angerechnet, auch nicht Fehler des Zustellers. Eigene Fehler zählen, etwa eine falsche Anschrift des Arbeitgebers: dann rechnet das Gericht ab dem gescheiterten Zustellversuch. Deshalb Anschrift vor Einreichung prüfen (Handelsregister, Impressum) | § 167 ZPO über § 46 Abs. 2 ArbGG; BGH, Urteil vom 10.10.2024, VII ZR 240/23, Rn. 28, 32, 34 |
 | Berechnung | „Für die Berechnung der Fristen gelten die Vorschriften des Bürgerlichen Gesetzbuchs“ (§§ 187 bis 193 BGB); „Fällt das Ende einer Frist auf einen Sonntag, einen allgemeinen Feiertag oder einen Sonnabend, so endet die Frist mit Ablauf des nächsten Werktages“; Feiertage am Gerichtsort (`land=`) | § 222 Abs. 1 und 2 ZPO über § 46 Abs. 2 ArbGG |
 | Weitere Fristen | Einspruch gegen ein Versäumnisurteil: „Notfrist von einer Woche nach seiner Zustellung“. Berufung: ein Monat, Begründung zwei Monate; „Beide Fristen beginnen mit der Zustellung des in vollständiger Form abgefassten Urteils, spätestens aber mit Ablauf von fünf Monaten nach der Verkündung.“ Wer nur auf die Zustellung wartet, kann die Berufung also verlieren. Ohne oder mit falscher Rechtsmittelbelehrung: Jahresfrist | § 59 Satz 1, § 66 Abs. 1 Satz 1 und 2, § 9 Abs. 5 Satz 3 und 4 ArbGG |
 | Vertragliche und tarifliche Ausschlussfristen | Zahlungsansprüche verfallen oft nach zwei bis sechs Monaten schriftlicher Geltendmachung, teils mit zweiter Stufe (gerichtliche Geltendmachung); Arbeitsvertrag und Tarifvertrag lesen, gesondert eintragen | `[PRÜFEN: § 7 Arbeitsvertrag, § 37 TVöD oder AVR je Fall]` |
@@ -64,18 +64,32 @@ muss bis Dienstag, 29.09.2026 beim Arbeitsgericht eingehen (§ 4 Satz 1 KSchG,
 einheit=wochen land=…`. Der Zugang ist der Tag, an dem die Kündigung in den
 Machtbereich gelangt (Briefkasten, Übergabe), nicht das Datum auf dem Brief:
 Eine Willenserklärung unter Abwesenden „wird … in dem Zeitpunkt wirksam, in
-welchem sie ihm zugeht“ (§ 130 Abs. 1 Satz 1 BGB). Wann ein Brief im Briefkasten
-„zugegangen“ ist (am Einwurftag oder erst am nächsten Tag bei Einwurf nach der
-üblichen Leerung), entscheidet die Rechtsprechung `[PRÜFEN: BAG-Rechtsprechung
-zum Zugang, nicht gelesen; im Zweifel vom Einwurftag rechnen]`. Zugang mit Datum
-vermerken, Umschlag aufheben.
+welchem sie ihm zugeht“ (§ 130 Abs. 1 Satz 1 BGB). Für den Briefkasten
+gilt nach dem BAG: Der Einwurf „bewirkt den Zugang, sobald nach der
+Verkehrsanschauung mit der nächsten Entnahme zu rechnen ist“; es zählt nicht,
+wann der Empfänger tatsächlich nachsieht, und Urlaub oder Krankheit hindern den
+Zugang nicht. Das BAG hat die Annahme gebilligt, dass bei Hausbriefkästen „im
+Allgemeinen mit einer Leerung unmittelbar nach Abschluss der üblichen
+Postzustellzeiten zu rechnen sei“; die örtlichen Zustellzeiten prägen die
+Verkehrsanschauung. Wirft der Arbeitgeber (Bote) erst danach ein, etwa am
+Nachmittag, kann die Kündigung erst am nächsten Tag zugehen. Das BAG hat das
+nicht selbst entschieden, sondern die örtliche Verkehrsanschauung vom
+Landesarbeitsgericht feststellen lassen; eine gewandelte Anschauung mit
+späterer Leerung ist möglich, die Beweislast für den früheren Zugang trägt der
+Arbeitgeber. Wirft ein Postbediensteter ein, besteht „ein Beweis des ersten
+Anscheins, dass Bedienstete der Deutschen Post AG Briefe zu den postüblichen
+Zeiten zustellen“, die Kündigung geht dann in der Regel am Einwurftag zu.
+Zur Sicherheit vom frühesten möglichen Tag rechnen (BAG, Urteil vom 22.08.2019,
+2 AZR 111/19, Rn. 12, 15, 16, 30; BAG, Urteil vom 20.06.2024, 2 AZR 213/23,
+Leitsatz, Rn. 10, 16).
+Zugang mit Datum und Uhrzeit vermerken, Umschlag aufheben.
 
 ## 3. Form, Inhalt, Adressat
 
 | Punkt | Regel | Norm |
 |---|---|---|
 | Form | „bei dem Gericht schriftlich einzureichen oder mündlich zum Protokoll der Geschäftsstelle anzubringen“ (Rechtsantragstelle des Arbeitsgerichts nimmt die Klage auf) | § 496 ZPO über § 46 Abs. 2 ArbGG |
-| Schriftlich | Klageschrift mit Unterschrift; „unter Beifügung der für ihre Zustellung oder Mitteilung erforderlichen Zahl von Abschriften“ (je Beklagter eine Abschrift, bei Papier). Fax: Die ZPO kennt „bei Übermittlung durch einen Telefaxdienst (Telekopie) die Wiedergabe der Unterschrift in der Kopie“ als Sollinhalt, das Fax ist damit ein anerkannter Weg `[QUELLE: Rechtsprechung zum Fax, nicht gelesen]` | § 253 Abs. 5 Satz 1, § 130 Nr. 6 ZPO |
+| Schriftlich | Klageschrift mit Unterschrift; „unter Beifügung der für ihre Zustellung oder Mitteilung erforderlichen Zahl von Abschriften“ (je Beklagter eine Abschrift, bei Papier). Fax: Die ZPO kennt „bei Übermittlung durch einen Telefaxdienst (Telekopie) die Wiedergabe der Unterschrift in der Kopie“ als Sollinhalt, die Übermittlung per Telefax ist „in allen Gerichtszweigen uneingeschränkt zulässig“, auch als Computerfax mit eingescannter Unterschrift. Rechtzeitig ist das Fax, wenn es vor Fristablauf „vom Telefaxgerät des Gerichts vollständig empfangen (gespeichert)“ wurde; der Ausdruck ist gleichgültig. Sendebericht mit Uhrzeit und Seitenzahl aufheben und nicht bis kurz vor Mitternacht warten | § 253 Abs. 5 Satz 1, § 130 Nr. 6 ZPO; GmS-OGB, Beschluss vom 05.04.2000, GmS-OGB 1/98; BGH, Beschluss vom 25.04.2006, IV ZB 20/05, Leitsatz und Rn. 18 |
 | Elektronisch | Das Dokument „muss mit einer qualifizierten elektronischen Signatur der verantwortenden Person versehen sein oder von der verantwortenden Person signiert und auf einem sicheren Übermittlungsweg eingereicht werden“; sichere Wege für Privatpersonen: identifiziertes elektronisches Postfach (eBO, Nr. 3) oder Nutzerkonto nach dem Onlinezugangsgesetz (Nr. 4). Einfache E-Mail genügt nicht. Bei elektronischer Einreichung keine Abschriften nötig | § 46c Abs. 3 und 4 ArbGG, § 253 Abs. 5 Satz 2 ZPO |
 | Anwälte | müssen elektronisch einreichen (beA); dasselbe gilt für Verbandsvertreter (Gewerkschaft) mit sicherem Übermittlungsweg, nicht für Familienangehörige und Beschäftigte der Partei; Papier nur bei vorübergehender technischer Störung mit Glaubhaftmachung | § 46g Satz 1 bis 4 ArbGG |
 | Adressat | das zuständige Arbeitsgericht (Abschnitt 1). Klage im falschen Rechtsweg (etwa beim Amtsgericht) wird von Amts wegen verwiesen, „Die Wirkungen der Rechtshängigkeit bleiben bestehen“, die Frist ist gewahrt; „Dem Kläger sind die entstandenen Mehrkosten auch dann aufzuerlegen, wenn er in der Hauptsache obsiegt.“ Beim falschen Arbeitsgericht (örtlich) Verweisung nur auf Antrag (§ 281 ZPO, Merkblatt Zuständigkeit) | § 48 Abs. 1 ArbGG; § 17a Abs. 2, § 17b Abs. 1 Satz 2, Abs. 2 Satz 2 GVG |
@@ -177,9 +191,14 @@ vermerken, Umschlag aufheben.
 | § 24 KSchG Schifffahrt und Luftverkehr (Abs. 1, 4) | https://www.gesetze-im-internet.de/kschg/__24.html | KSchG, Bek. 25.08.1969, zuletzt geändert 14.06.2021 (17.09.2026 abends) |
 | § 17 MuSchG Kündigungsverbot (Abs. 1, 2) | https://www.gesetze-im-internet.de/muschg_2018/__17.html | MuSchG vom 23.05.2017, zuletzt geändert Art. 13 G v. 22.12.2025 I Nr. 371 (17.09.2026) |
 | § 159 SGB III Ruhen bei Sperrzeit (Abs. 1 Satz 1 bis 3, Abs. 3) | https://www.gesetze-im-internet.de/sgb_3/__159.html | SGB III vom 24.03.1997, zuletzt geändert Art. 1a G v. 24.07.2026 I Nr. 228 (17.09.2026) |
+| BAG, Urteil vom 22.08.2019, 2 AZR 111/19 (Zugang im Hausbriefkasten, örtliche Postzustellzeiten) | https://www.bundesarbeitsgericht.de/entscheidung/2-azr-111-19/ | Volltext gelesen (17.09.2026 abends) |
+| BAG, Urteil vom 20.06.2024, 2 AZR 213/23 (Anscheinsbeweis für Zustellung zu postüblichen Zeiten) | https://www.bundesarbeitsgericht.de/entscheidung/2-azr-213-23/ | Volltext gelesen (17.09.2026 abends) |
+| BGH, Urteil vom 10.10.2024, VII ZR 240/23 („demnächst“, 14 Tage, Fehler von Gericht und Zusteller) | https://www.bundesgerichtshof.de/SharedDocs/Entscheidungen/DE/Zivilsenate/VII_ZS/2023/VII_ZR_240-23.pdf | Volltext gelesen (17.09.2026 abends) |
+| Gemeinsamer Senat der obersten Gerichtshöfe des Bundes, Beschluss vom 05.04.2000, GmS-OGB 1/98 (Telefax und Computerfax an Gerichte) | https://www.bundesgerichtshof.de/SharedDocs/EntscheidungenGemSenat/DE/HTML/gmsOgb198.html | Volltext gelesen (17.09.2026 abends) |
+| BGH, Beschluss vom 25.04.2006, IV ZB 20/05 (Eingang eines Telefax bei Gericht) | https://www.bundesgerichtshof.de/SharedDocs/Entscheidungen/DE/Zivilsenate/IV_ZS/2005/IV_ZB__20-05.pdf | Volltext gelesen (17.09.2026 abends); in BGHZ veröffentlicht laut Kopf der Entscheidung |
 
 Nicht gelesen: § 78 ArbGG (Beschwerde), Kostenverzeichnis zum GKG außer
 Nr. 8210 und 8211, Fachliche Weisungen der Bundesagentur zu § 159 SGB III,
-Rechtsprechung zu Zugang, Fax, Unterschrift, „demnächst“, Sperrzeit und
-Weiterbeschäftigungsantrag. Ansprüche selbst (Kündigungsgründe, Lohn,
+Rechtsprechung zur Unterschrift, zum Einwurf-Einschreiben, zur Sperrzeit und
+zum Weiterbeschäftigungsantrag. Ansprüche selbst (Kündigungsgründe, Lohn,
 Zeugnis, Entschädigung) sind nicht Gegenstand dieses Merkblatts.

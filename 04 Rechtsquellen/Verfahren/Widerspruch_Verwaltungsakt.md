@@ -1,6 +1,6 @@
 # Merkblatt: Widerspruch gegen einen Verwaltungsakt (Bescheid einer Behörde)
 
-*Rechtsordnung DE · Bereich Behörden und Bescheide · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz gegengeprüft 17.09.2026 (Bundesrecht am Rohtext; Landesrecht BW nur im Browser vom 16.09.2026), förmliche Zustellung (VwZG) am 17.09.2026 nachgelesen, § 9 VwZG, § 9a OZG und § 79 VwGO am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt*
+*Rechtsordnung DE · Bereich Behörden und Bescheide · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz gegengeprüft 17.09.2026 (Bundesrecht am Rohtext; Landesrecht BW nur im Browser vom 16.09.2026), förmliche Zustellung (VwZG) am 17.09.2026 nachgelesen, § 9 VwZG, § 9a OZG und § 79 VwGO am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, Rechtsprechung zum Fax am 17.09.2026 abends nachgelesen*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -71,7 +71,7 @@ Tag der Aufgabe zur Post.
 | Punkt | Regel | Norm |
 |---|---|---|
 | Form | „schriftlich, in elektronischer Form nach § 3a Absatz 2 des Verwaltungsverfahrensgesetzes, schriftformersetzend nach § 3a Absatz 3 des Verwaltungsverfahrensgesetzes und § 9a Absatz 5 des Onlinezugangsgesetzes oder zur Niederschrift bei der Behörde“ | § 70 Abs. 1 Satz 1 VwGO |
-| Schriftlich | Brief mit Unterschrift; Telefax gilt als schriftlich `[QUELLE: Rechtsprechung zum Fax]` | § 70 Abs. 1 VwGO |
+| Schriftlich | Brief mit Unterschrift. Telefax: Für Schriftsätze an Gerichte ist die Übermittlung per Telefax „in allen Gerichtszweigen uneingeschränkt zulässig“ (Gemeinsamer Senat); dass dasselbe für den Widerspruch bei der Behörde gilt, ist damit nicht am Volltext belegt `[QUELLE: Rechtsprechung zum Fax an Verwaltungsbehörden]`. Im Zweifel Brief mit Einwurf-Einschreiben oder Abgabe gegen Eingangsstempel | § 70 Abs. 1 VwGO; GmS-OGB, Beschluss vom 05.04.2000, GmS-OGB 1/98 |
 | Elektronisch | Einfache E-Mail genügt nicht: § 3a Abs. 2 VwVfG verlangt „ein elektronisches Dokument, das mit einer qualifizierten elektronischen Signatur versehen ist“. Schriftformersatz nach § 3a Abs. 3 VwVfG: (1) ein elektronisches Formular der Behörde, bei Eingabe über das Internet mit elektronischem Identitätsnachweis (Online-Ausweis); (2) eine elektronisch signierte Erklärung aus einem besonderen elektronischen Anwaltspostfach oder gleichgestellten Postfach, aus einem Behördenpostfach oder aus einem nach Identifizierung eingerichteten Postfach einer natürlichen Person (etwa eBO). De-Mail ist keine Ersatzform mehr, der frühere Buchstabe d ist „(weggefallen)“. Der Weg über ein Nutzerkonto steht nicht in § 3a, sondern gesondert in § 70 Abs. 1 Satz 1 VwGO mit § 9a Abs. 5 OZG: Hat der Nutzer „über ein Nutzerkonto den Identitätsnachweis erbracht und gibt er über ein Verwaltungsportal mittels Online-Formular eine Erklärung ab, für die durch Rechtsvorschrift die Schriftform angeordnet ist, so wird dadurch zugleich die Schriftform ersetzt“. Das Portal muss vor der Abgabe eine Prüfung der ganzen Erklärung erlauben und danach „eine Kopie seiner Erklärung zum Abruf“ bereitstellen; diese Kopie ist der Beleg. § 9a gilt für Leistungen zur Ausführung von Bundesgesetzen und EU-Recht über Verwaltungsportale, „soweit nicht durch Bundesgesetz etwas anderes bestimmt ist“ `[PRÜFEN: Landes-Onlinezugangsgesetze für reine Landesleistungen]`. Vor dem Versand prüfen, welchen Zugang die Behörde eröffnet hat (§ 3a Abs. 1 VwVfG); im Zweifel Brief oder Fax mit Beleg | § 3a Abs. 1, 2 und 3 Nr. 1 und 2 VwVfG; § 70 Abs. 1 Satz 1 VwGO; § 9a Abs. 1, 2, 4 und 5 OZG |
 | Adressat | die Behörde, die den Verwaltungsakt erlassen hat; fristwahrend auch bei der Widerspruchsbehörde | § 70 Abs. 1 Satz 1 und 2 VwGO |
 | Pflichtinhalt | Erkennbar: wer, gegen welchen Bescheid, dass Widerspruch gewollt ist. Eine Begründung ist nicht Voraussetzung, kann nachgereicht werden | § 70 VwGO nennt keinen Begründungszwang; Begründung empfohlen wegen § 68 Abs. 1 (Rechtmäßigkeit und Zweckmäßigkeit) |
@@ -138,9 +138,10 @@ Tag der Aufgabe zur Post.
 | § 9 VwZG Zustellung im Ausland (Abs. 1 bis 3) | https://www.gesetze-im-internet.de/vwzg_2005/__9.html | wie oben (17.09.2026 abends) |
 | Stand des VwZG | https://www.gesetze-im-internet.de/vwzg_2005/BJNR235410005.html | Vollzitat: G v. 12.08.2005 (BGBl. I S. 2354), zuletzt geändert Art. 15 Abs. 3 G v. 03.07.2026 (BGBl. 2026 I Nr. 199); Stand-Zeile Art. 3 G v. 15.07.2024, die Änderung 2026 dokumentarisch noch nicht abschließend bearbeitet |
 | §§ 177 bis 181 ZPO Zustellung, Ersatzzustellung | https://www.gesetze-im-internet.de/zpo/__178.html | ZPO, Vollzitat zuletzt geändert 20.05.2026 (Stand-Zeile 22.12.2025) (17.09.2026) |
+| Gemeinsamer Senat der obersten Gerichtshöfe des Bundes, Beschluss vom 05.04.2000, GmS-OGB 1/98 (Telefax und Computerfax an Gerichte) | https://www.bundesgerichtshof.de/SharedDocs/EntscheidungenGemSenat/DE/HTML/gmsOgb198.html | Volltext gelesen (17.09.2026 abends) |
 
 Nicht gelesen: Ausführungsgesetze zur VwGO und Landes-VwVfG der übrigen
 15 Länder, Landes-Verwaltungszustellungsgesetze außer §§ 2
 bis 4 LVwZG BW, Onlinezugangsgesetze der Länder, Gebührengesetze der
-Länder, Rechtsprechung (Fax, reformatio in peius). Baden-Württemberg ist im
+Länder, Rechtsprechung (Fax an Verwaltungsbehörden, reformatio in peius). Baden-Württemberg ist im
 Browser zweimal gelesen (§ 15 AGVwGO, § 41 LVwVfG, 16.09. und 17.09.2026).

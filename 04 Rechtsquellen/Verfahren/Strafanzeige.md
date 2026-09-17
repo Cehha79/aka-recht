@@ -1,6 +1,6 @@
 # Merkblatt: Strafanzeige und Strafantrag
 
-*Rechtsordnung DE · Bereich Strafsachen und Anzeigen · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, Verjährung (§§ 78 bis 78c StGB) am 17.09.2026 nachgelesen, Privatklage, Nebenklage und Adhäsionsverfahren im Einzelnen am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt*
+*Rechtsordnung DE · Bereich Strafsachen und Anzeigen · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, Verjährung (§§ 78 bis 78c StGB) am 17.09.2026 nachgelesen, Privatklage, Nebenklage und Adhäsionsverfahren im Einzelnen am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, Rechtsprechung zur Form des Strafantrags am 17.09.2026 abends ergänzt*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -49,7 +49,7 @@ früher stellen.
 | Punkt | Regel | Norm |
 |---|---|---|
 | Wo | Staatsanwaltschaft (schriftlich), Polizei (schriftlich, mündlich, Online-Wache der Länder), Amtsgericht (Rechtsantragstelle) | § 158 Abs. 1 Satz 1 StPO `[QUELLE: Online-Wache des Landes]` |
-| Form | keine Formvorschrift; schriftlich mit Unterschrift oder zu Protokoll. Der Strafantrag muss den Verfolgungswillen ausdrücken („Ich stelle Strafantrag“); ein bloßer Sachbericht genügt nicht | § 158 Abs. 1 und 2 StPO `[PRÜFEN: Rechtsprechung zur Auslegung von Anzeigen als Strafantrag]` |
+| Form | Die Anzeige ist formlos. Für den Strafantrag gilt seit dem 17.07.2024 keine Schriftform mehr: Es müssen nur „die Identität und der Verfolgungswille der antragstellenden Person sichergestellt sein“ (vorher „schriftlich“ oder zu Protokoll). Der BGH legt das so aus: Es genügt, „dass aus der Erklärung des Antragstellers und den Umständen ihrer Abgabe unzweifelhaft hervorgeht, von wem sie herrührt und dass sie mit Wissen und Wollen des Berechtigten der zuständigen Stelle zugeleitet worden ist“; Identität und Verfolgungswille dürfen sich „gegebenenfalls im Wege der Auslegung“ ergeben, auch eine einfache E-Mail kann genügen. Eine Anzeige kann also zugleich Strafantrag sein, wenn der Verfolgungswille eindeutig erkennbar ist. Sicher ist nur der ausdrückliche Satz „Ich stelle Strafantrag“ mit Name und Anschrift; ein bloßer Sachbericht lässt den Verfolgungswillen offen. Altes Recht: Lief die Antragsfrist vor dem 17.07.2024 ab, bleibt es bei der Schriftform; ein Strafantrag per einfacher E-Mail war damals unwirksam, und die Neufassung heilt das nicht („keine rückwirkende Anwendung“) | § 158 Abs. 2 StPO i. d. F. des G v. 12.07.2024 (BGBl. 2024 I Nr. 234); BGH, Beschluss vom 21.08.2024, 3 StR 97/24, Rn. 5 bis 10; BGH, Beschluss vom 12.05.2022, 5 StR 398/21, Rn. 14 |
 | Inhalt | Wer (Anzeigender, Kontakt), wann und wo, was geschah (Tatsachen in zeitlicher Reihenfolge, keine Bewertungen), wer war beteiligt oder Zeuge, welche Beweise (Fotos, Nachrichten, Belege), Schaden; ausdrücklich: Strafantrag ja oder nein; Bitte um Eingangsbestätigung, Aktenzeichen und Mitteilung des Ausgangs | § 158 Abs. 1 Satz 3, § 406d Abs. 1 StPO |
 | Rechtliche Einordnung | nicht nötig; die Staatsanwaltschaft prüft alle rechtlichen Gesichtspunkte. Eine Nennung des Delikts hilft, verpflichtet aber nicht | § 160 Abs. 1 StPO |
 | Wahrheit | Wer „wider besseres Wissen“ einen anderen einer Tat verdächtigt, „in der Absicht …, ein behördliches Verfahren oder andere behördliche Maßnahmen gegen ihn herbeizuführen“, macht sich strafbar (falsche Verdächtigung, bis fünf Jahre); ebenso das Vortäuschen einer Straftat (bis drei Jahre). Nur Tatsachen anzeigen, die man belegen kann; Vermutungen als Vermutung kennzeichnen | § 164 Abs. 1 und 2, § 145d Abs. 1 StGB |
@@ -132,8 +132,12 @@ früher stellen.
 | § 247 StGB Haus- und Familiendiebstahl | https://www.gesetze-im-internet.de/stgb/__247.html | wie oben (17.09.2026) |
 | § 303c StGB Strafantrag bei Sachbeschädigung | https://www.gesetze-im-internet.de/stgb/__303c.html | wie oben (17.09.2026) |
 | Stand des StGB | https://www.gesetze-im-internet.de/stgb/BJNR001270871.html | Neugefasst Bek. v. 13.11.1998 I 3322; zuletzt geändert Art. 1 G v. 20.03.2026 I Nr. 95 |
+| Gesetz zur weiteren Digitalisierung der Justiz, Art. 1 Nr. 9 (Neufassung § 158 Abs. 2 StPO), Art. 50 Abs. 1 (Inkrafttreten am Tag nach der Verkündung) | https://www.recht.bund.de/bgbl/1/2024/234/VO.html | G v. 12.07.2024, BGBl. 2024 I Nr. 234, ausgegeben 16.07.2024, in Kraft 17.07.2024 (amtliches PDF gelesen, 17.09.2026 abends) |
+| BGH, Beschluss vom 21.08.2024, 3 StR 97/24 (Form des Strafantrags nach neuem Recht, keine Rückwirkung) | https://www.bundesgerichtshof.de/SharedDocs/Entscheidungen/DE/Strafsenate/3_StS/2024/3_StR__97-24.pdf | Volltext gelesen (17.09.2026 abends) |
+| BGH, Beschluss vom 12.05.2022, 5 StR 398/21 (Strafantrag per einfacher E-Mail nach altem Recht unwirksam) | https://www.bundesgerichtshof.de/SharedDocs/Entscheidungen/DE/Strafsenate/5_StS/2021/5_StR_398-21.pdf | Volltext gelesen (17.09.2026 abends); BGHSt 67, 69 |
 
 Nicht gelesen: Antragsvorschriften weiterer Delikte, Gebühren des
 Adhäsionsverfahrens und der Nebenklage, Landesrecht außer Baden-Württemberg zu
 Schiedsstellen und Online-Wachen, Opferentschädigungsrecht (SGB XIV),
-Rechtsprechung zur Auslegung von Anzeigen als Strafantrag.
+Rechtsprechung der Instanzgerichte zu § 158 Abs. 2 StPO in der neuen Fassung
+(Online-Wache, Formulare der Polizei).

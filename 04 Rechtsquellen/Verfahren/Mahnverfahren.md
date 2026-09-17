@@ -1,6 +1,6 @@
 # Merkblatt: Mahnverfahren (Mahnbescheid und Vollstreckungsbescheid)
 
-*Rechtsordnung DE · Bereiche Forderungen und Inkasso, Verträge und Verbraucher · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen, §§ 751, 765a ZPO und MahnVordrV am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt*
+*Rechtsordnung DE · Bereiche Forderungen und Inkasso, Verträge und Verbraucher · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen, §§ 751, 765a ZPO und MahnVordrV am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, BGH zu „demnächst“ am 17.09.2026 abends ergänzt*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -44,7 +44,7 @@ Verjährung rechnen, Formular des Mahngerichts verwenden.
 | Vollstreckungsbescheid: spätestens | Wird er nicht „binnen einer sechsmonatigen Frist, die mit der Zustellung des Mahnbescheids beginnt“ beantragt, „so fällt die Wirkung des Mahnbescheids weg“; dasselbe, wenn der rechtzeitig gestellte Antrag zurückgewiesen wird. Stille Frist für die Verjährung: Die Hemmung „endet sechs Monate nach der rechtskräftigen Entscheidung oder anderweitigen Beendigung des eingeleiteten Verfahrens“; bleibt das Verfahren liegen, weil niemand es betreibt, „so tritt an die Stelle der Beendigung des Verfahrens die letzte Verfahrenshandlung“, die Hemmung endet also sechs Monate nach dem letzten Schritt und „beginnt erneut, wenn eine der Parteien das Verfahren weiter betreibt“. Das Datum der letzten Verfahrenshandlung als Frist eintragen | § 701 Satz 1 und 2 ZPO; § 204 Abs. 2 Satz 1 bis 3 BGB |
 | Einspruch gegen den Vollstreckungsbescheid | Der Vollstreckungsbescheid „steht einem für vorläufig vollstreckbar erklärten Versäumnisurteil gleich“; Einspruch binnen zwei Wochen ab Zustellung (Notfrist) | § 700 Abs. 1 ZPO, § 338, § 339 Abs. 1 ZPO |
 | Anspruchsbegründung | Nach Widerspruch und Abgabe gibt die Geschäftsstelle des Streitgerichts dem Antragsteller auf, „seinen Anspruch binnen zwei Wochen in einer der Klageschrift entsprechenden Form zu begründen“; die Frist läuft ab dieser Aufforderung, nicht ab der Abgabe. Sonst Termin nur auf Antrag des Gegners | § 697 Abs. 1 und 3 ZPO |
-| Verjährung | Gehemmt durch „die Zustellung des Mahnbescheids“; die Hemmung tritt schon mit Eingang des Antrags ein, „wenn die Zustellung demnächst erfolgt“. Wird der Antrag zurückgewiesen, bleibt die Wirkung erhalten, „wenn innerhalb eines Monats seit der Zustellung der Zurückweisung des Antrags Klage eingereicht und diese demnächst zugestellt wird“ | § 204 Abs. 1 Nr. 3 BGB, § 167 ZPO, § 691 Abs. 2 ZPO |
+| Verjährung | Gehemmt durch „die Zustellung des Mahnbescheids“; die Hemmung tritt schon mit Eingang des Antrags ein, „wenn die Zustellung demnächst erfolgt“. Wird der Antrag zurückgewiesen, bleibt die Wirkung erhalten, „wenn innerhalb eines Monats seit der Zustellung der Zurückweisung des Antrags Klage eingereicht und diese demnächst zugestellt wird“. Zum Maßstab „demnächst“ hat der BGH für die Klage entschieden: unschädlich ist eine vom Antragsteller „zu vertretende Verzögerung“ von bis zu 14 Tagen, Verzögerungen von Gericht und Post zählen nicht (Einzelheiten im Merkblatt Zivilklage) | § 204 Abs. 1 Nr. 3 BGB, § 167 ZPO, § 691 Abs. 2 ZPO; BGH, Urteil vom 10.10.2024, VII ZR 240/23, Rn. 28 |
 | Berechnung | §§ 187 bis 193 BGB; Fristende an Samstag, Sonntag, Feiertag verschiebt auf den nächsten Werktag | § 222 Abs. 1 und 2 ZPO |
 
 Beispiel: Mahnbescheid am Dienstag, 08.09.2026 zugestellt. Widerspruchsfrist
@@ -142,6 +142,7 @@ noch Einspruch binnen zwei Wochen.
 | § 34 GKG Wertgebühren (Abs. 1) | https://www.gesetze-im-internet.de/gkg_2004/__34.html | wie oben |
 | Kostenverzeichnis Nr. 1100 und Anm. zu Nr. 1210 | https://www.gesetze-im-internet.de/gkg_2004/anlage_1.html | wie oben |
 | § 204 BGB Hemmung (Abs. 1 Nr. 3, Abs. 2) | https://www.gesetze-im-internet.de/bgb/__204.html | BGB, Bek. 02.01.2002, zuletzt geändert Art. 6 G v. 23.07.2026 I Nr. 226 |
+| BGH, Urteil vom 10.10.2024, VII ZR 240/23 („demnächst“ bei Klagezustellung) | https://www.bundesgerichtshof.de/SharedDocs/Entscheidungen/DE/Zivilsenate/VII_ZS/2023/VII_ZR_240-23.pdf | Volltext gelesen (17.09.2026 abends) |
 
 Nicht gelesen: §§ 752 ff. ZPO (übrige Vollstreckungsvoraussetzungen),
 Landesverordnungen zum zentralen Mahngericht außer Baden-Württemberg, Vorgaben für maschinell bearbeitete
