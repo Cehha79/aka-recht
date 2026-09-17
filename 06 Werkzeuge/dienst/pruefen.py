@@ -584,6 +584,38 @@ def run():
             assert code == 0 and 'keine Befunde' in aus and 'keine Freigabe' in aus and (base / 'Entwurf.docx').is_file(), (code, aus)
             with zipfile.ZipFile(base / 'Entwurf.docx') as zf: assert 'lege ich Widerspruch ein' in zf.read('word/document.xml').decode() and 'intern' not in zf.read('word/document.xml').decode()
             ok('Word-Erzeuger, Vorabbericht: offene Marker jeder Art (auch ohne Doppelpunkt), Platzhalter, interne Notiz, fehlender Empfänger, Aktenzeichen, fehlende Anlagenliste, fehlende Trennlinie werden genannt; sauberer Entwurf ohne Befund, Datei ohne interne Hinweise, keine Freigabe durch das Skript')
+        # Windows einrichten (Stufe 9, 17.09.2026): Hooks in Exec-Form mit ${CLAUDE_PROJECT_DIR}, damit sie ohne Shell auch unter PowerShell laufen;
+        #    einrichten_windows.py ersetzt nur den Befehlswert python3 durch python, ein zweiter Lauf ändert nichts
+        einrichten = QUELLE / '06 Werkzeuge/einrichten_windows.py'
+        if einrichten.is_file() and (QUELLE / '.claude/settings.json').is_file():
+            hooks = [h for gruppen in json.loads((QUELLE / '.claude/settings.json').read_text('utf-8'))['hooks'].values() for g in gruppen for h in g['hooks']]
+            assert len(hooks) >= 4 and all(h.get('args') and h['args'][0].startswith('${CLAUDE_PROJECT_DIR}/') and ' ' not in h['command'] for h in hooks), hooks
+            win = base / 'Windows Probe ß'
+            for datei in ('.mcp.json', '.claude/settings.json', '.codex/config.toml'):
+                (win / datei).parent.mkdir(parents=True, exist_ok=True); shutil.copy2(QUELLE / datei, win / datei)
+            def einrichten_lauf(*extra):
+                r = subprocess.run([sys.executable, str(einrichten), '--root', str(win), *extra], capture_output=True, text=True, encoding='utf-8', timeout=30); return r.returncode, r.stdout
+            vorher = {d: (win / d).read_bytes() for d in ('.mcp.json', '.claude/settings.json', '.codex/config.toml')}
+            if os.name != 'nt':
+                code, aus = einrichten_lauf(); assert code == 2 and all((win / d).read_bytes() == b for d, b in vorher.items()), (code, aus)
+            code, aus = einrichten_lauf('--pruefen'); assert code == 1 and '4× python3' in aus, (code, aus)
+            code, aus = einrichten_lauf('--erzwingen'); assert code == 0 and aus.count('durch python ersetzt') == 3, (code, aus)
+            mcp = json.loads((win / '.mcp.json').read_text('utf-8'))['mcpServers']['aka-recht']
+            neu_hooks = [h for gruppen in json.loads((win / '.claude/settings.json').read_text('utf-8'))['hooks'].values() for g in gruppen for h in g['hooks']]
+            import tomllib
+            codex = tomllib.loads((win / '.codex/config.toml').read_text('utf-8'))['mcp_servers']['aka-recht']
+            assert mcp['command'] == 'python' and codex['command'] == 'python' and all(h['command'] == 'python' for h in neu_hooks) and [h['args'] for h in neu_hooks] == [h['args'] for h in hooks]
+            for d, b in vorher.items():   # nur der Befehlswert hat sich geändert
+                assert (win / d).read_bytes().replace(b'"python"', b'"python3"') == b, d
+            stand = {d: (win / d).read_bytes() for d in vorher}
+            code, aus = einrichten_lauf('--erzwingen'); assert code == 0 and aus.count('bereits eingerichtet') == 3 and all((win / d).read_bytes() == b for d, b in stand.items()), (code, aus)
+            code, aus = einrichten_lauf('--pruefen'); assert code == 0, (code, aus)
+            assert sorted(p.name for p in win.rglob('*') if p.is_file()) == ['.mcp.json', 'config.toml', 'settings.json']   # keine Zwischendateien
+            (win / '.mcp.json').write_text('{"mcpServers": {"aka-recht": {"command":"python3", "args": []}}}', encoding='utf-8')
+            code, aus = einrichten_lauf('--erzwingen'); assert code == 1 and 'unerwartet' in aus and '"python3"' in (win / '.mcp.json').read_text('utf-8'), (code, aus)
+            (win / '.mcp.json').write_text('{kaputt', encoding='utf-8')
+            code, aus = einrichten_lauf('--erzwingen'); assert code == 1 and 'nicht lesbar' in aus and (win / '.mcp.json').read_text('utf-8') == '{kaputt', (code, aus)
+            ok('Windows einrichten: Hooks in Exec-Form mit ${CLAUDE_PROJECT_DIR}; einrichten_windows.py ersetzt in .mcp.json, settings.json und config.toml nur python3 durch python, zweiter Lauf ändert nichts, keine Zwischendateien; außerhalb von Windows ohne --erzwingen nichts, unerwartete Schreibweise und kaputte Datei bleiben unverändert')
 
         ergebnis = {'bestanden': len(bestanden), 'punkte': bestanden, 'ordner': str(base)}
         (base / 'Ergebnis.json').write_text(json.dumps(ergebnis, ensure_ascii=False, indent=2), encoding='utf-8')

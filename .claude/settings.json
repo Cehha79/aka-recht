@@ -6,7 +6,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/recht/hooks/sitzungsstart.py\"",
+            "command": "python3",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/recht/hooks/sitzungsstart.py"],
             "timeout": 20,
             "statusMessage": "Eingang und Fristen der Akten prüfen"
           }
@@ -19,7 +20,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/recht/hooks/originalschutz.py\"",
+            "command": "python3",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/recht/hooks/originalschutz.py"],
             "timeout": 5
           }
         ]
@@ -30,7 +32,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/recht/hooks/doku_abgleich.py\"",
+            "command": "python3",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/recht/hooks/doku_abgleich.py"],
             "timeout": 10
           }
         ]
@@ -42,7 +45,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/recht/hooks/fremdtext.py\"",
+            "command": "python3",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/recht/hooks/fremdtext.py"],
             "timeout": 5
           }
         ]

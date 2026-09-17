@@ -234,6 +234,7 @@ from them, `/entwurf` checks the mandatory content against them.
 | Command (inside the folder) | Purpose |
 |---|---|
 | `Start.command`, `Start.sh`, `Start.bat` | start the service and open the UI (macOS, Linux, Windows) |
+| `python "06 Werkzeuge/einrichten_windows.py"` | Windows only: replace `python3` with `python` in `.mcp.json`, `.claude/settings.json`, `.codex/config.toml` (`Start.bat` does this itself); `--pruefen` report only |
 | `python3 "06 Werkzeuge/dienst/server.py" --no-open` | start without a browser; `--check` verify all cases; `--backup` verified backup; `--probe` restore test of the last backup; `--restore <ZIP> <new folder>` extract a backup into a new folder and verify it |
 | `python3 "06 Werkzeuge/dienst/cli.py" liste` | list all tools with parameters; then `cli.py <tool> field=value` |
 | `python3 "06 Werkzeuge/dienst/cli.py" frist_berechnen start=2026-09-11 menge=1 einheit=monate land=BW` | calculate a deadline, with the calculation shown |
@@ -309,9 +310,12 @@ languages are planned to match the countries.
   Python 3.12 and on Windows 11 with Python 3.14 (test suite, service via
   the start script, MCP server, sample case in a folder with umlauts on
   each). On Windows the command is `python` instead of `python3`; `python3.exe` there is only a
-  Microsoft Store stub. So replace `python3` with `python` in `.mcp.json`
-  and `.claude/settings.json`, otherwise the assistant launches the Store
-  instead of the MCP server.
+  Microsoft Store stub. `Start.bat` therefore switches `.mcp.json`,
+  `.claude/settings.json` and `.codex/config.toml` to `python` on every
+  start (`06 Werkzeuge/einrichten_windows.py`; it changes only that one value
+  and nothing once set up). So on Windows run `Start.bat` once before using
+  Claude Code or Codex in the folder. If you use git, these three files then
+  show as modified.
 - Optional for text extraction from PDF: `pdftotext` (poppler). Scanned PDFs
   without a text layer are not read; that needs OCR outside the folder.
 

@@ -247,6 +247,7 @@ den Pflichtinhalt dagegen.
 | Befehl (im Ordner der Mappe) | Zweck |
 |---|---|
 | `Start.command`, `Start.sh`, `Start.bat` | Dienst starten und Oberfläche öffnen (macOS, Linux, Windows) |
+| `python "06 Werkzeuge/einrichten_windows.py"` | nur Windows: `python3` in `.mcp.json`, `.claude/settings.json`, `.codex/config.toml` durch `python` ersetzen (macht `Start.bat` selbst); `--pruefen` nur melden |
 | `python3 "06 Werkzeuge/dienst/server.py" --no-open` | Dienst ohne Browser starten; `--check` Bestand aller Fälle prüfen; `--backup` geprüfte Sicherung; `--probe` Wiederherstellungsprobe der letzten Sicherung; `--restore <ZIP> <neuer Ordner>` Sicherung in einen neuen Ordner entpacken und prüfen |
 | `python3 "06 Werkzeuge/dienst/cli.py" liste` | alle Werkzeuge mit Parametern; danach `cli.py <werkzeug> feld=wert` |
 | `python3 "06 Werkzeuge/dienst/cli.py" frist_berechnen start=2026-09-11 menge=1 einheit=monate land=BW` | Frist rechnen, mit Rechenweg |
@@ -322,9 +323,12 @@ Weitere Sprachen sind geplant, passend zu den Ländern.
   Python 3.12 und auf Windows 11 mit Python 3.14 (jeweils Funktionstest,
   Dienst über das Startskript, MCP-Server, Beispielfall in einem Ordner mit
   Umlauten). Unter Windows heißt der Befehl `python` statt `python3`; `python3.exe` ist dort nur ein
-  Verweis auf den Microsoft Store. Deshalb in `.mcp.json` und
-  `.claude/settings.json` `python3` durch `python` ersetzen, sonst startet
-  der Assistent den Store statt des MCP-Servers.
+  Verweis auf den Microsoft Store. `Start.bat` stellt deshalb bei jedem Start
+  `.mcp.json`, `.claude/settings.json` und `.codex/config.toml` auf `python`
+  um (`06 Werkzeuge/einrichten_windows.py`, ändert nur diesen einen Wert und
+  nichts, wenn schon eingerichtet). Also unter Windows einmal `Start.bat`
+  starten, bevor Claude Code oder Codex im Ordner laufen. Wer mit git
+  arbeitet, sieht diese drei Dateien danach als geändert.
 - Für die Textauszüge aus PDF optional `pdftotext` (Paket poppler). Scans
   ohne Textschicht liest die Mappe nicht; dafür braucht es OCR außerhalb.
 

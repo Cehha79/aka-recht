@@ -8,4 +8,7 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
+rem KI-Konfigurationen (.mcp.json, .claude\settings.json, .codex\config.toml) auf "python" statt "python3" stellen; aendert nichts, wenn schon eingerichtet.
+python "%~dp0\06 Werkzeuge\einrichten_windows.py"
+if errorlevel 1 echo Hinweis: KI-Konfiguration nicht vollstaendig angepasst, siehe Meldung oben. Die Oberflaeche startet trotzdem.
 python "%~dp0\06 Werkzeuge\dienst\server.py" %*
