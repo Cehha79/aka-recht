@@ -52,7 +52,7 @@ Recht/
 ├─ 06 Werkzeuge/
 │  ├─ dienst/                 server.py, store.py, dokumente.py, fristen.py,
 │  │                          bestand.py, sicherung.py, werkzeuge.py, cli.py
-│  ├─ oberflaeche/            index.html, app.js, style.css
+│  ├─ oberflaeche/            index.html, app.js, style.css, sprachen/ (de.json und anleitung.de.html je Sprache, Stufe 11)
 │  ├─ verteilen.py            AGENTS.md und .agents/skills/ aus den Quellen erzeugen
 │  ├─ einrichten_windows.py   nur Windows: python3 in .mcp.json, .claude/settings.json, .codex/config.toml durch python ersetzen (ruft Start.bat)
 │  └─ pruefen.py              Funktionstest mit künstlichen Akten
@@ -167,7 +167,7 @@ Sicherungsziel iCloud Drive wird nur vorgeschlagen, wo es den Ordner gibt. Texta
 | `server.py` | HTTP-Dienst, Sitzungen, Routen, statische Oberfläche |
 | `store.py` | akte.json und zentrale.json lesen und mit Revision schreiben, Sperre |
 | `dokumente.py` | Dateien auflisten, Textauszug (txt, md, html, docx, eml, pdf) mit Herkunft (`befund()`: textquelle, Seiten, Zeichen; Bildscan und Foto gelten als nicht gelesen, seit 17.09.2026, F34), Suche |
-| `fristen.py` | Fristen rechnen nach §§ 187, 188, 193 BGB, landesweite Feiertage aller 16 Bundesländer (Kürzel, Einstellung `feiertagsland` in zentrale.json, Standard BW), Rechnung als Text |
+| `fristen.py` | Fristen rechnen mit Weiche je Rechtsordnung (`REGELWERKE`, Parameter `rechtsordnung`, Standard `DE`; seit 17.09.2026, Stufe 11): heute nur DE nach §§ 187, 188, 193 BGB mit den landesweiten Feiertagen aller 16 Bundesländer (Kürzel, Einstellung `feiertagsland` in zentrale.json, Standard BW), Rechnung als Text; die Antwort nennt Rechtsordnung und Regelwerk, eine unbekannte Rechtsordnung wird abgewiesen. Neue Rechtsordnungen nur als eigene Rechenfunktion mit eigenen Grenzfällen im Funktionstest und Prüfvermerk in Rechtsinhalte.md |
 | `bestand.py` | Prüfsummen, Verschiebungen erkennen, Bestand prüfen |
 | `texterkennung.py` | Texterkennung (OCR, Stufe 13) über das freiwillige Zusatzprogramm `tesseract` (PDF-Seiten vorher mit `pdftoppm` gerastert, HEIC unter macOS mit `sips`); ohne Programm klare Meldung mit Installationsweg. Das Werkzeug `texterkennung` legt das Ergebnis als eigene Textdatei unter `07 Recherche/Texterkennung/D…_Texterkennung_JJJJ-MM-TT.txt` an (Kopf mit Quelle, Prüfsumme, Programm, Sprache, Datum, Warnhinweis; eigene D-Kennung mit Verweis auf das Original; überschreibt nie), setzt beim Original den Textstand „OCR-erkannt“ nur, wenn keiner steht; `dokument_text` zeigt den erkannten Text mit Textquelle `ocr`, die Suche findet Original und Ableitung. Keine Erkennung beim bloßen Lesen |
 | `pflege.py` | Pflege der Rechtsinhalte (Stufe 12): meldet nur lesend und ohne Netz, was wieder am Volltext zu prüfen ist; Merkblätter zwölf Monate nach der Kopfzeile „Letzte vollständige Prüfung: TT.MM.JJJJ“, Feiertagstabelle ab 1. Dezember (`fristen.FEIERTAGE_GEPRUEFT`), Quellenkatalog sechs Monate nach `catalog_checked`; „bald fällig“ 30 Tage vorher; Werkzeug `rechtsinhalte_pruefen`, Meldung im Sitzungsstart (seit 17.09.2026) |
@@ -192,8 +192,9 @@ GET  /api/bestand                     Prüfsummen aller Fälle prüfen
 POST /api/sicherung                   geprüfte ZIP erstellen
 POST /api/sicherung/probe             Wiederherstellungsprobe der letzten (oder genannten) Sicherung
 GET  /api/werkzeuge                   Werkzeugkatalog (für Oberfläche und KI)
-GET  /api/einstellungen               Sicherungsziele, Bundesland für Feiertage, Absender, Länderliste
-POST /api/einstellungen               Sicherungsziele, Bundesland und Absender ändern (nur Text, bleibt lokal)
+GET  /api/einstellungen               Sicherungsziele, Bundesland für Feiertage, Absender, Länderliste, Sprache und vorhandene Sprachen
+POST /api/einstellungen               Sicherungsziele, Bundesland, Sprache und Absender ändern (nur Text, bleibt lokal)
+GET  /sprachen/aktuell.json           Texte der eingestellten Sprache (Kopfzeile X-AKA-Sprache); ebenso anleitung.aktuell.html und <kürzel>.json
 ```
 
 ## Aktenmappe für jede KI (Stufe 7)
@@ -280,6 +281,23 @@ Seitenleiste links, Inhalt rechts, jeder Bereich scrollt für sich. Nach jeder
 Dienst setzt `style-src 'self'`; die Oberfläche erzeugt deshalb keine
 Inline-Stile, Abstände und Farben liegen als Hilfsklassen `u-…` in style.css
 (seit 17.09.2026, F37). Beschriftungen nennen den Dateimanager des Systems (Finder, Explorer, sonst „Dateimanager“), erkannt am Browser, der auf demselben Rechner läuft (seit 17.09.2026).
+
+Sprache der Oberfläche (Stufe 11, seit 17.09.2026): Alle Beschriftungen
+stehen in `oberflaeche/sprachen/<kürzel>.json` (eine Kennung je Text,
+Platzhalter `{name}`), die Anleitung als HTML-Fragment in
+`sprachen/anleitung.<kürzel>.html` (`{dm}` wird zum Dateimanager). `app.js`
+holt jeden Text über `t('kennung', {…})`; feste Werte aus akte.json (Stand,
+Art, Status, Bereich, Rolle, Zeitpunkt) bleiben in der Akte deutsch und werden
+nur über `wert()` mit Kennungen `wert.<Wert>` übersetzt angezeigt. Der Dienst
+liefert `/sprachen/aktuell.json` und `/sprachen/anleitung.aktuell.html` für
+die eingestellte Sprache (`einstellungen.sprache`, Standard `de`, Auswahl auf
+der Einstellungen-Seite; vorhanden ist, was als Datei im Ordner liegt) und
+sonst nur Dateien aus diesem Ordner mit festem Namensmuster; fehlt eine Datei
+für die eingestellte Sprache, gilt Deutsch, und fehlende Kennungen fallen in
+der Oberfläche auf die deutschen Texte zurück. Der Funktionstest gleicht jede
+in `app.js` und `index.html` benutzte Kennung mit `de.json` ab und umgekehrt.
+Nicht übersetzt sind die Meldungen des Dienstes, der Werkzeugkatalog, Skills,
+Vorlagen, Merkblätter und das README (eigene Schritte, wenn Türkisch kommt).
 
 Bereiche der Zentrale: Übersicht, Alle Fälle, Posteingang, Fristen aller
 Fälle, Rechtsquellen, Bestand und Sicherung, Einstellungen, Anleitung.

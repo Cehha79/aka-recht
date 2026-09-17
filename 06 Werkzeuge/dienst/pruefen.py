@@ -24,6 +24,7 @@ def vorbereiten(base):
     (root / '06 Werkzeuge').mkdir()
     shutil.copy2(QUELLE / '06 Werkzeuge/akte_schema.py', root / '06 Werkzeuge/akte_schema.py')
     shutil.copytree(QUELLE / '06 Werkzeuge/dienst', root / '06 Werkzeuge/dienst', ignore=shutil.ignore_patterns('__pycache__', '.DS_Store'))
+    shutil.copytree(QUELLE / '06 Werkzeuge/oberflaeche', root / '06 Werkzeuge/oberflaeche', ignore=shutil.ignore_patterns('.DS_Store'))   # mit Sprachdateien (Stufe 11)
     (base / 'iCloud').mkdir()
     z = {'schema': 1, 'app': 'AKA Recht', 'faelle': [],
          'sicherung': {'ziel': str(base / 'Sicherungen'), 'zweites_ziel': str(base / 'iCloud' / 'AKA Recht Sicherungen'), 'letzte': None},
@@ -78,14 +79,15 @@ def run():
             if server.poll() is not None: raise RuntimeError((base / 'server.log').read_text('utf-8'))
             time.sleep(.1)
         d = json.loads(laufzeit.read_text('utf-8')); url = f'http://127.0.0.1:{d["port"]}'; cookie = f'aka_{instanz}={d["key"]}'; csrf = d['csrf']
-        def anfrage(pfad, daten=None, erwartet=200, kopf=None, roh=False):
+        def anfrage(pfad, daten=None, erwartet=200, kopf=None, roh=False, mit_kopf=False):
             k = {'Cookie': cookie, **(kopf or {})}
             if daten is not None: k = {'Content-Type': 'application/json', 'X-AKA-CSRF': csrf, 'Origin': url, **k}
             r = urllib.request.Request(url + pfad, data=json.dumps(daten).encode() if daten is not None else None, headers=k, method='POST' if daten is not None else 'GET')
             try:
-                with urllib.request.urlopen(r, timeout=60) as a: code, body = a.status, a.read()
-            except urllib.error.HTTPError as e: code, body = e.code, e.read()
+                with urllib.request.urlopen(r, timeout=60) as a: code, body, kopfzeilen = a.status, a.read(), dict(a.headers)
+            except urllib.error.HTTPError as e: code, body, kopfzeilen = e.code, e.read(), dict(e.headers)
             assert code == erwartet, f'{pfad}: HTTP {code} statt {erwartet}: {body[:300]!r}'
+            if mit_kopf: return code, kopfzeilen, body   # (Status, Kopfzeilen, Rohinhalt), etwa für X-AKA-Sprache
             if roh: return body
             try: return json.loads(body)
             except json.JSONDecodeError: return body.decode('utf-8', 'replace')
@@ -99,8 +101,8 @@ def run():
         ok('Schreibanfrage von fremdem Ursprung abgewiesen')
         z = anfrage('/api/zentrale'); assert z['faelle'] == [] and z['csrf'] == csrf and z['app'] == 'AKA Recht'
         ok('Zentrale mit leerer Fallliste und Sitzungsdaten')
-        html = anfrage('/', roh=True).decode(); assert 'Stufe 4' in html
-        ok('Startseite liefert Platzhalter, solange die Oberfläche fehlt')
+        html = anfrage('/', roh=True).decode(); assert '<html lang="de">' in html and 'app.js?v=' in html and 'data-t=' in html   # Oberfläche liegt in der Testkopie (seit Stufe 11), vorher der Platzhalter
+        ok('Startseite liefert die Oberfläche (index.html mit Sprachkennung und data-t-Beschriftungen)')
         kat = anfrage('/api/werkzeuge'); assert len(kat) >= 18 and not any(w['name'] in ('loeschen', 'versenden') for w in kat)
         ok(f'Werkzeugkatalog mit {len(kat)} Werkzeugen, ohne Löschen und Versand')
 
@@ -327,6 +329,39 @@ def run():
         fr = anfrage('/api/fristen/berechnen', {'start': '2026-10-30', 'menge': 2, 'einheit': 'tage'}); assert fr['ende'] == '2026-11-02' and fr['feiertagsland'] == 'NW'
         anfrage('/api/fristen/berechnen', {'start': '2026-06-03', 'menge': 1, 'einheit': 'tage', 'land': 'XX'}, erwartet=400)
         ok('Feiertage je Bundesland (Fronleichnam BW, nicht BE), Einstellung Bundesland, unbekanntes Land abgewiesen')
+        # Stufe 11: Weiche je Rechtsordnung. Heute nur DE; unbekannte Kennung wird abgewiesen, die Antwort nennt Rechtsordnung und Regelwerk.
+        # (eigene Variablennamen: `fr` wird weiter unten für die Testfrist F02 gebraucht und muss das Ergebnis vom 30.10.2026 behalten)
+        w1 = anfrage('/api/fristen/berechnen', {'start': '2026-08-21', 'menge': 3, 'einheit': 'wochen'}); assert w1['rechtsordnung'] == 'DE' and w1['rechtsordnung_name'] == 'Deutschland' and '§§ 187, 188, 193 BGB' in w1['regelwerk'], w1
+        w2 = anfrage('/api/fristen/berechnen', {'start': '2026-08-21', 'menge': 3, 'einheit': 'wochen', 'rechtsordnung': 'de'}); assert w2['ende'] == w1['ende'] == '2026-09-11' and w2['rechtsordnung'] == 'DE'
+        f = anfrage('/api/fristen/berechnen', {'start': '2026-08-21', 'menge': 3, 'einheit': 'wochen', 'rechtsordnung': 'AT'}, erwartet=400); assert 'Unbekannte Rechtsordnung: AT' in f['fehler'] and 'DE (Deutschland)' in f['fehler'], f
+        assert fristen.berechne('2026-01-31', 1, 'monate', ereignisfrist=False, werktagsregel=False, rechtsordnung='DE')['ende'] == '2026-02-28'
+        fb = next(w for w in anfrage('/api/werkzeuge') if w['name'] == 'frist_berechnen')
+        assert fb['parameter']['properties']['rechtsordnung']['enum'] == ['DE'], fb['parameter']['properties'].get('rechtsordnung')
+        ok('Fristenrechner mit Weiche je Rechtsordnung: DE als Standard und Kleinschreibung, Antwort nennt Rechtsordnung und Regelwerk, unbekannte Rechtsordnung 400 mit Liste, Parameter im Katalog')
+        # Stufe 11: Sprache der Oberfläche. Sprachdateien nur aus dem Ordner sprachen/, eingestellte Sprache unter „aktuell“, Deutsch als Rückfall,
+        # unbekannte Sprache abgewiesen; jede Kennung, die app.js oder index.html benutzt, steht in de.json und umgekehrt.
+        sp = anfrage('/sprachen/aktuell.json', mit_kopf=True); assert sp[0] == 200 and sp[1].get('X-AKA-Sprache') == 'de' and json.loads(sp[2])['app.titel'] == 'AKA Recht', sp[:2]
+        an = anfrage('/sprachen/anleitung.aktuell.html', mit_kopf=True); assert an[0] == 200 and b'<h2>' in an[2] and b'${' not in an[2] and b'<script' not in an[2].lower(), an[:2]
+        anfrage('/sprachen/xx.json', erwartet=404); anfrage('/sprachen/de.txt', erwartet=404); anfrage('/sprachen/../06%20Werkzeuge/dienst/store.py', erwartet=404)
+        anfrage('/api/einstellungen', {'einstellungen': {'sprache': 'xx'}}, erwartet=400)
+        e = anfrage('/api/einstellungen'); assert e['sprache'] == 'de' and e['sprachen'] == ['de'] and e['einstellungen']['sprache'] == 'de', e
+        (root / '06 Werkzeuge/oberflaeche/sprachen/zz.json').write_text(json.dumps({'app.titel': 'Probe'}), encoding='utf-8')   # Probesprache ohne Anleitung
+        anfrage('/api/einstellungen', {'einstellungen': {'sprache': 'ZZ'}}); e = anfrage('/api/einstellungen'); assert e['sprache'] == 'zz' and e['sprachen'] == ['de', 'zz'], e
+        sp = anfrage('/sprachen/aktuell.json', mit_kopf=True); assert sp[1].get('X-AKA-Sprache') == 'zz' and json.loads(sp[2]) == {'app.titel': 'Probe'}, sp[:2]
+        an = anfrage('/sprachen/anleitung.aktuell.html', mit_kopf=True); assert an[0] == 200 and an[1].get('X-AKA-Sprache') == 'de', an[:2]   # Rückfall auf Deutsch
+        anfrage('/api/einstellungen', {'einstellungen': {'sprache': 'de'}}); assert anfrage('/api/einstellungen')['sprache'] == 'de'
+        texte = json.loads((QUELLE / '06 Werkzeuge/oberflaeche/sprachen/de.json').read_text(encoding='utf-8')); texte.pop('_hinweis', None)
+        js = (QUELLE / '06 Werkzeuge/oberflaeche/app.js').read_text(encoding='utf-8') + (QUELLE / '06 Werkzeuge/oberflaeche/index.html').read_text(encoding='utf-8')
+        benutzt = set(re.findall(r"""['"]([a-z_0-9]+(?:\.[a-z_0-9]+)+)['"]""", js)) | set(re.findall(r'data-t="([a-z_.0-9]+)"', js))
+        benutzt = {k for k in benutzt if not k.endswith('_')}   # 'vorschau.tab_' und 'vorschau.f_' sind Vorsilben, die Kennung entsteht erst zur Laufzeit
+        fehlt = sorted(k for k in benutzt if k not in texte and re.fullmatch(r'(app|allg|nav|karte|home|faelle|eingang|fristen|quellen|bestand|einst|sprache|fall|dok|bet|verf|chron|fristen_fall|aufg|entw|anl|journal|vorschau|dialog|personen|form|ordnen|vorlage|einsortieren|neuerfall|fallbearb|journal_dialog|rechner|zuordnen|upload|meld|anleitung)\..+', k))
+        assert not fehlt, 'Kennungen ohne Text in de.json: ' + ', '.join(fehlt)
+        dynamisch = re.compile(r'^(nav\.|wert\.|sprache\.|vorschau\.tab_|vorschau\.f_|rechner\.(tage|wochen|monate|jahre)$)')
+        unbenutzt = sorted(k for k in texte if k not in benutzt and not dynamisch.match(k))
+        assert not unbenutzt, 'Kennungen in de.json ohne Verwendung: ' + ', '.join(unbenutzt)
+        assert all(isinstance(v, str) and v.strip() and not re.search(r'\{[^}]*[^\w}][^}]*\}', v) for v in texte.values()), 'Sprachdatei: leerer Text oder Platzhalter, der nicht {wort} ist'
+        assert 'DATEIMANAGER' not in js and "t('" in js, 'app.js muss die Texte über t() holen'
+        ok(f'Sprache der Oberfläche: aktuell.json und Anleitung mit Kennung der Sprache, nur Dateien aus sprachen/, unbekannte Sprache 400, Probesprache zz mit Rückfall der Anleitung auf Deutsch, {len(texte)} Kennungen in de.json vollständig und ohne Reste')
         r = anfrage('/api/werkzeug', {'name': 'beispiel_laden', 'parameter': {}, 'bestaetigt': True}); beispiel = r['id']
         b = anfrage('/api/fall/' + beispiel); assert b['akte']['fall']['id'] == beispiel and b['akte']['fall']['bereich'] == 'Arbeit'
         assert set(b['akte']['dokumente']) == {d['id'] for d in b['dokumente']}
@@ -485,7 +520,7 @@ def run():
             a = rpc({'jsonrpc': '2.0', 'id': 4, 'method': 'tools/call', 'params': {'name': 'faelle_auflisten', 'arguments': {}}})
             assert not a['result']['isError'] and [f['id'] for f in a['result']['structuredContent']['ergebnis']][:2] == ['R-0001', 'R-0002'] and 'R-0001' in a['result']['content'][0]['text']
             a = rpc({'jsonrpc': '2.0', 'id': 5, 'method': 'tools/call', 'params': {'name': 'fall_uebersicht', 'arguments': {'fall': 'R-0001'}}})
-            assert a['result']['structuredContent']['fristen'][0]['id'] == 'F01' and a['result']['structuredContent']['dokumente']
+            assert a['result']['structuredContent']['fristen'][0]['id'] == 'F01' and a['result']['structuredContent']['dokumente'], [(f['id'], f['datum'], f['pruefstatus']) for f in a['result']['structuredContent']['fristen']]
             ok('MCP: lesende Aufrufe liefern Text und strukturiertes Ergebnis')
             a = rpc({'jsonrpc': '2.0', 'id': 6, 'method': 'tools/call', 'params': {'name': 'notiz_anlegen', 'arguments': {'fall': 'R-0001', 'titel': 'MCP-Probe', 'text': 'ohne Bestätigung'}}})
             assert a['result']['structuredContent'].get('bestaetigung_noetig') and 'Rückfrage' in a['result']['content'][0]['text']

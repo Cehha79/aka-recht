@@ -16,7 +16,7 @@ Kandidat, bis jemand ihn erneut am amtlichen Volltext liest.
 | Inhalt | Ort | Was es ist | Wer es nutzt |
 |---|---|---|---|
 | Feiertagstabelle | `06 Werkzeuge/dienst/fristen.py`, Funktion `feiertage()` | landesweite gesetzliche Feiertage aller 16 Länder, regionale nur als Hinweis, einmalige Feiertage gesondert | Fristenrechner (`frist_berechnen`, `land=`), Oberfläche, Skills |
-| Fristenregeln | `fristen.py`, Funktion `berechne()` | §§ 187, 188, 193 BGB als Rechenregeln, mit Text der Rechnung | Fristenrechner |
+| Fristenregeln | `fristen.py`, Weiche `REGELWERKE` und Funktion `berechne(…, rechtsordnung=)` | je Rechtsordnung ein Regelwerk; heute nur `DE`: §§ 187, 188, 193 BGB als Rechenregeln, mit Text der Rechnung. Ein neues Land kommt erst nach Recherche am Originalvolltext als eigene Rechenfunktion mit Prüfvermerk hier dazu (Stufe 11) | Fristenrechner (`frist_berechnen`, `rechtsordnung=`) |
 | Merkblätter je Verfahrensart | `04 Rechtsquellen/Verfahren/*.md` | Rechtsbehelf, Frist mit Norm, Form, Pflichtinhalt, Adressat, Wirkung, Quellen mit Prüfdatum | `/fallaufnahme` (Rechtsbehelf nennen), `/entwurf` (Pflichtinhalt prüfen), Nutzer |
 | Schreibvorlagen | `05 Vorlagen/Schreiben/*.md` | Textbausteine mit Platzhaltern und internen Hinweisen; Normen darin sind Beispiele | `/entwurf`, Nutzer |
 | Zugangskatalog | `04 Rechtsquellen/Quellen.md` | Adressen amtlicher Angebote (Gesetze, Rechtsprechung, Landesportale), keine Gesetzestexte | Oberfläche (Seite Rechtsquellen), `/recherche-de` |

@@ -78,7 +78,16 @@ class Handler(BaseHTTPRequestHandler):
             if pfad == '/api/werkzeuge': self.antwort(200, werkzeuge.beschreibung()); return
             if pfad == '/api/quellen': self.antwort(200, werkzeuge.quellen_katalog()); return
             if pfad == '/api/einstellungen':
-                z = store.lade_zentrale(); self.antwort(200, {'sicherung': {k: v for k, v in z['sicherung'].items() if k != 'letzte'}, 'einstellungen': z['einstellungen'], 'laender': fristen.LAENDER}); return
+                z = store.lade_zentrale(); self.antwort(200, {'sicherung': {k: v for k, v in z['sicherung'].items() if k != 'letzte'}, 'einstellungen': z['einstellungen'], 'laender': fristen.LAENDER, 'sprachen': store.sprachen(), 'sprache': store.sprache()}); return
+            # Sprachdateien der Oberfläche (Stufe 11): nur Dateien aus dem Ordner sprachen/, Namen fest gemustert; „aktuell“ ist die eingestellte Sprache
+            m = re.fullmatch(r'/sprachen/(aktuell|[a-z]{2})\.json', pfad) or re.fullmatch(r'/sprachen/anleitung\.(aktuell|[a-z]{2})\.html', pfad)
+            if m:
+                kuerzel = store.sprache() if m[1] == 'aktuell' else m[1]
+                datei = lambda k: store.SPRACHEN_ORDNER / (f'{k}.json' if pfad.endswith('.json') else f'anleitung.{k}.html')
+                p = datei(kuerzel)
+                if not p.is_file() and m[1] == 'aktuell': kuerzel, p = 'de', datei('de')   # eingestellte Sprache ohne diese Datei: Deutsch als Rückfall
+                if not p.is_file(): self.antwort(404, {'fehler': 'Sprachdatei fehlt: ' + p.name}); return
+                self.antwort(200, p.read_bytes(), ('application/json' if p.suffix == '.json' else 'text/html') + '; charset=utf-8', kopf={'X-AKA-Sprache': kuerzel}); return
             if pfad == '/api/sicherung/status': self.antwort(200, sicherung.status()); return
             if pfad == '/api/bestand':
                 self.antwort(200, {'faelle': [werkzeuge.bestand_pruefen(f['id']) for f in store.faelle()]}); return
@@ -148,6 +157,10 @@ class Handler(BaseHTTPRequestHandler):
                 if land:
                     if land not in fristen.LAENDER: self.antwort(400, {'fehler': 'Unbekanntes Bundesland.'}); return
                     z['einstellungen']['feiertagsland'] = land
+                sprache = str(daten.get('einstellungen', {}).get('sprache', '') or '').lower()
+                if sprache:
+                    if sprache not in store.sprachen(): self.antwort(400, {'fehler': 'Unbekannte Sprache: ' + sprache + '. Vorhanden: ' + ', '.join(store.sprachen())}); return
+                    z['einstellungen']['sprache'] = sprache
                 ab = daten.get('einstellungen', {}).get('absender')
                 if isinstance(ab, dict):   # Absender: nur Text je Feld, einzeilig, bleibt in zentrale.json auf diesem Rechner
                     for k in store.ABSENDER_FELDER:

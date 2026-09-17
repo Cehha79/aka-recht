@@ -422,7 +422,7 @@ change to `akte.json` is validated against the data model and saved with a revis
 | `fall_uebersicht` | reads | Compact overview of one case: parties, proceedings, open deadlines and tasks, events, document list, unregistered files |
 | `dokument_text` | reads | Text of one document (Word, e-mail, PDF, text, HTML) with its source: read directly, from the PDF text layer or not at all (scan, photo); the extract is derived, check figures and deadlines against the original |
 | `dokumente_suchen` | reads | Full-text search in titles, metadata and document contents of a case |
-| `frist_berechnen` | reads | Deadline end under §§ 187, 188, 193 BGB with the public holidays of a federal state; shows the calculation, does not decide which deadline applies |
+| `frist_berechnen` | reads | Deadline end under the rules of a jurisdiction, today only DE (§§ 187, 188, 193 BGB with the public holidays of a federal state); shows the calculation and names jurisdiction and rule set, does not decide which deadline applies |
 | `beispiel_laden` | writes | Create the bundled sample case (fictional) as a new case |
 | `bestand_pruefen` | reads | Compare checksums of all registered files of a case with their first state; also reports unregistered and moved files; writes nothing |
 | `journal_lesen` | reads | Read the case journal, newest entries last |

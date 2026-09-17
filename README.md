@@ -434,7 +434,7 @@ und mit Revision gespeichert.
 | `fall_uebersicht` | lesend | Kompakte Übersicht eines Falls: Fall, Beteiligte, Verfahren, offene Fristen und Aufgaben, Ereignisse, Dokumentliste mit Kennung, Titel, Datum, Stand, dazu nicht erfasste Dateien. Dokumentinhalte über dokument_text. |
 | `dokument_text` | lesend | Textauszug eines Dokuments (Word, E-Mail, PDF, Text, HTML) mit Herkunft: textquelle sagt, ob der Text direkt, aus der PDF-Textschicht oder gar nicht gelesen wurde (Bildscan, Foto); textstand ist die in der Akte vermerkte Lesequalität. Der Auszug ist eine Ableitung, Zahlen und Fristen am Original prüfen. |
 | `dokumente_suchen` | lesend | Volltextsuche in Titeln, Ordnungsangaben und Dokumentinhalten eines Falls. |
-| `frist_berechnen` | lesend | Fristende nach §§ 187, 188, 193 BGB mit den landesweiten Feiertagen eines Bundeslands berechnen (Standard: Einstellung der Mappe). Liefert die Rechnung als Text. Entscheidet nicht, welche Frist gilt. |
+| `frist_berechnen` | lesend | Fristende nach den Regeln einer Rechtsordnung berechnen; heute nur DE (§§ 187, 188, 193 BGB mit den landesweiten Feiertagen eines Bundeslands, Standard: Einstellung der Mappe). Liefert die Rechnung als Text und nennt Rechtsordnung und Regelwerk. Entscheidet nicht, welche Frist gilt. |
 | `beispiel_laden` | schreibend | Die mitgelieferte Beispielakte (erfundener Fall) als neuen Fall anlegen, zum Ausprobieren. Der Fall bekommt die nächste freie Kennung. |
 | `bestand_pruefen` | lesend | Prüfsummen aller registrierten Dateien eines Falls mit dem ersten Stand vergleichen; meldet auch nicht erfasste und verschobene Dateien. Schreibt nichts. |
 | `journal_lesen` | lesend | Verlauf eines Falls aus JOURNAL.md, neueste Einträge zuletzt. |

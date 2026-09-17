@@ -204,6 +204,10 @@ Zugangskatalog bleibt in `04 Rechtsquellen/Quellen.md`.
 dient nur Entwürfen aus Vorlagen (`vorlage_fuellen`) und verlässt den Rechner
 nicht (zentrale.json kommt nie ins Produkt). Hat ein Fall einen Beteiligten mit
 Rolle „Ich“ und Anschrift, gewinnt dieser gegenüber dem Standard.
+Seit 17.09.2026 (Stufe 11) dazu `einstellungen.sprache` (Kürzel wie `de`,
+Standard `de`; nur Kürzel, für die eine Datei `oberflaeche/sprachen/<kürzel>.json`
+vorliegt). Die Sprache betrifft nur die Oberfläche; alle Werte in akte.json
+(Stand, Art, Status, Bereich, Rolle, Zeitpunkt) bleiben deutsch.
 
 ## bestand.json
 

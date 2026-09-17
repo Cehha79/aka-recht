@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
-"""Fristenrechner nach §§ 187, 188, 193 BGB mit Feiertagen Baden-Württemberg.
+"""Fristenrechner mit Weiche je Rechtsordnung (Stufe 11, 17.09.2026).
+
+`berechne()` wählt über `REGELWERKE` die Rechenregeln der Rechtsordnung.
+Heute gibt es nur „DE“: §§ 187, 188, 193 BGB mit den landesweiten Feiertagen
+des gewählten Bundeslands. Weitere Rechtsordnungen (AT, CH, TR …) kommen als
+eigene Rechenfunktion mit eigenem Prüfvermerk dazu; jede erst nach Recherche
+am Originalvolltext, kein Land „ungefähr“.
 
 Der Rechner liefert immer die Rechnung als Text mit. Er entscheidet nicht,
-welche Frist gilt und ob § 193 BGB (Verschiebung auf den nächsten Werktag)
-auf die konkrete Frist anwendbar ist. Das bleibt fachliche Prüfung.
+welche Frist gilt und ob die Werktagsregel (in DE § 193 BGB) auf die konkrete
+Frist anwendbar ist. Das bleibt fachliche Prüfung.
 Nur Standardbibliothek.
 """
 import sys
@@ -102,8 +108,8 @@ def _datum(wert):
 
 def fmt(d): return f'{WOCHENTAGE[d.weekday()]}, {d.day:02d}.{d.month:02d}.{d.year}'
 
-def berechne(start, menge, einheit, ereignisfrist=True, werktagsregel=True, land='BW'):
-    """Fristende berechnen.
+def _berechne_de(start, menge, einheit, ereignisfrist=True, werktagsregel=True, land='BW'):
+    """Deutschland: §§ 187, 188, 193 BGB (Regelwerk „DE“, siehe REGELWERKE).
 
     start:          Tag des Ereignisses (Zugang) oder Fristbeginn, Datum oder Text
     menge, einheit: 3 'wochen', 14 'tage', 2 'monate'
@@ -111,6 +117,7 @@ def berechne(start, menge, einheit, ereignisfrist=True, werktagsregel=True, land
                     False = Beginn des Tages maßgebend, Tag zählt mit (§ 187 Abs. 2 BGB)
     werktagsregel:  True = fällt das Ende auf Samstag, Sonntag oder Feiertag, gilt der
                     nächste Werktag (§ 193 BGB). Anwendbarkeit auf die konkrete Frist prüfen.
+    land:           Bundesland des Leistungsorts für die Feiertage (Kürzel wie BW)
     Rückgabe: dict mit ende, ende_text, rechnung (Liste Sätze), verschoben, grundlagen.
     """
     d0 = _datum(start); menge = int(menge); e = str(einheit).lower().strip()
@@ -175,9 +182,32 @@ def berechne(start, menge, einheit, ereignisfrist=True, werktagsregel=True, land
             'regional': REGIONAL.get((land or 'BW').upper(), ''),
             'hinweis': 'Rechnung ohne Gewähr für die Wahl der richtigen Frist. Auslöser, Zugang und Rechtsgrundlage sind gesondert zu belegen.'}
 
+# Weiche je Rechtsordnung (Stufe 11): Kürzel -> (Name, Regelwerk in einem Satz, Rechenfunktion).
+# Neue Rechtsordnungen nur mit eigener Funktion, eigenen Grenzfällen in pruefen.py und Prüfvermerk in Rechtsinhalte.md.
+REGELWERKE = {
+    'DE': ('Deutschland', '§§ 187, 188, 193 BGB; Feiertage je Bundesland', _berechne_de),
+}
+
+def berechne(start, menge, einheit, ereignisfrist=True, werktagsregel=True, land='BW', rechtsordnung='DE'):
+    """Fristende nach den Regeln der Rechtsordnung berechnen (Standard DE).
+
+    Parameter wie bei der Rechenfunktion der Rechtsordnung (siehe _berechne_de);
+    `land` ist das Bundesland für die Feiertage und gilt nur für DE.
+    Unbekannte Rechtsordnung: ValueError mit der Liste der bekannten.
+    Die Antwort nennt `rechtsordnung` und `regelwerk`.
+    """
+    kennung = str(rechtsordnung or 'DE').strip().upper()
+    if kennung not in REGELWERKE:
+        raise ValueError('Unbekannte Rechtsordnung: ' + kennung + '. Bekannt: ' + ', '.join(f'{k} ({v[0]})' for k, v in REGELWERKE.items()))
+    name, regelwerk, funktion = REGELWERKE[kennung]
+    ergebnis = funktion(start, menge, einheit, ereignisfrist=ereignisfrist, werktagsregel=werktagsregel, land=land)
+    ergebnis.update({'rechtsordnung': kennung, 'rechtsordnung_name': name, 'regelwerk': regelwerk})
+    return ergebnis
+
 if __name__ == '__main__':
     import json, sys
-    if len(sys.argv) < 4: sys.exit('Aufruf: fristen.py <Start> <Menge> <Einheit> [ereignis|beginn] [werktag|ohne]')
+    if len(sys.argv) < 4: sys.exit('Aufruf: fristen.py <Start> <Menge> <Einheit> [ereignis|beginn] [werktag|ohne] [Bundesland] [Rechtsordnung]')
     r = berechne(sys.argv[1], sys.argv[2], sys.argv[3], ereignisfrist=(sys.argv[4] if len(sys.argv) > 4 else 'ereignis') == 'ereignis',
-                 werktagsregel=(sys.argv[5] if len(sys.argv) > 5 else 'werktag') == 'werktag')
+                 werktagsregel=(sys.argv[5] if len(sys.argv) > 5 else 'werktag') == 'werktag',
+                 land=sys.argv[6] if len(sys.argv) > 6 else 'BW', rechtsordnung=sys.argv[7] if len(sys.argv) > 7 else 'DE')
     print(json.dumps(r, ensure_ascii=False, indent=2))

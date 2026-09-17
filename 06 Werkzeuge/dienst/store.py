@@ -70,8 +70,23 @@ def zentrale_standard():
             'sicherung': {'ziel': str(Path.home() / 'Desktop/AKA Recht Sicherungen'),
                           'zweites_ziel': str(Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs/AKA Recht Sicherungen') if (Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs').is_dir() else '',   # iCloud Drive nur, wo es eines gibt
                           'letzte': None},
-            'einstellungen': {'feiertagsland': 'BW', 'absender': dict.fromkeys(ABSENDER_FELDER, '')},
+            'einstellungen': {'feiertagsland': 'BW', 'sprache': 'de', 'absender': dict.fromkeys(ABSENDER_FELDER, '')},
             'verbindungen': {}}
+
+# Sprache der Oberfläche (Stufe 11): je Sprache eine Datei `oberflaeche/sprachen/<kürzel>.json` mit den Texten
+# und `anleitung.<kürzel>.html` mit der Anleitung. Vorhanden ist, was als Datei da liegt; Standard und Rückfall ist Deutsch.
+SPRACHEN_ORDNER = Path(__file__).resolve().parent.parent / 'oberflaeche' / 'sprachen'
+SPRACHE_MUSTER = re.compile(r'^[a-z]{2}$')
+
+def sprachen():
+    """Kürzel aller Sprachen, für die eine Textdatei vorliegt, alphabetisch; Deutsch immer zuerst."""
+    vorhanden = sorted(p.stem for p in SPRACHEN_ORDNER.glob('*.json') if SPRACHE_MUSTER.match(p.stem)) if SPRACHEN_ORDNER.is_dir() else []
+    return ['de'] + [s for s in vorhanden if s != 'de'] if 'de' in vorhanden or not vorhanden else vorhanden
+
+def sprache():
+    """Eingestellte Sprache; fehlt ihre Datei, Deutsch."""
+    s = str(lade_zentrale()['einstellungen'].get('sprache') or 'de').lower()
+    return s if s in sprachen() else 'de'
 
 def zentrale_pfad(): return ROOT / 'zentrale.json'
 
@@ -89,6 +104,7 @@ def lade_zentrale():
     p = zentrale_pfad()
     z = json.loads(p.read_text('utf-8')) if p.exists() else zentrale_standard()
     z.setdefault('einstellungen', {}).setdefault('feiertagsland', 'BW')   # ältere zentrale.json
+    z['einstellungen'].setdefault('sprache', 'de')
     a = z['einstellungen'].setdefault('absender', {})
     for k in ABSENDER_FELDER: a.setdefault(k, '')
     return z
