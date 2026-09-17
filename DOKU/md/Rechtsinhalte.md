@@ -144,14 +144,39 @@ Magistrats in Bremerhaven, §§ 126, 128, 141 BremPolG). Die Verordnung war am 1
 gefunden worden. (2) In Schleswig-Holstein war der Eintrag zu weit: Nach dem Zuständigkeitsverzeichnis
 (Gliederungsnummer 2.1.20.1) liegen §§ 24, 24a, 24c StVG bei den Kreisen und kreisfreien Städten;
 Gemeinden über 80 000 Einwohner haben nur Lärmschutz und Lichtzeichen (2.7.2.1), Gemeinden über
-20 000 und weitere benannte Gemeinden nur Halten und Parken (2.8.1.1, 2.9.1.1). Für Hessen bleibt es
-dabei, dass die Verordnung vom 12.11.2007 Ordnungswidrigkeiten nur im Gefahrgutrecht regelt und am
-Landesportal keine Norm zur Verkehrs-Bußgeldzuständigkeit zu finden war; nach der Entscheidung
-Hasans vom 18.09.2026 zählt ein Runderlass als Beleg, wenn ein Land keine Rechtsverordnung hat —
-die dahinterstehende Norm bleibt dann als `[QUELLE]` offen (so bei Nordrhein-Westfalen).
-Die übrigen Landesthemen (Verwaltungsverfahrens-, Zustellungs-, Informationsfreiheits-,
-Petitions- und Gemeindegesetze, Schiedsstellen) bleiben außerhalb
-Baden-Württembergs offen.
+20 000 und weitere benannte Gemeinden nur Halten und Parken (2.8.1.1, 2.9.1.1). (3) Auch für Hessen war der Befund vom 17.09.2026 falsch: § 3 der Verordnung zur Bestimmung
+verkehrsrechtlicher Zuständigkeiten vom 12.11.2007 (§ 3 gültig ab 16.12.2022) weist §§ 24, 24a,
+24c StVG dem Regierungspräsidium Kassel als Bezirksordnungsbehörde zu, in Frankfurt am Main der
+Oberbürgermeisterin oder dem Oberbürgermeister; daneben verfolgen die übrigen örtlichen
+Ordnungsbehörden. Am 17.09.2026 waren nur das Inhaltsverzeichnis, §§ 1, 2, 10 bis 12 und der
+Gefahrgut-Teil gelesen worden, § 3 wurde übersehen. Gefunden über den Erlass „Verfolgung von
+Ordnungswidrigkeiten durch die Polizeibehörden“ (StAnz. 2026, S. 306), dessen Nr. 3 die Norm nennt.
+Damit hat nur noch Nordrhein-Westfalen keine Rechtsverordnung zur Bußgeldzuständigkeit. Nach der
+Entscheidung Hasans vom 18.09.2026 zählt dort ein Runderlass als Beleg — die dahinterstehende Norm
+bleibt als `[QUELLE]` offen.
+
+Am 18.09.2026 ebenfalls geklärt (Thema 1, Restfrage): § 1 Abs. 1 ThürVwZVG, § 1 Abs. 1 Vw ZG-LSA
+und § 1 Abs. 1 VwVfG LSA nennen die Gemeinden nicht, erfassen sie aber. Alle drei gelten für die
+Körperschaften des öffentlichen Rechts unter der Aufsicht des Landes; Gemeinden sind
+Gebietskörperschaften (§ 1 Abs. 2 ThürKO, § 2 Abs. 2 KVG LSA) und unterstehen der staatlichen
+Aufsicht (§ 117 ThürKO, § 143 KVG LSA). Die Marker im Merkblatt Widerspruch sind damit aufgelöst;
+Rechtsprechung zu dieser Frage wurde nicht gelesen.
+Am 18.09.2026 folgte das dritte Landesthema: **Akteneinsicht und Kosten im Vorverfahren nach dem
+Landes-VwVfG**, für alle 16 Länder am Volltext gelesen; die Übersicht steht im Merkblatt Widerspruch
+Verwaltungsakt, Abschnitt 4, ein Kurzabschnitt im Merkblatt Akteneinsicht. Elf Länder verweisen auf
+das Bundesgesetz, fünf haben eigene Vollgesetze (BY, HH, HE, MV, NW), Schleswig-Holstein das
+Landesverwaltungsgesetz. Drei Abweichungen mit praktischer Folge: Berlin gewährt die Akteneinsicht
+ohne das Erfordernis eines rechtlichen Interesses (§ 6 Abs. 1 VwVfG BE, ergänzend das IFG Berlin);
+Schleswig-Holstein kennt keinen allgemeinen Anspruch, sondern pflichtgemäßes Ermessen (§ 88 Abs. 1
+LVwG) und lässt in § 120 LVwG nur die Erstattung zugunsten des erfolgreichen Widerspruchsführers zu;
+Rheinland-Pfalz nimmt § 80 VwVfG in § 1 Abs. 1 LVwVfG ausdrücklich aus — woraus sich die Kostenfolge
+dort ergibt, ist als `[QUELLE]` offen. Kleinere Befunde: Brandenburg nimmt § 30 VwVfG aus, Hamburg
+und Nordrhein-Westfalen haben ihn aufgehoben; Bremen, Niedersachsen und Thüringen nennen die
+Gemeinden im Anwendungsbereich ausdrücklich; Hamburg, Hessen, Mecklenburg-Vorpommern und
+Nordrhein-Westfalen haben § 80 auf die Erstattung der Aufwendungen verkürzt.
+
+Die restlichen Landesthemen (Informationsfreiheits-, Petitions- und Gemeindegesetze, Schiedsstellen,
+Online-Wachen) bleiben außerhalb Baden-Württembergs offen.
 Fassungen seit 17.09.2026 nach dem Vollzitat des Portals (Abschnitt 4,
 Nr. 2).
 

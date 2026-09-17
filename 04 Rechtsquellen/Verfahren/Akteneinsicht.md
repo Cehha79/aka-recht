@@ -1,6 +1,6 @@
 # Merkblatt: Akteneinsicht und Auskunft
 
-*Rechtsordnung DE · alle Bereiche · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen, Bundesnormen daraus am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt*
+*Rechtsordnung DE · alle Bereiche · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen, Bundesnormen daraus am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, Landes-VwVfG aller 16 Länder am 18.09.2026 am Volltext gelesen*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -26,6 +26,7 @@ Verwendung: Fassung erneut prüfen und die passende Zeile der Tabelle wählen.
 | Wer führt die Akte, welche Rolle | Regel | Norm |
 |---|---|---|
 | Behörde, eigenes Verwaltungsverfahren (Bund) | „Die Behörde hat den Beteiligten Einsicht in die das Verfahren betreffenden Akten zu gestatten, soweit deren Kenntnis zur Geltendmachung oder Verteidigung ihrer rechtlichen Interessen erforderlich ist“; nicht für Entwürfe und Vorbereitungsarbeiten vor Abschluss; Grenzen bei Geheimhaltung und Interessen Dritter; Einsicht bei der aktenführenden Behörde | § 29 Abs. 1 bis 3 VwVfG; Landesbehörden: Landes-VwVfG; Baden-Württemberg: § 29 Abs. 1 bis 3 LVwVfG im Wortlaut gleich (im Browser gelesen) `[QUELLE: übrige Länder]` |
+| Behörde eines Landes oder einer Gemeinde | § 29 VwVfG gilt nur über das Landesrecht. In dreizehn Ländern entspricht die Regel dem Bund (Verweisung oder wortgleiches Landesgesetz). Zwei Länder weichen ab: **Berlin** gewährt die Einsicht ohne die Voraussetzung, dass die Kenntnis zur Rechtsverfolgung erforderlich ist (§ 6 Abs. 1 VwVfG BE; ergänzend gelten §§ 5 bis 12 IFG Berlin, für Nichtbeteiligte das IFG); **Schleswig-Holstein** kennt keinen allgemeinen Anspruch: „Die Beteiligten haben einen Anspruch auf Akteneinsicht, soweit Rechtsvorschriften ihn zuerkennen“, im Übrigen entscheidet die Behörde nach pflichtgemäßem Ermessen (§ 88 Abs. 1 LVwG). In **Brandenburg**, **Hamburg** und **Nordrhein-Westfalen** ist § 30 VwVfG (Geheimhaltung) nicht anwendbar oder aufgehoben. Die Übersicht aller 16 Länder steht im Merkblatt Widerspruch Verwaltungsakt, Abschnitt 4 | § 6 VwVfG BE; § 88 LVwG SH; § 1 der Landes-VwVfG der übrigen Länder |
 | Sozialbehörde (Jobcenter, Rentenversicherung, Krankenkasse, Versorgungsamt) | Abs. 1 wortgleich mit § 29 Abs. 1 Satz 1 und 2 VwVfG; die Grenze ist enger gefasst (nur Geheimhaltung „wegen der berechtigten Interessen der Beteiligten oder dritter Personen“); bei Gesundheitsdaten kann die Behörde den Inhalt „durch einen Arzt vermitteln lassen“, das Recht selbst wird dadurch nicht beschränkt; Einsicht bei der aktenführenden Behörde. Die Beteiligten „können … Auszüge oder Abschriften selbst fertigen oder sich Ablichtungen durch die Behörde erteilen lassen“; bei elektronischer Akte Ausdruck, Bildschirm, Dokumente oder Zugriff; „Die Behörde kann Ersatz ihrer Aufwendungen in angemessenem Umfang verlangen“ | § 25 Abs. 1 bis 5 SGB X |
 | Finanzamt | Kein allgemeines Einsichtsrecht in der AO; im Einspruchsverfahren sind „die Unterlagen der Besteuerung auf Antrag oder, wenn die Begründung des Einspruchs dazu Anlass gibt, von Amts wegen offenzulegen“; darüber hinaus Ermessen `[PRÜFEN: Rechtsprechung des BFH zur Akteneinsicht nach Ermessen; AEAO zu § 91]` | § 364 AO |
 | Bußgeldverfahren, Betroffener | „Die Verwaltungsbehörde gewährt dem Betroffenen auf Antrag Einsicht in die Akten“, soweit Untersuchungszweck und Interessen Dritter nicht entgegenstehen; bei Papierakten Kopien; Entscheidung vor Abgabe an das Gericht (Merkblatt Einspruch Bußgeldbescheid) | § 49 Abs. 1, § 69 Abs. 3 Satz 2 OWiG |
@@ -103,7 +104,7 @@ Verwendung: Fassung erneut prüfen und die passende Zeile der Tabelle wählen.
 | § 9 HGB Einsichtnahme in das Handelsregister (Abs. 1) | https://www.gesetze-im-internet.de/hgb/__9.html | HGB, zuletzt geändert 04.02.2026 |
 | Kostenverzeichnis zum JVKostG Nr. 2000 (Dokumentenpauschale) mit Anmerkungen | https://www.gesetze-im-internet.de/jvkostg/anlage.html | JVKostG vom 23.07.2013, Fassung des Portals (17.09.2026 abends) |
 
-Nicht gelesen: Landes-VwVfG und Informationsfreiheitsgesetze außer Baden-Württemberg,
+Nicht gelesen: Informationsfreiheitsgesetze der Länder außer Baden-Württemberg (die Landes-VwVfG sind am 18.09.2026 für alle 16 Länder gelesen, Übersicht im Merkblatt Widerspruch Verwaltungsakt),
 Mitarbeitervertretungsrecht der Kirchen, Justizverwaltungskostengesetz außer
 Nr. 2000 des Kostenverzeichnisses, Gebührenordnungen der Länder und Kommunen,
 Rechtsprechung des BFH zur Akteneinsicht, des BAG zu § 83 BetrVG und zu
