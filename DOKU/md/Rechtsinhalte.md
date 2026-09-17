@@ -175,8 +175,20 @@ und Nordrhein-Westfalen haben ihn aufgehoben; Bremen, Niedersachsen und Thüring
 Gemeinden im Anwendungsbereich ausdrücklich; Hamburg, Hessen, Mecklenburg-Vorpommern und
 Nordrhein-Westfalen haben § 80 auf die Erstattung der Aufwendungen verkürzt.
 
-Die restlichen Landesthemen (Informationsfreiheits-, Petitions- und Gemeindegesetze, Schiedsstellen,
-Online-Wachen) bleiben außerhalb Baden-Württembergs offen.
+Als viertes Landesthema folgten am 18.09.2026 die **Informationszugangsgesetze der Länder**, für
+alle 16 Länder geprüft und im Merkblatt Akteneinsicht als Übersicht eingetragen. Vierzehn Länder
+haben ein eigenes Gesetz (Berlin, Brandenburg, Bremen, Hamburg, Hessen im Vierten Teil des HDSIG,
+Mecklenburg-Vorpommern, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Sachsen, Sachsen-Anhalt,
+Schleswig-Holstein, Thüringen und Baden-Württemberg). Befunde: Thüringen hat das ThürIFG zum
+31.12.2019 durch das Transparenzgesetz abgelöst; Sachsen hat seit 2022 ein Transparenzgesetz;
+Nordrhein-Westfalen gibt den Anspruch nur natürlichen Personen; Mecklenburg-Vorpommern schließt die
+gewerbliche Weiterverwendung aus; in Schleswig-Holstein gleicht § 3 IZG-SH aus, dass § 88 LVwG im
+Verwaltungsverfahren nur Ermessen gibt. Für **Bayern und Niedersachsen** wurde kein allgemeines
+Landesgesetz gefunden; dieser Negativbefund stützt sich nur auf die Suche im Landesportal und ist
+als `[PRÜFEN]` markiert.
+
+Die restlichen Landesthemen (Petitions- und Bürgerbeauftragtengesetze, Gemeindeordnungen,
+Schiedsstellen, Online-Wachen) bleiben außerhalb Baden-Württembergs offen.
 Fassungen seit 17.09.2026 nach dem Vollzitat des Portals (Abschnitt 4,
 Nr. 2).
 
