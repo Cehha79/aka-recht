@@ -197,8 +197,19 @@ Streitwertgrenze, aber nur innerhalb desselben Landgerichtsbezirks. Dazu im Merk
 eine Zeile, wer den Sühneversuch vor der Privatklage abnimmt (Gemeinden in Baden-Württemberg,
 sonst Schiedsämter und Schiedsstellen).
 
-Die restlichen Landesthemen (Petitions- und Bürgerbeauftragtengesetze, Gemeindeordnungen,
-Online-Wachen) bleiben außerhalb Baden-Württembergs offen.
+Am selben Tag kamen die letzten drei Landesthemen dazu. **Online-Wachen:** Die Polizeien der Länder
+betreiben ein gemeinsames Portal (`portal.onlinewache.polizei.de`), das nach dem Tatort weiterleitet;
+es steht jetzt als Q13 im Quellenkatalog und im Merkblatt Strafanzeige, mit den Grenzen (keine
+Gewaltdelikte, keine Verkehrsunfälle, ersetzt keinen unterschriebenen Strafantrag).
+**Petitionsrecht:** Thüringen hat ein eigenes Petitionsgesetz (ThürPetG vom 15.05.2007, unter anderem
+unkontrollierte Weiterleitung von Petitionen Gefangener); eigene Beauftragte haben Rheinland-Pfalz
+(BürgBG) und Schleswig-Holstein (Bürger- und Polizeibeauftragtengesetz vom 15.01.1992) neben
+Baden-Württemberg. **Gemeindeordnungen:** Die Kommunalaufsicht ist am Volltext belegt für Bayern
+(Art. 110 GO: Landratsamt, Regierung), Brandenburg (§ 110 BbgKVerf: Landrat, Innenministerium),
+Nordrhein-Westfalen (§ 120 GO NRW: Landrat, Bezirksregierung) sowie Thüringen und Sachsen-Anhalt aus
+der Arbeit am selben Tag. Für die übrigen Länder ist das Muster dasselbe, die Norm aber nicht
+gelesen (`[QUELLE]`). Damit sind alle Landesthemen des Abschnitts A bearbeitet; die offenen Stellen
+sind in den Merkblättern markiert.
 Fassungen seit 17.09.2026 nach dem Vollzitat des Portals (Abschnitt 4,
 Nr. 2).
 

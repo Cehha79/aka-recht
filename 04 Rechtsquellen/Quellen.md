@@ -122,6 +122,15 @@ Einige Portale erfordern JavaScript oder blockieren automatische Abrufe.
     "url": "https://www.service-bw.de/",
     "limit": "Nur Baden-Württemberg. Der Behördenfinder des Bundes war am 16.09.2026 per Abruf nicht erreichbar.",
     "catalog_checked": "2026-09-16"
+  },
+  {
+    "id": "Q13",
+    "title": "Onlinewachen der Polizeien der Länder (gemeinsames Portal)",
+    "category": "Strafanzeige",
+    "use": "Strafanzeige oder Hinweis online erstatten; das Portal leitet nach dem Tatort zur Onlinewache des zuständigen Landes, auch bei Taten im Ausland, im Internet oder an unbekanntem Ort.",
+    "url": "https://portal.onlinewache.polizei.de/de/",
+    "limit": "Nur einfache Straftaten (Betrug, Diebstahl, Sachbeschaedigung, Hasspostings, sonstige Anzeigen) sowie Hinweise und Beschwerden. Nicht fuer Verkehrsunfaelle, komplexe Sachverhalte und Taten mit Gewalt oder Gewaltandrohung; dort Dienststelle oder Notruf 110. Formularauswahl je Land verschieden. Ersetzt keinen Strafantrag, wo dieser unterschrieben sein muss.",
+    "catalog_checked": "2026-09-18"
   }
 ]
 ```
