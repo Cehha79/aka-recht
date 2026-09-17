@@ -14,6 +14,10 @@ Zugriff braucht das Sitzungscookie aus dem Startlink; Änderungen zusätzlich di
 Schreibkennung im Kopf X-AKA-CSRF und einen Ursprung von 127.0.0.1.
 """
 import sys
+
+# Ein- und Ausgabe immer UTF-8, auch unter Windows (Konsole dort cp1252); Ausgaben für Assistenten und Tests müssen UTF-8 sein (Stufe 9, 17.09.2026).
+for _strom in (sys.stdin, sys.stdout, sys.stderr):
+    if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
 import argparse, base64, json, mimetypes, os, re, secrets, signal, subprocess, tempfile, threading, time, urllib.request
 from http.cookies import SimpleCookie
@@ -174,7 +178,7 @@ class Handler(BaseHTTPRequestHandler):
 # ---------------------------------------------------------------- Betrieb
 def laeuft():
     try:
-        d = json.loads(laufzeitdatei().read_text())
+        d = json.loads(laufzeitdatei().read_text('utf-8'))
         anfrage = urllib.request.Request(f'http://127.0.0.1:{d["port"]}/api/ping', headers={'Cookie': f'{cookie_name()}={d["key"]}'})
         with urllib.request.urlopen(anfrage, timeout=1) as r:
             if json.load(r)['instanz'] == store.instanz(): return d

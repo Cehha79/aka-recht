@@ -33,9 +33,9 @@ def dateien(ordner):
         if not basis.is_dir(): continue
         for p in sorted(basis.rglob('*')):
             if p.is_file() and not p.is_symlink() and p.name != '.DS_Store' and not p.name.startswith('.'):
-                try: store.sicher(str(p.relative_to(ordner)), ordner)
+                try: store.sicher(p.relative_to(ordner).as_posix(), ordner)
                 except ValueError: continue
-                liste.append(str(p.relative_to(ordner)))
+                liste.append(p.relative_to(ordner).as_posix())
     return liste
 
 def _rechnen(ordner, weg, kennungen_vergeben):
@@ -133,7 +133,7 @@ def verschieben(ordner, kennung, zielgruppe, unterordner=''):
         if ziel == quelle: return e['pfad']
         if ziel.exists(): raise ValueError('Am Ziel liegt schon eine gleichnamige Datei. Es wird nichts überschrieben.')
         zielordner.mkdir(parents=True, exist_ok=True)
-        quelle.rename(ziel); neu = str(ziel.relative_to(ordner))
+        quelle.rename(ziel); neu = ziel.relative_to(ordner).as_posix()
         daten['verschiebungen'].append({'id': kennung, 'von': e['pfad'], 'nach': neu, 'zeit': datetime.now().isoformat(timespec='seconds'), 'weg': 'Oberfläche'})
         e['pfad'] = neu
         store.atomar(ordner / 'bestand.json', json.dumps(daten, ensure_ascii=False, indent=2) + '\n')

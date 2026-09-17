@@ -20,6 +20,9 @@ selbst, den der Nutzer tippt oder in seinem KI-Client je Befehl genehmigt
 schreibende Werkzeuge nur nach ausdrücklicher Zustimmung des Nutzers aufrufen.
 """
 import sys
+# Ein- und Ausgabe immer UTF-8, auch unter Windows (Konsole dort cp1252); JSON für Assistenten muss UTF-8 sein (Stufe 9, 17.09.2026).
+for _strom in (sys.stdin, sys.stdout, sys.stderr):
+    if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
 import json
 from pathlib import Path

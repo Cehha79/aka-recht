@@ -317,7 +317,7 @@ def vorlage_fuellen(fall, vorlage, ziel=''):
     zielpfad = store.sicher(rel, ordner)
     entwuerfe = (ordner / '06 Entwürfe').resolve()
     if entwuerfe not in zielpfad.resolve().parents: raise ValueError('Entwürfe entstehen nur unter 06 Entwürfe des Falls, nie in Originalbereichen.')
-    rel = str(zielpfad.resolve().relative_to(ordner.resolve()))
+    rel = zielpfad.resolve().relative_to(ordner.resolve()).as_posix()
     if zielpfad.exists(): raise ValueError(f'{rel} gibt es schon. Nichts wird überschrieben; anderen Namen mit ziel= wählen.')
     ab = store.absender(fall); text = quelle.read_text('utf-8'); ersetzt = []; hinweise = []
     werte = {'【ABSENDER】': ab['zeile'], '【ABSENDER_NAME】': ab['name'], '【DATUM】': heute.strftime('%d.%m.%Y'), '【R-0000】': fall}
@@ -382,7 +382,7 @@ def entwurf_erfassen(fall, titel, datei, status='in Arbeit', versandt_als=''):
             if ziel.exists():
                 if bestand.sha_datei(ziel) != bestand.sha_datei(q): raise ValueError(f'Eingefrorene Kopie {ziel.name} gibt es schon mit anderem Inhalt. Nichts wird überschrieben.')
             else: shutil.copyfile(q, ziel); ziel.chmod(0o444)   # nur lesbar: die Kopie ist das Original dieser Fassung
-            kopien[q.suffix.lower().lstrip('.')] = str(ziel.relative_to(ordner))
+            kopien[q.suffix.lower().lstrip('.')] = ziel.relative_to(ordner).as_posix()
         stand['kopien'] = kopien
         bestand.abgleichen(ordner, weg='Fassung eingefroren'); dokumente.katalog(fall, akte)
         pfad_zu_id = {d['pfad']: k for k, d in akte['dokumente'].items()}

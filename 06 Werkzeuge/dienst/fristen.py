@@ -6,6 +6,11 @@ welche Frist gilt und ob § 193 BGB (Verschiebung auf den nächsten Werktag)
 auf die konkrete Frist anwendbar ist. Das bleibt fachliche Prüfung.
 Nur Standardbibliothek.
 """
+import sys
+
+# Ein- und Ausgabe immer UTF-8, auch unter Windows (Konsole dort cp1252); Ausgaben für Assistenten und Tests müssen UTF-8 sein (Stufe 9, 17.09.2026).
+for _strom in (sys.stdin, sys.stdout, sys.stderr):
+    if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 from datetime import date, timedelta
 import calendar, re
 

@@ -7,6 +7,10 @@ Ausgabe:  Fehler (Datei ist ungültig) und Warnungen (Datei ist gültig, aber
 Nur Standardbibliothek. Der Dienst (Stufe 3) nutzt validate() vor dem Speichern.
 """
 import sys
+
+# Ein- und Ausgabe immer UTF-8, auch unter Windows (Konsole dort cp1252); Ausgaben für Assistenten und Tests müssen UTF-8 sein (Stufe 9, 17.09.2026).
+for _strom in (sys.stdin, sys.stdout, sys.stderr):
+    if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
 import json, re, sys
 from datetime import date

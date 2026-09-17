@@ -10,6 +10,10 @@ Seit 17.09.2026 (Prüfbericht F26) inhaltlich statt nach Zeitstempel:
    DOKU/md/Live-Dokumentation.md, werden mit Namen aufgezählt (fehlt die Live-Doku wie im Produkt, entfällt das).
 Läuft auch ohne zentrale.json (Entwicklung ohne eingerichtete Akte)."""
 import sys
+
+# Ein- und Ausgabe immer UTF-8, auch unter Windows (Konsole dort cp1252); Ausgaben für Assistenten und Tests müssen UTF-8 sein (Stufe 9, 17.09.2026).
+for _strom in (sys.stdin, sys.stdout, sys.stderr):
+    if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
 import importlib.util, os, subprocess
 from pathlib import Path

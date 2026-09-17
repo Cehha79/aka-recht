@@ -2,6 +2,10 @@
 """SessionStart-Hook: meldet neue Post, nahe Fristen und offene Aufgaben aller Fälle.
 Liest nur. Gibt Kontext für Claude als JSON aus. Bei Fehlern still (Exit 0)."""
 import sys
+
+# Ein- und Ausgabe immer UTF-8, auch unter Windows (Konsole dort cp1252); Ausgaben für Assistenten und Tests müssen UTF-8 sein (Stufe 9, 17.09.2026).
+for _strom in (sys.stdin, sys.stdout, sys.stderr):
+    if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
 import json, os
 from datetime import date

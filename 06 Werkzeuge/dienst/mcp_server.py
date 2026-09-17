@@ -27,6 +27,9 @@ Aufruf (durch den Client, nicht von Hand):
 Nur Standardbibliothek.
 """
 import sys
+# Ein- und Ausgabe immer UTF-8, auch unter Windows (Konsole dort cp1252); JSON für Assistenten muss UTF-8 sein (Stufe 9, 17.09.2026).
+for _strom in (sys.stdin, sys.stdout, sys.stderr):
+    if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
 import argparse, json
 from pathlib import Path

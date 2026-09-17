@@ -19,6 +19,10 @@ Das Skript löscht nichts. Verwaiste Kopien werden nur gemeldet.
 Nur Standardbibliothek.
 """
 import sys
+
+# Ein- und Ausgabe immer UTF-8, auch unter Windows (Konsole dort cp1252); Ausgaben für Assistenten und Tests müssen UTF-8 sein (Stufe 9, 17.09.2026).
+for _strom in (sys.stdin, sys.stdout, sys.stderr):
+    if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
 from pathlib import Path
 
@@ -141,7 +145,7 @@ def main(argv):
         if not pruefen and ist != soll_roh:
             ziel.parent.mkdir(parents=True, exist_ok=True)
             ziel.write_bytes(soll_roh)
-    rel = lambda p: str(p.relative_to(ROOT))
+    rel = lambda p: p.relative_to(ROOT).as_posix()   # immer Schrägstrich, auch unter Windows
     wort = 'fehlt' if pruefen else 'neu'
     for p in neu: print(f'{wort:<10} {rel(p)}')
     wort = 'veraltet' if pruefen else 'aktualisiert'

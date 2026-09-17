@@ -10,6 +10,10 @@ Shell-Befehle und MCP-Werkzeuge deckt dieser Hook weiterhin nicht ab (Entscheidu
 dort schützen der Dienst (keine Werkzeuge für Löschen oder Ändern von Originalen) und die
 Bestätigung des Nutzers."""
 import sys
+
+# Ein- und Ausgabe immer UTF-8, auch unter Windows (Konsole dort cp1252); Ausgaben für Assistenten und Tests müssen UTF-8 sein (Stufe 9, 17.09.2026).
+for _strom in (sys.stdin, sys.stdout, sys.stderr):
+    if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
 import json, os, re
 from pathlib import Path

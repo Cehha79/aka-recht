@@ -37,7 +37,7 @@ gerade dieselbe Datei hält (Sperrdatei im temporären Ordner).
 ```text
 Recht/
 ├─ Start.command              startet den Dienst und öffnet den Browser (macOS)
-├─ Start.sh, Start.bat        dasselbe für Linux und Windows (Stufe 9, dort ungeprüft)
+├─ Start.sh, Start.bat        dasselbe für Linux (Ubuntu 24.04) und Windows (Windows 11), beide geprüft 17.09.2026
 ├─ CLAUDE.md                  Arbeitsprofil, Quelle (Stufe 5)
 ├─ AGENTS.md                  erzeugt aus CLAUDE.md für Codex, Cursor, Gemini CLI (Stufe 7)
 ├─ .agents/skills/            erzeugte Kopien der Skills für Codex (Stufe 7)

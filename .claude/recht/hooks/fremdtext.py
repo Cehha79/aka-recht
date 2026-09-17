@@ -12,6 +12,10 @@ Seit 17.09.2026 (Prüfbericht F07): MCP-Ergebnisse werden geprüft, Ausnahmen ge
 tatsächlich aufgelöste Pfade in den eigenen Bereichen (.claude, .agents, DOKU, 06 Werkzeuge,
 Profil- und README-Dateien), kurze Texte und Dateinamen oder Aufrufparameter werden mitgeprüft."""
 import sys
+
+# Ein- und Ausgabe immer UTF-8, auch unter Windows (Konsole dort cp1252); Ausgaben für Assistenten und Tests müssen UTF-8 sein (Stufe 9, 17.09.2026).
+for _strom in (sys.stdin, sys.stdout, sys.stderr):
+    if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
 import json, os, re
 from pathlib import Path

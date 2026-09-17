@@ -34,7 +34,7 @@ es zu ordnen, zu prüfen und zu formulieren.
 > Arbeitgeber). In der Oberfläche auf **„Beispielfall laden“** klicken, dann
 > durch Akte, Dokumente, Fristen und Entwurf klicken. Jederzeit löschbar.
 
-Produkt Version 0.2 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · Stand 17.09.2026 · geprüft mit Python 3.14.7 auf macOS 26.7 · Autor: Hasan Tepegöz
+Produkt Version 0.2 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · Stand 17.09.2026 · geprüft mit Python 3.14.7 auf macOS 26.7, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
 
 **Inhalt:** [So sieht es aus](#so-sieht-es-aus) · [So arbeitet deine KI mit der Mappe](#so-arbeitet-deine-ki-mit-der-mappe) · [Was in der Mappe steckt](#was-in-der-mappe-steckt) · [Worauf du dich verlassen kannst](#worauf-du-dich-verlassen-kannst) · [Geltungsbereich](#geltungsbereich) · [Voraussetzungen](#voraussetzungen) · [Erster Start](#erster-start) · [KI anbinden](#ki-anbinden) · [Grenzen](#grenzen) · [Sicherung](#sicherung) · [Lizenz](#lizenz) · [Mitmachen](#mitmachen-und-unterstützen) · [Impressum](#impressum)
 
@@ -318,11 +318,13 @@ Weitere Sprachen sind geplant, passend zu den Ländern.
 
 - Python 3, geprüft mit 3.14.7 (`python3 --version`); ältere Fassungen
   sind ungeprüft. Keine weiteren Pakete.
-- Gebaut und geprüft auf macOS. Linux und Windows: Startskripte liegen bei,
-  der Dienst nutzt nur die Standardbibliothek, geprüft ist es dort noch
-  nicht. Unter Windows heißt der Befehl meist `python` statt `python3`;
-  dann in `.mcp.json` und `.claude/settings.json` `python3` durch `python`
-  ersetzen.
+- Gebaut auf macOS; geprüft am 17.09.2026 auf macOS, auf Ubuntu 24.04 mit
+  Python 3.12 und auf Windows 11 mit Python 3.14 (jeweils Funktionstest,
+  Dienst über das Startskript, MCP-Server, Beispielfall in einem Ordner mit
+  Umlauten). Unter Windows heißt der Befehl `python` statt `python3`; `python3.exe` ist dort nur ein
+  Verweis auf den Microsoft Store. Deshalb in `.mcp.json` und
+  `.claude/settings.json` `python3` durch `python` ersetzen, sonst startet
+  der Assistent den Store statt des MCP-Servers.
 - Für die Textauszüge aus PDF optional `pdftotext` (Paket poppler). Scans
   ohne Textschicht liest die Mappe nicht; dafür braucht es OCR außerhalb.
 

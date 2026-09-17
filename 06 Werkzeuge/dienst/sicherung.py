@@ -41,14 +41,14 @@ def erstellen(root=None, ziel=None, zweites_ziel=None):
     fertig = ziel / name; vorlaeufig = ziel / (name + '.unvollstaendig')
     eintraege = _dateien(root)
     with zipfile.ZipFile(vorlaeufig, 'x', zipfile.ZIP_DEFLATED) as zf:
-        for p in eintraege: zf.write(p, str(p.relative_to(root)))
+        for p in eintraege: zf.write(p, p.relative_to(root).as_posix())   # immer Schrägstrich, auch unter Windows
     vorlaeufig.chmod(0o600)
     with zipfile.ZipFile(vorlaeufig) as zf:
         if zf.testzip(): raise RuntimeError('ZIP-Prüfung fehlgeschlagen; keine fertige Sicherung gemeldet.')
         for p in eintraege:
-            if sha(zf.read(str(p.relative_to(root)))) != sha(p.read_bytes()): raise RuntimeError('Datei während der Sicherung verändert: ' + str(p.relative_to(root)))
+            if sha(zf.read(p.relative_to(root).as_posix())) != sha(p.read_bytes()): raise RuntimeError('Datei während der Sicherung verändert: ' + p.relative_to(root).as_posix())
     vorlaeufig.rename(fertig); pruefsumme = sha(fertig.read_bytes())
-    (fertig.with_suffix('.zip.sha256')).write_text(pruefsumme + '  ' + fertig.name + '\n')
+    (fertig.with_suffix('.zip.sha256')).write_text(pruefsumme + '  ' + fertig.name + '\n', encoding='utf-8')
     ergebnis = {'pfad': str(fertig), 'sha256': pruefsumme, 'dateien': len(eintraege), 'groesse': fertig.stat().st_size,
                 'zeit': datetime.now().isoformat(timespec='seconds'), 'zweites_ziel': None, 'zweites_ziel_hinweis': ''}
     if zweites:
@@ -64,8 +64,8 @@ def erstellen(root=None, ziel=None, zweites_ziel=None):
     return ergebnis
 
 def _cloud_hinweis(pfad):
-    p = str(pfad or '')
-    if 'com~apple~CloudDocs' in p or '/iCloud' in p: return 'iCloud Drive: das Betriebssystem lädt die Kopie unverschlüsselt zu Apple hoch.'
+    p = str(pfad or '').replace('\\', '/')   # Windows-Pfade mit Schrägstrich vergleichen
+    if 'com~apple~CloudDocs' in p or '/iCloud' in p or 'iCloudDrive' in p: return 'iCloud Drive: das Betriebssystem lädt die Kopie unverschlüsselt zu Apple hoch.'
     if any(t in p for t in ('Dropbox', 'OneDrive', 'Google Drive', 'GoogleDrive', 'Nextcloud')): return 'Synchronisierter Ordner: der Dienst des Anbieters lädt die Kopie hoch.'
     return ''
 
@@ -93,7 +93,7 @@ def wiederherstellen(archiv, zielordner, erwartete_pruefsumme=None):
     inhalt = archiv.read_bytes(); pruefsumme = sha(inhalt)
     sha_datei = archiv.with_suffix('.zip.sha256')
     if sha_datei.is_file():
-        bericht['pruefsummendatei'] = sha_datei.read_text().split()[0] == pruefsumme
+        bericht['pruefsummendatei'] = sha_datei.read_text('utf-8').split()[0] == pruefsumme
         if not bericht['pruefsummendatei']: bericht['fehler'].append('Prüfsumme in der .sha256-Datei passt nicht zum Archiv.')
     if erwartete_pruefsumme and erwartete_pruefsumme != pruefsumme: bericht['fehler'].append('Archiv weicht von der in zentrale.json gemerkten Prüfsumme ab.')
     with zipfile.ZipFile(archiv) as zf:

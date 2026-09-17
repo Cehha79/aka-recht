@@ -34,7 +34,7 @@ AI helps you to organise, check and formulate.
 > Click **"Beispielfall laden"** in the UI, then browse case, documents,
 > deadlines and draft. Delete it whenever you like.
 
-Product version 0.2 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · as of 17.09.2026 · tested with Python 3.14.7 on macOS 26.7 · Author: Hasan Tepegöz · Deutsch: [README.md](README.md)
+Product version 0.2 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · as of 17.09.2026 · tested with Python 3.14.7 on macOS 26.7, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz · Deutsch: [README.md](README.md)
 
 **Contents:** [What it looks like](#what-it-looks-like) · [How your AI works with the folder](#how-your-ai-works-with-the-folder) · [What is inside](#what-is-inside) · [What you can rely on](#what-you-can-rely-on) · [Scope](#scope) · [Requirements](#requirements) · [First start](#first-start) · [Connecting an AI](#connecting-an-ai) · [Limits](#limits) · [Backup](#backup) · [Licence](#licence) · [Contributing](#contributing-and-supporting) · [Legal notice](#legal-notice-impressum)
 
@@ -305,11 +305,13 @@ languages are planned to match the countries.
 
 - Python 3, tested with 3.14.7 (`python3 --version`); older versions are
   untested. No other packages.
-- Built and tested on macOS. Linux and Windows: start scripts are included,
-  the service uses only the standard library, but it has not been tested
-  there yet. On Windows the command is usually `python` instead of
-  `python3`; then replace `python3` with `python` in `.mcp.json` and
-  `.claude/settings.json`.
+- Built on macOS; tested on 17 Sep 2026 on macOS, on Ubuntu 24.04 with
+  Python 3.12 and on Windows 11 with Python 3.14 (test suite, service via
+  the start script, MCP server, sample case in a folder with umlauts on
+  each). On Windows the command is `python` instead of `python3`; `python3.exe` there is only a
+  Microsoft Store stub. So replace `python3` with `python` in `.mcp.json`
+  and `.claude/settings.json`, otherwise the assistant launches the Store
+  instead of the MCP server.
 - Optional for text extraction from PDF: `pdftotext` (poppler). Scanned PDFs
   without a text layer are not read; that needs OCR outside the folder.
 
