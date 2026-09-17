@@ -1,5 +1,11 @@
-# AKA Recht für Codex: MCP-Server der Aktenmappe (gilt nur in diesem Projekt,
-# Codex fragt beim ersten Öffnen, ob es dem Projektordner vertraut).
+# AKA Recht für Codex: MCP-Server der Aktenmappe (gilt nur in diesem Projekt).
+# Codex lädt diese Datei nur, wenn genau dieser Projektordner in
+# ~/.codex/config.toml als vertraut eingetragen ist:
+#   [projects."/voller/Pfad/zum/Projektordner"]
+#   trust_level = "trusted"
+# Ein Eintrag für einen übergeordneten Ordner oder für "/" genügt nicht
+# (geprüft mit codex-cli 0.154.0). Prüfen im Projektordner: codex mcp list
+# muss aka-recht mit relativem Pfad und cwd "." zeigen.
 # Quelle der Werkzeuge: 06 Werkzeuge/dienst/mcp_server.py. Schreibende
 # Werkzeuge laufen nur mit bestaetigt=true nach Rückfrage beim Nutzer.
 [mcp_servers.aka-recht]
