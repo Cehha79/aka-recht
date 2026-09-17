@@ -683,14 +683,14 @@ erklärt ihn nur.
 
 Angaben gemäß § 5 DDG und § 18 MStV
 
-Hasan Tepegöz, Einzelunternehmen MikaTec
-Pontoiser Straße 54
-71034 Böblingen
+Hasan Tepegöz, Einzelunternehmen MikaTec<br>
+Pontoiser Straße 54<br>
+71034 Böblingen<br>
 Deutschland
 
-Telefon: 0173 5904496
-E-Mail: info@mika-tec.com
+Telefon: 0173 5904496<br>
+E-Mail: info@mika-tec.com<br>
 Web: https://www.mika-tec.com
 
-Kleinunternehmer gemäß § 19 UStG; es wird keine Umsatzsteuer ausgewiesen.
+Kleinunternehmer gemäß § 19 UStG; es wird keine Umsatzsteuer ausgewiesen.<br>
 Verantwortlich im Sinne des § 18 Abs. 2 MStV: Hasan Tepegöz, Anschrift wie oben.
