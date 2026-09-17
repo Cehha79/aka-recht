@@ -1,6 +1,6 @@
 # Merkblatt: Mahnverfahren (Mahnbescheid und Vollstreckungsbescheid)
 
-*Rechtsordnung DE · Bereiche Forderungen und Inkasso, Verträge und Verbraucher · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen, §§ 751, 765a ZPO und MahnVordrV am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, BGH zu „demnächst“ und zur Individualisierung am 17.09.2026 abends ergänzt, Vordruck-Verordnung für maschinelle Verfahren am 17.09.2026 abends gelesen*
+*Rechtsordnung DE · Bereiche Forderungen und Inkasso, Verträge und Verbraucher · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen, §§ 751, 765a ZPO und MahnVordrV am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, BGH zu „demnächst“ und zur Individualisierung am 17.09.2026 abends ergänzt, Vordruck-Verordnung für maschinelle Verfahren am 17.09.2026 abends gelesen, zentrale Mahngerichte aller Länder am 17.09.2026 abends aufgenommen (acht Länder mit Landesnorm am Volltext, die übrigen nach dem amtlichen Justizportal)*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -33,6 +33,36 @@ Verjährung rechnen, Formular des Mahngerichts verwenden.
 | Selbst beantragen | Anträge und Erklärungen „können … vor dem Urkundsbeamten der Geschäftsstelle abgegeben werden“; kein Anwaltszwang. Für Rechtsanwälte, registrierte Inkassodienstleister, Kreditdienstleistungsinstitute, Behörden und juristische Personen des öffentlichen Rechts „ist nur diese Form der Übermittlung zulässig“ (maschinell lesbar). Online-Antrag mit elektronischem Identitätsnachweis (Online-Ausweis) ist möglich; dann „bedarf es nicht“ der handschriftlichen Unterschrift | § 702 Abs. 1, Abs. 2 Satz 2 bis 4 ZPO |
 | Geheim bis zur Zustellung | „Der Antrag auf Erlass eines Mahnbescheids oder eines Vollstreckungsbescheids wird dem Antragsgegner nicht mitgeteilt.“ Der Schuldner erfährt vom Verfahren erst durch den Mahnbescheid | § 702 Abs. 3 ZPO |
 | Bearbeitung | Die Amtsgerichte bearbeiten maschinell; Eingänge sollen am folgenden Arbeitstag erledigt sein; die Akte ist elektronisch | § 689 Abs. 1 ZPO |
+
+### Zentrale Mahngerichte je Land (Stand 17.09.2026)
+
+§ 689 Abs. 3 ZPO erlaubt den Ländern, die Mahnverfahren bei einem Amtsgericht zu bündeln, auch über
+Landesgrenzen hinweg. Der Antrag muss beim danach zuständigen Gericht eingehen; ein Antrag bei einem
+anderen Amtsgericht wird weitergeleitet, wahrt die Frist aber erst mit Eingang beim zuständigen
+Gericht. Maßgeblich ist der allgemeine Gerichtsstand des Antragstellers, nicht der des Schuldners.
+
+| Land | Zentrales Mahngericht | Rechtsgrundlage |
+|---|---|---|
+| Baden-Württemberg | Amtsgericht Stuttgart | § 2 ZuVOJu BW (Zuständigkeitsverordnung Justiz vom 20.11.1998, § 2 gültig ab 01.11.2023), am Volltext gelesen |
+| Bayern | Amtsgericht Coburg | § 5 Abs. 1 GZVJu (Gerichtliche Zuständigkeitsverordnung Justiz vom 11.06.2012, GVBl. S. 295, BayRS 300-3-1-J): „Dem Amtsgericht Coburg werden die Mahnverfahren für die Bezirke aller Amtsgerichte in Bayern zur Bearbeitung übertragen“, am Volltext gelesen |
+| Berlin und Brandenburg | Amtsgericht Wedding, „Zentrales Mahngericht Berlin-Brandenburg“ | Mahngerichtsvertrag vom 13.12.2005 (GVBl. I/06 Nr. 4 S. 54, 55), Artikel 1: Brandenburgs Mahnverfahren sind zum 01.07.2006 dem für Berlin schon zuständigen Amtsgericht Wedding übertragen; Artikel 3: maschinelle Bearbeitung. Am Volltext gelesen |
+| Bremen | Amtsgericht Bremen, Mahnabteilung | `[QUELLE: bremische Landesnorm zur Zuweisung noch nicht am Volltext gelesen; Zuordnung nach dem amtlichen Justizportal mahngerichte.de]` |
+| Hamburg und Mecklenburg-Vorpommern | Amtsgericht Hamburg-Altona, „Gemeinsames Mahngericht der Länder Hamburg und Mecklenburg-Vorpommern“ | Staatsvertrag vom 10.10.2005 (GVOBl. M-V 2005, 512); nur die Eingangsformel am Volltext gelesen, die Artikel liegen auf dem Portal in Einzeldokumenten `[QUELLE: Artikel 1 des Staatsvertrags]` |
+| Hessen | Amtsgericht Hünfeld, Mahnabteilung | `[QUELLE: hessische Landesnorm zur Zuweisung noch nicht am Volltext gelesen; Zuordnung nach mahngerichte.de]` |
+| Niedersachsen | Amtsgericht Uelzen, Zentrales Mahngericht | `[QUELLE: niedersächsische Landesnorm noch nicht am Volltext gelesen; Zuordnung nach mahngerichte.de]` |
+| Nordrhein-Westfalen | Amtsgericht Hagen (OLG-Bezirke Düsseldorf und Hamm), Amtsgericht Euskirchen (OLG-Bezirk Köln) | § 6 JuZuVO (Justizzuständigkeitsverordnung vom 04.12.2024, GV. NRW. S. 1144, zuletzt geändert durch Verordnung vom 05.12.2025, GV. NRW. S. 1152; Fassung gültig ab 01.01.2026), Abs. 1 und 2; Abs. 3: maschinelle Bearbeitung, ausgenommen Zustellung im Ausland und nach dem NATO-Truppenstatut. Am Volltext gelesen |
+| Rheinland-Pfalz und Saarland | Amtsgericht Mayen, Mahnabteilung | `[QUELLE: Staatsvertrag beziehungsweise Landesverordnungen noch nicht am Volltext gelesen; Zuordnung nach mahngerichte.de]` |
+| Sachsen, Sachsen-Anhalt und Thüringen | Amtsgericht Aschersleben (Dienstgebäude Staßfurt), „Gemeinsames Mahngericht der Länder Sachsen-Anhalt, Sachsen und Thüringen“ | Staatsvertrag über die Errichtung eines gemeinsamen Mahngerichts vom 11.01.2007 (SächsGVBl. S. 81), Artikel 1 Abs. 1 und Artikel 2 Abs. 1, geschlossen auf der Grundlage des § 689 Abs. 3 Satz 4 ZPO. Am Volltext gelesen |
+| Schleswig-Holstein | Amtsgericht Schleswig, Mahnabteilung | `[QUELLE: schleswig-holsteinische Landesnorm noch nicht am Volltext gelesen; Zuordnung nach mahngerichte.de]` |
+
+Sonderfälle (amtliches Justizportal mahngerichte.de, abgerufen 17.09.2026, und Gesetz):
+Antragsteller ohne allgemeinen Gerichtsstand im Inland → ausschließlich Amtsgericht Wedding in
+Berlin (§ 689 Abs. 2 Satz 2 ZPO; **Befund:** der Mahngerichtsvertrag von 2005 nennt insoweit noch
+das Amtsgericht Schöneberg, das ist durch die heutige Fassung des § 689 Abs. 2 Satz 2 ZPO überholt).
+Antragsgegner ohne allgemeinen Gerichtsstand im Inland → das Mahngericht, in dessen Bezirk auch das
+Streitverfahren zu führen wäre (§ 703d ZPO). Zahlungsansprüche nach dem Wohnungseigentumsgesetz →
+Zuständigkeit nach der Lage des Wohnungseigentums. Ansprüche aus einem Arbeitsverhältnis → nicht die
+Amtsgerichte, sondern die Arbeitsgerichte (Mahnverfahren nach § 46a ArbGG).
 
 ## 2. Fristen
 
@@ -135,6 +165,12 @@ noch Einspruch binnen zwei Wochen.
 | § 751 ZPO Bedingungen für Vollstreckungsbeginn (Abs. 1) | https://www.gesetze-im-internet.de/zpo/__751.html | wie oben (17.09.2026 abends) |
 | § 765a ZPO Vollstreckungsschutz (Abs. 1 bis 5) | https://www.gesetze-im-internet.de/zpo/__765a.html | wie oben (17.09.2026 abends) |
 | § 2 ZuVOJu BW Mahnsachen (im Browser gelesen) | https://www.landesrecht-bw.de/perma?j=GerZustJuV_BW_!_2 | Zuständigkeitsverordnung Justiz vom 20.11.1998, § 2 gültig ab 01.11.2023 (17.09.2026 abends) |
+| § 5 GZVJu Bayern (Mahnverfahren beim Amtsgericht Coburg) | https://www.gesetze-bayern.de/Content/Document/BayGZVJu-5 | Gerichtliche Zuständigkeitsverordnung Justiz vom 11.06.2012 (GVBl. S. 295), BayRS 300-3-1-J (17.09.2026 am Volltext gelesen) |
+| § 6 JuZuVO Nordrhein-Westfalen (Mahnverfahren Hagen und Euskirchen) | https://recht.nrw.de/lrgv/rechtsverordnung/01012026-justizzustaendigkeitsverordnung-juzuvo/ | Justizzuständigkeitsverordnung vom 04.12.2024 (GV. NRW. S. 1144), zuletzt geändert durch Verordnung vom 05.12.2025 (GV. NRW. S. 1152), Fassung gültig ab 01.01.2026 (17.09.2026) |
+| Mahngerichtsvertrag Berlin-Brandenburg (Artikel 1 bis 4) | https://bravors.brandenburg.de/vertraege/mahngerichtsvertrag_2006 | Staatsvertrag vom 13.12.2005 (GVBl. I/06 Nr. 4 S. 54, 55) (17.09.2026 am Volltext gelesen) |
+| Staatsvertrag über die Errichtung eines gemeinsamen Mahngerichts (Sachsen-Anhalt, Sachsen, Thüringen) | https://www.revosax.sachsen.de/vorschrift/9336 | Staatsvertrag vom 11.01.2007 (SächsGVBl. S. 81), Artikel 1 bis 4, auf der Grundlage des § 689 Abs. 3 Satz 4 ZPO (17.09.2026 am Volltext gelesen) |
+| Staatsvertrag Hamburg und Mecklenburg-Vorpommern über ein gemeinsames Mahngericht | https://www.landesrecht-mv.de/bsmv/document/jlr-NNLMV00007617NN00000000011 | Gesetz vom 10.10.2005 (GVOBl. M-V 2005, 512); Eingangsformel gelesen, Artikel 1 auf dem Portal nicht abrufbar (17.09.2026) |
+| Zuständigkeiten der zentralen Mahngerichte (Übersicht der Justiz) | https://www.mahngerichte.de/verfahrensueberblick/zustaendigkeiten/ | Amtliches Portal „Automatisiertes gerichtliches Mahnverfahren“, Justiz Nordrhein-Westfalen; Zuordnung Land zu Mahngericht, Sonderfälle Ausland, Wohnungseigentum, Arbeitssachen (abgerufen 17.09.2026). Hinweis: Das Portal ist eine amtliche Auskunft, keine Rechtsnorm; die Zuweisung steht in der jeweiligen Landesnorm |
 | §§ 1 bis 3 MahnVordrV Vordrucke für das Mahnverfahren | https://www.gesetze-im-internet.de/mahnvordrv/__1.html | Verordnung vom 06.05.1977 (BGBl. I S. 693), zuletzt geändert durch Art. 25 G v. 05.10.2021 (BGBl. I S. 4607) (17.09.2026 abends) |
 | § 167 ZPO Rückwirkung der Zustellung | https://www.gesetze-im-internet.de/zpo/__167.html | wie oben |
 | § 222 ZPO Fristberechnung | https://www.gesetze-im-internet.de/zpo/__222.html | wie oben |
@@ -148,6 +184,10 @@ noch Einspruch binnen zwei Wochen.
 | BGH, Urteil vom 14.07.2022, VII ZR 255/21 (Individualisierung des Anspruchs im Mahnbescheid) | https://www.bundesgerichtshof.de/SharedDocs/Entscheidungen/DE/Zivilsenate/VII_ZS/2021/VII_ZR_255-21.pdf | Volltext gelesen (17.09.2026 abends) |
 
 Nicht gelesen: §§ 752 ff. ZPO (übrige Vollstreckungsvoraussetzungen),
-Landesverordnungen zum zentralen Mahngericht außer Baden-Württemberg, Vorgaben für maschinell bearbeitete
+Landesnormen zur Zuweisung des Mahngerichts von Bremen, Hessen, Niedersachsen, Rheinland-Pfalz,
+Saarland und Schleswig-Holstein sowie Artikel 1 des Staatsvertrags Hamburg/Mecklenburg-Vorpommern
+(Zuordnung dort nach dem amtlichen Justizportal; Baden-Württemberg, Bayern, Nordrhein-Westfalen,
+Berlin, Brandenburg, Sachsen, Sachsen-Anhalt und Thüringen sind am 17.09.2026 am Volltext gelesen),
+Vorgaben für maschinell bearbeitete
 Mahnanträge über die Vorschriften der MaschMahnVordrV hinaus, Vordruckmuster der Anlagen zu beiden Vordruck-Verordnungen (im Portal als „nicht darstellbare Vordrucke“ geführt). Das
 Europäische Mahnverfahren (§§ 1087 ff. ZPO) ist nicht Gegenstand.
