@@ -187,8 +187,18 @@ Verwaltungsverfahren nur Ermessen gibt. Für **Bayern und Niedersachsen** wurde 
 Landesgesetz gefunden; dieser Negativbefund stützt sich nur auf die Suche im Landesportal und ist
 als `[PRÜFEN]` markiert.
 
+Fünftes Landesthema am 18.09.2026: die **obligatorische Streitschlichtung nach § 15a EGZPO** und die
+Schiedsstellen. Ergebnis als Übersicht im Merkblatt Zivilklage. Sechs Länder haben sie noch
+(Bayern, Hessen, Mecklenburg-Vorpommern, Rheinland-Pfalz, Saarland, Schleswig-Holstein), drei haben
+sie abgeschafft (Baden-Württemberg seit 2013, Brandenburg seit dem 17.12.2022, Nordrhein-Westfalen
+laut Portal „historisch“); für sieben Länder wurde kein Ausführungsgesetz gefunden — dieser
+Negativbefund ist als `[PRÜFEN]` markiert. Bayern verlangt den Schlichtungsversuch ohne
+Streitwertgrenze, aber nur innerhalb desselben Landgerichtsbezirks. Dazu im Merkblatt Strafanzeige
+eine Zeile, wer den Sühneversuch vor der Privatklage abnimmt (Gemeinden in Baden-Württemberg,
+sonst Schiedsämter und Schiedsstellen).
+
 Die restlichen Landesthemen (Petitions- und Bürgerbeauftragtengesetze, Gemeindeordnungen,
-Schiedsstellen, Online-Wachen) bleiben außerhalb Baden-Württembergs offen.
+Online-Wachen) bleiben außerhalb Baden-Württembergs offen.
 Fassungen seit 17.09.2026 nach dem Vollzitat des Portals (Abschnitt 4,
 Nr. 2).
 

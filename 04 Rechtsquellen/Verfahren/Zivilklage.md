@@ -1,6 +1,6 @@
 # Merkblatt: Zivilklage vor dem Amtsgericht oder Landgericht
 
-*Rechtsordnung DE · Bereiche Verträge und Verbraucher, Forderungen und Inkasso, Wohnen und Miete, Bauen und Nachbarn, Versicherungen · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen, Prozesskostenhilfe, § 40 ZPO und § 288 Abs. 5, 6 BGB am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, Rechtsprechung zu „demnächst“, Vorschuss und Fax am 17.09.2026 abends ergänzt, Anwaltskosten nach dem RVG am 17.09.2026 abends ergänzt*
+*Rechtsordnung DE · Bereiche Verträge und Verbraucher, Forderungen und Inkasso, Wohnen und Miete, Bauen und Nachbarn, Versicherungen · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen, Prozesskostenhilfe, § 40 ZPO und § 288 Abs. 5, 6 BGB am 17.09.2026 abends ergänzt, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, Rechtsprechung zu „demnächst“, Vorschuss und Fax am 17.09.2026 abends ergänzt, Anwaltskosten nach dem RVG am 17.09.2026 abends ergänzt, obligatorische Streitschlichtung der Länder am 18.09.2026 geprüft*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -36,8 +36,32 @@ Gerichtskosten bereithalten.
 | Gerichtsstandsvereinbarung | Eine Klausel im Vertrag, die ein anderes Gericht bestimmt, gilt nur zwischen Kaufleuten und juristischen Personen des öffentlichen Rechts, bei einer Partei ohne Gerichtsstand im Inland, oder wenn sie „ausdrücklich und schriftlich nach dem Entstehen der Streitigkeit“ geschlossen wird. Gegenüber Verbrauchern ist eine vorformulierte Gerichtsstandsklausel also unwirksam. Auch zwischen Kaufleuten hat eine Vereinbarung „keine rechtliche Wirkung, wenn sie nicht auf ein bestimmtes Rechtsverhältnis und die aus ihm entspringenden Rechtsstreitigkeiten sich bezieht“; unzulässig ist sie, wenn „für die Klage ein ausschließlicher Gerichtsstand begründet ist“ (etwa Wohnraummiete, § 29a) oder bei nichtvermögensrechtlichen Ansprüchen, die dem Amtsgericht ohne Rücksicht auf den Wert zugewiesen sind; dann wird das Gericht auch durch rügeloses Verhandeln nicht zuständig | § 38 Abs. 1 bis 3, § 40 ZPO |
 | Selbst klagen | Vor dem Amtsgericht: „Soweit eine Vertretung durch Rechtsanwälte nicht geboten ist, können die Parteien den Rechtsstreit selbst führen.“ Vertreten dürfen außer Anwälten nur Beschäftigte, „volljährige Familienangehörige …, Personen mit Befähigung zum Richteramt und Streitgenossen, wenn die Vertretung nicht im Zusammenhang mit einer entgeltlichen Tätigkeit steht“, Verbraucherzentralen für Verbraucherforderungen | § 79 Abs. 1 Satz 1, Abs. 2 ZPO |
 | Anwaltszwang | „Vor den Landgerichten und Oberlandesgerichten müssen sich die Parteien durch einen Rechtsanwalt vertreten lassen.“ Über 10.000 Euro und in den Fällen des § 71 Abs. 2 GVG also nur mit Anwalt; ohne Anwalt bleiben nur Prozesshandlungen, „die vor dem Urkundsbeamten der Geschäftsstelle vorgenommen werden können“ | § 78 Abs. 1 Satz 1, Abs. 3 ZPO |
-| Vorher schlichten? | Länder können für Streitigkeiten bis 750 Euro, Nachbarrecht, Ehrverletzungen außerhalb von Presse und Rundfunk und AGG-Sachen eine Gütestelle vorschalten; die Bescheinigung über den erfolglosen Versuch ist „mit der Klage einzureichen“ und wird auch ausgestellt, wenn das Verfahren binnen drei Monaten nicht durchgeführt wurde. Nicht bei Klagen mit gesetzlicher oder gerichtlicher Frist, nicht nach einem Mahnverfahren und nicht, „wenn die Parteien nicht in demselben Land wohnen oder ihren Sitz oder eine Niederlassung haben“. Baden-Württemberg: Das Schlichtungsgesetz vom 28.06.2000 ist laut Landesportal „gültig bis: 30.04.2013“ und außer Kraft; eine Nachfolgeregelung hat die Suche am Portal nicht ergeben, ein Schlichtungsversuch vor der Klage ist dort also nach Aktenlage nicht mehr Pflicht `[PRÜFEN: Aufhebungsgesetz und Übergangsregel nicht im Wortlaut gelesen]` | § 15a Abs. 1 Satz 1 bis 3, Abs. 2 Satz 1 Nr. 1 und 5, Satz 2 EGZPO `[QUELLE: Schlichtungsgesetze der übrigen Länder]` |
+| Vorher schlichten? | Länder können für Streitigkeiten bis 750 Euro, Nachbarrecht, Ehrverletzungen außerhalb von Presse und Rundfunk und AGG-Sachen eine Gütestelle vorschalten; die Bescheinigung über den erfolglosen Versuch ist „mit der Klage einzureichen“ und wird auch ausgestellt, wenn das Verfahren binnen drei Monaten nicht durchgeführt wurde. Nicht bei Klagen mit gesetzlicher oder gerichtlicher Frist, nicht nach einem Mahnverfahren und nicht, „wenn die Parteien nicht in demselben Land wohnen oder ihren Sitz oder eine Niederlassung haben“. Welche Länder das umgesetzt haben, steht in der Übersicht unter dieser Tabelle | § 15a Abs. 1 Satz 1 bis 3, Abs. 2 Satz 1 Nr. 1 und 5, Satz 2 EGZPO `[QUELLE: Schlichtungsgesetze der übrigen Länder]` |
 | Alternative Mahnverfahren | Bei reinen Geldforderungen ohne erwarteten Widerspruch: Mahnbescheid statt Klage (eigenes Merkblatt); die Zustellung des Mahnbescheids hemmt die Verjährung ebenso | § 204 Abs. 1 Nr. 3 BGB `[QUELLE: §§ 688 ff. ZPO]` |
+
+### Obligatorische Streitschlichtung je Land (Stand 18.09.2026)
+
+§ 15a EGZPO erlaubt den Ländern, für kleine Streitigkeiten einen Schlichtungsversuch zur
+Zulässigkeitsvoraussetzung zu machen. Mehrere Länder haben das inzwischen wieder abgeschafft.
+Wer klagt, prüft das für sein Land vorher — ohne Bescheinigung wird die Klage sonst als unzulässig
+abgewiesen.
+
+| Land | Obligatorische Schlichtung vor der Klage | Rechtsgrundlage |
+|---|---|---|
+| Baden-Württemberg | **nein, weggefallen.** Das Schlichtungsgesetz vom 28.06.2000 ist am Landesportal als „gültig bis 30.04.2013“ geführt | Schlichtungsgesetz BW (außer Kraft) `[PRÜFEN: Aufhebungsgesetz und Übergangsregel nicht im Wortlaut gelesen]` |
+| Bayern | **ja**, für Nachbarrecht (§§ 906, 910, 911, 923 BGB, Art. 43 bis 54 AGBGB, nicht bei gewerblichen Betrieben), Ehrverletzungen außerhalb von Presse und Rundfunk und Ansprüche nach Abschnitt 3 AGG — **ohne Streitwertgrenze**. Nur, wenn beide Parteien im selben Landgerichtsbezirk wohnen oder sitzen (München I und II gelten als einer) | Art. 1, Art. 2 BaySchlG vom 25.04.2000 (GVBl. S. 268, BayRS 300-1-5-J). Am Volltext gelesen |
+| Brandenburg | **nein, seit 17.12.2022 weggefallen.** Das Brandenburgische Schlichtungsgesetz vom 05.10.2000 ist durch Gesetz vom 16.12.2022 außer Kraft getreten | BbgSchlG (außer Kraft, GVBl. I/22 Nr. 31). Am Volltext gelesen |
+| Hessen | **ja.** Das Gesetz zur Regelung der außergerichtlichen Streitschlichtung gilt bis 31.12.2035 und wurde zuletzt am 16.09.2025 geändert; erfasst sind Nachbarrecht und Ehrverletzungen außerhalb von Presse und Rundfunk | SchlichtG HE 2001 vom 06.02.2001 (Gl.Nr. 210-82), §§ 1 bis 5. Kopf und § 1 gelesen `[PRÜFEN: § 1 nur in der Fassung bis 02.12.2010 im Wortlaut gelesen]` |
+| Mecklenburg-Vorpommern | **ja**, für Nachbarrecht und Ehrverletzungen außerhalb von Presse und Rundfunk, vorbehaltlich § 15a Abs. 2 und 3 EGZPO; zuständig sind die Schiedsstellen | § 34a Schiedsstellen- und Schlichtungsgesetz (SchStG M-V) vom 13.09.1990, zuletzt geändert 26.05.2021. Am Volltext gelesen |
+| Nordrhein-Westfalen | **nein, weggefallen.** Das Gütestellen- und Schlichtungsgesetz vom 09.05.2000 führt das Landesportal als „historisch“ und aufgehoben | GüSchlG NRW (aufgehoben) `[PRÜFEN: Datum und Aufhebungsgesetz am Portal nicht abrufbar]` |
+| Rheinland-Pfalz | **ja**, für Nachbarrecht (§§ 906, 910, 911, 923 BGB, Landesnachbarrechtsgesetz) und Ehrverletzungen außerhalb von Presse und Rundfunk | § 1 LSchlG (gültig ab 01.12.2008). Am Volltext gelesen |
+| Saarland | **ja**, wenn beide Parteien im Saarland wohnen, sitzen oder eine Niederlassung haben; Nachbarrecht und weitere Fälle | § 37a AGJusG (gültig ab 01.07.2007), Gütestellen nach § 37b. Am Volltext gelesen |
+| Schleswig-Holstein | **ja**, Landesschlichtungsgesetz vom 11.12.2001, gültig ab 01.01.2003; § 1 regelt den Anwendungsbereich, § 2 die Bescheinigung über den erfolglosen Einigungsversuch | LSchliG SH `[QUELLE: Wortlaut des § 1 nicht gelesen, Portal war nicht erreichbar]` |
+| Berlin, Bremen, Hamburg, Niedersachsen, Sachsen, Sachsen-Anhalt, Thüringen | **kein Ausführungsgesetz zu § 15a EGZPO gefunden.** In Thüringen enthält das Schiedsstellengesetz nur das Sühneverfahren vor der Privatklage, keine obligatorische Streitschlichtung | `[PRÜFEN: Negativbefund; für diese sieben Länder stützt er sich auf die Suche in den Landesportalen, nicht auf eine gelesene Norm]` |
+
+Zweiter Weg, unabhängig davon: Die **Schiedsstellen und Schiedsämter** der Länder nehmen auch den
+Sühneversuch vor einer Privatklage ab (§ 380 StPO); dazu das Merkblatt Strafanzeige.
+
 
 ## 2. Fristen
 
@@ -174,6 +198,12 @@ Gerichtskosten bereithalten.
 | § 548 BGB Verjährung der Ersatzansprüche bei Miete (Abs. 1, 2) | https://www.gesetze-im-internet.de/bgb/__548.html | wie oben (17.09.2026) |
 | § 634a BGB Verjährung der Mängelansprüche beim Werkvertrag (Abs. 1 bis 3) | https://www.gesetze-im-internet.de/bgb/__634a.html | wie oben (17.09.2026) |
 | Stand des BGB | https://www.gesetze-im-internet.de/bgb/BJNR001950896.html | Neugefasst Bek. v. 02.01.2002 I 42, 2909; 2003 I 738; zuletzt geändert Art. 6 G v. 23.07.2026 I Nr. 226 |
+| Art. 1, 2 BaySchlG | https://www.gesetze-bayern.de/Content/Document/BaySchlG | Bayerisches Schlichtungsgesetz vom 25.04.2000 (GVBl. S. 268, BayRS 300-1-5-J) (18.09.2026) |
+| BbgSchlG (außer Kraft seit 17.12.2022) | https://bravors.brandenburg.de/gesetze/bbgschlg | Brandenburgisches Schlichtungsgesetz vom 05.10.2000, außer Kraft durch Gesetz vom 16.12.2022 (18.09.2026) |
+| § 1 LSchlG Rheinland-Pfalz | https://www.landesrecht.rlp.de/bsrp/document/jlr-SchlGRPpP1 | Landesschlichtungsgesetz, § 1 gültig ab 01.12.2008 (18.09.2026) |
+| § 37a AGJusG Saarland | https://recht.saarland.de/bssl/document/jlr-JusGAGSLV3P37a | Ausführungsgesetz zum Justizgesetz, § 37a gültig ab 01.07.2007 (18.09.2026) |
+| § 34a SchStG M-V | https://www.landesrecht-mv.de/bsmv/document/jlr-SchiedsGMVrahmen | Schiedsstellen- und Schlichtungsgesetz vom 13.09.1990, zuletzt geändert 26.05.2021 (18.09.2026) |
+| SchlichtG HE 2001 (Kopf und § 1) | https://www.rv.hessenrecht.hessen.de/bshe/document/jlr-SchlichtGHE2001rahmen | Gesetz zur Regelung der außergerichtlichen Streitschlichtung vom 06.02.2001, gültig bis 31.12.2035, zuletzt geändert 16.09.2025 (18.09.2026) |
 | § 15a EGZPO Gütestellen (Abs. 1, Abs. 2) | https://www.gesetze-im-internet.de/zpoeg/__15a.html | EGZPO, zuletzt geändert Art. 17 G v. 08.12.2025 I Nr. 319 (17.09.2026 gelesen) |
 | § 13 RVG Wertgebühren (Abs. 1) und Anlage 2 (Gebührentabelle) | https://www.gesetze-im-internet.de/rvg/__13.html | RVG vom 05.05.2004, Tabelle in der Fassung BGBl. 2025 I Nr. 109 (17.09.2026 abends) |
 | Vergütungsverzeichnis zum RVG (Nr. 1000, 1003, 3100, 3104, 7002, 7008) | https://www.gesetze-im-internet.de/rvg/anlage_1.html | Fassung des Portals (17.09.2026 abends) |
@@ -188,7 +218,7 @@ Verfahren bis 1.000 Euro (§ 495a ZPO, früher 600), Berufung ab 1.000 Euro
 (§ 511 Abs. 2 ZPO, früher 600); alle drei am Rohtext der Gesetzesseite
 bestätigt.
 
-Nicht gelesen: Aufhebungsgesetz zum Schlichtungsgesetz Baden-Württemberg, § 116 ZPO (Prozesskostenhilfe für Parteien kraft Amtes und
+Nicht gelesen: Aufhebungsgesetze zu den Schlichtungsgesetzen in Baden-Württemberg und Nordrhein-Westfalen, die Schlichtungsgesetze von Schleswig-Holstein und Hessen im Wortlaut der aktuellen Fassung, § 116 ZPO (Prozesskostenhilfe für Parteien kraft Amtes und
 juristische Personen; gelesen, nicht eingearbeitet), RVG außer § 13, Anlage 2 und den genannten Nummern des Vergütungsverzeichnisses,
 Landesschlichtungsgesetze, §§ 688 ff. ZPO (Mahnverfahren, eigenes Merkblatt),
 Rechtsprechung zur Nachholung der Klagebegründung. Die Ansprüche selbst sind
