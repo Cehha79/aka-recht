@@ -1,6 +1,6 @@
 # Rechtsinhalte
 
-*Stand: 17.09.2026*
+*Stand: 18.09.2026*
 
 ## Aufgabe dieser Datei
 
@@ -122,23 +122,33 @@ Befunde des zweiten Durchgangs (17.09.2026 nachts, die sieben zuletzt offenen St
 Mahnverfahren gebündelt: Arbeitsgericht Hannover für die Bezirke aller Arbeitsgerichte.
 (3) Die maschinelle Bearbeitung steht nicht überall in derselben Norm: Bremen, Niedersachsen und die
 beiden Staatsverträge regeln sie mit, Schleswig-Holstein in einer eigenen Verordnung
-(§ 1 MaschMahnEV), Hessen gar nicht in § 48 JuZuV. Danach Thema 2, zweiter Teil: die Bußgeldbehörden je Land. Zwölf Länder sind am Volltext belegt
-(Baden-Württemberg schon vorher, dazu Bayern, Berlin, Brandenburg, Hamburg,
-Mecklenburg-Vorpommern, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland,
-Sachsen und Schleswig-Holstein); die Übersicht steht im Merkblatt Einspruch Bußgeldbescheid,
-Abschnitt 1. Ein zweiter Befund: Sechs Länder haben die Verkehrsordnungswidrigkeiten bei einer
-Landesbehörde gebündelt (Bayern Polizeiverwaltungsamt, Brandenburg Zentraldienst der Polizei,
-Berlin Polizei Berlin, Hamburg Behörde für Inneres und Sport, Rheinland-Pfalz Polizeipräsidium
-Rheinpfalz, Saarland Landesverwaltungsamt); die übrigen lassen Landkreise und kreisfreie Städte
-entscheiden, der ruhende Verkehr bleibt fast überall bei den Gemeinden. Befund: Das Thema ist nicht wie die vorigen in einem Zug zu erledigen, weil die Länder
-ganz unterschiedlich regeln — eigene Verkehrs-Bußgeldverordnung (Brandenburg), ein Abschnitt in
-einer großen Zuständigkeitsverordnung (Bayern, Niedersachsen, Sachsen) oder gar keine ausdrückliche
-Norm, sodass die Zuständigkeit nur über die Straßenverkehrsbehörden und einen Runderlass greifbar
-ist (Nordrhein-Westfalen; für Bremen ist geprüft, dass keine Verkehrs-Verordnung besteht). Offen
-sind Sachsen-Anhalt und Thüringen sowie die Verkehrszuständigkeit in Bremen; für Hessen ist
-geprüft und im Merkblatt festgehalten, dass die Verordnung vom 12.11.2007 Ordnungswidrigkeiten nur
-im Gefahrgutrecht regelt und am Landesportal keine Norm zur Verkehrs-Bußgeldzuständigkeit zu
-finden war.
+(§ 1 MaschMahnEV), Hessen gar nicht in § 48 JuZuV. Danach Thema 2, zweiter Teil: die Bußgeldbehörden je Land, seit dem 18.09.2026 für alle 16 Länder
+am Volltext belegt (zwölf am 17.09.2026 nachts, Bremen, Sachsen-Anhalt und Thüringen am
+18.09.2026); die Übersicht steht im Merkblatt Einspruch Bußgeldbescheid, Abschnitt 1. Ein zweiter
+Befund: Acht Länder haben die Verkehrsordnungswidrigkeiten bei einer Landesbehörde gebündelt
+(Bayern Polizeiverwaltungsamt, Berlin Polizei Berlin, Brandenburg Zentraldienst der Polizei,
+Hamburg Behörde für Inneres und Sport, Rheinland-Pfalz Polizeipräsidium Rheinpfalz, Saarland
+Landesverwaltungsamt, Sachsen-Anhalt Polizeiinspektion Zentrale Dienste, Thüringen Zentrale
+Bußgeldstelle bei der Landespolizeidirektion); die übrigen lassen Landkreise und kreisfreie Städte
+entscheiden, Bremen die Ortspolizeibehörden, und der ruhende Verkehr bleibt fast überall bei den
+Gemeinden. Befund: Das Thema war nicht wie die vorigen in einem Zug zu erledigen, weil die Länder
+ganz unterschiedlich regeln — eigene Verkehrs-Bußgeldverordnung (Brandenburg, Rheinland-Pfalz,
+Thüringen, Bremen), ein Abschnitt in einer großen Zuständigkeitsverordnung (Bayern, Niedersachsen,
+Sachsen, Sachsen-Anhalt), ein Zuständigkeitsverzeichnis als Anlage (Schleswig-Holstein) oder gar
+keine ausdrückliche Norm, sodass die Zuständigkeit nur über die Straßenverkehrsbehörden und einen
+Runderlass greifbar ist (Nordrhein-Westfalen). Zwei Befunde des Abschlusses am 18.09.2026:
+(1) Die Annahme vom 17.09.2026, Bremen habe keine Verkehrs-Verordnung, war falsch — § 1 der
+Verordnung über die zuständige Verwaltungsbehörde nach § 26 Abs. 1 StVG vom 21.07.1980 weist die
+Zuständigkeit den Ortspolizeibehörden zu (Ordnungsamt Bremen, Oberbürgermeister als Vertretung des
+Magistrats in Bremerhaven, §§ 126, 128, 141 BremPolG). Die Verordnung war am 17.09.2026 nur nicht
+gefunden worden. (2) In Schleswig-Holstein war der Eintrag zu weit: Nach dem Zuständigkeitsverzeichnis
+(Gliederungsnummer 2.1.20.1) liegen §§ 24, 24a, 24c StVG bei den Kreisen und kreisfreien Städten;
+Gemeinden über 80 000 Einwohner haben nur Lärmschutz und Lichtzeichen (2.7.2.1), Gemeinden über
+20 000 und weitere benannte Gemeinden nur Halten und Parken (2.8.1.1, 2.9.1.1). Für Hessen bleibt es
+dabei, dass die Verordnung vom 12.11.2007 Ordnungswidrigkeiten nur im Gefahrgutrecht regelt und am
+Landesportal keine Norm zur Verkehrs-Bußgeldzuständigkeit zu finden war; nach der Entscheidung
+Hasans vom 18.09.2026 zählt ein Runderlass als Beleg, wenn ein Land keine Rechtsverordnung hat —
+die dahinterstehende Norm bleibt dann als `[QUELLE]` offen (so bei Nordrhein-Westfalen).
 Die übrigen Landesthemen (Verwaltungsverfahrens-, Zustellungs-, Informationsfreiheits-,
 Petitions- und Gemeindegesetze, Schiedsstellen) bleiben außerhalb
 Baden-Württembergs offen.
