@@ -279,7 +279,7 @@ def run():
             text = (root / f1['ordner'] / r['datei']).read_text('utf-8')
             assert r['absender_quelle'] == 'Einstellungen' and 'Erika Probe, Probeweg 1, 70000 Probestadt, 0711 000, erika@example.org' in text and '【ABSENDER】' not in text and '【ABSENDER_NAME】' not in text and '【DATUM】' not in text and time.strftime('%d.%m.%Y') in text, (v, r)
             assert r['datei'].startswith('06 Entwürfe/') and set(r['ersetzt']) >= {'【ABSENDER】', '【ABSENDER_NAME】', '【DATUM】'}, r
-        assert f'Fall R-0001' in (root / f1['ordner'] / '06 Entwürfe/Probe_Briefkopf.md').read_text('utf-8')
+        assert 'Fall R-0001' in (root / f1['ordner'] / '06 Entwürfe/Probe_Briefkopf.md').read_text('utf-8')
         anfrage('/api/werkzeug', {'name': 'vorlage_fuellen', 'parameter': {'fall': 'R-0001', 'vorlage': 'Briefkopf', 'ziel': 'Probe_Briefkopf.md'}, 'bestaetigt': True}, erwartet=400)   # nie überschreiben
         anfrage('/api/werkzeug', {'name': 'vorlage_fuellen', 'parameter': {'fall': 'R-0001', 'vorlage': 'LIESMICH'}, 'bestaetigt': True}, erwartet=400)
         anfrage('/api/werkzeug', {'name': 'vorlage_fuellen', 'parameter': {'fall': 'R-0001', 'vorlage': 'Briefkopf', 'ziel': '../03 Schriftverkehr/x.md'}, 'bestaetigt': True}, erwartet=400)
