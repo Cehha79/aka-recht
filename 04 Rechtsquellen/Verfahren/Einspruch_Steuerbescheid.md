@@ -1,6 +1,6 @@
 # Merkblatt: Einspruch gegen einen Steuerbescheid
 
-*Rechtsordnung DE · Bereich Steuern und Abgaben · Stand der Prüfung: 16.09.2026, ergänzt und von einer zweiten Instanz gegengeprüft 17.09.2026, § 87a AO am 17.09.2026 abends vollständig gelesen, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, BFH zum E-Mail-Einspruch am 17.09.2026 abends gelesen*
+*Rechtsordnung DE · Bereich Steuern und Abgaben · Stand der Prüfung: 16.09.2026, ergänzt und von einer zweiten Instanz gegengeprüft 17.09.2026, § 87a AO am 17.09.2026 abends vollständig gelesen, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, BFH zum E-Mail-Einspruch und der Anwendungserlass zu §§ 172, 357 am 17.09.2026 abends gelesen*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -84,8 +84,19 @@ Unterschied nach dem Gesetzeswortlaut: Geändert wird nur, soweit dem Antrag
 „der Sache nach entsprochen wird“, also der beantragte Punkt; die volle
 Überprüfung nach § 367 Abs. 2 Satz 1 AO gibt es nur im Einspruchsverfahren.
 Dass damit keine Verböserung und keine Aussetzung der Vollziehung nach
-§ 361 AO verbunden ist, steht nicht in § 172 `[PRÜFEN: AEAO zu § 172 und
-Rechtsprechung zur schlichten Änderung, nicht gelesen]`. Bei Zweifeln
+§ 361 AO verbunden ist, steht nicht in § 172 `[PRÜFEN: Rechtsprechung zur
+Aussetzung der Vollziehung bei schlichter Änderung, nicht gelesen]`.
+Der Anwendungserlass (AEAO zu § 172, Nr. 1) ist gelesen: Der Antrag „bedarf
+keiner Form“; nicht ausdrücklich als Einspruch bezeichnete, vor Ablauf der
+Einspruchsfrist schriftlich oder elektronisch vorgetragene Änderungsbegehren
+können „regelmäßig als schlichte Änderungsanträge behandelt werden, wenn der
+Antragsteller eine genau bestimmte Änderung des Steuerbescheids beantragt und
+das Finanzamt dem Begehren entsprechen will“. Geändert wird nur, soweit „der
+Steuerpflichtige vor Ablauf der Einspruchsfrist eine genau bestimmte Änderung
+bezogen auf einen konkreten Lebenssachverhalt beantragt hat“; es genügt nicht,
+nur den Betrag oder den Rahmen zu nennen oder erst nach Fristablauf zu
+konkretisieren. Wer Einspruch einlegt, überlagert damit einen daneben
+gestellten Änderungsantrag. Bei Zweifeln
 Einspruch, er schließt die schlichte Änderung nicht aus.
 
 ## 6. Anlagen und Belege für die Akte
@@ -125,10 +136,10 @@ Einspruch, er schließt die schlichte Änderung nicht aus.
 | § 1 AO Anwendungsbereich (Abs. 2) | https://www.gesetze-im-internet.de/ao_1977/__1.html | 17.09.2026 abends am Rohtext | wie oben |
 | § 3 KAG BW Anwendung von Bundesrecht (Abs. 3) | https://www.landesrecht-bw.de/perma?j=KAG_BW_!_3 | 17.09.2026 abends im Browser | KAG vom 17.03.2005 (GBl. S. 206), § 3 gültig ab 12.12.2020 |
 | Stand der AO | https://www.gesetze-im-internet.de/ao_1977/BJNR006130976.html | 16.09.2026 | Neugefasst durch Bek. v. 23.01.2025 I Nr. 24; zuletzt geändert durch Art. 15 Abs. 6 G v. 03.07.2026 I Nr. 199 |
+| AEAO zu § 357 (Einlegung des Einspruchs) | https://ao.bundesfinanzministerium.de/ao/2025/Abgabenordnung/Siebenter-Teil/Zweiter-Abschnitt/Paragraf-357/inhalt.html | 17.09.2026 abends im Browser gelesen | AO-Handbuch 2025 (BMF) |
+| AEAO zu § 172 (schlichte Änderung) | https://ao.bundesfinanzministerium.de/ao/2025/Abgabenordnung/Vierter-Teil/Dritter-Abschnitt/Erster-Unterabschnitt/III/Paragraf-172/inhalt.html | 17.09.2026 abends im Browser gelesen | AO-Handbuch 2025 (BMF) |
 | BFH, Urteil vom 13.05.2015, III R 26/14 (Einspruch per einfacher E-Mail) | https://www.bundesfinanzhof.de/de/entscheidung/entscheidungen-online/detail/STRE201510201/ | 17.09.2026 abends, Volltext | Entscheidungsdatenbank des BFH, Vorinstanz Hessisches FG 8 K 1658/13 |
-| AEAO zu § 357 (E-Mail ohne Signatur) | https://ao.bundesfinanzministerium.de/ao/2025/Abgabenordnung/Siebenter-Teil/Zweiter-Abschnitt/Paragraf-357/inhalt.html | nicht gelesen (Abruf am 16.09.2026 blockiert) | AO-Handbuch 2025 |
 
 Nicht gelesen: § 122a
-AO in der bis 31.12.2025 geltenden Fassung, AEAO zu § 172 (schlichte
-Änderung), Rechtsprechung zur Kostenerstattung und zur
+AO in der bis 31.12.2025 geltenden Fassung, Rechtsprechung zur Kostenerstattung und zur
 Beschwer bei Null-Bescheiden, Kommunalabgabengesetze außer Baden-Württemberg.
