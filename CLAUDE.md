@@ -25,7 +25,8 @@ Strafsachen und mehr). Die Regeln aus `~/.claude/CLAUDE.md` gelten weiter.
   Schreiben: `bestand_abgleichen` (registriert neue und verschobene Dateien),
   `aufgabe_anlegen`, `frist_eintragen`, `ereignis_eintragen`,
   `notiz_anlegen`, `dokument_ordnen`, `dokument_verschieben`,
-  `journal_schreiben`, `entwurf_erfassen`, `akte_speichern` (mit Revision).
+  `journal_schreiben`, `vorlage_fuellen` (Entwurf aus Vorlage mit Absender
+  aus den Einstellungen), `entwurf_erfassen`, `akte_speichern` (mit Revision).
 - Kennungen (D, P, V, E, F, A, W, N, K) sind stabil; Verweise gehen auf
   Kennungen, nie auf Pfade.
 

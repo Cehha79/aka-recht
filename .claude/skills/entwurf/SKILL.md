@@ -22,9 +22,14 @@ Akte, nicht vorausgesetzt.
    (die Vorlage nennt es), dessen Pflichtinhalt, Adressat und Frist gegen den
    Entwurf prüfen und fehlende Punkte als `[PRÜFEN: …]` markieren. Das
    Merkblatt hat ein Prüfdatum; Fassung der Normen für den Fall erneut prüfen.
-3. Datei schreiben: `06 Entwürfe/JJJJ-MM-TT_<Kurzname>_ENTWURF.md` im Fallordner.
-   Oben interne Hinweise (Frist, Versandweg, offene Punkte), dann `---`,
-   dann der Sendetext. Neue Arbeitsfassung: Datei überschreiben. Die
+3. Entwurf aus der Vorlage anlegen: `cli.py vorlage_fuellen fall=$fall vorlage=<Name> [ziel=…]`
+   (Namen: `cli.py vorlagen_auflisten`). Das Werkzeug kopiert die Vorlage nach
+   `06 Entwürfe/JJJJ-MM-TT_<Vorlage>_ENTWURF.md`, setzt Absender (Einstellungen
+   oder Beteiligter mit Rolle „Ich“), Unterschrift, Datum und Fallkennung ein
+   und überschreibt nie; meldet es „Kein Absender“, den Nutzer auf die
+   Einstellungen hinweisen. Dann die übrigen Platzhalter 【…】 im Sendetext
+   ausfüllen. Aufbau der Datei: oben interne Hinweise (Frist, Versandweg,
+   offene Punkte), dann `---`, dann der Sendetext. Neue Arbeitsfassung: Datei überschreiben. Die
    eingefrorenen Kopien unter `06 Entwürfe/Fassungen/` nie anfassen.
 4. In der Akte erfassen (Pfad relativ zum Fallordner):
    `cli.py entwurf_erfassen fall=$fall titel="…" datei="06 Entwürfe/…_ENTWURF.md" status="in Arbeit"`

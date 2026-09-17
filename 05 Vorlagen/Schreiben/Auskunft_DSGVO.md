@@ -1,9 +1,9 @@
 Interne Hinweise (nicht im Sendetext): Auskunftsrecht Art. 15 DSGVO; Antwortfrist grundsätzlich ein Monat, Art. 12 Abs. 3 DSGVO [QUELLE: Volltext prüfen].
 Empfänger ist der Verantwortliche (Unternehmen, Arbeitgeber, Behörde). Eigene Identität nur so weit angeben wie nötig.
 ---
-Von: 【Vorname Nachname, Anschrift】
+Von: 【ABSENDER】
 An: 【Verantwortliche Stelle, Anschrift, ggf. Datenschutzbeauftragter】
-Datum: 【TT.MM.JJJJ】
+Datum: 【DATUM】
 Betreff: Auskunft nach Art. 15 DSGVO
 
 Sehr geehrte Damen und Herren,
@@ -20,4 +20,4 @@ Bitte stellen Sie mir eine Kopie der Daten zur Verfügung (Art. 15 Abs. 3 DSGVO)
 
 Mit freundlichen Grüßen
 
-【Vorname Nachname】
+【ABSENDER_NAME】

@@ -1,9 +1,9 @@
 Interne Hinweise (nicht im Sendetext): Fall 【R-0000】, Empfänger 【P-Kennung】, Zweck 【…】.
 Versandweg und Nachweis vor Versand festlegen (E-Mail mit Sendebeleg, Einwurf-Einschreiben, Fax mit Sendebericht).
 ---
-Von: 【Vorname Nachname, Straße Nr., PLZ Ort, E-Mail】
+Von: 【ABSENDER】
 An: 【Empfänger, Anschrift】
-Datum: 【TT.MM.JJJJ】
+Datum: 【DATUM】
 Betreff: 【Betreff】【, Aktenzeichen …】
 
 Sehr geehrte Damen und Herren,
@@ -16,7 +16,7 @@ Sehr geehrte Damen und Herren,
 
 Mit freundlichen Grüßen
 
-【Vorname Nachname】
+【ABSENDER_NAME】
 
 Anlagen:
 - 【Anlage 1】

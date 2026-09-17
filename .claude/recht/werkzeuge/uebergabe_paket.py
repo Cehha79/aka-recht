@@ -58,7 +58,13 @@ def verzeichnis(ak, docs, fehlend, args):
         z += [f'- {b["id"]} {b["name"]} ({b["rolle"]}){" · " + b["aktenzeichen"] if b["aktenzeichen"] else ""}' for b in ak['beteiligte']]
         z += ['', '## Verfahren'] + [f'- {v["id"]} {v["art"]} · {pers.get(v["stelle"], {}).get("name", "")} · Az. {v["aktenzeichen"] or "offen"} · Stand: {v["stand"]}' for v in ak['verfahren']]
     if args.umfang == 'voll' or args.mit_chronologie:
-        z += ['', '## Chronologie'] + [f'- {e["datum"]} {e["titel"]} ({e["art"]}){" · Quelle " + e["quelle"] if e["quelle"] else ""}: {e["detail"]}' for e in sorted(ak['ereignisse'], key=lambda x: x['datum'])]
+        def zeit(e):   # F13: unsichere Zeitpunkte sichtbar, datum ist dann nur das Sortierdatum
+            z = e.get('zeitpunkt') or 'genau'; t = f' ({e["zeitpunkt_text"]})' if e.get('zeitpunkt_text') else ''
+            if z == 'ungefähr': return f'ca. {e["datum"]}{t}'
+            if z == 'zeitraum': return f'{e["datum"]} bis {e.get("datum_bis") or e["datum"]}{t}'
+            if z == 'unbekannt': return f'Zeitpunkt unbekannt, einsortiert bei {e["datum"]}{t}'
+            return e['datum']
+        z += ['', '## Chronologie'] + [f'- {zeit(e)} {e["titel"]} ({e["art"]}){" · Quelle " + e["quelle"] if e["quelle"] else ""}: {e["detail"]}' for e in sorted(ak['ereignisse'], key=lambda x: x['datum'])]
     if args.umfang == 'voll':
         z += ['', '## Fristen und Termine'] + [f'- {x["datum"]} {x["titel"]} · {x["art"]} · Prüfstatus {x["pruefstatus"]} · Auslöser: {x["ausloeser"]} · Grundlage: {x["rechtsgrundlage"]}' for x in sorted(ak['fristen'], key=lambda x: x['datum'])]
         z += ['', '## Offene Aufgaben'] + [f'- {x["titel"]}{" (fällig " + x["faellig"] + ")" if x["faellig"] else ""}: {x["detail"]}' for x in ak['aufgaben'] if not x['erledigt']]

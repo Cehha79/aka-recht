@@ -1,9 +1,9 @@
 Interne Hinweise (nicht im Sendetext): Selbst gesetzte Frist in der Akte als Art „selbst gesetzt“ eintragen. Angemessene Länge begründen (je nach Anliegen ein bis drei Wochen).
 Versandnachweis sichern. Bei Zahlungsforderung: Fälligkeit und Verzug prüfen [QUELLE: §§ 286, 288 BGB].
 ---
-Von: 【Vorname Nachname, Anschrift】
+Von: 【ABSENDER】
 An: 【Empfänger, Anschrift】
-Datum: 【TT.MM.JJJJ】
+Datum: 【DATUM】
 Betreff: 【Anliegen】, Fristsetzung bis 【TT.MM.JJJJ】
 
 Sehr geehrte Damen und Herren,
@@ -20,4 +20,4 @@ Nach fruchtlosem Ablauf der Frist werde ich 【weitere Schritte, sachlich: z. B.
 
 Mit freundlichen Grüßen
 
-【Vorname Nachname】
+【ABSENDER_NAME】

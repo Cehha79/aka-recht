@@ -216,7 +216,7 @@ def run():
             assert fehler and any(erwartet in s for s in fehler), (name, fehler)
         fehler, warn = akte_schema.validate(kaputte(lambda k: k['fristen'].append(dict(voll, geprueft_am=''))))
         assert not fehler and any('Prüfdatum' in s for s in warn), (fehler, warn)
-        assert akte_schema.frist_eigenschaften(voll) == {'gerechnet': True, 'belegt': True, 'geprueft': True, 'offene_marker': []}
+        assert akte_schema.frist_eigenschaften(voll) == {'gerechnet': True, 'belegt': True, 'geprueft': True, 'ausloeser_sicher': None, 'offene_marker': []}
         assert akte_schema.frist_eigenschaften(dict(voll, art='Termin'))['gerechnet'] is None
         assert akte_schema.frist_eigenschaften(dict(voll, berechnung='Fristende 2026-09-21'))['gerechnet'] is True
         assert akte_schema.frist_eigenschaften(f12[1][1])['offene_marker'] == ['[PRÜFEN: Fassung]']
@@ -267,6 +267,27 @@ def run():
         fr = anfrage('/api/fristen/berechnen', {'start': '2025-05-07', 'menge': 1, 'einheit': 'tage', 'land': 'BE'}); assert fr['ende'] == '2025-05-09', fr   # 08.05.2025 (Donnerstag) in Berlin einmalig Feiertag, GVBl. Berlin 2024 S. 460
         fr = anfrage('/api/fristen/berechnen', {'start': '2025-05-07', 'menge': 1, 'einheit': 'tage', 'land': 'BB'}); assert fr['ende'] == '2025-05-08', fr
         anfrage('/api/einstellungen', {'einstellungen': {'feiertagsland': 'NW'}}); assert anfrage('/api/einstellungen')['einstellungen']['feiertagsland'] == 'NW'
+        # Absender in den Einstellungen und Entwurf aus Vorlage (vorlage_fuellen): Standard-Absender, „Ich“-Beteiligter gewinnt, nie überschreiben
+        assert anfrage('/api/einstellungen')['einstellungen']['absender'] == {'name': '', 'strasse': '', 'plz_ort': '', 'telefon': '', 'email': ''}
+        r = anfrage('/api/werkzeug', {'name': 'vorlage_fuellen', 'parameter': {'fall': 'R-0001', 'vorlage': 'Briefkopf'}, 'bestaetigt': True})
+        assert r['absender'] == '' and 'Kein Absender' in r['hinweis'] and '【ABSENDER】' in (root / f1['ordner'] / r['datei']).read_text('utf-8'), r
+        anfrage('/api/einstellungen', {'einstellungen': {'absender': {'name': 'Erika Probe', 'strasse': 'Probeweg 1', 'plz_ort': '70000 Probestadt', 'telefon': '0711 000', 'email': 'erika@example.org', 'unbekannt': 'x'}}})
+        e = anfrage('/api/einstellungen')['einstellungen']['absender']; assert e['name'] == 'Erika Probe' and 'unbekannt' not in e, e
+        vorlagen = [v['name'] for v in anfrage('/api/werkzeug', {'name': 'vorlagen_auflisten', 'parameter': {}})]; assert 'Briefkopf' in vorlagen and 'LIESMICH' not in vorlagen and len(vorlagen) >= 10, vorlagen
+        for v in vorlagen:
+            r = anfrage('/api/werkzeug', {'name': 'vorlage_fuellen', 'parameter': {'fall': 'R-0001', 'vorlage': v, 'ziel': f'Probe_{v}.md'}, 'bestaetigt': True})
+            text = (root / f1['ordner'] / r['datei']).read_text('utf-8')
+            assert r['absender_quelle'] == 'Einstellungen' and 'Erika Probe, Probeweg 1, 70000 Probestadt, 0711 000, erika@example.org' in text and '【ABSENDER】' not in text and '【ABSENDER_NAME】' not in text and '【DATUM】' not in text and time.strftime('%d.%m.%Y') in text, (v, r)
+            assert r['datei'].startswith('06 Entwürfe/') and set(r['ersetzt']) >= {'【ABSENDER】', '【ABSENDER_NAME】', '【DATUM】'}, r
+        assert f'Fall R-0001' in (root / f1['ordner'] / '06 Entwürfe/Probe_Briefkopf.md').read_text('utf-8')
+        anfrage('/api/werkzeug', {'name': 'vorlage_fuellen', 'parameter': {'fall': 'R-0001', 'vorlage': 'Briefkopf', 'ziel': 'Probe_Briefkopf.md'}, 'bestaetigt': True}, erwartet=400)   # nie überschreiben
+        anfrage('/api/werkzeug', {'name': 'vorlage_fuellen', 'parameter': {'fall': 'R-0001', 'vorlage': 'LIESMICH'}, 'bestaetigt': True}, erwartet=400)
+        anfrage('/api/werkzeug', {'name': 'vorlage_fuellen', 'parameter': {'fall': 'R-0001', 'vorlage': 'Briefkopf', 'ziel': '../03 Schriftverkehr/x.md'}, 'bestaetigt': True}, erwartet=400)
+        docx = QUELLE / '.claude/recht/werkzeuge/docx_erzeugen.py'
+        if docx.is_file():
+            rp = subprocess.run([sys.executable, str(docx), '--pruefen', str(root / f1['ordner'] / '06 Entwürfe/Probe_Briefkopf.md')], capture_output=True, text=True, timeout=30)
+            assert '„Von:“' not in rp.stdout and '„Datum:“' not in rp.stdout, rp.stdout
+        ok('Absender in den Einstellungen; vorlage_fuellen setzt Absender, Unterschrift, Datum und Fallkennung in jede Vorlage, „Ich“-Beteiligter gewinnt, ohne Absender bleibt der Platzhalter, nie überschreiben, nur nach 06 Entwürfe')
         fr = anfrage('/api/fristen/berechnen', {'start': '2026-10-30', 'menge': 2, 'einheit': 'tage'}); assert fr['ende'] == '2026-11-02' and fr['feiertagsland'] == 'NW'
         anfrage('/api/fristen/berechnen', {'start': '2026-06-03', 'menge': 1, 'einheit': 'tage', 'land': 'XX'}, erwartet=400)
         ok('Feiertage je Bundesland (Fronleichnam BW, nicht BE), Einstellung Bundesland, unbekanntes Land abgewiesen')
@@ -276,6 +297,9 @@ def run():
         d4 = next(d for d in b['dokumente'] if d['id'] == 'D0004'); assert any(isinstance(v, str) and v.endswith('Kuendigungsschutzklage_ENTWURF.md') for v in d4.values())
         assert anfrage('/api/werkzeug', {'name': 'bestand_pruefen', 'parameter': {'fall': beispiel}})['geprueft'] == 4
         ok('Beispielfall laden: Kennungen wie in akte.json, Bestand 4 geprüft')
+        r = anfrage('/api/werkzeug', {'name': 'vorlage_fuellen', 'parameter': {'fall': beispiel, 'vorlage': 'Fristsetzung'}, 'bestaetigt': True})
+        assert r['absender_quelle'].startswith('Beteiligter P01') and 'Max Muster, Musterweg 1, 70000 Beispielstadt' in r['absender'], r
+        ok('vorlage_fuellen: Beteiligter mit Rolle „Ich“ des Falls gewinnt gegen den Standard-Absender')
         r = anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': {'fall': 'R-0001', 'datum': '2026-09-21', 'titel': 'Einspruchsfrist', 'art': 'gesetzlich', 'ausloeser': 'Zustellung 05.09.2026', 'rechtsgrundlage': '§ 67 Abs. 1 OWiG', 'berechnung': '\n'.join(fr['rechnung']), 'pruefstatus': 'offen', 'quelle': 'D0001'}, 'bestaetigt': True})
         assert r['frist']['id'] == 'F01'
         r = anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'Zustellurkunde anfordern', 'quelle': 'D0001'}, 'bestaetigt': True}); assert r['aufgabe']['id'] == 'A01'
@@ -291,13 +315,36 @@ def run():
                       'berechnung': '\n'.join(fr['rechnung']), 'pruefstatus': 'bestätigt', 'quelle': 'D0001', 'geprueft_von': 'Prüflauf'}
         r = anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': bestaetigt, 'bestaetigt': True})
         assert r['frist']['id'] == 'F02' and r['frist']['geprueft_am'] == time.strftime('%Y-%m-%d') and r['frist']['geprueft_von'] == 'Prüflauf', r
-        assert r['eigenschaften'] == {'gerechnet': True, 'belegt': True, 'geprueft': True, 'offene_marker': []}, r
+        assert r['eigenschaften'] == {'gerechnet': True, 'belegt': True, 'geprueft': True, 'ausloeser_sicher': None, 'offene_marker': []}, r
         anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': dict(bestaetigt, berechnung='zwei Wochen [PRÜFEN: Zugang]'), 'bestaetigt': True}, erwartet=400)
         anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': dict(bestaetigt, berechnung='zwei Wochen ab Zustellung'), 'bestaetigt': True}, erwartet=400)
         u = anfrage('/api/werkzeug', {'name': 'fall_uebersicht', 'parameter': {'fall': 'R-0001'}})
         assert next(x for x in u['fristen'] if x['id'] == 'F02')['eigenschaften']['geprueft'] and not next(x for x in u['fristen'] if x['id'] == 'F01')['eigenschaften']['geprueft']
         assert len(anfrage('/api/fall/R-0001')['akte']['fristen']) == 2
         ok('frist_eintragen: Bestätigung bekommt Prüfdatum und Prüfer, Eigenschaften in der Fallübersicht; Marker oder fehlendes Fristende in bestätigter Frist abgewiesen')
+        # F13: unsichere Zeitpunkte als Feld, Fristen mit festem Bezug auf Verfahren und Auslöser-Ereignis
+        e_unsicher = anfrage('/api/werkzeug', {'name': 'ereignis_eintragen', 'parameter': {'fall': 'R-0001', 'datum': '2026-09-01', 'titel': 'Zugang ungefähr', 'art': 'Zugang', 'zeitpunkt': 'ungefähr', 'zeitpunkt_text': 'Anfang September laut Nachbarin'}, 'bestaetigt': True})['ereignis']
+        assert e_unsicher['zeitpunkt'] == 'ungefähr' and e_unsicher['zeitpunkt_text'], e_unsicher
+        e_genau = anfrage('/api/werkzeug', {'name': 'ereignis_eintragen', 'parameter': {'fall': 'R-0001', 'datum': '2026-09-02', 'titel': 'Zugang genau', 'art': 'Zugang', 'quelle': 'D0001'}, 'bestaetigt': True})['ereignis']
+        assert 'zeitpunkt' not in e_genau
+        e_raum = anfrage('/api/werkzeug', {'name': 'ereignis_eintragen', 'parameter': {'fall': 'R-0001', 'datum': '2026-08-20', 'titel': 'Gespräch im Zeitraum', 'zeitpunkt': 'zeitraum', 'datum_bis': '2026-08-25'}, 'bestaetigt': True})['ereignis']
+        assert e_raum['datum_bis'] == '2026-08-25'
+        for par in ({'zeitpunkt': 'zeitraum'}, {'zeitpunkt': 'zeitraum', 'datum_bis': '2026-08-01'}, {'zeitpunkt': 'unbekannt'}, {'zeitpunkt': 'irgendwann'}):
+            anfrage('/api/werkzeug', {'name': 'ereignis_eintragen', 'parameter': {'fall': 'R-0001', 'datum': '2026-08-20', 'titel': 'kaputt', **par}, 'bestaetigt': True}, erwartet=400)
+        fall = anfrage('/api/fall/R-0001'); ak = fall['akte']; ak['verfahren'].append({'id': 'V01', 'art': 'Bußgeldverfahren', 'stelle': '', 'aktenzeichen': '', 'stand': '', 'ordner': ''}); ak.setdefault('zaehler', {})['V'] = 1
+        anfrage('/api/fall/R-0001', {'akte': ak, 'revision': fall['revision']})
+        basis = {'fall': 'R-0001', 'datum': '2026-12-16', 'titel': 'Einspruch nach Zugang', 'art': 'gesetzlich', 'ausloeser': 'Zugang', 'rechtsgrundlage': '§ 67 Abs. 1 OWiG', 'berechnung': 'Ende 16.12.2026', 'quelle': 'D0001'}   # später als F01, damit die Sortierung der Fallübersicht bleibt
+        anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': dict(basis, verfahren='V99'), 'bestaetigt': True}, erwartet=400)
+        anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': dict(basis, ausloeser_ereignis='E99'), 'bestaetigt': True}, erwartet=400)
+        anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': dict(basis, pruefstatus='bestätigt', ausloeser_ereignis=e_unsicher['id'], geprueft_von='Prüflauf'), 'bestaetigt': True}, erwartet=400)   # bestätigt nur mit genauem Auslöser
+        r = anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': dict(basis, pruefstatus='offen', verfahren='v01', ausloeser_ereignis=e_unsicher['id']), 'bestaetigt': True})
+        assert r['frist']['verfahren'] == 'V01' and r['eigenschaften']['ausloeser_sicher'] is False, r
+        r = anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': dict(basis, pruefstatus='bestätigt', verfahren='V01', ausloeser_ereignis=e_genau['id'], geprueft_von='Prüflauf'), 'bestaetigt': True})
+        assert r['eigenschaften']['ausloeser_sicher'] is True and r['eigenschaften']['geprueft'] is True, r
+        u = anfrage('/api/werkzeug', {'name': 'fall_uebersicht', 'parameter': {'fall': 'R-0001'}})
+        assert next(x for x in u['ereignisse'] if x['id'] == e_unsicher['id'])['zeitpunkt'] == 'ungefähr' and next(x for x in u['fristen'] if x['id'] == r['frist']['id'])['ausloeser_ereignis'] == e_genau['id']
+        assert any(f['id'] == 'R-0001' and any(x.get('eigenschaften', {}).get('ausloeser_sicher') is False for x in f['fristen']) for f in anfrage('/api/zentrale')['faelle'])
+        ok('Unsichere Zeitpunkte (F13): ungefähr, Zeitraum, unbekannt als Feld mit Pflichtangaben; Fristen mit Verfahren und Auslöser-Ereignis als geprüfte Verweise; bestätigt nur mit genauem Auslöser, sonst „Auslöser unsicher“ bis in die Zentrale')
         anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'x', 'quelle': 'D9999'}, 'bestaetigt': True}, erwartet=400)
         r = anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'Freitext-Quelle', 'quelle': 'Zustellung laut Bescheid'}, 'bestaetigt': True})
         assert r['aufgabe']['quelle'] == '' and 'Zustellung laut Bescheid' in r['aufgabe']['detail']

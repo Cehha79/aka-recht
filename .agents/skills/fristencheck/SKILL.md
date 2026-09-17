@@ -30,7 +30,14 @@ Lies `AGENTS.md` und die Akte (`python3 "06 Werkzeuge/dienst/cli.py" fall_lesen 
    (Verschiebung auf den nächsten Werktag) auf diese Frist anwendbar ist,
    gesondert prüfen und im Text sagen; bei Zweifel den rechnerischen Tag als
    sicheren Tag nennen.
-4. Eintragen: `cli.py frist_eintragen fall=$fall datum=… titel=… art=gesetzlich|"selbst gesetzt"|"von Gegenseite gesetzt"|vorsorglich|Termin ausloeser=… rechtsgrundlage=… berechnung=… pruefstatus=offen|bestätigt|abgelaufen quelle=D… geprueft_von=…`
+4. Eintragen: `cli.py frist_eintragen fall=$fall datum=… titel=… art=gesetzlich|"selbst gesetzt"|"von Gegenseite gesetzt"|vorsorglich|Termin ausloeser=… rechtsgrundlage=… berechnung=… pruefstatus=offen|bestätigt|abgelaufen quelle=D… geprueft_von=… verfahren=V… ausloeser_ereignis=E…`
+   - `verfahren` (V-Kennung) und `ausloeser_ereignis` (E-Kennung des Zugangs
+     oder der Bekanntgabe) immer setzen, wenn es sie gibt; bei mehreren
+     Verfahren in einer Akte ist das Verfahren Pflicht. Das Schema prüft die
+     Verweise. Ist der Zeitpunkt des Auslöser-Ereignisses nicht „genau“
+     (ungefähr, Zeitraum, unbekannt), lässt das Schema kein „bestätigt“ zu:
+     Frist `offen` oder `vorsorglich` mit dem frühesten denkbaren Tag, Aufgabe
+     „Zeitpunkt klären“; das Werkzeug meldet `ausloeser_sicher`.
    - Gesetzliche Frist `bestätigt` nur, wenn Auslöser, Zugang und Grundlage belegt sind.
    - Drei Eigenschaften, die das Werkzeug zurückgibt und das Schema bei
      `bestätigt` verlangt: `gerechnet` (die Rechnung nennt das Fristende),

@@ -24,7 +24,7 @@ es zu ordnen, zu prüfen und zu formulieren.
   Rechenweg nach §§ 187, 188, 193 BGB, mit den Feiertagen deines Bundeslands.
 - **Deine KI arbeitet mit:** Claude Code, Claude Desktop, Codex oder jede andere,
   die MCP (Model Context Protocol) oder Befehle ausführen kann. 7 Anleitungen
-  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 23 Werkzeuge
+  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 25 Werkzeuge
   lassen sie in der Akte lesen und, nach deiner Bestätigung, schreiben.
 - **Alles bleibt bei dir:** keine KI in der App, kein Konto, kein Schlüssel,
   kein Netz. Der Dienst läuft nur auf deinem Rechner.
@@ -138,7 +138,7 @@ ein Hook sperrt das für die KI. Neue Texte entstehen in 06, Vermerke in 07.
 
 <img src="bilder/kapitel-werkzeuge.svg" alt="Werkzeuge: MCP und Befehlszeile">
 
-Dieselben 23 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+Dieselben 25 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 oder über die Befehlszeile (`python3 "06 Werkzeuge/dienst/cli.py" <werkzeug> feld=wert`).
 Schreibende Werkzeuge laufen über MCP nur mit deiner Bestätigung (es zählt
 allein der JSON-Wert `true`); über die Befehlszeile soll die KI vorher
@@ -149,7 +149,7 @@ selbst. Jede Änderung an `akte.json` wird gegen das Datenmodell geprüft
 und mit Revision gespeichert.
 
 <details>
-<summary>Alle 23 Werkzeuge anzeigen</summary>
+<summary>Alle 25 Werkzeuge anzeigen</summary>
 
 | Werkzeug | Art | Zweck |
 |---|---|---|
@@ -167,6 +167,8 @@ und mit Revision gespeichert.
 | `aufgabe_anlegen` | schreibend | Aufgabe in einem Fall anlegen. |
 | `aufgabe_setzen` | schreibend | Aufgabe als erledigt oder wieder offen setzen, optional Fälligkeit oder Detail ändern. |
 | `frist_eintragen` | schreibend | Frist oder Termin in einem Fall eintragen. Bestätigt nur, wenn die Rechnung das Fristende nennt, Auslöser, Rechtsgrundlage und Quelle da sind und kein Marker [PRÜFEN], [QUELLE], [BELEG] offen ist; die Bestätigung bekommt Prüfdatum und Prüfer. |
+| `vorlagen_auflisten` | lesend | Schreibvorlagen unter 05 Vorlagen/Schreiben mit erster Zeile (interne Hinweise, Merkblatt). |
+| `vorlage_fuellen` | schreibend | Entwurf aus einer Schreibvorlage anlegen: kopiert die Vorlage nach 06 Entwürfe des Falls und setzt Absender (Einstellungen oder Beteiligter mit Rolle Ich), Unterschrift, Datum und Fallkennung ein (Platzhalter 【ABSENDER】, 【ABSENDER_NAME】, 【DATUM】, 【R-0000】). Überschreibt nie. Alle anderen Platzhalter bleiben zum Ausfüllen. |
 | `ereignis_eintragen` | schreibend | Ereignis in die Chronologie eines Falls eintragen. |
 | `notiz_anlegen` | schreibend | Ordnungsnotiz in einem Fall anlegen. |
 | `entwurf_erfassen` | schreibend | Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung. |
@@ -249,6 +251,7 @@ den Pflichtinhalt dagegen.
 | `python3 "06 Werkzeuge/dienst/cli.py" liste` | alle Werkzeuge mit Parametern; danach `cli.py <werkzeug> feld=wert` |
 | `python3 "06 Werkzeuge/dienst/cli.py" frist_berechnen start=2026-09-11 menge=1 einheit=monate land=BW` | Frist rechnen, mit Rechenweg |
 | `python3 "06 Werkzeuge/akte_schema.py" "02 Fälle/<Fall>/akte.json"` | Akte gegen das Datenmodell prüfen |
+| `python3 "06 Werkzeuge/dienst/cli.py" vorlage_fuellen fall=R-0001 vorlage=Widerspruch_Bescheid` | Entwurf aus einer Vorlage unter 06 Entwürfe anlegen, mit Absender (Einstellungen oder Beteiligter „Ich“), Unterschrift, Datum; `vorlagen_auflisten` zeigt die Namen |
 | `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" <Entwurf.md>` | Word-Datei aus einem Entwurf, mit Vorabbericht (offene Marker, Platzhalter, Kopfzeilen, Anlagen); `--pruefen` nur der Bericht |
 | `python3 ".claude/recht/werkzeuge/uebergabe_paket.py" R-0001 --empfaenger anwalt --vorschau` | Übergabepaket je Empfänger (anwalt: alles; gericht, behoerde, gegenseite, beratung: nur `--nur D0001,D0002`), erst Vorschau, dann ohne `--vorschau` als geprüfte ZIP mit Manifest außerhalb der Mappe |
 | `python3 "06 Werkzeuge/verteilen.py"` | `AGENTS.md` und `.agents/skills/` aus `CLAUDE.md` und `.claude/skills/` erzeugen; `--pruefen` nur vergleichen |
@@ -280,6 +283,10 @@ technisch durch und prüft sie im Funktionstest:
   für bekannte Dokumentformate (PDF, Text, Office, Bilder, E-Mail, Ton,
   Video); Skripte, Programme, Webseiten, Archive und Unbekanntes werden nur
   im Dateimanager gezeigt, mit Hinweis.
+- **Unsicheres bleibt sichtbar.** Ein Ereignis kann „ungefähr“, „Zeitraum“
+  oder „unbekannt“ sein, statt einen erfundenen Tag zu tragen; eine Frist
+  nennt ihr Verfahren und ihr Auslöser-Ereignis, und auf einem unsicheren
+  Ereignis wird sie nicht bestätigt.
 - **Übergaben enthalten nur, was hin soll.** Das Paket wird für einen
   benannten Empfänger gebaut, zeigt vorher jede Datei, bricht bei
   unbekannten Kennungen ab und wird gegen sein Manifest zurückgelesen.
@@ -326,9 +333,12 @@ Weitere Sprachen sind geplant, passend zu den Ländern.
    ausführen, Windows `Start.bat` doppelklicken. Der Dienst läuft nur auf
    127.0.0.1, der Standardbrowser öffnet die Oberfläche. Beim ersten Start
    entsteht `zentrale.json`.
-3. In der Oberfläche „Neuer Fall“ anlegen, Post nach `01 Eingang` legen oder
+3. Unter „Einstellungen“ deinen Absender eintragen (Name, Anschrift,
+   Kontakt); er landet in `zentrale.json` auf deinem Rechner und füllt später
+   „Von:“ und Unterschrift in Entwürfen aus den Vorlagen.
+4. In der Oberfläche „Neuer Fall“ anlegen, Post nach `01 Eingang` legen oder
    in „Dokumente“ hinzufügen, ordnen, Fristen rechnen, Journal führen.
-4. Seite „Anleitung“ in der Oberfläche lesen, dort steht auch, wie du eine KI
+5. Seite „Anleitung“ in der Oberfläche lesen, dort steht auch, wie du eine KI
    anbindest.
 
 ## KI anbinden

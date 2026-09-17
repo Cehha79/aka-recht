@@ -4,9 +4,9 @@ Nur belegbare Tatsachen, Vermutungen als solche kennzeichnen; falsche Verdächti
 Strafantrag bei Antragsdelikten binnen drei Monaten ab Kenntnis von Tat und Täter (§ 77b StGB); ausdrücklich erklären, nicht nur berichten. Rücknahme ist endgültig (§ 77d StGB).
 Adressat: Staatsanwaltschaft am Tatort, Polizei oder Amtsgericht (§ 158 Abs. 1 StPO). Eingangsbestätigung und Mitteilung des Ausgangs beantragen (§ 158 Abs. 1 Satz 3, § 406d StPO).
 ---
-Von: 【Vorname Nachname, Anschrift, Telefon, E-Mail】
+Von: 【ABSENDER】
 An: 【Staatsanwaltschaft / Polizeipräsidium 【Ort】, Anschrift】
-Datum: 【TT.MM.JJJJ】
+Datum: 【DATUM】
 
 Betreff: Strafanzeige 【und Strafantrag】 wegen 【Vorfall in Stichworten】 vom 【TT.MM.JJJJ】
 
@@ -41,7 +41,7 @@ Ich bitte um schriftliche Bestätigung des Eingangs mit Aktenzeichen (§ 158 Abs
 
 Mit freundlichen Grüßen
 
-【Vorname Nachname】
+【ABSENDER_NAME】
 
 Anlagen:
 - 【Anlage 1: …】

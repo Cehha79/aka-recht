@@ -2,7 +2,11 @@
 
 Jede Vorlage hat zwei Teile: interne Hinweise oberhalb der Trennlinie `---`
 (werden nicht in die Word-Datei übernommen) und den Sendetext darunter.
-Platzhalter stehen in 【 】 und müssen ersetzt werden. Marker `[QUELLE: …]`,
+Platzhalter stehen in 【 】 und müssen ersetzt werden. Drei feste Platzhalter füllt
+das Werkzeug `vorlage_fuellen` beim Anlegen des Entwurfs: 【ABSENDER】 (Name,
+Anschrift, Kontakt aus den Einstellungen oder vom Beteiligten mit Rolle „Ich“
+des Falls), 【ABSENDER_NAME】 (Unterschrift) und 【DATUM】 (Tag der Erstellung);
+im Briefkopf außerdem 【R-0000】 (Fallkennung). Alle anderen bleiben zum Ausfüllen. Marker `[QUELLE: …]`,
 `[PRÜFEN: …]`, `[BELEG: …]` bleiben stehen, bis sie am Original aufgelöst sind.
 Der Word-Erzeuger (`werkzeuge/docx_erzeugen.py`) gibt vor dem Schreiben einen Vorabbericht aus: offene Marker (auch ohne Doppelpunkt), Platzhalter 【…】, interne Notizen im Sendetext, fehlende Kopfzeilen, Aktenzeichen, Anlagenliste, Antragssatz, fehlende Trennlinie; `--pruefen` liefert nur den Bericht.
 

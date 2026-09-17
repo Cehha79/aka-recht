@@ -8,11 +8,11 @@ An das
 Arbeitsgericht 【Ort】
 【Anschrift】
 
-Datum: 【TT.MM.JJJJ】
+Datum: 【DATUM】
 
 # Klage
 
-des 【Vorname Nachname, Anschrift】
+des 【ABSENDER】
 – Kläger –
 
 gegen
@@ -42,7 +42,7 @@ Namens und in Vollmacht 【entfällt bei eigener Klage: „Ich erhebe Klage“�
 
 【Zuständigkeit: § 2 Abs. 1 Nr. … ArbGG, § 48 Abs. 1a ArbGG (Ort) [QUELLE: prüfen].】
 
-【Vorname Nachname】
+【ABSENDER_NAME】
 
 Anlagenverzeichnis:
 - K 1: 【Arbeitsvertrag vom …】

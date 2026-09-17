@@ -6,9 +6,9 @@ Der Einspruch stoppt die Zahlung nicht (§ 361 Abs. 1 AO). Aussetzung der Vollzi
 Adressat ist das Finanzamt, das den Bescheid erlassen hat (§ 357 Abs. 2 AO). Elektronisch ist eine eigene Form (§ 357 Abs. 1 AO), sofern die Behörde einen Zugang eröffnet hat (§ 87a Abs. 1 AO); ELSTER mit Protokoll ist der sichere Weg.
 Verböserung möglich (§ 367 Abs. 2 Satz 2 AO): vor einem Einspruch prüfen, ob der Bescheid an anderer Stelle zu günstig ist.
 ---
-Von: 【Vorname Nachname, Anschrift】
+Von: 【ABSENDER】
 An: 【Finanzamt …, Anschrift】
-Datum: 【TT.MM.JJJJ】
+Datum: 【DATUM】
 Betreff: Einspruch gegen den 【Einkommensteuerbescheid】 für 【Jahr】 vom 【TT.MM.JJJJ】, Steuernummer 【…】
 
 Sehr geehrte Damen und Herren,
@@ -35,7 +35,7 @@ Ich beantrage, den Bescheid insoweit zu ändern und 【die Steuer entsprechend n
 
 Mit freundlichen Grüßen
 
-【Vorname Nachname】
+【ABSENDER_NAME】
 
 Anlagen:
 - 【Bescheid in Kopie】

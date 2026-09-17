@@ -3,9 +3,9 @@ Für eigene Daten bei jeder Stelle die Vorlage Auskunft_DSGVO nehmen (Art. 15 DS
 Den Antrag vor der eigenen Stellungnahme stellen, den Rechtsbehelf trotzdem fristwahrend einlegen; um Fristverlängerung bis zur Einsicht bitten. Antwortfrist setzen und in der Akte eintragen.
 Nach Erhalt: Kopien unverändert ablegen, mit der eigenen Akte abgleichen (/sachverhalt), Daten Dritter schützen.
 ---
-Von: 【Vorname Nachname, Anschrift】
+Von: 【ABSENDER】
 An: 【Behörde / Gericht / Arbeitgeber, Anschrift】
-Datum: 【TT.MM.JJJJ】
+Datum: 【DATUM】
 
 Betreff: Antrag auf Akteneinsicht 【Aktenzeichen / Verfahren / Personalakte】
 
@@ -23,6 +23,6 @@ Bitte bestätigen Sie den Eingang dieses Antrags.
 
 Mit freundlichen Grüßen
 
-【Vorname Nachname】
+【ABSENDER_NAME】
 
 【Anlage: Kopie des Bescheids / Vollmacht】

@@ -9,11 +9,11 @@ An das
 【Amtsgericht / Landgericht】 【Ort】
 【Anschrift】
 
-Datum: 【TT.MM.JJJJ】
+Datum: 【DATUM】
 
 # Klage
 
-des 【Vorname Nachname, Anschrift】
+des 【ABSENDER】
 – Kläger –
 
 gegen
@@ -50,7 +50,7 @@ Ein Verfahren der außergerichtlichen Konfliktbeilegung 【hat nicht stattgefund
 
 Gegen eine Entscheidung durch den Einzelrichter bestehen keine Bedenken. 【Nur beim Landgericht.】
 
-【Vorname Nachname】
+【ABSENDER_NAME】
 
 Anlagen (je eine Abschrift für die Beklagte beigefügt):
 - K 1: 【Vertrag / Bestellung vom …】

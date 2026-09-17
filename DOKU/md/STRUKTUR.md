@@ -43,7 +43,7 @@ Recht/
 ├─ .agents/skills/            erzeugte Kopien der Skills für Codex (Stufe 7)
 ├─ .mcp.json                  MCP-Server für Claude Code (Stufe 7)
 ├─ .codex/config.toml         MCP-Server für Codex, projektbezogen (Stufe 7, lädt noch nicht)
-├─ zentrale.json              Fallliste, Sicherungsziel, Einstellungen
+├─ zentrale.json              Fallliste, Sicherungsziel, Einstellungen (Bundesland, Absender für Entwürfe; bleibt lokal)
 ├─ 01 Eingang/                gemeinsame Post ohne Fallzuordnung
 ├─ 02 Fälle/                  eine Fallakte je Vorgang, feste Kennung R-0001 …
 ├─ 03 Verträge und Vorsorge/  Unterlagen ohne Streit (Finder-Ablage)
@@ -126,8 +126,8 @@ werden nie wiederverwendet.
 | `beteiligte` | P01 … | name, rolle (Gegner, Gericht, Behörde, Anwalt, Zeuge, Stelle), anschrift, kontakt, aktenzeichen |
 | `dokumente` | D0001 … | pfad, titel, datum, art (Schreiben, E-Mail, Foto, Vertrag, Bescheid, Urteil, Entwurf), status (Original, Entwurf, Versandt, Zugegangen), themen, anlage (K 1), personen, verweise, notiz |
 | `verfahren` | V01 … | art, stelle (P-Kennung), aktenzeichen, stand, ordner |
-| `ereignisse` | E01 … | datum, titel, art (Zugang, Versand, Termin, Gespräch, Vorfall), quelle (D-Kennung), detail |
-| `fristen` | F01 … | datum, titel, art (gesetzlich, selbst gesetzt, vorsorglich, Termin), ausloeser (E-Kennung), rechtsgrundlage, berechnung, pruefstatus (offen, bestätigt, erledigt), quelle |
+| `ereignisse` | E01 … | datum (Sortierdatum), zeitpunkt (genau, ungefähr, zeitraum, unbekannt), datum_bis, zeitpunkt_text, titel, art (Zugang, Versand, Termin, Gespräch, Vorfall), quelle (D-Kennung), detail |
+| `fristen` | F01 … | datum, titel, art (gesetzlich, selbst gesetzt, vorsorglich, Termin), ausloeser (Text), verfahren (V-Kennung), ausloeser_ereignis (E-Kennung), rechtsgrundlage, berechnung, pruefstatus (offen, bestätigt, erledigt), quelle, geprueft_am, geprueft_von |
 | `aufgaben` | A01 … | titel, detail, faellig, erledigt, quelle |
 | `entwuerfe` | W01 … | titel, datei, fassung, status (in Arbeit, geprüft, versandt), versandt_als (D-Kennung) |
 | `kosten` | | datum, posten, betrag, beleg |
@@ -137,7 +137,10 @@ werden nie wiederverwendet.
 Regeln im Modell: Eine Frist ohne Auslöser, Rechtsgrundlage und Prüfstatus
 darf nicht als bestätigt gespeichert werden; „bestätigt“ verlangt zudem, dass
 die Rechnung das Fristende nennt, kein Marker offen ist und ein Prüfdatum
-gesetzt wird (drei Eigenschaften gerechnet, belegt, geprüft; Datenmodell.md). Ein Entwurf wird beim Versand
+gesetzt wird (drei Eigenschaften gerechnet, belegt, geprüft; Datenmodell.md).
+Unsichere Zeitpunkte stehen als Feld am Ereignis (ungefähr, Zeitraum,
+unbekannt), das Datum ist dann nur Sortierdatum; eine Frist auf einem solchen
+Ereignis bleibt offen oder vorsorglich (F13). Ein Entwurf wird beim Versand
 nicht gelöscht, sondern bekommt den Status versandt und einen Verweis auf den
 Versandbeleg. Ein Dokument beweist zunächst nur seinen Inhalt.
 
@@ -186,8 +189,8 @@ GET  /api/bestand                     Prüfsummen aller Fälle prüfen
 POST /api/sicherung                   geprüfte ZIP erstellen
 POST /api/sicherung/probe             Wiederherstellungsprobe der letzten (oder genannten) Sicherung
 GET  /api/werkzeuge                   Werkzeugkatalog (für Oberfläche und KI)
-GET  /api/einstellungen               Sicherungsziele, Bundesland für Feiertage, Länderliste
-POST /api/einstellungen               Sicherungsziele und Bundesland ändern
+GET  /api/einstellungen               Sicherungsziele, Bundesland für Feiertage, Absender, Länderliste
+POST /api/einstellungen               Sicherungsziele, Bundesland und Absender ändern (nur Text, bleibt lokal)
 ```
 
 ## Aktenmappe für jede KI (Stufe 7)
@@ -200,7 +203,7 @@ Codex und andere. Dafür gibt es drei Standards, die wir bedienen:
 |---|---|---|---|
 | `AGENTS.md` und `CLAUDE.md` | Arbeitsanweisung im Projektordner, Klartext | Codex, Cursor, Gemini CLI, viele Agenten (`AGENTS.md`); Claude Code (`CLAUDE.md`) | eine Quelle, beide Dateien daraus erzeugt |
 | Agent Skills (`SKILL.md`) | Ordner mit Anleitung, offener Standard von Anthropic, von Codex übernommen | Claude Code (`.claude/skills/`), Codex (`.agents/skills/`) | Skills einmal gepflegt, für Codex kopiert |
-| MCP (Model Context Protocol) | offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe | Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini | eigener MCP-Server `mcp_server.py` ohne Fremdpaket, stellt die Werkzeuge für Assistenten bereit (Katalog ohne `fall_lesen` und `akte_speichern`; Stand 17.09.2026: 23 Werkzeuge für Assistenten, 25 im Katalog; die Zahl prüft der Produktbau gegen den Katalog, maßgeblich ist `cli.py liste`) |
+| MCP (Model Context Protocol) | offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe | Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini | eigener MCP-Server `mcp_server.py` ohne Fremdpaket, stellt die Werkzeuge für Assistenten bereit (Katalog ohne `fall_lesen` und `akte_speichern`; Stand 17.09.2026: 25 Werkzeuge für Assistenten, 27 im Katalog; die Zahl prüft der Produktbau gegen den Katalog, maßgeblich ist `cli.py liste`) |
 | Befehlszeile | `cli.py` | jede KI, die Befehle ausführen darf | vorhanden |
 
 Regeln für alle Wege: Lesen frei und wirklich nur lesend (kein Werkzeug mit
@@ -279,7 +282,8 @@ Fälle, Rechtsquellen, Bestand und Sicherung, Einstellungen, Anleitung.
 Bereiche der Fallakte: Übersicht (mit Notizen und Angeheftetem), Dokumente
 mit Vorschau (Vorschau, Text, Angaben; Ordnen, Einsortieren, Öffnen, Finder),
 Beteiligte, Verfahren, Chronologie, Fristen (mit Rechner im Formular),
-Aufgaben, Entwürfe, Beweise und Anlagen, Journal.
+Aufgaben, Entwürfe (mit „Entwurf aus Vorlage“: Dialog ruft `vorlage_fuellen`),
+Beweise und Anlagen, Journal.
 
 Die Oberfläche schreibt Ordnungsdaten über `/api/fall/<id>` mit Revision und
 nutzt für Dateivorgänge die Werkzeuge (Einsortieren, Journal, Fallstatus).
@@ -310,7 +314,7 @@ Arbeitsbereichs; Hook-Änderungen wirken nach Neustart der Sitzung.
 | `skills/entwurf` | Schreiben und Schriftsätze als Entwurf aus den Vorlagen, Markdown plus Word über `docx_erzeugen.py`, `entwurf_erfassen` |
 | `skills/uebergabe` | Übergabepaket als ZIP außerhalb des Projekts über `uebergabe_paket.py`, Begleitvermerk |
 | `.claude/settings.json` | SessionStart: Eingang, nahe Fristen, offene Aufgaben je Fall. PreToolUse (Write, Edit, MultiEdit): Schreiben in 02, 03, 04, 05, 08 und bestand.json gesperrt; der Pfad wird gegen den Projektordner aufgelöst („..“ und Verknüpfungen), geprüft werden die Ordnerbestandteile (seit 17.09.2026, F06); Shell und MCP deckt der Hook nicht ab, dort schützt der Dienst. PostToolUse (Read, Bash, WebFetch, WebSearch und die MCP-Werkzeuge `mcp__aka-recht__*`): Fremdtext-Wächter meldet Sätze, die wie Anweisungen an die KI klingen (REGELN Nr. 17), mit Herkunft (Datei, Befehl, Adresse oder Werkzeug mit Fall und Dokumentkennung), blockiert nicht; Ausnahmen nur für aufgelöste Pfade in `.claude`, `.agents`, `DOKU`, `06 Werkzeuge` und den Profil- und README-Dateien (bei Bash nur reines Lesen, nie wenn ein Skript läuft), auch kurze Texte und Dateinamen werden geprüft (seit 17.09.2026, F07). Stop: Doku-Abgleich inhaltlich: jede HTML-Ansicht wird aus ihrer md-Quelle neu erzeugt und verglichen, AGENTS.md und `.agents/skills/` über `verteilen.py --pruefen`, dazu die Namen der Dateien, die jünger sind als die Live-Dokumentation; läuft ohne zentrale.json (seit 17.09.2026, F26) |
-| `05 Vorlagen/Schreiben/` | Briefkopf, Einspruch Bußgeld, Widerspruch Bescheid, Fristsetzung, Auskunft DSGVO, Klage Arbeitsgericht; interne Hinweise über der Trennlinie, Platzhalter 【 】, Marker |
+| `05 Vorlagen/Schreiben/` | zehn Vorlagen (Briefkopf, Einspruch Bußgeld, Einspruch Steuerbescheid, Widerspruch Bescheid, Fristsetzung, Auskunft DSGVO, Akteneinsicht, Strafanzeige, Klage Arbeitsgericht, Klage Zivilgericht); interne Hinweise über der Trennlinie, Platzhalter 【 】, Marker; feste Platzhalter 【ABSENDER】, 【ABSENDER_NAME】, 【DATUM】, 【R-0000】 füllt das Werkzeug `vorlage_fuellen` aus den Einstellungen (Absender) oder vom Beteiligten mit Rolle „Ich“ des Falls (seit 17.09.2026) |
 | `.claude/recht/werkzeuge/docx_erzeugen.py` | Markdown oder Text nach Word ohne Fremdpaket; Vorabbericht zum Sendetext (offene Marker mit und ohne Doppelpunkt, Platzhalter 【…】, interne Notizen, Kopfzeilen Von, An, Datum, Betreff, Aktenzeichen, Anlagenliste, Antragssatz, Trennlinie), `--pruefen` nur Bericht mit Exit 1 bei Befunden; die Datei ist keine Freigabe (seit 17.09.2026, F29) |
 | `.claude/recht/werkzeuge/uebergabe_paket.py` | ZIP für einen benannten Empfänger: `--empfaenger anwalt` voll (Verzeichnis mit Chronologie, Fristen, Aufgaben, Journal, Originale 01 bis 05), `behoerde`, `gericht`, `gegenseite`, `beratung` nur die mit `--nur` gewählten Dokumente; `--vorschau`; unbekannte Kennungen brechen ab; Paket wird zurückgelesen und gegen `00 Manifest.json` geprüft (seit 17.09.2026, F08, F27) |
 

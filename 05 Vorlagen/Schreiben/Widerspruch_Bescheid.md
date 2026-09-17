@@ -3,9 +3,9 @@ Form: schriftlich mit Unterschrift, zur Niederschrift oder elektronisch nur mit 
 Widerspruchsfrist meist ein Monat ab Bekanntgabe, § 70 Abs. 1 VwGO, bei Sozialrecht § 84 SGG [QUELLE: prüfen, ob in diesem Land und Bereich ein Widerspruchsverfahren stattfindet; sonst Klage].
 Bekanntgabe belegen (Umschlag, Datum), Frist mit dem Rechner prüfen und eintragen.
 ---
-Von: 【Vorname Nachname, Anschrift】
+Von: 【ABSENDER】
 An: 【Behörde, Anschrift】
-Datum: 【TT.MM.JJJJ】
+Datum: 【DATUM】
 Betreff: Widerspruch gegen den Bescheid vom 【TT.MM.JJJJ】, Aktenzeichen 【…】
 
 Sehr geehrte Damen und Herren,
@@ -26,7 +26,7 @@ Ich beantrage, den Bescheid aufzuheben 【oder: wie folgt zu ändern: …】. Fe
 
 Mit freundlichen Grüßen
 
-【Vorname Nachname】
+【ABSENDER_NAME】
 
 Anlagen:
 - 【Bescheid in Kopie】

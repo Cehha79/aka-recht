@@ -63,12 +63,14 @@ def sperre():
             else: f.seek(0); msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
 
 # ---------------------------------------------------------------- zentrale
+ABSENDER_FELDER = ('name', 'strasse', 'plz_ort', 'telefon', 'email')   # Standard-Absender für Entwürfe (Einstellungen, bleibt lokal)
+
 def zentrale_standard():
     return {'schema': 1, 'app': 'AKA Recht', 'faelle': [],
             'sicherung': {'ziel': str(Path.home() / 'Desktop/AKA Recht Sicherungen'),
                           'zweites_ziel': str(Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs/AKA Recht Sicherungen') if (Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs').is_dir() else '',   # iCloud Drive nur, wo es eines gibt
                           'letzte': None},
-            'einstellungen': {'feiertagsland': 'BW'},
+            'einstellungen': {'feiertagsland': 'BW', 'absender': dict.fromkeys(ABSENDER_FELDER, '')},
             'verbindungen': {}}
 
 def zentrale_pfad(): return ROOT / 'zentrale.json'
@@ -87,7 +89,24 @@ def lade_zentrale():
     p = zentrale_pfad()
     z = json.loads(p.read_text('utf-8')) if p.exists() else zentrale_standard()
     z.setdefault('einstellungen', {}).setdefault('feiertagsland', 'BW')   # ältere zentrale.json
+    a = z['einstellungen'].setdefault('absender', {})
+    for k in ABSENDER_FELDER: a.setdefault(k, '')
     return z
+
+def absender(fall_id=None):
+    """Absender für Entwürfe: der Beteiligte mit Rolle „Ich“ des Falls (Name, Anschrift, Kontakt) gewinnt,
+    sonst der Standard aus den Einstellungen. Liefert die Felder, eine fertige Zeile und die Herkunft."""
+    a = {k: str(v or '').strip() for k, v in lade_zentrale()['einstellungen']['absender'].items()}
+    zeile = ', '.join(x for x in (a['name'], a['strasse'], a['plz_ort'], a['telefon'], a['email']) if x)
+    ergebnis = {**a, 'zeile': zeile, 'quelle': 'Einstellungen' if zeile else ''}
+    if fall_id:
+        akte, _ = lese_akte(fall_id)
+        ich = next((p for p in akte['beteiligte'] if p.get('rolle') == 'Ich' and str(p.get('name', '')).strip()), None)
+        if ich and (str(ich.get('anschrift', '')).strip() or not zeile):
+            teile = [str(ich.get(k, '')).strip() for k in ('name', 'anschrift', 'kontakt')]
+            ergebnis = {'name': teile[0], 'strasse': '', 'plz_ort': teile[1], 'telefon': '', 'email': teile[2],
+                        'zeile': ', '.join(x for x in teile if x), 'quelle': f'Beteiligter {ich["id"]} (Rolle Ich)'}
+    return ergebnis
 
 def feiertagsland(): return lade_zentrale()['einstellungen'].get('feiertagsland') or 'BW'
 

@@ -144,6 +144,10 @@ class Handler(BaseHTTPRequestHandler):
                 if land:
                     if land not in fristen.LAENDER: self.antwort(400, {'fehler': 'Unbekanntes Bundesland.'}); return
                     z['einstellungen']['feiertagsland'] = land
+                ab = daten.get('einstellungen', {}).get('absender')
+                if isinstance(ab, dict):   # Absender: nur Text je Feld, einzeilig, bleibt in zentrale.json auf diesem Rechner
+                    for k in store.ABSENDER_FELDER:
+                        if k in ab: z['einstellungen']['absender'][k] = ' '.join(str(ab[k] or '').split())[:200]
                 store.speichere_zentrale(z)
                 self.antwort(200, {'ok': True}); return
             self.antwort(404, {'fehler': 'Nicht gefunden.'})

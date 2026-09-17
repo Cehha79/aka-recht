@@ -24,7 +24,7 @@ AI helps you to organise, check and formulate.
   the calculation under §§ 187, 188, 193 BGB with the holidays of your state.
 - **Your AI works with it:** Claude Code, Claude Desktop, Codex or any other
   that speaks MCP (Model Context Protocol) or can run commands. 7 guides
-  take it from case intake to a reviewed draft, 23 tools let it read
+  take it from case intake to a reviewed draft, 25 tools let it read
   the case and, after your confirmation, write to it.
 - **Everything stays with you:** no AI inside the app, no account, no key, no
   network. The service runs only on your machine.
@@ -129,14 +129,14 @@ blocks that for the AI. New texts go to 06, memos to 07.
 
 <img src="bilder/kapitel-werkzeuge-en.svg" alt="Tools: MCP and command line">
 
-The same 23 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+The same 25 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 and on the command line (`python3 "06 Werkzeuge/dienst/cli.py" <tool> field=value`).
 Over MCP, writing tools run only with your confirmation; on the command line
 the AI is told to ask first. Every change to `akte.json` is validated against
 the data model and saved with a revision.
 
 <details>
-<summary>Show all 23 tools</summary>
+<summary>Show all 25 tools</summary>
 
 | Tool | Kind | Purpose |
 |---|---|---|
@@ -154,6 +154,8 @@ the data model and saved with a revision.
 | `aufgabe_anlegen` | writes | Add a task to a case |
 | `aufgabe_setzen` | writes | Mark a task done or open, optionally change due date or detail |
 | `frist_eintragen` | writes | Enter a deadline or appointment; "confirmed" only with trigger, legal basis, calculation and source |
+| `vorlagen_auflisten` | reads | Schreibvorlagen unter 05 Vorlagen/Schreiben mit erster Zeile (interne Hinweise, Merkblatt). |
+| `vorlage_fuellen` | writes | Entwurf aus einer Schreibvorlage anlegen: kopiert die Vorlage nach 06 Entwürfe des Falls und setzt Absender (Einstellungen oder Beteiligter mit Rolle Ich), Unterschrift, Datum und Fallkennung ein (Platzhalter 【ABSENDER】, 【ABSENDER_NAME】, 【DATUM】, 【R-0000】). Überschreibt nie. Alle anderen Platzhalter bleiben zum Ausfüllen. |
 | `ereignis_eintragen` | writes | Add an event to the case timeline |
 | `notiz_anlegen` | writes | Add a note to a case |
 | `entwurf_erfassen` | writes | Register a draft or a new version (title, file, version, status) |
@@ -236,6 +238,7 @@ from them, `/entwurf` checks the mandatory content against them.
 | `python3 "06 Werkzeuge/dienst/cli.py" liste` | list all tools with parameters; then `cli.py <tool> field=value` |
 | `python3 "06 Werkzeuge/dienst/cli.py" frist_berechnen start=2026-09-11 menge=1 einheit=monate land=BW` | calculate a deadline, with the calculation shown |
 | `python3 "06 Werkzeuge/akte_schema.py" "02 Fälle/<case>/akte.json"` | validate a case file against the data model |
+| `python3 "06 Werkzeuge/dienst/cli.py" vorlage_fuellen fall=R-0001 vorlage=Widerspruch_Bescheid` | create a draft from a template under 06 Entwürfe, with sender (settings or the party with role "Ich"), signature and date; `vorlagen_auflisten` lists the names |
 | `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" <draft.md>` | Word file from a draft, with a pre-check report (open markers, placeholders, header lines, attachments); `--pruefen` report only |
 | `python3 ".claude/recht/werkzeuge/uebergabe_paket.py" R-0001 --empfaenger anwalt --vorschau` | hand-over package per recipient (anwalt: everything; gericht, behoerde, gegenseite, beratung: only `--nur D0001,D0002`), preview first, then without `--vorschau` as a verified ZIP with manifest outside the folder |
 | `python3 "06 Werkzeuge/verteilen.py"` | generate `AGENTS.md` and `.agents/skills/` from `CLAUDE.md` and `.claude/skills/`; `--pruefen` compare only |
@@ -267,6 +270,10 @@ code and checks them in the test suite:
   for known document formats (PDF, text, office, images, e-mail, audio,
   video); scripts, programs, web pages, archives and unknown types are only
   shown in the file manager, with a note.
+- **Uncertainty stays visible.** An event can be "approximate", "period" or
+  "unknown" instead of carrying an invented day; a deadline names its
+  proceeding and its triggering event, and it is not confirmed on an
+  uncertain event.
 - **Hand-overs contain only what should go out.** The package is built for a
   named recipient, previews every file, aborts on unknown IDs and is read
   back against its manifest.
@@ -312,9 +319,12 @@ languages are planned to match the countries.
 2. Start: macOS double-click `Start.command`, Linux run `Start.sh`, Windows
    double-click `Start.bat`. The service binds to 127.0.0.1 only and your
    default browser opens the UI. `zentrale.json` is created on first start.
-3. In the UI create a new case ("Neuer Fall"), put mail into `01 Eingang` or
+3. Under "Einstellungen" enter your sender details (name, address,
+   contact); they stay in `zentrale.json` on your computer and later fill
+   "Von:" and the signature in drafts made from the templates.
+4. In the UI create a new case ("Neuer Fall"), put mail into `01 Eingang` or
    add it under "Dokumente", file it, calculate deadlines, keep the journal.
-4. Read the "Anleitung" page in the UI; it also explains how to connect an AI.
+5. Read the "Anleitung" page in the UI; it also explains how to connect an AI.
 
 ## Connecting an AI
 

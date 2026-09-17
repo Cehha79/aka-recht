@@ -80,7 +80,7 @@ def faelle_auflisten():
             zeilen.append({'id': e['id'], 'titel': f['titel'], 'bereich': f['bereich'], 'status': f['status'], 'rolle': f['rolle'],
                            'dokumente': len(vorhanden), 'nicht_erfasst': len(abweichungen['nicht_erfasst']), 'offene_aufgaben': sum(not a['erledigt'] for a in akte['aufgaben']),
                            'fristen_offen': sum(fr['pruefstatus'] != 'erledigt' for fr in akte['fristen']),
-                           'fristen': [{'id': fr['id'], 'datum': fr['datum'], 'titel': fr['titel'], 'art': fr['art'], 'pruefstatus': fr['pruefstatus'], 'eigenschaften': akte_schema.frist_eigenschaften(fr)} for fr in akte['fristen'] if fr['pruefstatus'] != 'erledigt']})
+                           'fristen': [{'id': fr['id'], 'datum': fr['datum'], 'titel': fr['titel'], 'art': fr['art'], 'pruefstatus': fr['pruefstatus'], 'verfahren': fr.get('verfahren', ''), 'ausloeser_ereignis': fr.get('ausloeser_ereignis', ''), 'eigenschaften': akte_schema.frist_eigenschaften(fr, akte)} for fr in akte['fristen'] if fr['pruefstatus'] != 'erledigt']})
         except Exception as ex:
             zeilen.append({'id': e['id'], 'titel': e['id'], 'fehler': str(ex)})
     return zeilen
@@ -101,9 +101,9 @@ def fall_uebersicht(fall):
     return {'fall': {k: akte['fall'].get(k, '') for k in ('id', 'titel', 'bereich', 'rolle', 'ziel', 'status', 'themen')},
             'beteiligte': [{'id': b['id'], 'name': b['name'], 'rolle': b.get('rolle', ''), 'aktenzeichen': b.get('aktenzeichen', '')} for b in akte['beteiligte']],
             'verfahren': [{'id': v['id'], 'art': v['art'], 'stelle': v.get('stelle', ''), 'aktenzeichen': v.get('aktenzeichen', ''), 'stand': kurz(v.get('stand'))} for v in akte['verfahren']],
-            'fristen': [{'id': f['id'], 'datum': f['datum'], 'titel': f['titel'], 'art': f['art'], 'pruefstatus': f['pruefstatus'], 'quelle': f.get('quelle', ''), 'geprueft_am': f.get('geprueft_am', ''), 'eigenschaften': akte_schema.frist_eigenschaften(f)} for f in sorted(akte['fristen'], key=lambda x: x['datum']) if f['pruefstatus'] != 'erledigt'],
+            'fristen': [{'id': f['id'], 'datum': f['datum'], 'titel': f['titel'], 'art': f['art'], 'pruefstatus': f['pruefstatus'], 'quelle': f.get('quelle', ''), 'geprueft_am': f.get('geprueft_am', ''), 'verfahren': f.get('verfahren', ''), 'ausloeser_ereignis': f.get('ausloeser_ereignis', ''), 'eigenschaften': akte_schema.frist_eigenschaften(f, akte)} for f in sorted(akte['fristen'], key=lambda x: x['datum']) if f['pruefstatus'] != 'erledigt'],
             'aufgaben_offen': [{'id': a['id'], 'titel': a['titel'], 'faellig': a.get('faellig', ''), 'quelle': a.get('quelle', '')} for a in akte['aufgaben'] if not a['erledigt']],
-            'ereignisse': [{'id': e['id'], 'datum': e['datum'], 'titel': e['titel'], 'art': e.get('art', ''), 'quelle': e.get('quelle', '')} for e in sorted(akte['ereignisse'], key=lambda x: x['datum'])],
+            'ereignisse': [{'id': e['id'], 'datum': e['datum'], 'titel': e['titel'], 'art': e.get('art', ''), 'quelle': e.get('quelle', ''), 'zeitpunkt': e.get('zeitpunkt', 'genau') or 'genau', 'datum_bis': e.get('datum_bis', ''), 'zeitpunkt_text': e.get('zeitpunkt_text', '')} for e in sorted(akte['ereignisse'], key=lambda x: x['datum'])],
             'entwuerfe': [{'id': w['id'], 'titel': w['titel'], 'fassung': w.get('fassung', 1), 'status': w.get('status', '')} for w in akte['entwuerfe']],
             'dokumente': [{'id': d['id'], 'titel': kurz(d['titel'], 90), 'datum': d.get('datum', ''), 'stand': d.get('stand', ''), 'anlage': d.get('anlage', ''), 'bereich': d.get('gruppe', ''), 'textstand': d.get('textstand', '')} for d in liste],
             'nicht_erfasst': abweichungen['nicht_erfasst'], 'verschoben': abweichungen['verschoben'],
@@ -273,26 +273,76 @@ def aufgabe_setzen(fall, aufgabe, erledigt=None, faellig=None, detail=None):
           {'fall': {'type': 'string'}, 'datum': {'type': 'string'}, 'titel': {'type': 'string'},
            'art': {'type': 'string', 'enum': akte_schema.FRIST_ART}, 'ausloeser': {'type': 'string'}, 'rechtsgrundlage': {'type': 'string'},
            'berechnung': {'type': 'string'}, 'pruefstatus': {'type': 'string', 'enum': akte_schema.FRIST_STATUS}, 'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'},
-           'geprueft_von': {'type': 'string', 'description': 'Wer die Bestätigung geprüft hat (Name oder Assistent); nur bei pruefstatus bestätigt'}},
+           'geprueft_von': {'type': 'string', 'description': 'Wer die Bestätigung geprüft hat (Name oder Assistent); nur bei pruefstatus bestätigt'},
+           'verfahren': {'type': 'string', 'description': 'V-Kennung des Verfahrens, zu dem die Frist gehört (bei mehreren Verfahren Pflicht der Sorgfalt)'},
+           'ausloeser_ereignis': {'type': 'string', 'description': 'E-Kennung des auslösenden Ereignisses (Zugang, Bekanntgabe); bestätigt nur, wenn dessen Zeitpunkt genau ist'}},
           schreibend=True, pflicht=['fall', 'datum', 'titel', 'art'])
-def frist_eintragen(fall, datum, titel, art, ausloeser='', rechtsgrundlage='', berechnung='', pruefstatus='offen', quelle='', geprueft_von=''):
+def frist_eintragen(fall, datum, titel, art, ausloeser='', rechtsgrundlage='', berechnung='', pruefstatus='offen', quelle='', geprueft_von='', verfahren='', ausloeser_ereignis=''):
     quelle, berechnung = _quelle(fall, quelle, berechnung)
     akte, rev = store.lese_akte(fall)
     eintrag = {'id': _naechste(akte, 'fristen'), 'datum': datum, 'titel': titel, 'art': art, 'ausloeser': ausloeser,
                'rechtsgrundlage': rechtsgrundlage, 'berechnung': berechnung, 'pruefstatus': pruefstatus, 'quelle': quelle}
+    if verfahren: eintrag['verfahren'] = str(verfahren).strip().upper()               # F13: das Schema prüft die Verweise beim Speichern
+    if ausloeser_ereignis: eintrag['ausloeser_ereignis'] = str(ausloeser_ereignis).strip().upper()
     if pruefstatus == 'bestätigt':   # F12: eine Bestätigung trägt Prüfdatum und Prüfer; das Schema prüft Rechnung, Beleg und Marker
         eintrag['geprueft_am'] = date.today().isoformat(); eintrag['geprueft_von'] = (geprueft_von or '').strip()
     akte['fristen'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
-    return {'frist': eintrag, 'eigenschaften': akte_schema.frist_eigenschaften(eintrag), 'revision': rev}
+    return {'frist': eintrag, 'eigenschaften': akte_schema.frist_eigenschaften(eintrag, akte), 'revision': rev}
+
+VORLAGEN_ORDNER = Path('05 Vorlagen') / 'Schreiben'
+PLATZHALTER_FEST = ('【ABSENDER】', '【ABSENDER_NAME】', '【DATUM】', '【R-0000】')
+
+@werkzeug('vorlagen_auflisten', 'Schreibvorlagen unter 05 Vorlagen/Schreiben mit erster Zeile (interne Hinweise, Merkblatt).', {})
+def vorlagen_auflisten():
+    ordner = store.sicher(str(VORLAGEN_ORDNER)); liste = []
+    for p in sorted(ordner.glob('*.md')):
+        if p.stem == 'LIESMICH': continue
+        liste.append({'name': p.stem, 'erste_zeile': p.read_text('utf-8').splitlines()[0][:200] if p.read_text('utf-8').strip() else ''})
+    return liste
+
+@werkzeug('vorlage_fuellen', 'Entwurf aus einer Schreibvorlage anlegen: kopiert die Vorlage nach 06 Entwürfe des Falls und setzt Absender (Einstellungen oder Beteiligter mit Rolle Ich), Unterschrift, Datum und Fallkennung ein (Platzhalter 【ABSENDER】, 【ABSENDER_NAME】, 【DATUM】, 【R-0000】). Überschreibt nie. Alle anderen Platzhalter bleiben zum Ausfüllen.',
+          {'fall': {'type': 'string'}, 'vorlage': {'type': 'string', 'description': 'Name der Vorlage ohne .md, siehe vorlagen_auflisten'},
+           'ziel': {'type': 'string', 'description': 'Dateiname oder Pfad unter 06 Entwürfe, optional; Standard JJJJ-MM-TT_<Vorlage>_ENTWURF.md'}},
+          schreibend=True, pflicht=['fall', 'vorlage'])
+def vorlage_fuellen(fall, vorlage, ziel=''):
+    from datetime import date
+    name = re.sub(r'\.md$', '', str(vorlage).strip())
+    if not re.fullmatch(r'[\wÄÖÜäöüß-]+', name) or name == 'LIESMICH': raise ValueError('Unbekannte Vorlage. vorlagen_auflisten zeigt die Namen.')
+    quelle = store.sicher(str(VORLAGEN_ORDNER / f'{name}.md'))
+    if not quelle.is_file(): raise ValueError(f'Vorlage {name} gibt es nicht. vorlagen_auflisten zeigt die Namen.')
+    ordner = store.fall_ordner(fall); heute = date.today()
+    rel = (ziel or '').strip() or f'{heute.isoformat()}_{name}_ENTWURF.md'
+    if not rel.lower().endswith('.md'): rel += '.md'
+    if not rel.startswith('06 Entwürfe/'): rel = '06 Entwürfe/' + rel
+    zielpfad = store.sicher(rel, ordner)
+    entwuerfe = (ordner / '06 Entwürfe').resolve()
+    if entwuerfe not in zielpfad.resolve().parents: raise ValueError('Entwürfe entstehen nur unter 06 Entwürfe des Falls, nie in Originalbereichen.')
+    rel = str(zielpfad.resolve().relative_to(ordner.resolve()))
+    if zielpfad.exists(): raise ValueError(f'{rel} gibt es schon. Nichts wird überschrieben; anderen Namen mit ziel= wählen.')
+    ab = store.absender(fall); text = quelle.read_text('utf-8'); ersetzt = []; hinweise = []
+    werte = {'【ABSENDER】': ab['zeile'], '【ABSENDER_NAME】': ab['name'], '【DATUM】': heute.strftime('%d.%m.%Y'), '【R-0000】': fall}
+    for ph, wert in werte.items():
+        if ph in text and wert: text = text.replace(ph, wert); ersetzt.append(ph)
+    if '【ABSENDER】' in text or '【ABSENDER_NAME】' in text: hinweise.append('Kein Absender hinterlegt: Einstellungen (Absender) ausfüllen oder dem Fall einen Beteiligten mit Rolle „Ich“ und Anschrift geben; die Platzhalter bleiben stehen.')
+    zielpfad.parent.mkdir(parents=True, exist_ok=True); zielpfad.write_text(text, 'utf-8')
+    offen = re.findall(r'【[^】]*】', text)
+    return {'datei': rel, 'vorlage': name, 'absender': ab['zeile'], 'absender_quelle': ab['quelle'], 'ersetzt': ersetzt, 'offene_platzhalter': len(offen),
+            'hinweis': ' '.join(hinweise + ['Die Datei ist noch nicht in der Akte: nach dem Ausfüllen entwurf_erfassen und bestand_abgleichen (nach Freigabe).'])}
 
 @werkzeug('ereignis_eintragen', 'Ereignis in die Chronologie eines Falls eintragen.',
           {'fall': {'type': 'string'}, 'datum': {'type': 'string'}, 'titel': {'type': 'string'},
-           'art': {'type': 'string', 'enum': akte_schema.EREIGNIS_ART_VORSCHLAG}, 'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'}, 'detail': {'type': 'string'}},
+           'art': {'type': 'string', 'enum': akte_schema.EREIGNIS_ART_VORSCHLAG}, 'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'}, 'detail': {'type': 'string'},
+           'zeitpunkt': {'type': 'string', 'enum': akte_schema.ZEITPUNKT, 'description': 'genau (Standard), ungefähr, zeitraum (mit datum_bis) oder unbekannt (mit zeitpunkt_text); datum ist dann nur das Sortierdatum, nie ein erfundener Tag'},
+           'datum_bis': {'type': 'string', 'description': 'Ende des Zeitraums, JJJJ-MM-TT'}, 'zeitpunkt_text': {'type': 'string', 'description': 'was über den Zeitpunkt bekannt ist, etwa „Anfang September laut Kollegin“'}},
           schreibend=True, pflicht=['fall', 'datum', 'titel'])
-def ereignis_eintragen(fall, datum, titel, art='Vermerk', quelle='', detail=''):
+def ereignis_eintragen(fall, datum, titel, art='Vermerk', quelle='', detail='', zeitpunkt='genau', datum_bis='', zeitpunkt_text=''):
     quelle, detail = _quelle(fall, quelle, detail)
     akte, rev = store.lese_akte(fall)
     eintrag = {'id': _naechste(akte, 'ereignisse'), 'datum': datum, 'titel': titel, 'art': art, 'quelle': quelle, 'detail': detail}
+    if (zeitpunkt or 'genau') != 'genau':   # F13: Unsicherheit als Feld, nicht als Prosa
+        eintrag['zeitpunkt'] = zeitpunkt
+        if datum_bis: eintrag['datum_bis'] = datum_bis
+        if zeitpunkt_text: eintrag['zeitpunkt_text'] = zeitpunkt_text
     akte['ereignisse'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
     return {'ereignis': eintrag, 'revision': rev}
 

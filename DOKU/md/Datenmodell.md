@@ -92,6 +92,16 @@ Ordnungsangaben sind optional.
 | art | Zugang, Versand, Termin, Gespräch, Vorfall, Entscheidung, Vermerk, Arbeitsstand | vorgeschlagen |
 | quelle | D-Kennung | Verweis |
 | detail | Text | frei |
+| zeitpunkt | genau, ungefähr, zeitraum, unbekannt | fest, optional (Standard genau); seit 17.09.2026, F13 |
+| datum_bis | Ende des Zeitraums | Datum, Pflicht bei zeitraum, nie vor datum |
+| zeitpunkt_text | was über den Zeitpunkt bekannt ist und woher | Text, Pflicht bei unbekannt, Warnung wenn bei ungefähr leer |
+
+Unsichere Zeitpunkte (F13): `datum` bleibt Pflicht und ein echter Kalendertag,
+ist aber bei allem außer „genau“ nur das Sortierdatum (frühester belegter oder
+gemeldeter Tag), nie ein erfundener Tag. Oberfläche, Übergabepaket und
+Fallübersicht zeigen die Art vor dem Datum („ca.“, „von bis“, „unbekannt,
+einsortiert bei“). Eine Frist, deren `ausloeser_ereignis` nicht genau datiert
+ist, kann nicht bestätigt werden.
 
 ## fristen
 
@@ -108,6 +118,8 @@ Ordnungsangaben sind optional.
 | quelle | D-Kennung | Verweis, Pflicht bei bestätigt |
 | geprueft_am | Datum der Bestätigung | Datum; setzt `frist_eintragen` und die Oberfläche bei bestätigt; fehlt es, nur Warnung (ältere Akten) |
 | geprueft_von | wer geprüft hat (Name oder Assistent) | Text, frei |
+| verfahren | V-Kennung des Verfahrens | Verweis, optional; bei mehreren Verfahren in einer Akte setzen (F13) |
+| ausloeser_ereignis | E-Kennung des auslösenden Ereignisses (Zugang, Bekanntgabe) | Verweis, optional; bestätigt nur, wenn dessen Zeitpunkt genau ist (F13) |
 
 Regel: `bestätigt` nur mit Auslöser, Rechtsgrundlage, Berechnung und Quelle.
 Seit 17.09.2026 (Prüfbericht F12) prüft das Schema dazu drei unterscheidbare
@@ -115,8 +127,9 @@ Eigenschaften, die `akte_schema.frist_eigenschaften()` aus den Feldern
 ableitet und die Werkzeuge und Oberfläche anzeigen: `gerechnet` (die Rechnung
 nennt das Fristende, als `JJJJ-MM-TT` oder `TT.MM.JJJJ`; bei Terminen nicht
 anwendbar), `belegt` (Quelle ist eine D-Kennung und der Auslöser ist benannt;
-bei Terminen genügt die Quelle), `geprueft` (bestätigt mit Prüfdatum). Eine
-bestätigte Frist, deren Rechnung das Fristende nicht nennt, und jede
+bei Terminen genügt die Quelle), `geprueft` (bestätigt mit Prüfdatum), dazu `ausloeser_sicher` (das
+verknüpfte Auslöser-Ereignis hat einen genauen Zeitpunkt; ohne Verknüpfung
+keine Aussage). Eine bestätigte Frist, deren Rechnung das Fristende nicht nennt, und jede
 bestätigte Frist mit einem offenen Marker `[PRÜFEN …]`, `[QUELLE …]` oder
 `[BELEG …]` in Titel, Auslöser, Grundlage oder Rechnung ist ein Fehler: erst
 auflösen oder als Aufgabe auslagern, dann bestätigen. Ein bestätigter Termin
@@ -182,6 +195,15 @@ D-Kennungen führt `bestand.json`, dort wird nie ein Eintrag entfernt.
 
 `quellen` sind fallbezogene Rechtsquellen mit Abrufdatum. Der gemeinsame
 Zugangskatalog bleibt in `04 Rechtsquellen/Quellen.md`.
+
+## zentrale.json (Einstellungen)
+
+`einstellungen.feiertagsland` (Kürzel, Standard BW) und seit 17.09.2026
+`einstellungen.absender` mit `name`, `strasse`, `plz_ort`, `telefon`, `email`
+(Text, je Feld eine Zeile, höchstens 200 Zeichen; leer erlaubt). Der Absender
+dient nur Entwürfen aus Vorlagen (`vorlage_fuellen`) und verlässt den Rechner
+nicht (zentrale.json kommt nie ins Produkt). Hat ein Fall einen Beteiligten mit
+Rolle „Ich“ und Anschrift, gewinnt dieser gegenüber dem Standard.
 
 ## bestand.json
 

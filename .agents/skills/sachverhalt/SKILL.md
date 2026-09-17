@@ -39,7 +39,11 @@ Original ändern; ein Textauszug ist eine Ableitung.
 ## Aufbereitung
 
 - Ereignisse nach belegtem Zeitpunkt ordnen. Unbekannte oder ungefähre
-  Zeitpunkte so lassen, keine scheingenauen Daten ergänzen.
+  Zeitpunkte so lassen, keine scheingenauen Daten ergänzen: `ereignis_eintragen`
+  kennt `zeitpunkt=ungefähr|zeitraum|unbekannt` mit `datum_bis` (Zeitraum) und
+  `zeitpunkt_text` (was bekannt ist, woher); `datum` ist dann nur das
+  Sortierdatum (frühester belegter oder gemeldeter Tag). Eine Frist auf einem
+  solchen Ereignis kann nicht bestätigt werden, bis der Zeitpunkt geklärt ist.
 - Zu jedem Ereignis: Dokumentkennung und Fundstelle (Seite, Absatz, Kopfzeile).
   Texte mit `cli.py dokument_text`, Bilder öffnen. Die Antwort nennt die
   `textquelle`: nur `direkt` und `pdf-text` sind gelesener Text; bei `bild`,

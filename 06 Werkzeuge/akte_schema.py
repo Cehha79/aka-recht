@@ -32,6 +32,7 @@ FRIST_ART = ['gesetzlich', 'selbst gesetzt', 'von Gegenseite gesetzt', 'vorsorgl
 FRIST_STATUS = ['offen', 'bestätigt', 'abgelaufen', 'erledigt']
 ENTWURF_STATUS = ['in Arbeit', 'geprüft', 'versandt', 'verworfen']
 TEXTSTAND = ['direkt ausgelesen', 'OCR-erkannt', 'visuell geprüft', 'teilweise lesbar', 'nicht lesbar']   # was vom Dokument tatsächlich gelesen wurde (F34)
+ZEITPUNKT = ['genau', 'ungefähr', 'zeitraum', 'unbekannt']   # Sicherheit des Ereigniszeitpunkts; datum bleibt Sortierdatum (F13)
 
 KENNUNG = {
     'dokumente': r'D\d{4,}', 'beteiligte': r'P\d{2,}', 'verfahren': r'V\d{2,}',
@@ -41,13 +42,22 @@ KENNUNG = {
 DATUM = re.compile(r'^\d{4}-\d{2}-\d{2}$')
 MARKER = re.compile(r'\[(PRÜFEN|QUELLE|BELEG)\b[^\]]*\]?')   # offene Marker in Texten (REGELN Nr. 14)
 
-def frist_eigenschaften(fr):
-    """Drei unterscheidbare Eigenschaften einer Frist (Prüfbericht 16.09.2026, F12), aus den Feldern abgeleitet:
+def ereignis_sicher(e):
+    """Wahr, wenn der Zeitpunkt des Ereignisses genau ist (kein zeitpunkt oder „genau“)."""
+    return isinstance(e, dict) and (e.get('zeitpunkt') or 'genau') == 'genau'
+
+def frist_eigenschaften(fr, akte=None):
+    """Eigenschaften einer Frist (Prüfbericht 16.09.2026, F12 und F13), aus den Feldern abgeleitet:
     gerechnet  die Rechnung nennt das Fristende (bei Terminen nicht anwendbar, None)
     belegt     Quelle ist eine D-Kennung und der Auslöser ist benannt (Termin: Quelle genügt)
     geprueft   Prüfstatus bestätigt mit Prüfdatum (geprueft_am)
+    ausloeser_sicher  das verknüpfte Auslöser-Ereignis (ausloeser_ereignis) hat einen genauen Zeitpunkt; ohne Verknüpfung None
     offene_marker  Marker [PRÜFEN …], [QUELLE …], [BELEG …] in Titel, Auslöser, Grundlage oder Rechnung."""
-    if not isinstance(fr, dict): return {'gerechnet': None, 'belegt': False, 'geprueft': False, 'offene_marker': []}
+    if not isinstance(fr, dict): return {'gerechnet': None, 'belegt': False, 'geprueft': False, 'ausloeser_sicher': None, 'offene_marker': []}
+    sicher = None
+    if fr.get('ausloeser_ereignis') and isinstance(akte, dict):
+        e = next((x for x in akte.get('ereignisse', []) if isinstance(x, dict) and x.get('id') == fr['ausloeser_ereignis']), None)
+        sicher = ereignis_sicher(e) if e else False
     d = str(fr.get('datum', '')); termin = fr.get('art') == 'Termin'
     deutsch = f'{d[8:10]}.{d[5:7]}.{d[0:4]}' if DATUM.match(d) else ''
     rechnung = str(fr.get('berechnung', '') or '')
@@ -56,7 +66,7 @@ def frist_eigenschaften(fr):
     belegt = quelle and (termin or bool(str(fr.get('ausloeser', '') or '').strip()))
     geprueft = fr.get('pruefstatus') == 'bestätigt' and bool(str(fr.get('geprueft_am', '') or '').strip())
     marker = [m.group(0) for feld in ('titel', 'ausloeser', 'rechtsgrundlage', 'berechnung') for m in MARKER.finditer(str(fr.get(feld, '') or ''))]
-    return {'gerechnet': gerechnet, 'belegt': belegt, 'geprueft': geprueft, 'offene_marker': marker}
+    return {'gerechnet': gerechnet, 'belegt': belegt, 'geprueft': geprueft, 'ausloeser_sicher': sicher, 'offene_marker': marker}
 
 def leer():
     """Leere, gültige Akte für neue Fälle."""
@@ -181,17 +191,30 @@ def validate(akte):
         if not str(e.get('titel', '')).strip(): f.append(f'{e["id"]}: titel fehlt.')
         if e.get('art') and e['art'] not in EREIGNIS_ART_VORSCHLAG: w.append(f'{e["id"]}: art „{e["art"]}“ ist unüblich.')
         verweis(e.get('quelle', ''), 'dokumente', f'{e["id"]}.quelle')
+        # F13: unsichere Zeitpunkte sichtbar statt scheingenau; datum bleibt der Tag, an dem das Ereignis einsortiert wird
+        zp = e.get('zeitpunkt', 'genau') or 'genau'
+        if zp not in ZEITPUNKT: f.append(f'{e["id"]}: zeitpunkt muss eines von {ZEITPUNKT} sein.')
+        datum(e.get('datum_bis', ''), f'{e["id"]}.datum_bis')
+        if zp == 'zeitraum':
+            if not e.get('datum_bis'): f.append(f'{e["id"]}: Zeitraum braucht datum_bis (Ende des Zeitraums).')
+            elif DATUM.match(str(e.get('datum', ''))) and DATUM.match(str(e['datum_bis'])) and e['datum_bis'] < e['datum']: f.append(f'{e["id"]}: datum_bis liegt vor datum.')
+        if zp == 'unbekannt' and not str(e.get('zeitpunkt_text', '')).strip(): f.append(f'{e["id"]}: Zeitpunkt unbekannt braucht zeitpunkt_text (was bekannt ist, etwa „vor dem Gespräch am …“); datum ist nur das Sortierdatum.')
+        if zp == 'ungefähr' and not str(e.get('zeitpunkt_text', '')).strip(): w.append(f'{e["id"]}: Zeitpunkt ungefähr, zeitpunkt_text fehlt (woher die Schätzung stammt).')
+        if 'zeitpunkt_text' in e and not isinstance(e['zeitpunkt_text'], str): f.append(f'{e["id"]}: zeitpunkt_text muss Text sein.')
     for fr in akte['fristen']:
         datum(fr.get('datum', ''), fr['id'], pflicht=True)
         if not str(fr.get('titel', '')).strip(): f.append(f'{fr["id"]}: titel fehlt.')
         if fr.get('art') not in FRIST_ART: f.append(f'{fr["id"]}: art muss eines von {FRIST_ART} sein.')
         if fr.get('pruefstatus') not in FRIST_STATUS: f.append(f'{fr["id"]}: pruefstatus muss eines von {FRIST_STATUS} sein.')
         verweis(fr.get('quelle', ''), 'dokumente', f'{fr["id"]}.quelle')
+        verweis(fr.get('verfahren', ''), 'verfahren', f'{fr["id"]}.verfahren')                 # F13: fester Bezug statt Freitext
+        verweis(fr.get('ausloeser_ereignis', ''), 'ereignisse', f'{fr["id"]}.ausloeser_ereignis')
         datum(fr.get('geprueft_am', ''), f'{fr["id"]}.geprueft_am')
         if 'geprueft_von' in fr and not isinstance(fr['geprueft_von'], str): f.append(f'{fr["id"]}: geprueft_von muss Text sein.')
         if fr.get('pruefstatus') == 'bestätigt':
             # F12: „bestätigt“ heißt gerechnet, belegt und ohne offene Marker; Prüfdatum fehlt nur als Warnung (ältere Akten)
-            eig = frist_eigenschaften(fr)
+            eig = frist_eigenschaften(fr, akte)
+            if eig['ausloeser_sicher'] is False: f.append(f'{fr["id"]}: bestätigte Frist, aber das Auslöser-Ereignis {fr.get("ausloeser_ereignis")} hat keinen genauen Zeitpunkt. Erst klären, bis dahin offen oder vorsorglich.')
             if fr.get('art') == 'Termin':
                 if not str(fr.get('quelle', '')).strip(): f.append(f'{fr["id"]}: bestätigter Termin ohne quelle (Ladung, Einladung oder Terminbestätigung). Erst Nachweis, dann Bestätigung.')
             else:
