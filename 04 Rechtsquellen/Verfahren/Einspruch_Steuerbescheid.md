@@ -60,7 +60,7 @@ Bescheiddatum.
 | Sollinhalt | Bezeichnung des angefochtenen Verwaltungsakts; Angabe, inwieweit er angefochten wird und Aufhebung beantragt wird; Tatsachen und Beweismittel zur Begründung | § 357 Abs. 3 AO |
 | Bescheide der Gemeinde | Nicht jeder Steuerbescheid geht zum Finanzamt. Für Grundsteuer und Gewerbesteuer (Realsteuern), soweit die Gemeinde sie verwaltet, gilt die AO nur in Teilen; aus dem Rechtsbehelfsteil nur „die §§ 351 und 361 Absatz 1 Satz 2 und Absatz 3“. Gegen den Steuerbescheid der Gemeinde gibt es deshalb keinen Einspruch nach § 347 AO, sondern den Widerspruch nach der VwGO; gegen den Messbescheid des Finanzamts bleibt es beim Einspruch. Für andere Kommunalabgaben (Hundesteuer, Gebühren, Beiträge) regeln die Kommunalabgabengesetze der Länder den Weg; Baden-Württemberg: „als außergerichtlicher Rechtsbehelf an Stelle des abgabenrechtlichen Einspruchs der Widerspruch (§ 68 der Verwaltungsgerichtsordnung)“, statt des Finanzgerichts das Verwaltungsgericht, statt des VwZG das Landesverwaltungszustellungsgesetz. Bei Widerspruch gelten Frist und Form nach dem Merkblatt Widerspruch Verwaltungsakt | § 1 Abs. 2 Nr. 7 AO; § 3 Abs. 3 Nr. 4 und 5 KAG BW (im Browser gelesen) `[QUELLE: Kommunalabgabengesetze der übrigen Länder]` |
 | Pflichtinhalt | Nur: Einspruchsführer erkennbar und Wille, den Bescheid anzugreifen. Alles andere ist Soll, kann nachgereicht werden. Fristwahrend ist auch der unbegründete Einspruch | § 357 Abs. 1 und 3 AO |
-| Unterschrift | bei schriftlicher Einlegung üblich; nach § 357 Abs. 1 Satz 2 genügt, dass der Absender erkennbar ist `[PRÜFEN: Rechtsprechung zur fehlenden Unterschrift im Einzelfall]` | § 357 Abs. 1 AO |
+| Unterschrift | bei schriftlicher Einlegung üblich, aber nicht nötig: Nach dem BFH umfasst die Schriftlichkeit des Einspruchs „nicht auch das Erfordernis einer eigenhändigen Unterschrift“; der Einspruch ist „auch ohne Unterschrift des Einspruchsführers wirksam, sofern das Schriftstück aus seinem sonstigen Inhalt den Einspruchsführer und den Gegenstand des Einspruchs erkennen lässt“. § 126 BGB gilt also nicht. Trotzdem unterschreiben, das erspart Streit | § 357 Abs. 1 AO; BFH, Urteil vom 13.05.2015, III R 26/14, Gründe II.2 |
 
 ## 4. Wirkung und Verfahren
 
@@ -130,5 +130,5 @@ Einspruch, er schließt die schlichte Änderung nicht aus.
 
 Nicht gelesen: § 122a
 AO in der bis 31.12.2025 geltenden Fassung, AEAO zu § 172 (schlichte
-Änderung), Rechtsprechung zur Unterschrift, zur Kostenerstattung und zur
+Änderung), Rechtsprechung zur Kostenerstattung und zur
 Beschwer bei Null-Bescheiden, Kommunalabgabengesetze außer Baden-Württemberg.
