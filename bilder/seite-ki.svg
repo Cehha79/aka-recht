@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="120" viewBox="0 0 1200 120" role="img" aria-label="Mit der KI arbeiten">
+  <rect width="1200" height="120" rx="18" fill="#6d28d9"/>
+  <rect x="28" y="28" width="64" height="64" rx="14" fill="#ffffff" opacity="0.18"/>
+  <text x="60" y="73" text-anchor="middle" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34" font-weight="700" fill="#ffffff">3</text>
+  <text x="120" y="62" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="40" font-weight="700" fill="#ffffff">Mit der KI arbeiten</text>
+  <text x="122" y="94" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" fill="#ffffff" opacity="0.88">Ablauf · Skills · Hooks</text>
+</svg>

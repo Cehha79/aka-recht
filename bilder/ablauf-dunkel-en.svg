@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="340" viewBox="0 0 900 340" role="img" aria-label="Workflow: letter goes to /fallaufnahme, then /sachverhalt and /fristencheck, /recherche-de, /entwurf, /gegenpruefung, then you check and send or /uebergabe">
+<defs><marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9aa1ab"/></marker></defs>
+<g fill="none" stroke="#9aa1ab" stroke-width="1.6" marker-end="url(#p)">
+<path d="M190 80.0 C215.0 80.0 215.0 80.0 238 80.0"/>
+<path d="M410 80.0 C435.0 80.0 435.0 44.0 458 44.0"/>
+<path d="M410 80.0 C435.0 80.0 435.0 116.0 458 116.0"/>
+<path d="M630 44.0 C660.0 44.0 660.0 80.0 688 80.0"/>
+<path d="M630 116.0 C660.0 116.0 660.0 80.0 688 80.0"/>
+<path d="M190 240.0 C225.0 240.0 225.0 240.0 258 240.0"/>
+<path d="M460 240.0 C500.0 240.0 500.0 207.0 538 207.0"/>
+<path d="M460 240.0 C500.0 240.0 500.0 273.0 538 273.0"/>
+<path d="M785.0 102 V160 Q785.0 168 777.0 168 H113.0 Q105.0 168 105.0 176 V216"/>
+</g>
+<g font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" text-anchor="middle" fill="#e6edf3">
+<rect x="20" y="58" width="170" height="44" rx="8" fill="#14532d" stroke="#4ade80" stroke-width="1.6"/><text x="105.0" y="86">Letter, notice, contract</text>
+<rect x="240" y="58" width="170" height="44" rx="8" fill="#172554" stroke="#60a5fa" stroke-width="1.6"/><text x="325.0" y="86">/fallaufnahme</text>
+<rect x="460" y="22" width="170" height="44" rx="8" fill="#172554" stroke="#60a5fa" stroke-width="1.6"/><text x="545.0" y="50">/sachverhalt</text>
+<rect x="460" y="94" width="170" height="44" rx="8" fill="#172554" stroke="#60a5fa" stroke-width="1.6"/><text x="545.0" y="122">/fristencheck</text>
+<rect x="690" y="58" width="190" height="44" rx="8" fill="#172554" stroke="#60a5fa" stroke-width="1.6"/><text x="785.0" y="86">/recherche-de</text>
+<rect x="20" y="218" width="170" height="44" rx="8" fill="#172554" stroke="#60a5fa" stroke-width="1.6"/><text x="105.0" y="246">/entwurf</text>
+<rect x="260" y="218" width="200" height="44" rx="8" fill="#172554" stroke="#60a5fa" stroke-width="1.6"/><text x="360.0" y="246">/gegenpruefung</text>
+<rect x="540" y="185" width="340" height="44" rx="8" fill="#14532d" stroke="#4ade80" stroke-width="1.6"/><text x="710.0" y="213">You check and send</text>
+<rect x="540" y="251" width="340" height="44" rx="8" fill="#172554" stroke="#60a5fa" stroke-width="1.6"/><text x="710.0" y="279">/uebergabe to a lawyer or authority</text>
+</g>
+<g font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9aa1ab"><rect x="20" y="314" width="16" height="16" rx="4" fill="#172554" stroke="#60a5fa"/><text x="44" y="327">your AI</text><rect x="130" y="314" width="16" height="16" rx="4" fill="#14532d" stroke="#4ade80"/><text x="154" y="327">you</text></g>
+</svg>

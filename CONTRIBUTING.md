@@ -7,7 +7,7 @@ ein Beitrag abläuft.
 ## Was hilft
 
 - Fehler melden: Was hast du getan, was ist passiert, was hast du erwartet.
-  Bitte mit Version (README) und macOS-Version, ohne echte Akten.
+  Bitte mit Version (README) und Betriebssystem, ohne echte Akten.
 - Feiertage anderer Bundesländer im Fristenrechner (`06 Werkzeuge/dienst/fristen.py`).
 - Schreibvorlagen für weitere Rechtsgebiete (`05 Vorlagen/Schreiben/`), mit
   Quelle je Rechtsaussage.
