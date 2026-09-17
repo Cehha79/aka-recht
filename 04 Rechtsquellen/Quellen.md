@@ -120,8 +120,8 @@ Einige Portale erfordern JavaScript oder blockieren automatische Abrufe.
     "category": "Zuständigkeit",
     "use": "Zuständige Behörde und Leistung nach Ort in Baden-Württemberg; andere Länder über ihr eigenes Serviceportal.",
     "url": "https://www.service-bw.de/",
-    "limit": "Nur Baden-Württemberg. Der Behördenfinder des Bundes war am 16.09.2026 per Abruf nicht erreichbar.",
-    "catalog_checked": "2026-09-16"
+    "limit": "Nur Baden-Württemberg; andere Laender ueber ihr eigenes Serviceportal. Bundesweit gibt es das Bundesportal (verwaltung.bund.de), das am 18.09.2026 antwortete, seinen Inhalt aber nur mit aktiviertem JavaScript zeigt.",
+    "catalog_checked": "2026-09-18"
   },
   {
     "id": "Q13",

@@ -193,6 +193,8 @@ noch Einspruch binnen zwei Wochen.
 | BGH, Urteil vom 10.10.2024, VII ZR 240/23 („demnächst“ bei Klagezustellung) | https://www.bundesgerichtshof.de/SharedDocs/Entscheidungen/DE/Zivilsenate/VII_ZS/2023/VII_ZR_240-23.pdf | Volltext gelesen (17.09.2026 abends) |
 | BGH, Urteil vom 14.07.2022, VII ZR 255/21 (Individualisierung des Anspruchs im Mahnbescheid) | https://www.bundesgerichtshof.de/SharedDocs/Entscheidungen/DE/Zivilsenate/VII_ZS/2021/VII_ZR_255-21.pdf | Volltext gelesen (17.09.2026 abends) |
 
+Befund 18.09.2026 zu den Vordrucken: § 1 MahnVordrV führt für Gerichte ohne maschinelle Bearbeitung den Vordruck für Mahn- und Vollstreckungsbescheid (Anlage 1) und den für den Widerspruch (Anlage 2) ein, mit Vorgaben zu Durchschreibesatz, DIN A4 und Papiergewicht. Die Anlagen selbst sind am amtlichen Portal als „nicht darstellbare Vordrucke“ hinterlegt und deshalb nicht im Wortlaut lesbar.
+
 Nicht gelesen: §§ 752 ff. ZPO (übrige Vollstreckungsvoraussetzungen),
 Vorgaben für maschinell bearbeitete
 Mahnanträge über die Vorschriften der MaschMahnVordrV hinaus, Vordruckmuster der Anlagen zu beiden Vordruck-Verordnungen (im Portal als „nicht darstellbare Vordrucke“ geführt). Das
