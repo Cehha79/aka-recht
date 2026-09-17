@@ -207,9 +207,16 @@ unkontrollierte Weiterleitung von Petitionen Gefangener); eigene Beauftragte hab
 Baden-Württemberg. **Gemeindeordnungen:** Die Kommunalaufsicht ist am Volltext belegt für Bayern
 (Art. 110 GO: Landratsamt, Regierung), Brandenburg (§ 110 BbgKVerf: Landrat, Innenministerium),
 Nordrhein-Westfalen (§ 120 GO NRW: Landrat, Bezirksregierung) sowie Thüringen und Sachsen-Anhalt aus
-der Arbeit am selben Tag. Für die übrigen Länder ist das Muster dasselbe, die Norm aber nicht
-gelesen (`[QUELLE]`). Damit sind alle Landesthemen des Abschnitts A bearbeitet; die offenen Stellen
-sind in den Merkblättern markiert.
+der Arbeit am selben Tag. Für die übrigen elf Länder ist das Muster dasselbe, die Norm aber nicht
+gelesen (`[QUELLE]`). **Nachgearbeitet am 18.09.2026 (auf Hasans Nachfrage):** Die **Kommunalaufsicht** ist jetzt für alle
+dreizehn Flächenländer am Volltext belegt (BW § 119 GemO, BY Art. 110 GO, BB § 110 BbgKVerf,
+HE § 136 HGO, MV § 79 KV M-V, NI § 171 NKomVG, NW § 120 GO NRW, RP § 118 GemO, SL § 128 KSVG,
+SN § 112 SächsGemO, ST § 143 KVG LSA, SH § 121 GO, TH § 117 ThürKO); für die drei Stadtstaaten ist
+vermerkt, dass es dort keine Kommunalaufsicht über selbständige Gemeinden gibt (`[QUELLE]`). Beim
+**Petitionsrecht** sind zehn Länder belegt (BW, BY, BB, SN, TH im Wortlaut; BE, HB, HE als
+Portaleintrag; RP und SH über die Beauftragtengesetze); für HH, MV, NI, NW, SL und ST steht ein
+`[PRÜFEN]`. Offen bleiben außerdem die Negativbefunde bei Streitschlichtung (sieben Länder) und
+Informationszugang (Bayern, Niedersachsen).
 Fassungen seit 17.09.2026 nach dem Vollzitat des Portals (Abschnitt 4,
 Nr. 2).
 
