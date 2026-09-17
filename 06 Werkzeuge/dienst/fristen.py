@@ -37,7 +37,8 @@ LAENDER = {'BW': 'Baden-Württemberg', 'BY': 'Bayern', 'BE': 'Berlin', 'BB': 'Br
 # SN (§ 1, revosax), SH (§ 2, ab 30.03.2018), BE (§ 1 konsolidiert, gültig 09.05.2025 bis 17.06.2028, plus GVBl. 2024 S. 460),
 # HE (§ 1 HFeiertagsG, Textnachweis ab 01.01.2004), NW (§ 2 Feiertagsgesetz NW, Fassung 23.04.1989, gültig ab 01.01.2000),
 # RP (§ 2 LFtG, Textnachweis ab 01.10.2001), SL (§ 2 SFG, gültig ab 24.12.2010), ST (§ 2 FeiertG LSA, Bek. 25.08.2004),
-# TH (§ 2 ThürFGtG, gültig ab 27.03.2019, Weltkindertag darin); HB Reformationstag seit 2018 [QUELLE: Brem.GBl. 2018 S. 302 nicht gelesen].
+# TH (§ 2 ThürFGtG, gültig ab 27.03.2019, Weltkindertag darin), HB (§ 2 Abs. 1 Buchst. j FeiertG BR, Reformationstag,
+# geändert durch Gesetz vom 26.06.2018, Brem.GBl. S. 302, Fassung gültig ab 29.06.2018; Transparenzportal, gelesen 17.09.2026).
 REGIONAL = {'BY': 'Mariä Himmelfahrt (15.08.) nur in Gemeinden mit überwiegend katholischer Bevölkerung, Friedensfest (08.08.) nur in Augsburg.',
             'SN': 'Fronleichnam nur in einzelnen Gemeinden.', 'TH': 'Fronleichnam nur in einzelnen Gemeinden.'}
 

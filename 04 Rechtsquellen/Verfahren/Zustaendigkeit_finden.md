@@ -1,6 +1,6 @@
 # Merkblatt: Zuständige Stelle finden
 
-*Rechtsordnung DE · alle Bereiche · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026*
+*Rechtsordnung DE · alle Bereiche · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, § 52 Nr. 4 VwGO am 17.09.2026 nachgelesen*
 
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Dieses
 Merkblatt enthält keine Adressen (sie veralten), sondern die Regeln, nach denen
@@ -39,7 +39,7 @@ ermittelt werden.
 | Zivilklage | Amtsgericht bis 10.000 Euro, sonst Landgericht (ohne Rücksicht auf den Wert das Landgericht unter anderem bei Heilbehandlungen und Presse- oder Internetveröffentlichungen, § 71 Abs. 2 GVG); Ort: Wohnsitz oder Sitz des Beklagten, bei Verträgen auch Erfüllungsort; Miete oder Pacht von Räumen: „das Gericht ausschließlich zuständig, in dessen Bezirk sich die Räume befinden“, Wohnraummiete dabei immer Amtsgericht | § 23 Nr. 1 und 2a, § 71 Abs. 1 und 2 GVG; §§ 12, 13, 17, 29, 29a Abs. 1 ZPO (Merkblatt Zivilklage) |
 | Mahnverfahren | Amtsgericht am allgemeinen Gerichtsstand des Antragstellers, gebündelt bei zentralen Mahngerichten der Länder | § 689 Abs. 2 und 3 ZPO (Merkblatt Mahnverfahren) `[QUELLE: Landesverordnung]` |
 | Arbeitsgericht | Arbeitsgericht am allgemeinen Gerichtsstand des Arbeitgebers (Wohnsitz oder Sitz, §§ 12, 13, 17 ZPO über § 46 Abs. 2 ArbGG) oder am gewöhnlichen Arbeitsort („auch das Arbeitsgericht zuständig, in dessen Bezirk der Arbeitnehmer gewöhnlich seine Arbeit verrichtet oder zuletzt gewöhnlich verrichtet hat“) | § 48 Abs. 1a ArbGG; §§ 12, 13, 17 ZPO (Merkblatt Klage Arbeitsgericht) |
-| Verwaltungsgericht | Bei Streit um Grundstücke oder ortsgebundene Rechte das Gericht des Ortes (Nr. 1); gegen Bundesbehörden am Sitz der Behörde (Nr. 2); bei allen anderen Anfechtungsklagen das Verwaltungsgericht, „in dessen Bezirk der Verwaltungsakt erlassen wurde“, bei einer Behörde mit Zuständigkeit für mehrere Gerichtsbezirke das Gericht, „in dessen Bezirk der Beschwerte seinen Sitz oder Wohnsitz hat“ (Nr. 3); „In allen anderen Fällen“ das Gericht am Sitz oder Wohnsitz des Beklagten (Nr. 5) | § 52 Nr. 1, 2, 3 und 5 VwGO `[PRÜFEN: Nr. 4 (Beamte, Soldaten, Wehrpflicht) nicht gelesen]` |
+| Verwaltungsgericht | Bei Streit um Grundstücke oder ortsgebundene Rechte das Gericht des Ortes (Nr. 1); gegen Bundesbehörden am Sitz der Behörde (Nr. 2); bei allen anderen Anfechtungsklagen das Verwaltungsgericht, „in dessen Bezirk der Verwaltungsakt erlassen wurde“, bei einer Behörde mit Zuständigkeit für mehrere Gerichtsbezirke das Gericht, „in dessen Bezirk der Beschwerte seinen Sitz oder Wohnsitz hat“ (Nr. 3); Beamte, Richter, Wehr- und Zivildienst: „das Verwaltungsgericht örtlich zuständig, in dessen Bezirk der Kläger oder Beklagte seinen dienstlichen Wohnsitz oder in Ermangelung dessen seinen Wohnsitz hat“ (Nr. 4); „In allen anderen Fällen“ das Gericht am Sitz oder Wohnsitz des Beklagten (Nr. 5) | § 52 Nr. 1 bis 5 VwGO |
 | Sozialgericht | „das Sozialgericht, in dessen Bezirk der Kläger zur Zeit der Klageerhebung seinen Sitz oder Wohnsitz … hat“; Beschäftigte auch am Beschäftigungsort | § 57 Abs. 1 Satz 1 SGG |
 | Finanzgericht | „das Finanzgericht, in dessen Bezirk die Behörde, gegen welche die Klage gerichtet ist, ihren Sitz hat“; bei Kindergeld der Wohnsitz des Klägers | § 38 Abs. 1 und 2a FGO |
 | Widerspruch, Einspruch | immer bei der Behörde, die den Bescheid erlassen hat (Widerspruch fristwahrend auch bei der Widerspruchsbehörde; Steuer-Einspruch auch bei einer anderen zuständigen Finanzbehörde) | § 70 Abs. 1 VwGO, § 357 Abs. 2 AO, § 67 Abs. 1 OWiG (Merkblätter) |
@@ -78,7 +78,7 @@ ermittelt werden.
 
 | Quelle | URL | Stand |
 |---|---|---|
-| § 52 VwGO Örtliche Zuständigkeit (Nr. 1, 2, 3, 5) | https://www.gesetze-im-internet.de/vwgo/__52.html | VwGO, Vollzitat zuletzt geändert 20.05.2026 (Stand-Zeile 23.04.2026) |
+| § 52 VwGO Örtliche Zuständigkeit (Nr. 1 bis 5) | https://www.gesetze-im-internet.de/vwgo/__52.html | VwGO, Vollzitat zuletzt geändert 20.05.2026 (Stand-Zeile 23.04.2026); Nr. 4 am 17.09.2026 |
 | § 57 SGG Örtliche Zuständigkeit (Abs. 1) | https://www.gesetze-im-internet.de/sgg/__57.html | SGG, Bek. 23.09.1975, Vollzitat zuletzt geändert 20.05.2026 (Stand-Zeile 09.04.2026) |
 | § 38 FGO Örtliche Zuständigkeit (Abs. 1, 2, 2a) | https://www.gesetze-im-internet.de/fgo/__38.html | FGO, Bek. 28.03.2001, Vollzitat zuletzt geändert 29.06.2026 (Stand-Zeile 22.12.2025) |
 | § 50 OWiG Belehrung (Abs. 2), § 52 OWiG Wiedereinsetzung | https://www.gesetze-im-internet.de/owig_1968/__50.html | OWiG, zuletzt geändert 22.12.2025 (17.09.2026) |
@@ -96,6 +96,6 @@ ermittelt werden.
 | service-bw | https://www.service-bw.de/ | Abruf 16.09.2026, Weiterleitung auf den Zuständigkeitsfinder |
 | handelsregister.de, verwaltung.bund.de | https://www.handelsregister.de/, https://verwaltung.bund.de/ | Abruf 17.09.2026, Antwort 200 |
 
-Nicht gelesen: § 52 Nr. 4 VwGO, Landesverordnungen zu Mahngerichten und
+Nicht gelesen: Landesverordnungen zu Mahngerichten und
 Bußgeldbehörden, Behördenfinder des Bundes (behoerdenfinder.de am 16.09. und
 17.09.2026 per Abruf nicht erreichbar).

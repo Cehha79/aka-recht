@@ -24,13 +24,13 @@ Kandidat, bis jemand ihn erneut am amtlichen Volltext liest.
 
 ## 2. Stand je Inhalt
 
-### 2.1 Feiertagstabelle (geprüft 16.09.2026)
+### 2.1 Feiertagstabelle (geprüft 16.09.2026, Bremen 17.09.2026)
 
 „Volltext“ heißt: der Paragraf des Landesgesetzes wurde auf dem amtlichen
-Portal oder im Gesetzblatt gelesen. Stand 16.09.2026 spät: 15 von 16 Ländern
-am Volltext (HE, NW, RP, SL, ST, TH, BE am Abend im Browser nachgelesen; die
-frühere Stütze „Übersicht BMI 2018“ ist damit überall abgelöst). Nur Bremen
-stützt sich noch auf eine alte Fassung des Portals.
+Portal oder im Gesetzblatt gelesen. Stand 17.09.2026: alle 16 Länder am
+Volltext (HE, NW, RP, SL, ST, TH, BE am 16.09.2026 abends, Bremen am
+17.09.2026 im Browser nachgelesen; die frühere Stütze „Übersicht BMI 2018“
+ist damit überall abgelöst). Keine Abweichung von der Tabelle in `fristen.py`.
 
 | Land | Zusätzliche Feiertage in der Tabelle | Beleg | Offen |
 |---|---|---|---|
@@ -38,7 +38,7 @@ stützt sich noch auf eine alte Fassung des Portals.
 | BY | Heilige Drei Könige, Fronleichnam, Allerheiligen; regional Mariä Himmelfahrt, Friedensfest | Volltext FTG BY Art. 1 (16.09.2026) | – |
 | BE | Frauentag (8. März) seit 2019; einmalig 08.05.2025 und 17.06.2028 | Volltext § 1 FeiertG BE, gesetze.berlin.de (Fassung vom 10.07.2024, gültig 09.05.2025 bis 17.06.2028; Nr. 11 nennt den 17.06.2028; der 08.05.2025 stand in der Fassung 21.07.2024 bis 08.05.2025); GVBl. Berlin 2024 S. 460 | – |
 | BB | Reformationstag | Volltext § 2 FTG, bravors.brandenburg.de (Gesetz vom 21.03.1991, geändert 30.04.2015) | – |
-| HB | Reformationstag seit 2018 | Transparenzportal zeigt nur Fassungen bis 2017 mit „31. Oktober 2017“; Änderungsgesetz Brem.GBl. 2018 S. 302 nur aus Pressemeldungen | `[QUELLE: Brem.GBl. 2018 S. 302 am Volltext lesen]` |
+| HB | Reformationstag seit 2018 | Volltext § 2 Abs. 1 Buchst. j FeiertG BR (Gesetz über die Sonn-, Gedenk- und Feiertage vom 12.11.1954, SaBremR 113-c-1), transparenz.bremen.de, aktuelle Gesamtausgabe gültig ab 30.06.2025; § 2 in dieser Fassung seit 29.06.2018; Änderungshistorie Nr. 18: „§§ 2 und 14 geändert durch Gesetz vom 26.06.2018 (Brem.GBl. S. 302)“; Vorfassung 21.11.2017 bis 28.06.2018 (17.09.2026) | – |
 | HH | Reformationstag seit 2018 | Volltext § 1 FeiertG HA, landesrecht-hamburg.de, gültig ab 21.03.2018 | – |
 | HE | Fronleichnam | Volltext § 1 HFeiertagsG, rv.hessenrecht.hessen.de (Bek. 29.12.1971, Textnachweis ab 01.01.2004) | – |
 | MV | Frauentag (8. März) seit 2023, Reformationstag | Volltext § 2 FTG M-V, landesrecht-mv.de, gültig ab 13.07.2022 | – |
@@ -60,22 +60,32 @@ Verordnungen sind nicht erfasst.
 
 Alle zehn am 17.09.2026 von einer zweiten Instanz (drei unabhängige
 Prüfer) am Rohtext von gesetze-im-internet.de gegengeprüft, Befunde
-eingearbeitet. Landesrecht war per Skript nicht prüfbar.
+eingearbeitet. Landesrecht war per Skript nicht prüfbar. Am 17.09.2026
+danach die „Nicht gelesen“-Listen nachgelesen: 60 Bundesnormen am Rohtext
+(VwZG §§ 1 bis 10, ZPO §§ 177 bis 182, § 78 bis 78c StGB, Prozesskostenhilfe,
+Gerichtsstände, Verjährung je Vertragsart, Vollstreckungseinstellung,
+Nebenklage, Adhäsion, Privatklage, Aufsicht u. a.) und im Browser § 15
+AGVwGO BW, § 41 LVwVfG BW (zweite Lesung) sowie §§ 2 bis 4 LVwZG BW. Befund
+der zweiten Lesung: Die ab 01.01.2026 gültige Fassung des § 15 AGVwGO heißt
+in der Fassungsliste des Portals „vom 02.07.2024“, nicht „vom 18.03.2025“;
+der Wortlaut war richtig wiedergegeben. Was offen bleibt, steht je
+Merkblatt in der Liste „Nicht gelesen“ (vor allem Rechtsprechung,
+Landesrecht außer BW, Verwaltungsanweisungen).
 Fassungen seit 17.09.2026 nach dem Vollzitat des Portals (Abschnitt 4,
 Nr. 2).
 
 | Merkblatt | Normen | Rechtsstand (Vollzitat) | Geprüft | Offen |
 |---|---|---|---|---|
-| Einspruch Steuerbescheid | §§ 347, 350, 355, 356, 357, 361, 362, 367, 108, 110, 122, 122a, 172, 87a AO; Art. 97 § 28 EGAO; § 47 FGO; §§ 187, 188 BGB | AO i. d. F. v. 23.01.2025, zuletzt geändert 03.07.2026; EGAO 29.06.2026; FGO 29.06.2026 (Stand-Zeile 22.12.2025) | 17.09.2026 (Fristbeispiel berichtigt: § 188 Abs. 2 BGB ergibt den Sonntag, § 108 Abs. 3 AO den Montag) | AEAO zu §§ 172, 357, § 87a Abs. 6 bis 8 AO, Vorfassung § 122a, BFH III R 26/14, Kostenerstattung, Kommunalabgaben |
-| Widerspruch Verwaltungsakt | §§ 57, 58, 60, 68, 69, 70, 72, 73, 74, 79, 80 VwGO; §§ 3a, 29, 31, 41, 80 VwVfG; § 222 ZPO; § 15 AGVwGO BW, § 41 LVwVfG BW | VwGO 20.05.2026 (Stand-Zeile 23.04.2026); VwVfG 22.07.2026 (Stand-Zeile 15.07.2024); AGVwGO BW 18.03.2025 (gültig ab 01.01.2026); LVwVfG BW 28.01.2025 | 17.09.2026 (De-Mail aus § 3a Abs. 3 gestrichen, § 80 Abs. 6, Fristbeispiel) | Landesrecht der übrigen Länder und zweite Lesung BW, § 80 LVwVfG BW, VwZG, § 9a OZG, Gebührengesetze, Rechtsprechung |
-| Klage Arbeitsgericht | §§ 2, 9, 11, 11a, 12a, 46, 46c, 46g, 48, 54, 59, 61, 61a, 61b, 64, 66 ArbGG; §§ 12, 13, 17, 130, 130a, 167, 222, 253, 330, 496 ZPO; §§ 1, 4, 5, 7 KSchG; §§ 6, 9, 11, 42 GKG, KV 8210, 8211; §§ 17a, 17b GVG; § 15 AGG | ArbGG 20.05.2026 (Stand-Zeile 27.04.2026); ZPO 20.05.2026 (Stand-Zeile 22.12.2025); KSchG 14.06.2021; GKG 20.05.2026; AGG 22.12.2023 | 17.09.2026 (Fünf-Monats-Grenze § 66 Abs. 1 S. 2, Ausschluss verspäteten Vorbringens § 61a Abs. 5) | § 269 ZPO, § 16 ArbGG, § 1 Abs. 1 und § 23 KSchG, § 130 BGB, § 168 SGB IX, § 17 MuSchG, § 159 SGB III, Rechtsprechung |
-| Zivilklage | §§ 3, 12, 13, 17, 29, 78, 79, 91, 93, 130, 130a, 130d, 167, 222, 233, 234, 253, 269, 271, 275, 276, 278, 330, 331, 338, 339, 495a, 496, 511, 517 ZPO; §§ 23, 71, 72, 119 GVG; §§ 12, 34 GKG, KV 1210, 1211; §§ 195, 199, 204 BGB; § 15a EGZPO | ZPO 20.05.2026; GVG 02.07.2026 (Stand-Zeile 09.01.2026); GKG 20.05.2026; BGB 23.07.2026; EGZPO 08.12.2025 (Wertgrenzen: AG 10.000 Euro, § 495a und Berufung 1.000 Euro, am Rohtext bestätigt) | 17.09.2026 (§ 71 Abs. 2 GVG, Auslandsfristen, § 234 Abs. 1 S. 2) | §§ 29a, 29c, 32, 38, 92, 114 ff., 139 ZPO, § 43 GKG, §§ 269, 270, 288, 438, 548, 634a BGB, RVG, Landesschlichtungsgesetze |
-| Mahnverfahren | §§ 167, 222, 338, 339, 688 bis 697, 699 bis 703c, 794 ZPO; § 12 Abs. 3, § 34 GKG, KV 1100 mit Anm. zu 1210; § 204 BGB | ZPO 20.05.2026; GKG 20.05.2026; BGB 23.07.2026 (Mindestgebühr KV 1100: 38 Euro, am Rohtext bestätigt) | 17.09.2026 (Ende der Verjährungshemmung § 204 Abs. 2 BGB, Online-Antrag ohne Unterschrift) | §§ 703a, 703d, 707, 719, 750 ff. ZPO, Landesverordnung zentrales Mahngericht, MahnVordrV, Rechtsprechung zur Individualisierung; keine Vorlage (Formularzwang) |
-| Strafanzeige | §§ 153, 153a, 158, 160, 163, 170, 171, 172, 374, 376, 379, 379a, 380, 406d, 406e, 406h, 406i, 471 StPO; §§ 77, 77b, 77d, 145d, 164, 194, 230, 247, 303c StGB | StPO 03.07.2026 (Stand-Zeile 23.02.2026); StGB 20.03.2026 | 17.09.2026 („Sachbeschädigung unter Angehörigen“ berichtigt, Klageerzwingung, Kostenrisiko Privatklage) | § 78 StGB, § 123 Abs. 2 StGB, §§ 377, 378, 381 ff., 395 ff., 403 ff. StPO, Landesrecht zu Schiedsstellen und Online-Wachen, SGB XIV |
-| Akteneinsicht | § 29 VwVfG; § 25 SGB X; § 364 AO; § 49 OWiG; §§ 147, 406e StPO; § 299 ZPO; § 83 BetrVG; Art. 12, 15, 77, 79 DSGVO; §§ 1, 7, 9 IFG; § 12 GBO; § 9 HGB | VwVfG 22.07.2026 (Stand-Zeile 15.07.2024); SGB X 21.07.2026; AO 03.07.2026; StPO 03.07.2026; ZPO 20.05.2026; BetrVG 19.07.2024; IFG 19.06.2020; GBO 22.06.2026; HGB 04.02.2026; DSGVO EUR-Lex | 17.09.2026 (§ 406e Abs. 3, Verweis auf einen nicht vorhandenen Abs. 6 entfernt, IFG-Frist als Soll-Frist) | Landes-VwVfG und LIFG, § 25 Abs. 5 SGB X, § 44a VwGO, § 406e Abs. 4, § 32f StPO, § 241 Abs. 2 BGB, JVKostG, Rechtsprechung BFH und BAG |
-| Dienstaufsichtsbeschwerde | Art. 17 GG; § 26 DRiG; § 73 BRAO; § 62 OWiG; § 164 StGB | GG 22.03.2025; DRiG 22.10.2024; BRAO 22.12.2025 | 17.09.2026 (§ 73 Abs. 3 und 5 BRAO, Marker zu E-Mail und anonymen Beschwerden) | BVerfG zur Bescheidungspflicht, Art. 45c GG, Petitionsgesetze, Disziplinarrecht, §§ 146, 147 GVG, § 87 SGB IV, § 191f BRAO, § 98 StPO, § 43 VwGO |
-| Zuständigkeit finden | § 52 VwGO; § 57 SGG; § 38 FGO; §§ 36, 50, 52, 68 OWiG; § 143, §§ 17a, 17b, § 71 GVG; §§ 7, 8 StPO; §§ 29a, 281 ZPO; Verweise auf die anderen Merkblätter; sieben amtliche Verzeichnisse (Abruf geprüft) | VwGO 20.05.2026; SGG 20.05.2026; FGO 29.06.2026; OWiG 22.12.2025; GVG 02.07.2026; StPO 03.07.2026 | 17.09.2026 (Jahresfrist bei fehlender Belehrung gilt nicht für Bußgeldbescheide, Verweisung nur beim Rechtsweg von Amts wegen) | § 52 Nr. 4 VwGO, Landesverordnungen, Behördenfinder des Bundes (nicht erreichbar) |
-| Einspruch Bußgeldbescheid | §§ 18, 31, 33, 46, 49, 50, 51, 52, 55, 56, 62, 66 bis 74, 79, 80, 89, 105, 109, 110c OWiG; §§ 32a, 32d, 43, 44, 45, 297, 298, 300, 302, 303, 410, 411 StPO; §§ 25, 25a, 26 StVG | OWiG 22.12.2025; StPO 03.07.2026 (Stand-Zeile 23.02.2026); StVG 12.05.2026 (§ 26 Abs. 3 StVG: sechs Monate, Übergangsrecht offen) | 17.09.2026 (Zustellung an den Verteidiger, § 52 OWiG, Fahrverbotsbeginn § 25 Abs. 3 StVG) | VwZG Bund und Länder, § 107, § 111 OWiG, §§ 35a, 341, 344, 345 StPO, GKG-Kostenverzeichnis, BKatV, §§ 4, 28 StVG, Änderungshistorie § 26 Abs. 3 StVG, Rechtsprechung (Fax, E-Mail, Messunterlagen, Beschränkung des Einspruchs) |
+| Einspruch Steuerbescheid | §§ 347, 350, 355, 356, 357, 361, 362, 367, 108, 110, 122, 122a, 172, 87a (Abs. 1, 3, 6 bis 8) AO; Art. 97 § 28 EGAO; § 47 FGO; §§ 187, 188 BGB | AO i. d. F. v. 23.01.2025, zuletzt geändert 03.07.2026; EGAO 29.06.2026; FGO 29.06.2026 (Stand-Zeile 22.12.2025) | 17.09.2026 (Fristbeispiel berichtigt: § 188 Abs. 2 BGB ergibt den Sonntag, § 108 Abs. 3 AO den Montag) | AEAO zu §§ 172, 357, § 87a Abs. 1a, 2, 4, 5 AO, Vorfassung § 122a, BFH III R 26/14, Kostenerstattung, Kommunalabgaben |
+| Widerspruch Verwaltungsakt | §§ 57, 58, 60, 68, 69, 70, 72, 73, 74, 79, 80 VwGO; §§ 3a, 29, 31, 41, 80 VwVfG; § 222, §§ 177 bis 181 ZPO; §§ 1 bis 5, 8, 10 VwZG; § 15 AGVwGO BW, § 41 LVwVfG BW, §§ 2 bis 4 LVwZG BW | VwGO 20.05.2026 (Stand-Zeile 23.04.2026); VwVfG 22.07.2026 (Stand-Zeile 15.07.2024); VwZG 03.07.2026 (Stand-Zeile 15.07.2024); AGVwGO BW gültig ab 01.01.2026 (Fassungsliste: vom 02.07.2024); LVwVfG BW gültig ab 07.02.2025; LVwZG BW 03.07.2007 | 17.09.2026 (De-Mail aus § 3a Abs. 3 gestrichen, § 80 Abs. 6, Fristbeispiel; förmliche Zustellung; BW zweite Lesung, Fassungsangabe § 15 AGVwGO berichtigt) | Landesrecht der übrigen Länder, § 80 LVwVfG BW, § 9 VwZG, § 9a OZG, § 79 VwGO, Gebührengesetze, Rechtsprechung |
+| Klage Arbeitsgericht | §§ 2, 9, 11, 11a, 12a, 46, 46c, 46g, 48, 54, 59, 61, 61a, 61b, 64, 66 ArbGG; §§ 12, 13, 17, 114, 115, 117, 130, 130a, 167, 222, 253, 269, 330, 496 ZPO; §§ 1, 4, 5, 7, 23 KSchG; §§ 6, 9, 11, 42 GKG, KV 8210, 8211; §§ 17a, 17b GVG; § 15 AGG; § 16 ArbGG; § 130 BGB; § 168 SGB IX; § 17 MuSchG; § 159 SGB III | ArbGG 20.05.2026 (Stand-Zeile 27.04.2026); ZPO 20.05.2026 (Stand-Zeile 22.12.2025); KSchG 14.06.2021; GKG 20.05.2026; AGG 22.12.2023; BGB 23.07.2026; SGB IX 24.07.2026; MuSchG 22.12.2025; SGB III 24.07.2026 | 17.09.2026 (Fünf-Monats-Grenze § 66 Abs. 1 S. 2, Ausschluss verspäteten Vorbringens § 61a Abs. 5; Klagefrist auch im Kleinbetrieb, Sonderkündigungsschutz, Sperrzeit) | §§ 116, 118 bis 127 ZPO, § 24 KSchG, § 174 SGB IX, Fachliche Weisungen zu § 159 SGB III, Rechtsprechung (Zugang, Fax, „demnächst“, Sperrzeit, Weiterbeschäftigung) |
+| Zivilklage | §§ 3, 4, 12, 13, 17, 29, 29a, 29c, 32, 38, 78, 79, 91, 92, 93, 114, 115, 117, 130, 130a, 130d, 139, 167, 222, 233, 234, 253, 269, 271, 275, 276, 278, 330, 331, 338, 339, 495a, 496, 511, 517 ZPO; §§ 23, 71, 72, 119 GVG; §§ 12, 34, 43 GKG, KV 1210, 1211; §§ 195, 199, 204, 269, 270, 288, 438, 548, 634a BGB; § 15a EGZPO | ZPO 20.05.2026; GVG 02.07.2026 (Stand-Zeile 09.01.2026); GKG 20.05.2026; BGB 23.07.2026; EGZPO 08.12.2025 (Wertgrenzen: AG 10.000 Euro, § 495a und Berufung 1.000 Euro, am Rohtext bestätigt) | 17.09.2026 (§ 71 Abs. 2 GVG, Auslandsfristen, § 234 Abs. 1 S. 2; Gerichtsstände, Verjährung je Vertragsart, Prozesskostenhilfe) | §§ 116, 118 bis 127, § 40 ZPO, RVG, Landesschlichtungsgesetze, Rechtsprechung |
+| Mahnverfahren | §§ 167, 222, 338, 339, 688 bis 697, 699 bis 703d, 707, 719, 750, 794 ZPO; § 12 Abs. 3, § 34 GKG, KV 1100 mit Anm. zu 1210; § 204 BGB | ZPO 20.05.2026; GKG 20.05.2026; BGB 23.07.2026 (Mindestgebühr KV 1100: 38 Euro, am Rohtext bestätigt) | 17.09.2026 (Ende der Verjährungshemmung § 204 Abs. 2 BGB, Online-Antrag ohne Unterschrift; Einstellung der Vollstreckung nach Einspruch) | §§ 751 ff., 765a ZPO, Landesverordnung zentrales Mahngericht, MahnVordrV, Rechtsprechung zur Individualisierung; keine Vorlage (Formularzwang) |
+| Strafanzeige | §§ 153, 153a, 158, 160, 163, 170, 171, 172, 374, 376 bis 383, 395, 403, 406d, 406e, 406h, 406i, 471 StPO; §§ 77, 77b, 77d, 78 bis 78c, 123, 145d, 164, 185, 194, 223, 230, 247, 303, 303c StGB | StPO 03.07.2026 (Stand-Zeile 23.02.2026); StGB 20.03.2026 | 17.09.2026 („Sachbeschädigung unter Angehörigen“ berichtigt, Klageerzwingung, Kostenrisiko Privatklage; Verjährung, Nebenklage, Adhäsion) | § 78b Abs. 1 Nr. 1, Abs. 3 bis 6 StGB, § 200, §§ 384 bis 394, 396 bis 402, 404 bis 406c StPO, Landesrecht zu Schiedsstellen und Online-Wachen, SGB XIV |
+| Akteneinsicht | § 29 VwVfG; § 25 SGB X; § 364 AO; § 49 OWiG; §§ 32f, 147, 406e StPO; § 299 ZPO; § 83 BetrVG; § 44a VwGO; § 241 BGB; Art. 12, 15, 77, 79 DSGVO; §§ 1, 7, 9 IFG; § 12 GBO; § 9 HGB | VwVfG 22.07.2026 (Stand-Zeile 15.07.2024); SGB X 21.07.2026; AO 03.07.2026; StPO 03.07.2026; ZPO 20.05.2026; BetrVG 19.07.2024; IFG 19.06.2020; GBO 22.06.2026; HGB 04.02.2026; DSGVO EUR-Lex | 17.09.2026 (§ 406e Abs. 3, Verweis auf einen nicht vorhandenen Abs. 6 entfernt, IFG-Frist als Soll-Frist) | Landes-VwVfG und LIFG, § 32f Abs. 4 und 6 StPO, JVKostG, Rechtsprechung BFH und BAG |
+| Dienstaufsichtsbeschwerde | Art. 17, 45c GG; § 26 DRiG; §§ 73, 191f BRAO; § 62 OWiG; §§ 164, 185 StGB; §§ 146, 147 GVG; § 92 BNotO; §§ 42, 766 ZPO; §§ 24, 98 StPO; § 43 VwGO; § 87 SGB IV; § 50 BeamtStG | GG 22.03.2025; DRiG 22.10.2024; BRAO 22.12.2025; GVG 02.07.2026; BNotO 16.07.2026; SGB IV 24.07.2026; BeamtStG 20.12.2023 | 17.09.2026 (§ 73 Abs. 3 und 5 BRAO, Marker zu E-Mail und anonymen Beschwerden) | BVerfG zur Bescheidungspflicht, Gesetz nach Art. 45c Abs. 2 GG, Petitionsgesetze, Disziplinarrecht, § 106 BBG, § 90 SGB IV, § 193 StGB, Gerichtsvollzieherordnungen, Kammergesetze |
+| Zuständigkeit finden | § 52 Nr. 1 bis 5 VwGO; § 57 SGG; § 38 FGO; §§ 36, 50, 52, 68 OWiG; § 143, §§ 17a, 17b, § 71 GVG; §§ 7, 8 StPO; §§ 29a, 281 ZPO; Verweise auf die anderen Merkblätter; sieben amtliche Verzeichnisse (Abruf geprüft) | VwGO 20.05.2026; SGG 20.05.2026; FGO 29.06.2026; OWiG 22.12.2025; GVG 02.07.2026; StPO 03.07.2026 | 17.09.2026 (Jahresfrist bei fehlender Belehrung gilt nicht für Bußgeldbescheide, Verweisung nur beim Rechtsweg von Amts wegen) | Landesverordnungen, Behördenfinder des Bundes (nicht erreichbar) |
+| Einspruch Bußgeldbescheid | §§ 18, 31, 33, 46, 49, 50, 51, 52, 55, 56, 62, 66 bis 74, 79, 80, 89, 105, 107, 109, 110c, 111 OWiG; §§ 32a, 32d, 35a, 43, 44, 45, 297, 298, 300, 302, 303, 341, 344, 345, 410, 411 StPO; §§ 25, 25a, 26 StVG; §§ 2 bis 8, 10 VwZG; §§ 177 bis 182 ZPO; §§ 2 bis 4 LVwZG BW | OWiG 22.12.2025; StPO 03.07.2026 (Stand-Zeile 23.02.2026); VwZG 03.07.2026 (Stand-Zeile 15.07.2024); StVG 12.05.2026 (§ 26 Abs. 3 StVG: sechs Monate, Übergangsrecht offen) | 17.09.2026 (Zustellung an den Verteidiger, § 52 OWiG, Fahrverbotsbeginn § 25 Abs. 3 StVG; Zustellungsarten, Gebühren, Rechtsbeschwerde) | Landes-Zustellungsgesetze außer BW, § 9 VwZG, GKG-Kostenverzeichnis, BKatV, §§ 4, 28 StVG, Änderungshistorie § 26 Abs. 3 StVG, Rechtsprechung (Fax, E-Mail, Messunterlagen, Beschränkung des Einspruchs) |
 
 ### 2.3 Schreibvorlagen
 
@@ -85,7 +95,11 @@ Einspruch Steuerbescheid, Klage Zivilgericht, Strafanzeige, Akteneinsicht).
 Die Normen darin tragen `[QUELLE]`, wo sie nicht am Volltext gelesen wurden.
 Am 17.09.2026 gegen die berichtigten Merkblätter durchgesehen: nur die
 Formzeile der Vorlage Widerspruch_Bescheid war zu ergänzen (§ 3a Abs. 3
-VwVfG ohne De-Mail, § 9a Abs. 5 OZG über § 70 Abs. 1 VwGO).
+VwVfG ohne De-Mail, § 9a Abs. 5 OZG über § 70 Abs. 1 VwGO). Nach dem
+Nachlesen der „Nicht gelesen“-Listen (17.09.2026) erneut durchgesehen: nur
+Klage_Zivilgericht betroffen (§ 288 BGB gelesen, Marker im Antrag auf
+`[BELEG: Verzugsbeginn …]` umgestellt, Hinweise zu Zinssatz, Streitwert und
+Gerichtsstandsklausel).
 Zehn Merkblätter: Einspruch Steuerbescheid, Widerspruch Verwaltungsakt,
 Einspruch Bußgeldbescheid, Klage Arbeitsgericht, Zivilklage, Mahnverfahren
 (ohne Vorlage, Formularzwang), Strafanzeige, Akteneinsicht,
@@ -157,7 +171,15 @@ Mappe nutzt, prüft die Norm für seinen Fall selbst (README „Grenzen“).
   `VwVfG_BW`); die Schnellsuche mit dem juris-Kürzel („§ 15 VwGOAG BW“)
   listet alle Fassungen mit Geltungszeitraum, die Suche mit der amtlichen
   Abkürzung („§ 15 AGVwGO“) nur Rechtsprechung.
-- Das Transparenzportal Bremen zeigte am 16.09.2026 für das Feiertagsgesetz
-  nur Fassungen bis 2017, obwohl es „zuletzt geändert 02.09.2025“ meldet.
+- Transparenzportal Bremen (17.09.2026): Die Suchadresse `…/suche?q=` gibt
+  es nicht; im Browser unter „Vorschriften“ das Suchfeld per Klick füllen
+  (Eingabe über die Element-Referenz geht verloren), Ergebnis
+  `vorschriften-72741?…&fulltext=<Suchtext>`. Das Feiertagsgesetz heißt
+  „Gesetz über die Sonn-, Gedenk- und Feiertage“; die Metaseite enthält die
+  ganze aktuelle Gesamtausgabe und ist per curl lesbar, dazu die Vorlagen
+  `template=20_gp_ifg_meta_fassungen_d` (frühere Fassungen) und
+  `template=20_gp_ifg_meta_historie_d` (Änderungshistorie mit
+  Gesetzblattstelle). Am 16.09.2026 wurde über eine andere Seite nur eine
+  Fassung bis 2017 gefunden.
 - Das BMF-Portal zum Anwendungserlass AO (ao.bundesfinanzministerium.de)
   blockiert Skriptabrufe; juris.bundesfinanzhof.de war nicht erreichbar.

@@ -3,6 +3,7 @@ Gericht: Amtsgericht bis 10.000 Euro, darüber Landgericht mit Anwaltszwang (§ 
 Vorher: Mahnung mit Frist und Zugangsnachweis (sonst Kostenrisiko bei sofortigem Anerkenntnis, § 93 ZPO); Verjährung rechnen (§§ 195, 199 BGB); prüfen, ob das Landesrecht eine Gütestelle vorschaltet (§ 15a EGZPO) oder ob ein Mahnbescheid genügt.
 Form: schriftlich mit Unterschrift und einer Abschrift je Beklagten, zu Protokoll der Rechtsantragstelle (§ 496 ZPO) oder elektronisch nur mit qualifizierter Signatur oder über eBO/Nutzerkonto (§ 130a ZPO); einfache E-Mail genügt nicht. Pflichtinhalt § 253 Abs. 2 ZPO: Parteien, Gericht, Gegenstand und Grund, bestimmter Antrag.
 Nach Einreichung kommt die Kostenrechnung (3,0 Gebühren nach § 34 GKG); erst nach Zahlung wird zugestellt (§ 12 GKG). Sofort zahlen, sonst ist die Rückwirkung auf den Eingang (§ 167 ZPO) gefährdet. Zahlungsbeleg in die Akte.
+Zinsen: „fünf Prozentpunkte über dem Basiszinssatz“ (§ 288 Abs. 1 BGB, am 17.09.2026 gelesen); neun Prozentpunkte nur bei Entgeltforderungen, wenn kein Verbraucher beteiligt ist (§ 288 Abs. 2 BGB). Zinsen zählen nicht zum Streitwert (§ 4 Abs. 1 ZPO, § 43 Abs. 1 GKG). Gerichtsstandsklauseln gegenüber Verbrauchern greifen nicht (§ 38 ZPO).
 Anträge bestimmt fassen, Tatsachen mit Beweisangeboten, Anlagen als K 1, K 2 … nummerieren. Vor Abgabe: Gegenprüfung (/gegenpruefung) und bei Streitwerten über einigen tausend Euro fachanwaltliche Kurzprüfung empfehlen.
 ---
 An das
@@ -26,7 +27,7 @@ Streitwert: 【… €】
 
 Ich erhebe Klage und beantrage:
 
-1. Die Beklagte wird verurteilt, an den Kläger 【… €】 nebst Zinsen in Höhe von fünf Prozentpunkten über dem Basiszinssatz seit dem 【TT.MM.JJJJ】 zu zahlen. [QUELLE: § 288 Abs. 1 BGB, Verzugsbeginn belegen]
+1. Die Beklagte wird verurteilt, an den Kläger 【… €】 nebst Zinsen in Höhe von fünf Prozentpunkten über dem Basiszinssatz seit dem 【TT.MM.JJJJ】 zu zahlen. [BELEG: Verzugsbeginn, etwa Mahnung mit Zugang oder kalendermäßiges Zahlungsziel]
 2. 【Weiterer Antrag, z. B. Herausgabe, Feststellung, Freistellung von vorgerichtlichen Kosten】
 3. Die Beklagte trägt die Kosten des Rechtsstreits.
 

@@ -1,6 +1,6 @@
 # Merkblatt: Mahnverfahren (Mahnbescheid und Vollstreckungsbescheid)
 
-*Rechtsordnung DE · Bereiche Forderungen und Inkasso, Verträge und Verbraucher · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026*
+*Rechtsordnung DE · Bereiche Forderungen und Inkasso, Verträge und Verbraucher · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, „Nicht gelesen“-Liste am 17.09.2026 nachgelesen*
 
 Abstraktes Verfahrenswissen für jedermann, keine Beratung im Einzelfall. Normen
 am amtlichen Volltext gelesen (gesetze-im-internet.de): Zivilprozessordnung
@@ -23,7 +23,8 @@ Verjährung rechnen, Formular des Mahngerichts verwenden.
 | Wofür | „Wegen eines Anspruchs, der die Zahlung einer bestimmten Geldsumme in Euro zum Gegenstand hat, ist auf Antrag des Antragstellers ein Mahnbescheid zu erlassen.“ Nur Geld, keine Herausgabe, kein Zeugnis, keine Feststellung | § 688 Abs. 1 ZPO |
 | Nicht möglich | für Ansprüche eines Unternehmers aus einem Verbraucherdarlehen, wenn der effektive Jahreszins den Basiszinssatz „um mehr als zwölf Prozentpunkte übersteigt“ (Nr. 1); „wenn die Geltendmachung des Anspruchs von einer noch nicht erbrachten Gegenleistung abhängig ist“ (Nr. 2); wenn nur öffentlich zugestellt werden könnte (Nr. 3) | § 688 Abs. 2 Nr. 1 bis 3 ZPO |
 | Wozu | Das Gericht prüft den Anspruch nicht; der Mahnbescheid trägt den Hinweis, „dass das Gericht nicht geprüft hat, ob dem Antragsteller der geltend gemachte Anspruch zusteht“. Sinn: schneller Titel, wenn der Schuldner nicht widerspricht; Hemmung der Verjährung | § 692 Abs. 1 Nr. 2 ZPO, § 204 Abs. 1 Nr. 3 BGB |
-| Zuständiges Gericht | „Ausschließlich zuständig ist das Amtsgericht, bei dem der Antragsteller seinen allgemeinen Gerichtsstand hat“ (Wohnsitz des Antragstellers, nicht des Schuldners); ohne Gerichtsstand im Inland das Amtsgericht Wedding in Berlin. Die Länder bündeln das Mahnverfahren bei zentralen Mahngerichten | § 689 Abs. 2 und 3 ZPO `[QUELLE: Landesverordnung zum zentralen Mahngericht des jeweiligen Landes, nicht am Volltext gelesen; Adresse über mahngerichte.de]` |
+| Zuständiges Gericht | „Ausschließlich zuständig ist das Amtsgericht, bei dem der Antragsteller seinen allgemeinen Gerichtsstand hat“ (Wohnsitz des Antragstellers, nicht des Schuldners); ohne Gerichtsstand im Inland das Amtsgericht Wedding in Berlin. Die Länder bündeln das Mahnverfahren bei zentralen Mahngerichten. Hat der Antragsgegner keinen allgemeinen Gerichtsstand im Inland (Schuldner im Ausland), ist „das Amtsgericht [zuständig], das für das streitige Verfahren zuständig sein würde, wenn die Amtsgerichte im ersten Rechtszug sachlich unbeschränkt zuständig wären“ | § 689 Abs. 2 und 3, § 703d Abs. 1 und 2 ZPO `[QUELLE: Landesverordnung zum zentralen Mahngericht des jeweiligen Landes, nicht am Volltext gelesen; Adresse über mahngerichte.de]` |
+| Urkundenmahnbescheid | Wer den Anspruch mit Urkunden belegen kann, kann einen „Urkunden-, Wechsel- oder Scheckmahnbescheid“ beantragen; bei Widerspruch läuft die Sache dann im Urkundenprozess; die Urkunden sollen im Antrag bezeichnet werden. Für Laien selten sinnvoll, ein gewöhnlicher Mahnbescheid reicht meist | § 703a Abs. 1 und 2 Nr. 1 und 2 ZPO |
 | Formularzwang | „Soweit nach Absatz 1 Formulare für Anträge und Erklärungen der Parteien eingeführt sind, müssen sich die Parteien ihrer bedienen.“ Mahnantrag, Widerspruch und Antrag auf Vollstreckungsbescheid laufen über die amtlichen Formulare; die maschinell arbeitenden Mahngerichte nehmen den Antrag auch in maschinell lesbarer Form (Online-Mahnantrag mit Barcode, elektronisch mit Signatur) | § 703c Abs. 1 und 2, § 702 Abs. 2 ZPO `[QUELLE: Justizportal der Länder zum Online-Mahnantrag]` |
 | Selbst beantragen | Anträge und Erklärungen „können … vor dem Urkundsbeamten der Geschäftsstelle abgegeben werden“; kein Anwaltszwang. Für Rechtsanwälte, registrierte Inkassodienstleister, Kreditdienstleistungsinstitute, Behörden und juristische Personen des öffentlichen Rechts „ist nur diese Form der Übermittlung zulässig“ (maschinell lesbar). Online-Antrag mit elektronischem Identitätsnachweis (Online-Ausweis) ist möglich; dann „bedarf es nicht“ der handschriftlichen Unterschrift | § 702 Abs. 1, Abs. 2 Satz 2 bis 4 ZPO |
 | Geheim bis zur Zustellung | „Der Antrag auf Erlass eines Mahnbescheids oder eines Vollstreckungsbescheids wird dem Antragsgegner nicht mitgeteilt.“ Der Schuldner erfährt vom Verfahren erst durch den Mahnbescheid | § 702 Abs. 3 ZPO |
@@ -70,7 +71,7 @@ noch Einspruch binnen zwei Wochen.
 | Abgabe an das Streitgericht | Bei rechtzeitigem Widerspruch und Antrag einer Partei gibt das Mahngericht „den Rechtsstreit von Amts wegen an das Gericht ab, das in dem Mahnbescheid … bezeichnet worden ist“; die Streitsache gilt als mit Zustellung des Mahnbescheids rechtshängig, „wenn sie alsbald nach der Erhebung des Widerspruchs abgegeben wird“. Hat der Antragsteller die Abgabe beantragt, „soll“ die Sache erst abgegeben werden, „wenn die Gebühr für das Verfahren im Allgemeinen gezahlt ist“; die Prozessgebühr also gleich nach dem Widerspruch zahlen, sonst bleibt die Sache liegen | § 696 Abs. 1 und 3 ZPO, § 12 Abs. 3 Satz 3 GKG |
 | Streitverfahren | Anspruchsbegründung wie eine Klageschrift (§ 253 ZPO), dann Verfahren wie nach einer Klage; bleibt der Antrag hinter dem Mahnantrag zurück, gilt der Rest als zurückgenommen (Belehrung durch das Gericht) | § 697 Abs. 1 und 2 ZPO; Merkblatt Zivilklage |
 | Vollstreckungsbescheid | ohne rechtzeitigen Widerspruch auf Antrag; enthält die bisherigen Kosten; wird dem Antragsgegner von Amts wegen zugestellt (oder auf Antrag im Parteibetrieb) | § 699 Abs. 1, 3 und 4 ZPO |
-| Titel | Der Vollstreckungsbescheid ist ein Vollstreckungstitel: „Die Zwangsvollstreckung findet ferner statt … aus Vollstreckungsbescheiden“; Einspruch hindert die vorläufige Vollstreckung nicht ohne gesonderten Antrag `[QUELLE: § 719, § 707 ZPO]` | § 700 Abs. 1, § 794 Abs. 1 Nr. 4 ZPO |
+| Titel | Der Vollstreckungsbescheid ist ein Vollstreckungstitel: „Die Zwangsvollstreckung findet ferner statt … aus Vollstreckungsbescheiden“; sie „darf nur beginnen, wenn … das Urteil bereits zugestellt ist oder gleichzeitig zugestellt wird“. Der Einspruch allein stoppt die Vollstreckung nicht: Wird gegen ein vorläufig vollstreckbares Urteil Einspruch eingelegt, „so gelten die Vorschriften des § 707 entsprechend“, das Gericht kann also nur „auf Antrag anordnen, dass die Zwangsvollstreckung … einstweilen eingestellt werde“; bei einem Versäumnisurteil (und damit beim Vollstreckungsbescheid) „nur gegen Sicherheitsleistung …, es sei denn, dass das Versäumnisurteil nicht in gesetzlicher Weise ergangen ist oder die säumige Partei glaubhaft macht, dass ihre Säumnis unverschuldet war“. Den Einstellungsantrag mit dem Einspruch stellen und die Gründe glaubhaft machen (etwa fehlende Zustellung des Mahnbescheids) | § 700 Abs. 1, § 794 Abs. 1 Nr. 4, § 750 Abs. 1 Satz 1, § 719 Abs. 1, § 707 Abs. 1 ZPO |
 | Einspruch | Nach Einspruch gibt das Gericht den Rechtsstreit an das Streitgericht ab; Verfahren wie nach Widerspruch | § 700 Abs. 3 ZPO |
 | Haltepunkte | Antrag auf Vollstreckungsbescheid, Rücknahme des Antrags, Teilverzicht und jede Zahlungserklärung nur nach ausdrücklicher Entscheidung des Nutzers | – |
 
@@ -118,6 +119,11 @@ noch Einspruch binnen zwei Wochen.
 | § 701 ZPO Wegfall der Wirkung des Mahnbescheids | https://www.gesetze-im-internet.de/zpo/__701.html | wie oben |
 | § 702 ZPO Form von Anträgen und Erklärungen (Abs. 1 bis 3) | https://www.gesetze-im-internet.de/zpo/__702.html | wie oben |
 | § 703c ZPO Formulare (Abs. 1 bis 3) | https://www.gesetze-im-internet.de/zpo/__703c.html | wie oben |
+| § 703a ZPO Urkunden-, Wechsel-, Scheckmahnbescheid (Abs. 1, 2) | https://www.gesetze-im-internet.de/zpo/__703a.html | wie oben (17.09.2026) |
+| § 703d ZPO Antragsgegner ohne allgemeinen Gerichtsstand im Inland (Abs. 1, 2) | https://www.gesetze-im-internet.de/zpo/__703d.html | wie oben (17.09.2026) |
+| § 707 ZPO Einstweilige Einstellung der Zwangsvollstreckung (Abs. 1) | https://www.gesetze-im-internet.de/zpo/__707.html | wie oben (17.09.2026) |
+| § 719 ZPO Einstweilige Einstellung bei Einspruch (Abs. 1) | https://www.gesetze-im-internet.de/zpo/__719.html | wie oben (17.09.2026) |
+| § 750 ZPO Voraussetzungen der Zwangsvollstreckung (Abs. 1) | https://www.gesetze-im-internet.de/zpo/__750.html | wie oben (17.09.2026) |
 | § 794 ZPO Weitere Vollstreckungstitel (Abs. 1 Nr. 4) | https://www.gesetze-im-internet.de/zpo/__794.html | wie oben |
 | § 167 ZPO Rückwirkung der Zustellung | https://www.gesetze-im-internet.de/zpo/__167.html | wie oben |
 | § 222 ZPO Fristberechnung | https://www.gesetze-im-internet.de/zpo/__222.html | wie oben |
@@ -128,7 +134,7 @@ noch Einspruch binnen zwei Wochen.
 | Kostenverzeichnis Nr. 1100 und Anm. zu Nr. 1210 | https://www.gesetze-im-internet.de/gkg_2004/anlage_1.html | wie oben |
 | § 204 BGB Hemmung (Abs. 1 Nr. 3, Abs. 2) | https://www.gesetze-im-internet.de/bgb/__204.html | BGB, Bek. 02.01.2002, zuletzt geändert Art. 6 G v. 23.07.2026 I Nr. 226 |
 
-Nicht gelesen: §§ 703a, 703d ZPO (Urkunden- und Auslandsmahnverfahren),
-§§ 707, 719, 750 ff. ZPO (Vollstreckung, Einstellung), Landesverordnung zum zentralen Mahngericht, Verordnung über die Formulare
+Nicht gelesen: §§ 751 ff. ZPO (weitere Vollstreckungsvoraussetzungen,
+Vollstreckungsschutz § 765a), Landesverordnung zum zentralen Mahngericht, Verordnung über die Formulare
 (MahnVordrV), Rechtsprechung zur Individualisierung des Anspruchs. Das
 Europäische Mahnverfahren (§§ 1087 ff. ZPO) ist nicht Gegenstand.
