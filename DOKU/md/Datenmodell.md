@@ -61,7 +61,7 @@ Ordnungsangaben sind optional.
 |---|---|---|
 | pfad | relativ zum Fallordner | Pflicht, kein `/` am Anfang, kein `..` |
 | titel | Anzeigetitel | frei, sonst Dateiname |
-| datum | Dokumentdatum | Datum; ist kein Zugangsdatum |
+| datum | Dokumentdatum | Datum; ist kein Zugangsdatum. Aus dem Dateinamen wird ein Muster JJJJ-MM-TT nur übernommen, wenn es ein echter Kalendertag ist; sonst bleibt das Feld leer und der Hinweis steht in `notiz` (N08, 18.09.2026) |
 | art | Schreiben, E-Mail, Foto, Vertrag, Bescheid, Urteil, Entwurf, Beleg, Übersicht, Gesetz, Sonstiges | vorgeschlagen |
 | stand | Original, Entwurf, Versandt, Zugegangen, Historisch, Vermerk | fest |
 | themen | Liste | frei |
@@ -69,7 +69,7 @@ Ordnungsangaben sind optional.
 | personen | Liste von P-Kennungen | Verweise |
 | verweise | Liste von D-Kennungen | Verweise |
 | notiz | Ordnungsnotiz | frei |
-| textstand | direkt ausgelesen, OCR-erkannt, visuell geprüft, teilweise lesbar, nicht lesbar | fest, optional; was vom Inhalt tatsächlich gelesen wurde (seit 17.09.2026, F34); getrennt davon liefert `dokument_text` die technische `textquelle` (direkt, pdf-text, kein-text, werkzeug-fehlt, bild, ocr, kein-auszug, fehler). „OCR-erkannt“ setzt das Werkzeug `texterkennung`, wenn noch kein Textstand vermerkt ist; die erkannte Fassung ist ein eigenes Dokument unter `07 Recherche/Texterkennung/` (Stand Vermerk, `verweise` auf das Original, das Original verweist zurück) |
+| textstand | direkt ausgelesen, OCR-erkannt, visuell geprüft, teilweise lesbar, nicht lesbar | fest, optional; was vom Inhalt tatsächlich gelesen wurde (seit 17.09.2026, F34); getrennt davon liefert `dokument_text` die technische `textquelle` (direkt, pdf-text, **pdf-teiltext**, kein-text, werkzeug-fehlt, bild, ocr, kein-auszug, fehler; „pdf-teiltext“ seit 18.09.2026 für gemischte PDFs, deren Bildseiten unter `seiten_ohne_text` einzeln benannt werden — N06). „OCR-erkannt“ setzt das Werkzeug `texterkennung`, wenn noch kein Textstand vermerkt ist; die erkannte Fassung ist ein eigenes Dokument unter `07 Recherche/Texterkennung/` (Stand Vermerk, `verweise` auf das Original, das Original verweist zurück) |
 
 ## verfahren
 

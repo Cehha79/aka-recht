@@ -63,6 +63,32 @@ def erstellen(root=None, ziel=None, zweites_ziel=None):
     z = store.lade_zentrale(); z['sicherung']['letzte'] = ergebnis; store.speichere_zentrale(z)
     return ergebnis
 
+def rechte_zurueck(zf, ziel):
+    """Unix-Dateirechte aus dem Archiv wiederherstellen (Prüfbericht N05, 18.09.2026).
+
+    `extractall` legt jede Datei mit 0644 an, egal was im Archiv steht. Damit verlor eine
+    wiederhergestellte Kopie das Ausführungsrecht der Startdateien (0700, 0755) und den
+    Schreibschutz eingefrorener Entwurfsfassungen (0444). ZIP merkt sich die Rechte in den
+    oberen 16 Bit von `external_attr`; wir übernehmen davon nur die neun üblichen Bits.
+    Setuid, Setgid und Sticky (0o7000) werden nie übernommen — ein fremdes Archiv soll keine
+    Sonderrechte in die Mappe tragen. Unter Windows gibt es diese Rechte nicht; dort steht in
+    `external_attr` kein Unix-Modus und es bleibt beim Standard."""
+    gesetzt = 0; verworfen = []; fehler = []
+    for info in zf.infolist():
+        if info.is_dir(): continue                # Ordner bleiben beschreibbar, sonst scheitert das Abräumen der Probe
+        modus = info.external_attr >> 16
+        if not modus & 0o777: continue            # kein Unix-Modus im Archiv (etwa unter Windows gepackt)
+        if modus & 0o7000: verworfen.append(info.filename)
+        p = ziel / info.filename
+        try:
+            if p.exists() and not p.is_symlink(): p.chmod(modus & 0o777); gesetzt += 1
+        except OSError as e:
+            fehler.append(f'{info.filename}: {e}')
+    b = {'rechte_gesetzt': gesetzt}
+    if verworfen: b['rechte_verworfen'] = verworfen[:10]
+    if fehler: b['rechte_fehler'] = fehler[:10]
+    return b
+
 def _cloud_hinweis(pfad):
     p = str(pfad or '').replace('\\', '/')   # Windows-Pfade mit Schrägstrich vergleichen
     if 'com~apple~CloudDocs' in p or '/iCloud' in p or 'iCloudDrive' in p: return 'iCloud Drive: das Betriebssystem lädt die Kopie unverschlüsselt zu Apple hoch.'
@@ -102,6 +128,7 @@ def wiederherstellen(archiv, zielordner, erwartete_pruefsumme=None):
         for n in namen:
             if n.startswith('/') or '..' in Path(n).parts: bericht['fehler'].append('Unzulässiger Pfad im Archiv: ' + n); return bericht
         ziel.mkdir(parents=True, exist_ok=True); zf.extractall(ziel); bericht['dateien'] = len(namen)
+        bericht.update(rechte_zurueck(zf, ziel))   # N05: extractall lässt die Rechte fallen (0700 und 0444 wurden 0644)
     zentrale = ziel / 'zentrale.json'
     if not zentrale.is_file(): bericht['fehler'].append('zentrale.json fehlt im Archiv.'); return bericht
     for eintrag in json.loads(zentrale.read_text('utf-8')).get('faelle', []):

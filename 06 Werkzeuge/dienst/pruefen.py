@@ -65,6 +65,21 @@ def pdf_aus_bildern(ppm_dateien):
     objekte[1] = b'<< /Type /Pages /Kids [' + b' '.join(b'%d 0 R' % k for k in kinder) + b'] /Count %d >>' % len(kinder)
     return _pdf(objekte)
 
+def pdf_gemischt(zeilen, ppm):
+    """PDF mit einer Textseite und einer Bildseite (Prüfbericht N06): so sehen echte Scans oft aus,
+    wenn ein Deckblatt aus dem Textsystem kommt und die Anlage eingescannt wurde."""
+    objekte = [b'<< /Type /Catalog /Pages 2 0 R >>', b'', b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>']; kinder = []
+    text = b'BT /F1 28 Tf 40 TL 60 720 Td ' + b' '.join(b'(' + z.encode('cp1252') + b') Tj T*' for z in zeilen) + b' ET'
+    objekte.append(b'<< /Length %d >>\nstream\n' % len(text) + text + b'\nendstream')
+    objekte.append(b'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents %d 0 R >>' % len(objekte)); kinder.append(len(objekte))
+    roh = ppm.read_bytes(); m = re.match(rb'P6\s+(\d+)\s+(\d+)\s+(\d+)\s', roh); daten = zlib.compress(roh[m.end():])
+    objekte.append(b'<< /Type /XObject /Subtype /Image /Width %d /Height %d /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode /Length %d >>\nstream\n' % (int(m[1]), int(m[2]), len(daten)) + daten + b'\nendstream'); bild = len(objekte)
+    inhalt = b'q 612 0 0 792 0 0 cm /Im0 Do Q'
+    objekte.append(b'<< /Length %d >>\nstream\n' % len(inhalt) + inhalt + b'\nendstream')
+    objekte.append(b'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /XObject << /Im0 %d 0 R >> >> /Contents %d 0 R >>' % (bild, len(objekte))); kinder.append(len(objekte))
+    objekte[1] = b'<< /Type /Pages /Kids [' + b' '.join(b'%d 0 R' % k for k in kinder) + b'] /Count %d >>' % len(kinder)
+    return _pdf(objekte)
+
 def run():
     base = Path(tempfile.mkdtemp(prefix='aka-recht-pruefung-', dir='/private/tmp' if Path('/private/tmp').is_dir() else None)).resolve(); root = vorbereiten(base)
     instanz = hashlib.sha256(str(root).encode()).hexdigest()[:14]
@@ -574,6 +589,11 @@ def run():
         ok('Übergabepaket: unbekannte Kennung und fehlendes --nur brechen ab, Vorschau schreibt nichts, Gericht bekommt nur die gewählten Dokumente ohne Journal und interne Angaben, Anwalt alles; Manifest zurückgelesen, nichts überschrieben')
 
         # 8 Sicherung
+        if os.name != 'nt':   # N05: Probestücke mit besonderen Rechten, die die Wiederherstellung erhalten muss
+            nurlesbar = root / f1['ordner'] / '06 Entwürfe' / 'Fassungen' / 'Nurlesbar.md'
+            nurlesbar.parent.mkdir(parents=True, exist_ok=True); nurlesbar.write_text('Eingefrorene Fassung, nur lesbar.\n', encoding='utf-8'); nurlesbar.chmod(0o444)
+            (root / 'Start.command').write_text('#!/bin/zsh\necho AKA Recht\n', encoding='utf-8'); (root / 'Start.command').chmod(0o700)
+            (root / 'Start.sh').write_text('#!/bin/sh\necho AKA Recht\n', encoding='utf-8'); (root / 'Start.sh').chmod(0o755)
         s = anfrage('/api/sicherung', {}); zp = Path(s['pfad']); assert zp.is_file() and s['zweites_ziel'] and Path(s['zweites_ziel']).is_file()
         assert hashlib.sha256(zp.read_bytes()).hexdigest() == s['sha256'] == zp.with_suffix('.zip.sha256').read_text('utf-8').split()[0]
         with zipfile.ZipFile(zp) as zf: assert zf.testzip() is None and f"{f1['ordner']}/akte.json" in zf.namelist()
@@ -583,15 +603,22 @@ def run():
         # F19: Wiederherstellungsprobe und echte Wiederherstellung in einen neuen Ordner, Manipulationen fallen auf
         pr = anfrage('/api/sicherung/probe', {}); assert pr['bestanden'] and pr['dateien'] > 10 and pr['pruefsummendatei'] is True and [c['fall'] for c in pr['faelle']][:2] == ['R-0001', 'R-0002'] and all(not c['schema_fehler'] and not c['fehlend'] for c in pr['faelle']), pr
         assert not list(Path(tempfile.gettempdir()).glob('aka-recht-wiederherstellung-*')), 'Zwischenordner der Probe nicht abgeräumt'
-        r = subprocess.run([sys.executable, str(root / '06 Werkzeuge/dienst/server.py'), '--root', str(root), '--restore', s['pfad'], str(base / 'Wiederhergestellt')], capture_output=True, text=True, encoding='utf-8', timeout=60)
-        assert r.returncode == 0 and (base / 'Wiederhergestellt' / f1['ordner'] / 'akte.json').is_file() and json.loads(r.stdout)['bestanden'], r.stdout + r.stderr
+        r_wieder = subprocess.run([sys.executable, str(root / '06 Werkzeuge/dienst/server.py'), '--root', str(root), '--restore', s['pfad'], str(base / 'Wiederhergestellt')], capture_output=True, text=True, encoding='utf-8', timeout=60)
+        assert r_wieder.returncode == 0 and (base / 'Wiederhergestellt' / f1['ordner'] / 'akte.json').is_file() and json.loads(r_wieder.stdout)['bestanden'], r_wieder.stdout + r_wieder.stderr
         r = subprocess.run([sys.executable, str(root / '06 Werkzeuge/dienst/server.py'), '--root', str(root), '--restore', s['pfad'], str(base / 'Wiederhergestellt')], capture_output=True, text=True, encoding='utf-8', timeout=60); assert r.returncode != 0 and 'nicht leer' in r.stdout + r.stderr
         r = subprocess.run([sys.executable, str(root / '06 Werkzeuge/dienst/server.py'), '--root', str(root), '--restore', s['pfad'], str(root / 'X')], capture_output=True, text=True, encoding='utf-8', timeout=60); assert r.returncode != 0 and 'außerhalb' in r.stdout + r.stderr
+        if os.name != 'nt':   # N05 (Prüfbericht 18.09.2026): extractall ließ Ausführungsrecht und Schreibschutz fallen
+            wieder = base / 'Wiederhergestellt'
+            for rel, erwartet in (('Start.command', 0o700), ('Start.sh', 0o755), (f1['ordner'] + '/06 Entwürfe/Fassungen/Nurlesbar.md', 0o444)):
+                q = wieder / rel
+                assert q.is_file(), f'{rel} fehlt in der wiederhergestellten Kopie'
+                assert q.stat().st_mode & 0o777 == erwartet, f'{rel}: Rechte {oct(q.stat().st_mode & 0o777)} statt {oct(erwartet)}'
+            assert json.loads(r_wieder.stdout)['rechte_gesetzt'] > 0, r_wieder.stdout
         kopie = Path(s['zweites_ziel']); kopie.chmod(0o600); kopie.write_bytes(kopie.read_bytes()[:-1] + b'X')   # Kopie am zweiten Ziel manipuliert
         st = anfrage('/api/sicherung/status'); assert st['unveraendert'] and not st['zweites_ziel_unveraendert']
         pr = anfrage('/api/sicherung/probe', {'archiv': str(kopie)}); assert not pr['bestanden'] and pr['fehler'], pr
         kaputt = base / 'kaputt.zip'; kaputt.write_bytes(b'PK\x03\x04 kein archiv'); anfrage('/api/sicherung/probe', {'archiv': str(kaputt)}, erwartet=400)
-        ok('Wiederherstellungsprobe bestanden, echte Wiederherstellung nur in leeren Ordner außerhalb, manipulierte Kopie und kaputtes Archiv fallen auf')
+        ok('Wiederherstellungsprobe bestanden, echte Wiederherstellung nur in leeren Ordner außerhalb, manipulierte Kopie und kaputtes Archiv fallen auf; die Kopie behält Ausführungsrecht der Startdateien und Schreibschutz eingefrorener Fassungen (N05)')
 
         # 9 MCP-Server über die Standardeingabe
         mcp = subprocess.Popen([sys.executable, str(root / '06 Werkzeuge/dienst/mcp_server.py'), '--root', str(root)],
@@ -815,6 +842,30 @@ def run():
             subprocess.run([pp, '-r', '150', '-png', '-f', '1', '-l', '1', str(base / 'probe.pdf'), str(base / 'foto')], check=True, capture_output=True)
             subprocess.run([pp, '-r', '100', str(base / 'probe.pdf'), str(base / 'seite')], check=True, capture_output=True)
             foto_png = next(base.glob('foto*.png')); scan_pdf = pdf_aus_bildern(sorted(base.glob('seite*.ppm')))
+
+            # N06/N07 (Prüfbericht 18.09.2026): Seitenzahl und gemischte PDF
+            rein = anfrage('/api/fall/R-0002/eingang', {'name': 'Zwei Seiten Text.pdf', 'inhalt': base64.b64encode((base / 'probe.pdf').read_bytes()).decode()})['dokument']
+            gemischt_pdf = pdf_gemischt(['Landratsamt Musterstadt', 'Aktenzeichen 4711', 'Anlage siehe Rueckseite'], sorted(base.glob('seite*.ppm'))[1])
+            gemischt = anfrage('/api/fall/R-0002/eingang', {'name': 'Bescheid mit Anlage.pdf', 'inhalt': base64.b64encode(gemischt_pdf).decode()})['dokument']
+            anfrage('/api/werkzeug', {'name': 'bestand_abgleichen', 'parameter': {'fall': 'R-0002'}, 'bestaetigt': True})
+            t_rein = anfrage(f'/api/fall/R-0002/text/{rein}')
+            assert t_rein['textquelle'] == 'pdf-text' and t_rein['seiten'] == 2 and not t_rein['seiten_ohne_text'], t_rein   # N07: zwei Seiten sind zwei, nicht drei
+            t_mix = anfrage(f'/api/fall/R-0002/text/{gemischt}')
+            assert t_mix['textquelle'] == 'pdf-teiltext' and t_mix['seiten'] == 2 and t_mix['seiten_ohne_text'] == [2], t_mix
+            assert 'Musterstadt' in t_mix['text'] and 'ohne Textschicht' in t_mix['hinweis'] and 'Seite 2' in t_mix['hinweis'], t_mix
+            assert t_mix.get('gelesen') is not True, t_mix   # eine halb gelesene Datei gilt nicht als gelesen
+
+            # N08: unmögliches Datum im Dateinamen blockiert den Abgleich nicht mehr
+            schief = anfrage('/api/fall/R-0002/eingang', {'name': '2026-02-31_Probe.txt', 'inhalt': base64.b64encode('Zeile eins.\n'.encode()).decode()})['dokument']
+            gut = anfrage('/api/fall/R-0002/eingang', {'name': '2028-02-29_Schalttag.txt', 'inhalt': base64.b64encode('Schalttag.\n'.encode()).decode()})['dokument']
+            anfrage('/api/werkzeug', {'name': 'bestand_abgleichen', 'parameter': {'fall': 'R-0002'}, 'bestaetigt': True})
+            dok2 = json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8'))['dokumente']
+            assert dok2[schief]['datum'] == '' and 'kein Kalendertag' in dok2[schief]['notiz'], dok2[schief]
+            assert dok2[gut]['datum'] == '2028-02-29', dok2[gut]   # ein echter Schalttag bleibt
+            assert not akte_schema.validate(json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8')))[0]
+            anfrage('/api/werkzeug', {'name': 'bestand_abgleichen', 'parameter': {'fall': 'R-0002'}, 'bestaetigt': True})   # zweiter Lauf läuft durch, früher scheiterte er erneut
+            ok('PDF-Seiten und Dateinamen-Datum (N06, N07, N08): zwei Seiten werden als zwei gezählt, eine gemischte PDF meldet ihre Bildseiten einzeln und gilt nicht als gelesen, ein unmögliches Datum im Dateinamen bleibt leer mit Notiz statt die Akte unspeicherbar zu machen')
+
             foto = anfrage('/api/fall/R-0002/eingang', {'name': 'Brief Foto.png', 'inhalt': base64.b64encode(foto_png.read_bytes()).decode()})['dokument']
             scan = anfrage('/api/fall/R-0002/eingang', {'name': 'Bescheid Scan.pdf', 'inhalt': base64.b64encode(scan_pdf).decode()})['dokument']
             anfrage('/api/werkzeug', {'name': 'bestand_abgleichen', 'parameter': {'fall': 'R-0002'}, 'bestaetigt': True})

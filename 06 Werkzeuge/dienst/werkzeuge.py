@@ -125,8 +125,9 @@ def dokument_text(fall, dokument):
     b = dokumente.befund(p)
     antwort = {'dokument': dokument, 'titel': d['titel'], 'pfad': d['pfad'], 'text': b['text'], 'hinweis': (b['hinweis'] + ' ' if b['hinweis'] else '') + dokumente.ABLEITUNG,
                'textquelle': b['textquelle'], 'textquelle_text': b['textquelle_text'], 'seiten': b['seiten'], 'zeichen': b['zeichen'], 'textstand': d.get('textstand', ''),
+               'seiten_ohne_text': b.get('seiten_ohne_text') or [],   # N06: Seiten ohne Textschicht, einzeln benannt
                'gelesen': b['textquelle'] in ('direkt', 'pdf-text'), 'texterkennung': ''}
-    if b['textquelle'] in ('bild', 'kein-text'):   # Stufe 13: vorhandene Texterkennung zeigen, gekennzeichnet als Ableitung
+    if b['textquelle'] in ('bild', 'kein-text', 'pdf-teiltext'):   # Stufe 13: vorhandene Texterkennung zeigen, gekennzeichnet als Ableitung; seit N02/N06 auch für gemischte PDF
         ableitungen = sorted((x['pfad'], k) for k, x in akte['dokumente'].items() if dokument in x.get('verweise', []) and x['pfad'].startswith(dokumente.OCR_ORDNER + '/'))
         for rel, k in reversed(ableitungen):
             q = store.sicher(rel, ordner)
@@ -541,6 +542,7 @@ def texterkennung(fall, dokument, sprache='deu'):
     if not p.is_file(): raise ValueError('Datei fehlt am registrierten Ort. Falls sie verschoben wurde: bestand_abgleichen ausführen.')
     quelle = dokumente.befund(p)['textquelle']
     if quelle in ('direkt', 'pdf-text'): raise ValueError(f'{dokument} hat schon lesbaren Text ({dokumente.TEXTQUELLEN[quelle]}); die Texterkennung ist für Fotos und PDF ohne Textschicht.')
+    # N06: eine gemischte PDF darf erkannt werden — die Seiten ohne Textschicht sind sonst nicht lesbar
     jetzt = datetime.now(); rel = f'{dokumente.OCR_ORDNER}/{dokument}_Texterkennung_{jetzt:%Y-%m-%d}.txt'; ziel = store.sicher(rel, ordner)
     if ziel.exists(): raise ValueError(f'{rel} gibt es schon (heute bereits erkannt). Nichts wird überschrieben.')
     sha = bestand.sha_datei(p)
