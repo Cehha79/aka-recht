@@ -52,7 +52,7 @@ Recht/
 ├─ 06 Werkzeuge/
 │  ├─ dienst/                 server.py, store.py, dokumente.py, fristen.py,
 │  │                          bestand.py, sicherung.py, werkzeuge.py, cli.py
-│  ├─ oberflaeche/            index.html, app.js, style.css, sprachen/ (de.json und anleitung.de.html; Englisch später)
+│  ├─ oberflaeche/            index.html, app.js, style.css, sprachen/ (de.json, en.json und die Anleitungen dazu; Umschaltung in den Einstellungen)
 │  ├─ verteilen.py            AGENTS.md und .agents/skills/ aus den Quellen erzeugen
 │  ├─ einrichten_windows.py   nur Windows: python3 in .mcp.json, .claude/settings.json, .codex/config.toml durch python ersetzen (ruft Start.bat)
 │  └─ pruefen.py              Funktionstest mit künstlichen Akten
@@ -306,8 +306,10 @@ für die eingestellte Sprache, gilt Deutsch, und fehlende Kennungen fallen in
 der Oberfläche auf die deutschen Texte zurück. Der Funktionstest gleicht jede
 in `app.js` und `index.html` benutzte Kennung mit `de.json` ab und umgekehrt.
 Nicht übersetzt sind die Meldungen des Dienstes, der Werkzeugkatalog, Skills,
-Vorlagen, Merkblätter und das README. Englisch kommt als `en.json` plus
-`anleitung.en.html` dazu, ohne `app.js` anzufassen. Die Mappe kennt nur
+Vorlagen, Merkblätter und das README. Englisch ist seit 17.09.2026 als
+`en.json` plus `anleitung.en.html` vorhanden, ohne dass `app.js` angefasst
+werden musste; der Funktionstest gleicht beide Sprachdateien gegen die im
+Code benutzten Kennungen ab. Die Mappe kennt nur
 deutsches Recht; andere Rechtsordnungen sind nicht vorgesehen (Entscheidung
 vom 17.09.2026).
 

@@ -94,10 +94,13 @@ Framework und braucht keinen Zugang nach außen.
 
 ## Voraussetzungen
 
-- Python 3, geprüft mit 3.14.7 (`python3 --version`); ältere Fassungen
-  sind ungeprüft. Keine weiteren Pakete.
+- Python 3.12 oder neuer (`python3 --version`). Geprüft mit 3.12.3 unter
+  Ubuntu und 3.14.7 unter macOS und Windows; ältere Fassungen sind
+  ungeprüft. Keine weiteren Pakete.
 - Geprüft am 18.09.2026 auf macOS 26.7, auf Ubuntu 24.04 (Python 3.12) und
-  auf Windows 11 (Python 3.14.7): jeweils Funktionstest mit 61 Prüfpunkten,
+  auf Windows 11 (Python 3.14.7): jeweils Funktionstest mit 61 Prüfpunkten
+  (seither sind weitere Prüfpunkte dazugekommen; die sind bisher nur auf
+  macOS gelaufen),
   Dienst über das Startskript, MCP-Server, Beispielfall in einem Ordner mit
   Leerzeichen und Umlauten, Texterkennung mit Foto und zweiseitigem Scan.
 - Für Textauszüge aus PDF optional das Programm `pdftotext` (Paket poppler).
@@ -117,7 +120,9 @@ Internet. Wenn der Doppelklick nichts tut: Rechtsklick auf die Datei,
 **Öffnen**, dann im Fenster noch einmal **Öffnen**.
 
 *Geklappt, wenn:* Ein schwarzes Fenster erscheint und der Browser die Mappe
-zeigt. Das Fenster muss offen bleiben, solange du arbeitest.
+zeigt. Das Fenster kannst du danach schließen — der Dienst läuft in einer
+eigenen Sitzung weiter. Beenden kannst du ihn über „Bestand und Sicherung“
+oder indem du den Rechner neu startest.
 
 **2. Texterkennung einrichten — freiwillig**
 
@@ -695,11 +700,13 @@ technisch durch und prüft sie im Funktionstest:
   `03 Schriftverkehr`, `04 Verfahren`, `05 Beweise` und `08 Archiv` weist ein
   Hook ab, bevor die KI die Datei anfasst — geprüft am aufgelösten Pfad, also
   auch über Umwege wie `..` oder Verknüpfungen, und unabhängig davon, wie
-  Umlaute im Pfad geschrieben sind. Erfasst sind alle schreibenden Werkzeuge
-  einer KI. Neue Fassungen gehören nach `06 Entwürfe`, Vermerke nach
-  `07 Recherche`. **Grenze:** Der Hook greift an den Dateiwerkzeugen, nicht an
-  beliebigen Befehlen einer Shell — wer der KI erlaubt, Befehle auszuführen,
-  umgeht ihn.
+  Umlaute im Pfad geschrieben sind. **Der Hook gilt für Claude Code** und dort
+  für dessen Dateiwerkzeuge (Write, Edit, MultiEdit, NotebookEdit). Neue
+  Fassungen gehören nach `06 Entwürfe`, Vermerke nach `07 Recherche`.
+  **Grenzen:** Beliebige Befehle einer Shell deckt er nicht ab — wer der KI
+  erlaubt, Befehle auszuführen, umgeht ihn. Für Codex und andere Assistenten
+  ist kein solcher Hook eingerichtet; dort schützen die Werkzeuge der Mappe
+  selbst, die in die Originalbereiche nicht schreiben.
 - **Lesen bleibt Lesen.** Kein lesendes Werkzeug fasst `akte.json`,
   `bestand.json` oder `zentrale.json` an. Neue Dateien registriert nur der
   Abgleich.
@@ -766,8 +773,9 @@ Andere Rechtsordnungen sind nicht vorgesehen. Außerhalb Deutschlands lässt
 sich die Mappe zum Ordnen von Unterlagen nutzen, Fristen und Vorlagen gelten
 aber nur für Deutschland.
 
-Oberfläche, Vorlagen, Anleitung und Skills sind derzeit nur auf Deutsch.
-Eine englische Oberfläche ist geplant.
+Die Oberfläche und ihre Anleitung gibt es auf Deutsch und Englisch
+(Einstellungen › Sprache). Vorlagen, Merkblätter, Skills und dieses README
+sind nur auf Deutsch; die Werte in den Akten bleiben ebenfalls deutsch.
 
 ## Grenzen
 

@@ -154,14 +154,30 @@ def stand(text):
     m = re.search(r'^\*Stand:\s*([^*\n]+)\*\s*$', text, re.M)
     return m.group(1).strip() if m else 'ohne Stand-Zeile'
 
+def nur_lokal():
+    """Seiten, die .gitignore vom Repository ausschließt (Prüfbericht N09, 18.09.2026).
+
+    Der Ordner ist Arbeitsordner und Repository zugleich: Die Seitenleiste zeigte in jeder Seite
+    alle Seiten, also verwiesen die vier veröffentlichten HTML-Ansichten auf sechs Seiten, die
+    es im Repository nicht gibt — 24 tote Links für jeden, der das Projekt lädt. Die Liste kommt
+    aus .gitignore, damit sie nicht getrennt gepflegt werden muss und nie auseinanderläuft."""
+    p = DOKU.parent / '.gitignore'
+    if not p.exists(): return set()
+    return {m.group(1) for z in p.read_text('utf-8').splitlines()
+            if (m := re.fullmatch(r'DOKU/(.+)\.html', z.strip()))}
+
 def main():
     vorhanden = [n for n in REIHENFOLGE if (MD / f'{n}.md').exists()]
     vorhanden += sorted(p.stem for p in MD.glob('*.md') if p.stem not in vorhanden)
+    lokal = nur_lokal()
+    oeffentlich = [n for n in vorhanden if n not in lokal]
     for n in vorhanden:
         text = (MD / f'{n}.md').read_text('utf-8')
         inhalt, abschnitte = render(text)
-        (DOKU / f'{n}.html').write_text(seite(n, inhalt, abschnitte, vorhanden, stand(text)), 'utf-8')
+        # Eine veröffentlichte Seite verlinkt nur veröffentlichte Seiten; eine interne Seite alle.
+        (DOKU / f'{n}.html').write_text(seite(n, inhalt, abschnitte, vorhanden if n in lokal else oeffentlich, stand(text)), 'utf-8')
         print('erzeugt:', f'DOKU/{n}.html')
+    if lokal: print(f'nur lokal (nicht im Repository, deshalb in den öffentlichen Seiten nicht verlinkt): {", ".join(sorted(lokal))}')
     return 0
 
 if __name__ == '__main__':

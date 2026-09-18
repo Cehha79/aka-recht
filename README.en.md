@@ -94,10 +94,12 @@ no outside access.
 
 ## Requirements
 
-- Python 3, tested with 3.14.7 (`python3 --version`); older versions are
-  untested. No other packages.
+- Python 3.12 or newer (`python3 --version`). Tested with 3.12.3 on Ubuntu and
+  3.14.7 on macOS and Windows; older versions are untested. No other
+  packages.
 - Tested on 18 Sep 2026 on macOS 26.7, on Ubuntu 24.04 (Python 3.12) and on
-  Windows 11 (Python 3.14.7): test suite with 61 checks, service via the start
+  Windows 11 (Python 3.14.7): test suite with 61 checks (more checks have been
+  added since; those have only run on macOS so far), service via the start
   script, MCP server, sample case in a folder with spaces and umlauts, text
   recognition on a photo and a two-page scan.
 - Optional for text extraction from PDF: the program `pdftotext` (poppler).
@@ -116,8 +118,9 @@ want to open the program — that is normal, the file came from the internet. If
 the double-click does nothing: right-click the file, **Open**, then **Open**
 again in the dialog.
 
-*It worked if:* a black window appears and the browser shows the folder. Keep
-that window open while you work.
+*It worked if:* a black window appears and the browser shows the folder. You
+can close that window afterwards — the service keeps running in its own
+session. Stop it from "Bestand und Sicherung" or by restarting the computer.
 
 **2. Set up text recognition — optional**
 
@@ -751,8 +754,9 @@ German procedures.
 Other jurisdictions are not planned. Outside Germany the folder can be used to
 organise documents, but deadlines and templates apply to Germany only.
 
-The UI, templates, manual and skills are currently German only. An English
-UI is planned.
+The UI and its manual are available in German and English (Settings ›
+Language). Templates, leaflets, skills and this README are German only; the
+values stored in case files stay German as well.
 
 ## Limits
 

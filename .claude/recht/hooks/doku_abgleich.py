@@ -26,11 +26,13 @@ def ansichten_pruefen(root):
     spec = importlib.util.spec_from_file_location('ansicht_bauen', skript); modul = importlib.util.module_from_spec(spec); spec.loader.exec_module(modul)
     vorhanden = [n for n in modul.REIHENFOLGE if (modul.MD / f'{n}.md').exists()]
     vorhanden += sorted(p.stem for p in modul.MD.glob('*.md') if p.stem not in vorhanden)
+    lokal = modul.nur_lokal()   # N09: veröffentlichte Seiten verlinken nur veröffentlichte
+    oeffentlich = [n for n in vorhanden if n not in lokal]
     abweichend = []
     for n in vorhanden:
         quelle = modul.MD / f'{n}.md'; ziel = modul.DOKU / f'{n}.html'
         text = quelle.read_text('utf-8'); inhalt, abschnitte = modul.render(text)
-        soll = modul.seite(n, inhalt, abschnitte, vorhanden, modul.stand(text))   # Stempel aus der Stand-Zeile, nicht aus der Dateizeit
+        soll = modul.seite(n, inhalt, abschnitte, vorhanden if n in lokal else oeffentlich, modul.stand(text))   # Stempel aus der Stand-Zeile, nicht aus der Dateizeit
         ist = ziel.read_text('utf-8') if ziel.is_file() else None
         if ist != soll: abweichend.append(f'DOKU/{n}.html' + ('' if ist is not None else ' (fehlt)'))
     return abweichend
