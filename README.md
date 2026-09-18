@@ -699,3 +699,11 @@ Web: https://www.mika-tec.com
 
 Kleinunternehmer gemäß § 19 UStG; es wird keine Umsatzsteuer ausgewiesen.<br>
 Verantwortlich im Sinne des § 18 Abs. 2 MStV: Hasan Tepegöz, Anschrift wie oben.
+
+### Hinweis zu Künstlicher Intelligenz
+
+AKA Recht enthält selbst keine KI. Dienst, Oberfläche, Fristenrechner und Werkzeuge führen ausschließlich fest programmierte Regeln aus; es wird nichts gelernt und nichts abgeleitet. Die Mappe ist damit kein KI-System im Sinne von Art. 3 Nr. 1 der Verordnung (EU) 2024/1689 (KI-Verordnung).
+
+Wer die Mappe mit einem eigenen KI-Assistenten nutzt, arbeitet mit einem fremden KI-System. Dessen Ausgaben sind Entwürfe, keine geprüften Rechtsaussagen: Sie können falsch, veraltet oder erfunden sein. Sie tragen deshalb die Marker `[PRÜFEN]`, `[QUELLE]` und `[BELEG]` und sind vor jeder Verwendung am Originalvolltext zu prüfen. Fristen, Schreiben und Erklärungen verantwortet allein die Nutzerin oder der Nutzer.
+
+AKA Recht leistet keine Rechtsberatung und keine Rechtsdienstleistung im Sinne des § 2 RDG. Bei Weichenstellungen: Fachanwältin, Fachanwalt oder eine anerkannte Beratungsstelle.

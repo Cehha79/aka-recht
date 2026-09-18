@@ -684,3 +684,11 @@ Web: https://www.mika-tec.com
 
 Kleinunternehmer gemäß § 19 UStG; es wird keine Umsatzsteuer ausgewiesen.<br>
 Verantwortlich im Sinne des § 18 Abs. 2 MStV: Hasan Tepegöz, Anschrift wie oben.
+
+### Note on artificial intelligence
+
+AKA Recht contains no AI itself. Service, interface, deadline calculator and tools only execute rules written by hand; nothing is learned and nothing is inferred. The folder is therefore not an AI system within the meaning of Art. 3 no. 1 of Regulation (EU) 2024/1689 (AI Act).
+
+Anyone using the folder with their own AI assistant is working with a third-party AI system. Its output consists of drafts, not verified statements of law: it may be wrong, outdated or invented. That is why it carries the markers `[PRÜFEN]` (check), `[QUELLE]` (source) and `[BELEG]` (evidence) and must be checked against the original full text before any use. Deadlines, letters and declarations remain the sole responsibility of the user.
+
+AKA Recht provides no legal advice and no legal service within the meaning of § 2 RDG (German Legal Services Act). At any fork in the road: consult a specialist lawyer or a recognised advice centre.

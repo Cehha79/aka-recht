@@ -165,6 +165,8 @@ if __name__ == '__main__':
     p.add_argument('--root', type=Path, default=store.ROOT, help='Projektordner mit zentrale.json')
     a = p.parse_args(); store.konfigurieren(a.root)
     if not (Path(store.ROOT) / 'zentrale.json').exists():
-        print(f'AKA Recht MCP: kein Projekt in {store.ROOT} (zentrale.json fehlt).', file=sys.stderr); sys.exit(1)
+        print(f'AKA Recht MCP: kein Projekt in {store.ROOT} (zentrale.json fehlt).\n'
+              'Die Mappe ist noch nicht eingerichtet: Start.command (Mac), Start.sh (Linux)\n'
+              'oder Start.bat (Windows) einmal ausführen, dann diesen Client neu starten.', file=sys.stderr); sys.exit(1)
     print(f'AKA Recht MCP-Server bereit, Projekt {store.ROOT}, {len(werkzeuge.fuer_agenten())} Werkzeuge.', file=sys.stderr)
     schleife()
