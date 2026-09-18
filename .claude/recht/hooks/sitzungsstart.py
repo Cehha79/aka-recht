@@ -18,7 +18,10 @@ def main():
     try:
         import store, werkzeuge
         store.konfigurieren(root)
-        zeilen = [f'AKA Recht, Sitzungsstart {date.today():%d.%m.%Y}. Arbeitsprofil: CLAUDE.md im Projekt; Übergabe: DOKU/md/Live-Dokumentation.md.']
+        # Die Live-Dokumentation ist interne Entwicklungsdoku und liegt nicht in jeder Mappe;
+        # nur nennen, wenn sie da ist (Befund 18.09.2026 beim Trennen von Akte und Entwicklung).
+        uebergabe = '; Übergabe: DOKU/md/Live-Dokumentation.md' if (root / 'DOKU' / 'md' / 'Live-Dokumentation.md').exists() else ''
+        zeilen = [f'AKA Recht, Sitzungsstart {date.today():%d.%m.%Y}. Arbeitsprofil: CLAUDE.md im Projekt{uebergabe}.']
         eingang = [p.name for p in (root / '01 Eingang').iterdir() if p.is_file() and not p.name.startswith('.')] if (root / '01 Eingang').exists() else []
         zeilen.append('Gemeinsamer Eingang: ' + (', '.join(eingang) if eingang else 'leer') + '.')
         heute = date.today().isoformat()
