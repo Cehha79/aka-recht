@@ -15,12 +15,19 @@ import sys
 for _strom in (sys.stdin, sys.stdout, sys.stderr):
     if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
-import json, os, re
+import json, os, re, unicodedata
 from pathlib import Path
 
 PROJEKT = Path(os.environ.get('CLAUDE_PROJECT_DIR') or Path(__file__).resolve().parents[3]).resolve()
 FAELLE = ('02 Fälle', '02 Faelle')
 GESCHUETZT = re.compile(r'^0[2-58] ')   # 02 Grundlagen, 03 Schriftverkehr, 04 Verfahren, 05 Beweise, 08 Archiv
+
+
+def nfc(s):
+    """Umlaute in die zusammengesetzte Form bringen. macOS liefert beim Auflisten „ä“ zerlegt
+    (a + U+0308); ohne diesen Schritt trifft der Textvergleich mit „02 Fälle“ nicht und der
+    Schutz liefe leer (gefunden am 18.09.2026 beim Windows-Test, auf dem Mac genauso wirksam)."""
+    return unicodedata.normalize('NFC', s)
 
 
 def aufgeloest(p):
@@ -32,7 +39,7 @@ def aufgeloest(p):
 def befund(pfad):
     """Liefert den Grund für eine Sperre oder None. Prüft die Bestandteile des aufgelösten Pfads:
     …/02 Fälle/<Fall>/<Bereich>/… mit Bereich 02, 03, 04, 05 oder 08, und …/02 Fälle/<Fall>/bestand.json."""
-    teile = pfad.parts
+    teile = tuple(nfc(x) for x in pfad.parts)
     for i, t in enumerate(teile):
         if t in FAELLE and i + 2 < len(teile):
             bereich = teile[i + 2]
