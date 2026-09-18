@@ -716,10 +716,18 @@ def run():
         # Texterkennung (Stufe 13): ohne tesseract klare Meldung; mit tesseract an einem erfundenen Foto und einem zweiseitigen Scan ohne Textschicht
         import texterkennung as _ocr
         pfad_vorher = os.environ.get('PATH', ''); os.environ['PATH'] = str(base / 'kein-programm')
+        orte_vorher = _ocr.STANDARDORTE; _ocr.STANDARDORTE = {}
         try:
             try: _ocr.erkennen(base / 'Foto.jpg'); raise AssertionError('Texterkennung ohne tesseract gelaufen')
-            except ValueError as ex: assert 'tesseract' in str(ex) and 'brew install' in str(ex), ex
-        finally: os.environ['PATH'] = pfad_vorher
+            except ValueError as ex: assert 'tesseract' in str(ex) and 'brew install' in str(ex) and 'winget' in str(ex), ex
+            assert _ocr._finden('tesseract') is None, 'ohne PATH und ohne Standardorte darf nichts gefunden werden'
+            # Standardort greift, wenn der Suchpfad nichts hergibt (Windows-Fall vom 18.09.2026)
+            _ocr.STANDARDORTE = {sys.platform: [str(base / 'Foto.jpg')]}
+            assert _ocr._finden('tesseract') == str(base / 'Foto.jpg'), 'Standardort wurde nicht genommen'
+            assert _ocr._finden('pdftoppm') is None, 'Standardorte gelten nur für tesseract'
+            _ocr.STANDARDORTE = {sys.platform: [str(base / 'gibt-es-nicht')]}
+            assert _ocr._finden('tesseract') is None, 'nicht vorhandener Standardort darf nicht zählen'
+        finally: os.environ['PATH'] = pfad_vorher; _ocr.STANDARDORTE = orte_vorher
         try: _ocr.erkennen(base / 'Foto.jpg', 'deu; echo'); raise AssertionError('Sprachangabe mit Befehl angenommen')
         except ValueError as ex: assert 'Kürzel' in str(ex), ex
         pp = shutil.which('pdftoppm'); prog = _ocr.programme(); kann = bool(prog['tesseract'] and 'deu' in prog['sprachen'] and pp)
@@ -759,7 +767,7 @@ def run():
                 a = anfrage('/api/werkzeug', {'name': 'texterkennung', 'parameter': {'fall': 'R-0002', 'dokument': foto}, 'bestaetigt': True}, erwartet=400)
                 assert 'tesseract' in a['fehler'] and not (fall2 / '07 Recherche/Texterkennung').exists() and akte2()['dokumente'][foto].get('textstand', '') == '', a
                 assert all((fall2 / akte2()['dokumente'][k]['pfad']).read_bytes() == b for k, b in originale.items())
-                ok('Texterkennung ohne tesseract (oder ohne deutsche Sprache): klare Meldung mit Installationsweg, nichts angelegt, Akte und Original unverändert; unsichere Sprachangabe abgewiesen')
+                ok('Texterkennung ohne tesseract (oder ohne deutsche Sprache): klare Meldung mit Installationsweg für macOS, Linux und Windows, nichts angelegt, Akte und Original unverändert; unsichere Sprachangabe abgewiesen; Standardort greift nur für tesseract und nur wenn die Datei da ist')
         else:
             ok('Texterkennung ohne pdftoppm: Probebilder nicht erzeugbar; ohne tesseract und mit unsicherer Sprachangabe klare Meldung')
         # Pflege der Rechtsinhalte (Stufe 12): Fälligkeiten mit festen Stichtagen, Merkblatt ohne oder mit kaputtem Datum, Feiertage ab Dezember,

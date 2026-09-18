@@ -27,7 +27,28 @@ WARNUNG = ('Texterkennung verwechselt Zeichen und kann ganze Zeilen auslassen od
            'der Textstand „visuell geprüft“ entsteht erst durch diesen Abgleich.')
 INSTALLATION = ('Texterkennung braucht das freiwillige Zusatzprogramm tesseract mit deutscher Sprache '
                 '(macOS mit Homebrew: brew install poppler tesseract tesseract-lang; Linux, etwa Ubuntu: '
-                'sudo apt install poppler-utils tesseract-ocr tesseract-ocr-deu). Ohne das Programm bleibt alles wie bisher.')
+                'sudo apt install poppler-utils tesseract-ocr tesseract-ocr-deu; Windows mit winget: '
+                'winget install UB-Mannheim.TesseractOCR, dabei Deutsch mitwählen). Ohne das Programm bleibt alles wie bisher.')
+# Der übliche Windows-Installer trägt tesseract nicht in den Suchpfad ein (geprüft am 18.09.2026 in der
+# Testmaschine: installiert, aber `shutil.which` fand nichts). Deshalb zusätzlich an den bekannten
+# Standardorten nachsehen, bevor „Programm fehlt“ gemeldet wird.
+STANDARDORTE = {
+    'win32': [r'C:\Program Files\Tesseract-OCR\tesseract.exe',
+              r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'],
+    'darwin': ['/opt/homebrew/bin/tesseract', '/usr/local/bin/tesseract'],
+    'linux': ['/usr/bin/tesseract', '/usr/local/bin/tesseract'],
+}
+
+
+def _finden(name):
+    """Programm im Suchpfad; für tesseract sonst an den Standardorten des Systems."""
+    gefunden = shutil.which(name)
+    if gefunden or name != 'tesseract':
+        return gefunden
+    for ort in STANDARDORTE.get(sys.platform, []):
+        if Path(ort).is_file():
+            return ort
+    return None
 
 
 def _lauf(befehl, zeit):
@@ -36,7 +57,7 @@ def _lauf(befehl, zeit):
 
 def programme():
     """Welche Hilfsprogramme vorhanden sind: tesseract mit Version und Sprachen, pdftoppm, sips (nur macOS)."""
-    t = shutil.which('tesseract'); version = ''; sprachen = []
+    t = _finden('tesseract'); version = ''; sprachen = []
     if t:
         try:
             r = _lauf([t, '--version'], 30)
