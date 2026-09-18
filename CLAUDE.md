@@ -1,6 +1,8 @@
 # CLAUDE.md – AKA Recht
 
-Arbeitsprofil für Claude in diesem Projekt. AKA Recht ist eine Rechts-App für
+Arbeitsprofil für Claude in diesem Projekt. Hier wird die Anwendung entwickelt;
+örtliche Hinweise dazu stehen in `CLAUDE.local.md` (nicht im Repository).
+AKA Recht ist eine Rechts-App für
 Rechtssachen aller Art (Arbeit, Verkehr, Miete, Verträge, Behörden,
 Strafsachen und mehr). Die Regeln aus `~/.claude/CLAUDE.md` gelten weiter.
 

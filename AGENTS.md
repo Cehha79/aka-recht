@@ -4,7 +4,9 @@
 # AGENTS.md – AKA Recht
 
 Arbeitsprofil für jeden KI-Assistenten in diesem Projekt (Codex, Cursor,
-Gemini CLI und andere; Claude Code liest dasselbe Profil als CLAUDE.md). AKA Recht ist eine Rechts-App für
+Gemini CLI und andere; Claude Code liest dasselbe Profil als CLAUDE.md). Hier wird die Anwendung entwickelt;
+örtliche Hinweise dazu stehen in `CLAUDE.local.md` (nicht im Repository).
+AKA Recht ist eine Rechts-App für
 Rechtssachen aller Art (Arbeit, Verkehr, Miete, Verträge, Behörden,
 Strafsachen und mehr). Persönliche Regeln des Nutzers gelten zusätzlich, soweit der Assistent sie lädt.
 
