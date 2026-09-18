@@ -152,7 +152,7 @@ Ordnungsbehörden. Am 17.09.2026 waren nur das Inhaltsverzeichnis, §§ 1, 2, 10
 Gefahrgut-Teil gelesen worden, § 3 wurde übersehen. Gefunden über den Erlass „Verfolgung von
 Ordnungswidrigkeiten durch die Polizeibehörden“ (StAnz. 2026, S. 306), dessen Nr. 3 die Norm nennt.
 Damit hat nur noch Nordrhein-Westfalen keine Rechtsverordnung zur Bußgeldzuständigkeit. Nach der
-Entscheidung Hasans vom 18.09.2026 zählt dort ein Runderlass als Beleg — die dahinterstehende Norm
+Entscheidung des Autors vom 18.09.2026 zählt dort ein Runderlass als Beleg — die dahinterstehende Norm
 bleibt als `[QUELLE]` offen.
 
 Am 18.09.2026 ebenfalls geklärt (Thema 1, Restfrage): § 1 Abs. 1 ThürVwZVG, § 1 Abs. 1 Vw ZG-LSA
@@ -208,7 +208,7 @@ Baden-Württemberg. **Gemeindeordnungen:** Die Kommunalaufsicht ist am Volltext 
 (Art. 110 GO: Landratsamt, Regierung), Brandenburg (§ 110 BbgKVerf: Landrat, Innenministerium),
 Nordrhein-Westfalen (§ 120 GO NRW: Landrat, Bezirksregierung) sowie Thüringen und Sachsen-Anhalt aus
 der Arbeit am selben Tag. Für die übrigen elf Länder ist das Muster dasselbe, die Norm aber nicht
-gelesen (`[QUELLE]`). **Nachgearbeitet am 18.09.2026 (auf Hasans Nachfrage):** Die **Kommunalaufsicht** ist jetzt für alle
+gelesen (`[QUELLE]`). **Nachgearbeitet am 18.09.2026 (auf Nachfrage):** Die **Kommunalaufsicht** ist jetzt für alle
 dreizehn Flächenländer am Volltext belegt (BW § 119 GemO, BY Art. 110 GO, BB § 110 BbgKVerf,
 HE § 136 HGO, MV § 79 KV M-V, NI § 171 NKomVG, NW § 120 GO NRW, RP § 118 GemO, SL § 128 KSVG,
 SN § 112 SächsGemO, ST § 143 KVG LSA, SH § 121 GO, TH § 117 ThürKO); für die drei Stadtstaaten ist
@@ -216,7 +216,7 @@ vermerkt, dass es dort keine Kommunalaufsicht über selbständige Gemeinden gibt
 **Petitionsrecht** sind elf Länder belegt (BW, BY, BB, MV, SN, TH im Wortlaut; BE, HB, HE als
 Portaleintrag; RP und SH über die Beauftragtengesetze); für HH, NI, NW, SL und ST steht ein
 `[PRÜFEN]` — dort führen die Portale nur die Geschäftsordnung von Bürgerschaft oder Landtag.
-**Abschlussentscheidung Hasans vom 18.09.2026:** Dieser Stand reicht; die restlichen Stellen bleiben
+**Abschlussentscheidung des Autors vom 18.09.2026:** Dieser Stand reicht; die restlichen Stellen bleiben
 mit ihren Markierungen stehen, statt weiter gesucht zu werden. Offen bleiben außerdem die Negativbefunde bei Streitschlichtung (sieben Länder) und
 Informationszugang (Bayern, Niedersachsen).
 Fassungen seit 17.09.2026 nach dem Vollzitat des Portals (Abschnitt 4,
