@@ -213,9 +213,11 @@ dreizehn Flächenländer am Volltext belegt (BW § 119 GemO, BY Art. 110 GO, BB 
 HE § 136 HGO, MV § 79 KV M-V, NI § 171 NKomVG, NW § 120 GO NRW, RP § 118 GemO, SL § 128 KSVG,
 SN § 112 SächsGemO, ST § 143 KVG LSA, SH § 121 GO, TH § 117 ThürKO); für die drei Stadtstaaten ist
 vermerkt, dass es dort keine Kommunalaufsicht über selbständige Gemeinden gibt (`[QUELLE]`). Beim
-**Petitionsrecht** sind zehn Länder belegt (BW, BY, BB, SN, TH im Wortlaut; BE, HB, HE als
-Portaleintrag; RP und SH über die Beauftragtengesetze); für HH, MV, NI, NW, SL und ST steht ein
-`[PRÜFEN]`. Offen bleiben außerdem die Negativbefunde bei Streitschlichtung (sieben Länder) und
+**Petitionsrecht** sind elf Länder belegt (BW, BY, BB, MV, SN, TH im Wortlaut; BE, HB, HE als
+Portaleintrag; RP und SH über die Beauftragtengesetze); für HH, NI, NW, SL und ST steht ein
+`[PRÜFEN]` — dort führen die Portale nur die Geschäftsordnung von Bürgerschaft oder Landtag.
+**Abschlussentscheidung Hasans vom 18.09.2026:** Dieser Stand reicht; die restlichen Stellen bleiben
+mit ihren Markierungen stehen, statt weiter gesucht zu werden. Offen bleiben außerdem die Negativbefunde bei Streitschlichtung (sieben Länder) und
 Informationszugang (Bayern, Niedersachsen).
 Fassungen seit 17.09.2026 nach dem Vollzitat des Portals (Abschnitt 4,
 Nr. 2).
