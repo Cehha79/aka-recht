@@ -275,6 +275,7 @@
   "entw.fassung": "Fassung {n}",
   "entw.versandt_als": "versandt als",
   "entw.eingefroren": "Eingefroren: {liste}",
+  "entw.eingefroren_meldung": "Fassung {n} als „{status}“ eingefroren: die Kopie unter 06 Entwürfe/Fassungen ist nur lesbar und hat eine eigene Kennung.",
   "entw.fassung_status": "Fassung {n} {status} {datum}",
   "entw.keiner": "Noch kein Entwurf erfasst. Ein Entwurf bleibt Entwurf, bis der Versand belegt ist.",
   "entw.dateien": "Dateien in 06 Entwürfe",

@@ -12,7 +12,8 @@ import sys
 for _strom in (sys.stdin, sys.stdout, sys.stderr):
     if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
-import base64, hashlib, json, os, re, shutil, subprocess, sys, tempfile, time, urllib.error, urllib.request, zipfile, zlib
+import base64, hashlib, json, os, re, shutil, subprocess, sys, tempfile, time, unicodedata, urllib.error, urllib.request, zipfile, zlib
+from datetime import date
 from pathlib import Path
 
 QUELLE = Path(__file__).resolve().parents[2]
@@ -254,7 +255,9 @@ def run():
             assert fehler and any(erwartet in s for s in fehler), (name, fehler)
         fehler, warn = akte_schema.validate(kaputte(lambda k: k['fristen'].append(dict(voll, geprueft_am=''))))
         assert not fehler and any('Prüfdatum' in s for s in warn), (fehler, warn)
-        assert akte_schema.frist_eigenschaften(voll) == {'gerechnet': True, 'belegt': True, 'geprueft': True, 'ausloeser_sicher': None, 'offene_marker': []}
+        assert akte_schema.frist_eigenschaften(voll) == {'gerechnet': True, 'belegt': True, 'geprueft': True, 'ausloeser_sicher': None, 'stand_aktuell': None, 'offene_marker': []}   # stand_aktuell None: ohne gespeicherten Stand keine Aussage (N02)
+        assert akte_schema.frist_eigenschaften(dict(voll, geprueft_stand=akte_schema.frist_grundlagen_stand(voll)))['stand_aktuell'] is True
+        assert akte_schema.frist_eigenschaften(dict(voll, geprueft_stand='abweichend'))['stand_aktuell'] is False
         assert akte_schema.frist_eigenschaften(dict(voll, art='Termin'))['gerechnet'] is None
         assert akte_schema.frist_eigenschaften(dict(voll, berechnung='Fristende 2026-09-21'))['gerechnet'] is True
         assert akte_schema.frist_eigenschaften(f12[1][1])['offene_marker'] == ['[PRÜFEN: Fassung]']
@@ -390,7 +393,7 @@ def run():
                       'berechnung': '\n'.join(fr['rechnung']), 'pruefstatus': 'bestätigt', 'quelle': 'D0001', 'geprueft_von': 'Prüflauf'}
         r = anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': bestaetigt, 'bestaetigt': True})
         assert r['frist']['id'] == 'F02' and r['frist']['geprueft_am'] == time.strftime('%Y-%m-%d') and r['frist']['geprueft_von'] == 'Prüflauf', r
-        assert r['eigenschaften'] == {'gerechnet': True, 'belegt': True, 'geprueft': True, 'ausloeser_sicher': None, 'offene_marker': []}, r
+        assert r['eigenschaften'] == {'gerechnet': True, 'belegt': True, 'geprueft': True, 'ausloeser_sicher': None, 'stand_aktuell': True, 'offene_marker': []}, r   # N02: die frische Bestätigung hält ihren Stand fest
         anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': dict(bestaetigt, berechnung='zwei Wochen [PRÜFEN: Zugang]'), 'bestaetigt': True}, erwartet=400)
         anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': dict(bestaetigt, berechnung='zwei Wochen ab Zustellung'), 'bestaetigt': True}, erwartet=400)
         u = anfrage('/api/werkzeug', {'name': 'fall_uebersicht', 'parameter': {'fall': 'R-0001'}})
@@ -441,6 +444,53 @@ def run():
             anfrage('/api/werkzeug', {'name': 'datei_ablegen', 'parameter': {'fall': 'R-0001', 'text': 'x', **par}, 'bestaetigt': True}, erwartet=400)
         assert '# Vermerk' in anfrage('/api/werkzeug', {'name': 'dokument_text', 'parameter': {'fall': 'R-0001', 'dokument': abl['kennung']}})['text']   # abgelegte Datei ist über ihre Kennung lesbar
         ok('MCP-Lücken geschlossen (F23): Beteiligte und Verfahren anlegen mit geprüften Verweisen und ohne Doppelung, vorhandene Frist und vorhandenes Ereignis ändern (genau räumt die Unsicherheit ab, Marker bleiben gesperrt), Textdatei ablegen nur in 01, 06, 07 ohne Überschreiben und mit eigener Kennung')
+
+        # N01 (Prüfbericht 18.09.2026): datei_ablegen kam über „unterordner“ aus dem erlaubten Bereich heraus
+        fallordner = root / f1['ordner']
+        geschuetzt = ['02 Grundlagen', '03 Schriftverkehr', '04 Verfahren', '05 Beweise', '08 Archiv']
+        vorher_geschuetzt = sorted(p.relative_to(fallordner).as_posix() for g in geschuetzt for p in (fallordner / g).rglob('*') if p.is_file())
+        for unter in ['../05 Beweise', '../../02 Fälle', 'Unter/../../08 Archiv', '/etc', 'C:/Windows', '..\\05 Beweise', '..', '.']:
+            anfrage('/api/werkzeug', {'name': 'datei_ablegen', 'parameter': {'fall': 'R-0001', 'bereich': '07 Recherche', 'unterordner': unter, 'name': 'Angriff.txt', 'text': 'x'}, 'bestaetigt': True}, erwartet=400)
+        anfrage('/api/werkzeug', {'name': 'datei_ablegen', 'parameter': {'fall': 'R-0001', 'bereich': unicodedata.normalize('NFD', '06 Entwürfe'), 'unterordner': '../05 Beweise', 'name': 'Angriff.txt', 'text': 'x'}, 'bestaetigt': True}, erwartet=400)   # zerlegtes „ü“ im Bereich scheitert schon an der Werteliste
+        assert sorted(p.relative_to(fallordner).as_posix() for g in geschuetzt for p in (fallordner / g).rglob('*') if p.is_file()) == vorher_geschuetzt, 'Angriff hat in einem Originalbereich etwas hinterlassen'
+        assert not (fallordner / '07 Recherche' / 'etc').exists(), 'absoluter Pfad wurde stillschweigend in den Bereich umgebogen'
+        gut = anfrage('/api/werkzeug', {'name': 'datei_ablegen', 'parameter': {'fall': 'R-0001', 'bereich': '06 Entwürfe', 'unterordner': 'Alte Fassungen/', 'name': 'Zerlegt.md', 'text': 'ok'}, 'bestaetigt': True})
+        assert gut['pfad'] == '06 Entwürfe/Alte Fassungen/Zerlegt.md' and gut['kennung'].startswith('D'), gut   # Schrägstrich am Ende ist erlaubt, der Pfad kommt normalisiert zurück
+        ok('Textablage bleibt im gewählten Bereich (N01): „..“, absoluter Pfad, Laufwerksbuchstabe, Backslash und zerlegte Umlaute werden abgewiesen, Originalbereiche bleiben unberührt, erlaubte Ablage liefert den normalisierten Pfad mit Kennung')
+
+        # N02 (Prüfbericht 18.09.2026): eine bestätigte Frist überlebte die Änderung ihres Auslösers
+        def frist_n02(kennung):
+            return next(x for x in anfrage('/api/fall/R-0001')['akte']['fristen'] if x['id'] == kennung)
+        def akte_speichern_n02(aendern):
+            fall_x = anfrage('/api/fall/R-0001'); aendern(fall_x['akte'])
+            return anfrage('/api/fall/R-0001', {'akte': fall_x['akte'], 'revision': fall_x['revision']})['revision']
+        e_n02 = anfrage('/api/werkzeug', {'name': 'ereignis_eintragen', 'parameter': {'fall': 'R-0001', 'datum': '2026-09-01', 'titel': 'Bescheid zugegangen (N02)', 'art': 'Zugang', 'quelle': 'D0001'}, 'bestaetigt': True})['ereignis']
+        f_n02 = anfrage('/api/werkzeug', {'name': 'frist_eintragen', 'parameter': {'fall': 'R-0001', 'datum': '2026-10-01', 'titel': 'Widerspruchsfrist (N02)', 'art': 'gesetzlich', 'ausloeser': f'Zugang am 01.09.2026 ({e_n02["id"]})', 'rechtsgrundlage': '§ 70 Abs. 1 VwGO', 'berechnung': 'Zugang 01.09.2026, ein Monat, Ende 01.10.2026', 'pruefstatus': 'bestätigt', 'quelle': 'D0001', 'geprueft_von': 'Prüflauf', 'ausloeser_ereignis': e_n02['id']}, 'bestaetigt': True})['frist']
+        assert frist_n02(f_n02['id']).get('geprueft_stand'), 'Bestätigung ohne festgehaltenen Stand der Grundlagen'
+        r_n02 = anfrage('/api/werkzeug', {'name': 'ereignis_setzen', 'parameter': {'fall': 'R-0001', 'ereignis': e_n02['id'], 'datum': '2026-09-08'}, 'bestaetigt': True})
+        assert [z['id'] for z in r_n02.get('fristen_hinfaellig', [])] == [f_n02['id']], r_n02   # das Werkzeug meldet die Folge seiner eigenen Änderung
+        fr_n02 = frist_n02(f_n02['id'])
+        assert fr_n02['pruefstatus'] == 'offen' and 'geprueft_am' not in fr_n02 and 'geprueft_stand' not in fr_n02, fr_n02
+        assert '[PRÜFEN' in fr_n02['berechnung'] and 'hinfällig' in fr_n02['berechnung'], fr_n02['berechnung']
+        assert any('Fristbestätigung hinfällig' in x['titel'] for x in anfrage('/api/fall/R-0001/journal')['eintraege']), 'Journal ohne Vermerk zur hinfälligen Bestätigung'
+        anfrage('/api/werkzeug', {'name': 'frist_setzen', 'parameter': {'fall': 'R-0001', 'frist': f_n02['id'], 'datum': '2026-10-08', 'pruefstatus': 'bestätigt', 'geprueft_von': 'Prüflauf'}, 'bestaetigt': True}, erwartet=400)   # der Marker in der Rechnung sperrt, bis er aufgelöst ist
+        berechnung_n02 = 'Zugang 08.09.2026, ein Monat, Ende 08.10.2026'
+        w_n02 = anfrage('/api/werkzeug', {'name': 'frist_setzen', 'parameter': {'fall': 'R-0001', 'frist': f_n02['id'], 'datum': '2026-10-08', 'ausloeser': f'Zugang am 08.09.2026 ({e_n02["id"]})', 'berechnung': berechnung_n02, 'pruefstatus': 'bestätigt', 'geprueft_von': 'Prüflauf'}, 'bestaetigt': True})
+        assert w_n02['frist']['pruefstatus'] == 'bestätigt' and w_n02['eigenschaften']['stand_aktuell'] is True, w_n02   # nachgerechnet und ausdrücklich neu bestätigt
+        def ereignis_verschieben(akte_x):
+            for x in akte_x['ereignisse']:
+                if x['id'] == e_n02['id']: x['datum'] = '2026-09-15'
+        akte_speichern_n02(ereignis_verschieben)          # Weg der Oberfläche: ganze Akte, Frist selbst unangetastet
+        assert frist_n02(f_n02['id'])['pruefstatus'] == 'offen', 'über die Oberfläche geänderter Auslöser lässt die Bestätigung stehen'
+        def wieder_bestaetigen(akte_x):
+            for x in akte_x['fristen']:
+                if x['id'] == f_n02['id']:
+                    x.update({'datum': '2026-10-15', 'ausloeser': f'Zugang am 15.09.2026 ({e_n02["id"]})', 'berechnung': 'Zugang 15.09.2026, ein Monat, Ende 15.10.2026', 'pruefstatus': 'bestätigt', 'geprueft_am': date.today().isoformat(), 'geprueft_von': 'Prüflauf'})
+        akte_speichern_n02(wieder_bestaetigen)
+        assert frist_n02(f_n02['id'])['pruefstatus'] == 'bestätigt', 'Bestätigung über die Oberfläche kommt nicht durch'
+        akte_speichern_n02(lambda akte_x: akte_x['fall'].update({'ziel': 'Bescheid aufheben lassen'}))   # Änderung ohne Bezug zur Frist
+        assert frist_n02(f_n02['id'])['pruefstatus'] == 'bestätigt', 'eine fristfremde Änderung darf die Bestätigung nicht kippen'
+        ok('Bestätigte Frist überlebt die Änderung ihrer Grundlagen nicht mehr (N02): die Bestätigung hält den Stand von Fristende, Auslöser, Grundlage, Rechnung, Beleg und Auslöser-Ereignis fest; ändert sich davon etwas über Werkzeug oder Oberfläche, fällt der Prüfstatus auf offen, die Rechnung bekommt einen Marker und das Journal einen Vermerk; nach Nachrechnen ist die erneute Bestätigung möglich, eine fristfremde Änderung kippt nichts')
         anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'x', 'quelle': 'D9999'}, 'bestaetigt': True}, erwartet=400)
         r = anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'Freitext-Quelle', 'quelle': 'Zustellung laut Bescheid'}, 'bestaetigt': True})
         assert r['aufgabe']['quelle'] == '' and 'Zustellung laut Bescheid' in r['aufgabe']['detail']
@@ -481,6 +531,26 @@ def run():
         a2 = json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8')); assert a2['dokumente']['D0001']['stand'] == 'Zugegangen' and a2['dokumente'][f2s[1]['kopie_dokument']]['stand'] == 'Versandt'
         assert not akte_schema.validate(a2)[0]
         ok('Neu zugeordnetes Dokument sofort ordnen und als Versandbeleg verweisen; geprüfte und versandte Fassung eingefroren (Kopie nur lesbar, eigene Kennung, Abweichung gemeldet)')
+
+        # N03 (Prüfbericht 18.09.2026): „geprüft“ über die Oberfläche erzeugte keine eingefrorene Fassung
+        fall_n03 = anfrage('/api/fall/R-0002')
+        akte_n03 = fall_n03['akte']; w_n03 = next(x for x in akte_n03['entwuerfe'] if x['titel'] == 'Antwort')
+        fassungen_vorher = len(w_n03.get('fassungen', []))
+        w_n03.update({'fassung': w_n03['fassung'] + 1, 'status': 'geprüft'})   # Weg der Oberfläche: Status im Formular setzen und ganze Akte speichern
+        anfrage('/api/fall/R-0002', {'akte': akte_n03, 'revision': fall_n03['revision']}, erwartet=400)
+        akte_jetzt = json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8'))
+        assert next(x for x in akte_jetzt['entwuerfe'] if x['titel'] == 'Antwort')['status'] == 'versandt', 'die abgewiesene Akte wurde trotzdem geschrieben'
+        assert len(next(x for x in akte_jetzt['entwuerfe'] if x['titel'] == 'Antwort').get('fassungen', [])) == fassungen_vorher
+        fall_n03 = anfrage('/api/fall/R-0002'); akte_n03 = fall_n03['akte']
+        for x in akte_n03['entwuerfe']:
+            if x['titel'] == 'Antwort': x['status'] = 'in Arbeit'   # zurück auf „in Arbeit“ bleibt erlaubt, das verspricht keine Kopie
+        anfrage('/api/fall/R-0002', {'akte': akte_n03, 'revision': fall_n03['revision']})
+        ent.write_text('Hinweise\n---\nSehr geehrte Damen und Herren, Fassung drei.\n', encoding='utf-8')
+        r_n03 = anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': {'fall': 'R-0002', 'titel': 'Antwort', 'datei': '06 Entwürfe/Antwort_ENTWURF.md', 'status': 'geprüft'}, 'bestaetigt': True})
+        letzte = r_n03['entwurf']['fassungen'][-1]
+        assert letzte['status'] == 'geprüft' and letzte['kopien'] and (root / f2['ordner'] / letzte['kopien']['md']).is_file(), letzte
+        assert not akte_schema.validate(json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8')))[0]
+        ok('Entwurfsstatus „geprüft“ und „versandt“ nur mit eingefrorener Fassung (N03): der Weg der Oberfläche über die ganze Akte wird abgewiesen und schreibt nichts, „in Arbeit“ bleibt frei, und über entwurf_erfassen entsteht die unveränderliche Kopie mit Prüfsumme und eigener Kennung')
 
         # 7b Übergabepaket (F08, F27): Empfänger und Umfang, Vorschau, Manifest mit Rücklesen, harte Fehler
         anfrage('/api/werkzeug', {'name': 'notiz_anlegen', 'parameter': {'fall': 'R-0002', 'titel': 'intern', 'text': 'VERTRAULICH-PROBE'}, 'bestaetigt': True})

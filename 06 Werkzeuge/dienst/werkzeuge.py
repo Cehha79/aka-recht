@@ -7,13 +7,18 @@ Werkzeuge. Schreibende Werkzeuge laufen für Assistenten nur mit Bestätigung. W
 Löschen oder Ändern von Originalen gibt es absichtlich nicht.
 Nur Standardbibliothek.
 """
-import json, re, shutil, sys
+import json, re, shutil, sys, unicodedata
 from datetime import date
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import akte_schema, bestand, dokumente, fristen, pflege, sicherung, store, texterkennung as ocr
 
 KATALOG = []
+
+def _nfc(text):
+    """Umlaute zusammengesetzt schreiben. macOS liefert sie zerlegt (a + ¨); ohne das
+    trifft kein Vergleich mit einem Bereichsnamen wie „06 Entwürfe“ (wie im Hook, a6928b7)."""
+    return unicodedata.normalize('NFC', str(text or ''))
 
 def werkzeug(name, beschreibung, parameter, schreibend=False, pflicht=None, ki=True):
     def deko(fn):
@@ -421,10 +426,15 @@ def frist_setzen(fall, frist, datum=None, titel=None, art=None, ausloeser=None, 
         if pruefstatus == 'bestätigt':   # F12: Bestätigung immer mit Prüfdatum und Prüfer
             f['geprueft_am'] = date.today().isoformat()
             f['geprueft_von'] = (geprueft_von if geprueft_von is not None else f.get('geprueft_von', '') or '').strip()
+            f['geprueft_stand'] = akte_schema.frist_grundlagen_stand(f, akte)   # N02: ausdrückliche Bestätigung prüft den jetzigen Stand
+        else:
+            f.pop('geprueft_stand', None)
     elif geprueft_von is not None:
         f['geprueft_von'] = geprueft_von.strip()
-    rev = store.speichere_akte(fall, akte, rev)
-    return {'frist': f, 'eigenschaften': akte_schema.frist_eigenschaften(f, akte), 'revision': rev}
+    hinfaellig = akte_schema.fristen_nachpruefen(akte)   # N02: greift, wenn Grundlagen geändert wurden, ohne neu zu bestätigen
+    rev = store.speichere_akte(fall, akte, rev, hinfaellig=hinfaellig)
+    return {'frist': f, 'eigenschaften': akte_schema.frist_eigenschaften(f, akte), 'revision': rev,
+            **({'fristen_hinfaellig': hinfaellig} if hinfaellig else {})}
 
 @werkzeug('ereignis_setzen', 'Vorhandenes Ereignis ändern. Nur die übergebenen Felder werden geändert; „zeitpunkt“ genau entfernt die Angaben zur Unsicherheit.',
           {'fall': {'type': 'string'}, 'ereignis': {'type': 'string', 'description': 'E-Kennung wie E01'},
@@ -453,8 +463,9 @@ def ereignis_setzen(fall, ereignis, datum=None, titel=None, art=None, quelle=Non
     else:
         if datum_bis is not None: e['datum_bis'] = datum_bis
         if zeitpunkt_text is not None: e['zeitpunkt_text'] = zeitpunkt_text
-    rev = store.speichere_akte(fall, akte, rev)
-    return {'ereignis': e, 'revision': rev}
+    hinfaellig = akte_schema.fristen_nachpruefen(akte)   # N02: hängende Bestätigungen fallen zurück, hier nur, um sie melden zu können
+    rev = store.speichere_akte(fall, akte, rev, hinfaellig=hinfaellig)
+    return {'ereignis': e, 'revision': rev, **({'fristen_hinfaellig': hinfaellig} if hinfaellig else {})}
 
 @werkzeug('notiz_anlegen', 'Ordnungsnotiz in einem Fall anlegen.',
           {'fall': {'type': 'string'}, 'titel': {'type': 'string'}, 'text': {'type': 'string'}}, schreibend=True, pflicht=['fall', 'titel', 'text'])
@@ -601,22 +612,33 @@ ABLAGE_BEREICHE = ['01 Eingang', '06 Entwürfe', '07 Recherche']   # Originalber
            'unterordner': {'type': 'string', 'description': 'Unterordner im Bereich, optional'}},
           schreibend=True, pflicht=['fall', 'bereich', 'name', 'text'])
 def datei_ablegen(fall, bereich, name, text, unterordner=''):
-    name = (name or '').strip()
+    name = _nfc((name or '').strip())
     if '/' in name or '\\' in name or name.startswith('.'):
         raise ValueError('„name“ ist ein Dateiname ohne Pfad.')
     if not name.lower().endswith(('.md', '.txt')):
         raise ValueError('Nur Textdateien (.md oder .txt). Andere Formate über den Dateimanager ablegen und bestand_abgleichen aufrufen.')
-    if bereich not in ABLAGE_BEREICHE:
+    if _nfc(str(bereich)) not in ABLAGE_BEREICHE:
         raise ValueError('Erlaubt sind nur ' + ', '.join(ABLAGE_BEREICHE) + '. Originale werden nie geschrieben.')
+    bereich = _nfc(str(bereich))
+    unter = _nfc((unterordner or '').strip())
+    if unter.startswith('/') or '\\' in unter or re.match(r'^[A-Za-z]:', unter):
+        raise ValueError('„unterordner“ ist ein Ordnername im Bereich, kein absoluter Pfad.')
+    unter = unter.rstrip('/ ')
+    if unter and any(t in ('', '.', '..') for t in unter.split('/')):
+        raise ValueError('„unterordner“ ist ein einfacher Ordnername ohne „..“ und ohne Umwege.')
     ordner = store.fall_ordner(fall)
-    rel = '/'.join(x for x in (bereich, (unterordner or '').strip('/ '), name) if x)
-    ziel = store.sicher(rel, ordner)
-    if ziel.exists():
-        raise ValueError(f'„{rel}“ gibt es schon. Vorhandene Dateien werden nie überschrieben; anderen Namen wählen.')
+    bereichsordner = store.sicher(bereich, ordner)            # der erlaubte Bereich, aufgelöst
+    ziel = store.sicher('/'.join(x for x in (bereich, unter, name) if x), ordner)
+    if bereichsordner not in ziel.parents:                    # N01: aufgelöstes Ziel muss im Bereich liegen
+        raise ValueError(f'Das Ziel liegt außerhalb von „{bereich}“. Originale werden nie geschrieben.')
+    rel = ziel.relative_to(ordner).as_posix()                 # normalisiert, ohne „..“, auch unter Windows
     ziel.parent.mkdir(parents=True, exist_ok=True)
-    ziel.write_text(text, encoding='utf-8')
+    try:
+        with open(ziel, 'x', encoding='utf-8') as f: f.write(text)   # exklusiv: kein paralleler Aufruf überschreibt
+    except FileExistsError:
+        raise ValueError(f'„{rel}“ gibt es schon. Vorhandene Dateien werden nie überschrieben; anderen Namen wählen.')
     abgleich = bestand_abgleichen(fall)
-    kennung = next((e['id'] for e in abgleich.get('neu', []) if e.get('pfad') == rel), '')
+    kennung = next((e['id'] for e in abgleich.get('neu', []) if _nfc(e.get('pfad', '')) == _nfc(rel)), '')
     return {'pfad': rel, 'zeichen': len(text), 'kennung': kennung, 'abgleich': abgleich}
 
 @werkzeug('journal_schreiben', 'Eintrag an das Journal eines Falls anhängen.',

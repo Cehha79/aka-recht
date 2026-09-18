@@ -393,7 +393,18 @@ const FORMULARE = {
 function eintragDialog(art, id) {
   const F = FORMULARE[art]; const vorhanden = id ? akte()[F.liste].find(x => x.id === id) : null; const werte = vorhanden || {id: '', ...F.leer};
   dialog(id ? t('dialog.bearbeiten', {was: t(F.titel), id}) : t('dialog.neu', {was: t(F.titel)}), F.felder(werte) + (id ? `<p><button type="button" class="knopf klein" data-aktion="eintrag-entfernen" data-art="${art}" data-id="${esc(id)}">${esc(t('dialog.entfernen'))}</button> <small class="u-muted">${esc(t('dialog.entfernen_hinweis'))}</small></p>` : ''),
-    async f => { const neu = F.lesen(f); await akteSpeichern(a => { const l = a[F.liste]; if (id) Object.assign(l.find(x => x.id === id), neu); else l.push({id: naechste(a, F.liste, F.kennung), ...neu}); }); });
+    async f => {
+      const neu = F.lesen(f);
+      // N03: „geprüft“ und „versandt“ frieren eine Fassung ein. Das kann nur entwurf_erfassen,
+      // also geht dieser Statuswechsel über das Werkzeug statt über das Speichern der ganzen Akte.
+      if (art === 'entwurf' && (neu.status === 'geprüft' || neu.status === 'versandt')) {
+        const r = await api.werkzeug('entwurf_erfassen', {fall: fallId(), titel: neu.titel, datei: neu.datei, status: neu.status, versandt_als: neu.versandt_als || ''});
+        await ladeFall(fallId());
+        toast((r.hinweise && r.hinweise.length ? r.hinweise.join(' ') + ' ' : '') + t('entw.eingefroren_meldung', {status: neu.status, n: r.entwurf.fassung}));
+        await render(); return;
+      }
+      await akteSpeichern(a => { const l = a[F.liste]; if (id) Object.assign(l.find(x => x.id === id), neu); else l.push({id: naechste(a, F.liste, F.kennung), ...neu}); });
+    });
 }
 const jaNein = w => opt([['nein', t('form.nein')], ['ja', t('form.ja')]], w ? 'ja' : 'nein');
 function ordnenDialog(d) {

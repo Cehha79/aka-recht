@@ -12,7 +12,7 @@ import sys
 for _strom in (sys.stdin, sys.stdout, sys.stderr):
     if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
-import json, re, sys
+import hashlib, json, re, sys
 from datetime import date
 from pathlib import Path
 
@@ -56,8 +56,9 @@ def frist_eigenschaften(fr, akte=None):
     belegt     Quelle ist eine D-Kennung und der Auslöser ist benannt (Termin: Quelle genügt)
     geprueft   Prüfstatus bestätigt mit Prüfdatum (geprueft_am)
     ausloeser_sicher  das verknüpfte Auslöser-Ereignis (ausloeser_ereignis) hat einen genauen Zeitpunkt; ohne Verknüpfung None
+    stand_aktuell  die Grundlagen sind unverändert seit der Bestätigung (N02); ohne gespeicherten Stand None
     offene_marker  Marker [PRÜFEN …], [QUELLE …], [BELEG …] in Titel, Auslöser, Grundlage oder Rechnung."""
-    if not isinstance(fr, dict): return {'gerechnet': None, 'belegt': False, 'geprueft': False, 'ausloeser_sicher': None, 'offene_marker': []}
+    if not isinstance(fr, dict): return {'gerechnet': None, 'belegt': False, 'geprueft': False, 'ausloeser_sicher': None, 'stand_aktuell': None, 'offene_marker': []}
     sicher = None
     if fr.get('ausloeser_ereignis') and isinstance(akte, dict):
         e = next((x for x in akte.get('ereignisse', []) if isinstance(x, dict) and x.get('id') == fr['ausloeser_ereignis']), None)
@@ -70,7 +71,50 @@ def frist_eigenschaften(fr, akte=None):
     belegt = quelle and (termin or bool(str(fr.get('ausloeser', '') or '').strip()))
     geprueft = fr.get('pruefstatus') == 'bestätigt' and bool(str(fr.get('geprueft_am', '') or '').strip())
     marker = [m.group(0) for feld in ('titel', 'ausloeser', 'rechtsgrundlage', 'berechnung') for m in MARKER.finditer(str(fr.get(feld, '') or ''))]
-    return {'gerechnet': gerechnet, 'belegt': belegt, 'geprueft': geprueft, 'ausloeser_sicher': sicher, 'offene_marker': marker}
+    gespeichert = str(fr.get('geprueft_stand', '') or '').strip()
+    stand_aktuell = (gespeichert == frist_grundlagen_stand(fr, akte)) if gespeichert else None
+    return {'gerechnet': gerechnet, 'belegt': belegt, 'geprueft': geprueft, 'ausloeser_sicher': sicher,
+            'stand_aktuell': stand_aktuell, 'offene_marker': marker}
+
+GRUNDLAGEN_FELDER = ('datum', 'art', 'ausloeser', 'rechtsgrundlage', 'berechnung', 'quelle', 'ausloeser_ereignis')
+EREIGNIS_FELDER = ('datum', 'zeitpunkt', 'datum_bis', 'zeitpunkt_text')
+
+def frist_grundlagen_stand(fr, akte=None):
+    """Fingerabdruck der Tatsachen, auf denen eine Bestätigung beruht (Prüfbericht N02, 18.09.2026).
+    Erfasst Fristende, Auslöser, Rechtsgrundlage, Rechnung, Beleg und den Zeitpunkt des
+    verknüpften Auslöser-Ereignisses. Ändert sich eine dieser Angaben, passt der gespeicherte
+    Stand nicht mehr und die Bestätigung ist hinfällig."""
+    if not isinstance(fr, dict): return ''
+    teile = [str(fr.get(feld, '') or '').strip() for feld in GRUNDLAGEN_FELDER]
+    if fr.get('ausloeser_ereignis') and isinstance(akte, dict):
+        e = next((x for x in akte.get('ereignisse', []) if isinstance(x, dict) and x.get('id') == fr['ausloeser_ereignis']), None)
+        teile += [str((e or {}).get(feld, '') or '').strip() for feld in EREIGNIS_FELDER]
+    return hashlib.sha256('\x1f'.join(teile).encode('utf-8')).hexdigest()[:16]
+
+def fristen_nachpruefen(akte):
+    """N02: Eine Bestätigung gilt nur für den Stand, der bei der Prüfung vorlag.
+    Ändert die Akte an Ort und Stelle und liefert die zurückgesetzten Fristen.
+    Ohne gespeicherten Stand (erste Bestätigung, ältere Akte) wird er nachgetragen, nicht geprüft.
+    Wird vor jedem Speichern gerufen, deckt also Oberfläche, cli.py und MCP gleichermaßen ab."""
+    if not isinstance(akte, dict) or not isinstance(akte.get('fristen'), list): return []
+    heute = date.today().isoformat()
+    zurueckgesetzt = []
+    for fr in akte['fristen']:
+        if not isinstance(fr, dict) or fr.get('pruefstatus') != 'bestätigt': continue
+        stand = frist_grundlagen_stand(fr, akte)
+        alt = str(fr.get('geprueft_stand', '') or '').strip()
+        if not alt:
+            fr['geprueft_stand'] = stand          # erste Bestätigung: Stand festhalten
+            continue
+        if alt == stand: continue
+        geprueft_am = str(fr.get('geprueft_am', '') or '').strip()
+        fr['pruefstatus'] = 'offen'
+        fr.pop('geprueft_stand', None); fr.pop('geprueft_am', None); fr.pop('geprueft_von', None)
+        hinweis = f'[PRÜFEN: Grundlage am {heute[8:10]}.{heute[5:7]}.{heute[0:4]} geändert, Bestätigung' + (f' vom {geprueft_am[8:10]}.{geprueft_am[5:7]}.{geprueft_am[0:4]}' if DATUM.match(geprueft_am) else '') + ' ist hinfällig. Rechnung nachrechnen, dann erneut bestätigen.]'
+        rechnung = str(fr.get('berechnung', '') or '').strip()
+        fr['berechnung'] = (rechnung + '\n' + hinweis).strip() if hinweis not in rechnung else rechnung
+        zurueckgesetzt.append({'id': fr.get('id', ''), 'titel': fr.get('titel', ''), 'datum': fr.get('datum', ''), 'geprueft_am': geprueft_am})
+    return zurueckgesetzt
 
 def leer():
     """Leere, gültige Akte für neue Fälle."""
@@ -215,6 +259,7 @@ def validate(akte):
         verweis(fr.get('ausloeser_ereignis', ''), 'ereignisse', f'{fr["id"]}.ausloeser_ereignis')
         datum(fr.get('geprueft_am', ''), f'{fr["id"]}.geprueft_am')
         if 'geprueft_von' in fr and not isinstance(fr['geprueft_von'], str): f.append(f'{fr["id"]}: geprueft_von muss Text sein.')
+        if 'geprueft_stand' in fr and not isinstance(fr['geprueft_stand'], str): f.append(f'{fr["id"]}: geprueft_stand muss Text sein.')   # N02: Fingerabdruck der geprüften Grundlagen
         if fr.get('pruefstatus') == 'bestätigt':
             # F12: „bestätigt“ heißt gerechnet, belegt und ohne offene Marker; Prüfdatum fehlt nur als Warnung (ältere Akten)
             eig = frist_eigenschaften(fr, akte)
@@ -251,6 +296,14 @@ def validate(akte):
                 if not re.fullmatch(r'[0-9a-f]{64}', str(x.get('sha256', ''))): f.append(f'{wo}: sha256 fehlt oder ist keine Prüfsumme.')
                 if x.get('status') not in ENTWURF_STATUS: f.append(f'{wo}: status muss eines von {ENTWURF_STATUS} sein.')
                 verweis(x.get('kopie_dokument', ''), 'dokumente', f'{wo}.kopie_dokument')
+        # N03 (18.09.2026): „geprüft“ und „versandt“ versprechen eine eingefrorene Fassung. Ohne Nachweis
+        # wäre das Versprechen vom Bedienweg abhängig; der Status wird deshalb hier abgewiesen.
+        if e.get('status') in ('geprüft', 'versandt'):
+            nachweis = [x for x in (e.get('fassungen') or []) if isinstance(x, dict)
+                        and x.get('fassung') == e.get('fassung', 1) and x.get('status') == e['status'] and (x.get('kopien') or {})]
+            if not nachweis:
+                f.append(f'{e["id"]}: Status „{e["status"]}“ ohne eingefrorene Fassung {e.get("fassung", 1)}. '
+                         'Diesen Statuswechsel macht das Werkzeug entwurf_erfassen; es legt die unveränderliche Kopie unter 06 Entwürfe/Fassungen an.')
     for i, k in enumerate(akte['kosten']):
         datum(k.get('datum', ''), f'kosten[{i}]')
         if not zahl(k.get('betrag', 0)): f.append(f'kosten[{i}]: betrag muss eine Zahl sein.')

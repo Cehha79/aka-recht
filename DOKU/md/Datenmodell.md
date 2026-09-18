@@ -118,8 +118,26 @@ ist, kann nicht bestätigt werden.
 | quelle | D-Kennung | Verweis, Pflicht bei bestätigt |
 | geprueft_am | Datum der Bestätigung | Datum; setzt `frist_eintragen` und die Oberfläche bei bestätigt; fehlt es, nur Warnung (ältere Akten) |
 | geprueft_von | wer geprüft hat (Name oder Assistent) | Text, frei |
+| geprueft_stand | Fingerabdruck der Grundlagen zum Zeitpunkt der Bestätigung | Text, optional; setzt und prüft die Anwendung selbst (N02, siehe unten), nie von Hand schreiben |
 | verfahren | V-Kennung des Verfahrens | Verweis, optional; bei mehreren Verfahren in einer Akte setzen (F13) |
 | ausloeser_ereignis | E-Kennung des auslösenden Ereignisses (Zugang, Bekanntgabe) | Verweis, optional; bestätigt nur, wenn dessen Zeitpunkt genau ist (F13) |
+
+**Eine Bestätigung gilt nur für den Stand, der bei der Prüfung vorlag**
+(seit 18.09.2026, Prüfbericht N02). Wird eine Frist bestätigt, hält die
+Anwendung in `geprueft_stand` eine Prüfsumme über ihre Grundlagen fest:
+Fristende, Art, Auslöser, Rechtsgrundlage, Rechnung, Beleg und die
+Zeitangaben des verknüpften Auslöser-Ereignisses (`datum`, `zeitpunkt`,
+`datum_bis`, `zeitpunkt_text`). Vor jedem Speichern wird neu gerechnet
+(`akte_schema.fristen_nachpruefen`, gerufen aus `store.speichere_akte`, also
+auf jedem Weg — Oberfläche, `cli.py`, MCP). Weicht der Stand ab, gilt die
+Prüfung nicht mehr: `pruefstatus` fällt auf `offen`, `geprueft_am`,
+`geprueft_von` und `geprueft_stand` werden entfernt, die Rechnung bekommt
+einen Marker `[PRÜFEN: Grundlage am … geändert …]`, und das Journal einen
+Vermerk. Danach muss nachgerechnet, der Marker aufgelöst und ausdrücklich
+neu bestätigt werden. Eine Änderung ohne Bezug zur Frist ändert nichts.
+Fehlt `geprueft_stand` (erste Bestätigung, ältere Akte), wird er nachgetragen
+statt geprüft. Die abgeleitete Eigenschaft heißt `stand_aktuell`
+(`True`, `False` oder `None`, wenn kein Stand gespeichert ist).
 
 Regel: `bestätigt` nur mit Auslöser, Rechtsgrundlage, Berechnung und Quelle.
 Seit 17.09.2026 (Prüfbericht F12) prüft das Schema dazu drei unterscheidbare
@@ -163,6 +181,15 @@ im Journal.
 | status | in Arbeit, geprüft, versandt, verworfen | fest |
 | versandt_als | D-Kennung des Versandbelegs | Pflicht bei versandt |
 | fassungen | Liste je erfasster Fassung: fassung, datei, sha256 (Prüfsumme der Datei zu diesem Zeitpunkt), zeit, status, bei geprüft und versandt dazu kopien (Pfade der eingefrorenen Kopien) und kopie_dokument (D-Kennung der Kopie) | optional; kopie_dokument ist ein Verweis |
+
+**Der Status „geprüft“ und „versandt“ verlangt eine eingefrorene Fassung**
+(seit 18.09.2026, Prüfbericht N03). Das Schema weist einen Entwurf ab, dessen
+Status `geprüft` oder `versandt` ist, ohne dass in `fassungen` ein Eintrag mit
+derselben Fassungsnummer, demselben Status und mit `kopien` steht. Damit ist
+das Versprechen nicht mehr vom Bedienweg abhängig: Die Oberfläche ruft für
+diesen Statuswechsel `entwurf_erfassen` auf (app.js v30), statt die Akte
+unmittelbar zu speichern; `cli.py` und MCP tun das ohnehin. „in Arbeit“ und
+„verworfen“ bleiben frei, sie versprechen keine Kopie.
 
 Eingefrorene Fassungen (seit 17.09.2026, Prüfbericht F28): Erfasst
 `entwurf_erfassen` einen Entwurf mit Status „geprüft“ oder „versandt“, kopiert
@@ -259,7 +286,7 @@ Die Oberfläche liest die Überschriftzeile und kann danach filtern.
 |---|---|
 | `06 Werkzeuge/dienst/cli.py` | alle Werkzeuge ohne laufenden Dienst, für Claude und Skripte |
 | Ändern statt neu anlegen | `frist_setzen` und `ereignis_setzen` ändern einen vorhandenen Eintrag (nur die übergebenen Felder). Bei `ereignis_setzen` räumt `zeitpunkt: genau` die Felder `datum_bis` und `zeitpunkt_text` ab; bei `frist_setzen` gelten dieselben Sperren wie beim Eintragen: bestätigt nur mit Rechnung, Beleg und ohne offene Marker (seit 18.09.2026) |
-| Datei aus der KI heraus ablegen | `datei_ablegen` schreibt eine Textdatei (.md oder .txt) nach 01 Eingang, 06 Entwürfe oder 07 Recherche, nie in die Originalbereiche, überschreibt nichts und registriert die Datei anschließend im Bestand (seit 18.09.2026) |
+| Datei aus der KI heraus ablegen | `datei_ablegen` schreibt eine Textdatei (.md oder .txt) nach 01 Eingang, 06 Entwürfe oder 07 Recherche, nie in die Originalbereiche, überschreibt nichts und registriert die Datei anschließend im Bestand (seit 18.09.2026). Seit dem Abend des 18.09.2026 (Prüfbericht N01) wird der **aufgelöste** Zielpfad gegen den gewählten Bereich geprüft, nicht mehr nur gegen den Fallordner: `unterordner` muss ein einfacher Ordnername sein (kein `..`, kein absoluter Pfad, kein Laufwerksbuchstabe, kein Backslash), die Datei wird exklusiv angelegt, und zurückgegeben wird der normalisierte Pfad |
 | `06 Werkzeuge/akte_schema.py` | leere Akte erzeugen, Akte prüfen (Fehler, Warnungen); der Dienst ruft `validate()` vor jedem Speichern |
 | `05 Vorlagen/Fallvorlage/` | Ordner 01 bis 08, leere akte.json, bestand.json, JOURNAL.md |
 | `05 Vorlagen/Beispielakte/` | vollständiger erfundener Fall „Kündigung durch den Arbeitgeber“ (R-9001): akte.json mit allen Blöcken, bestand.json mit Prüfsummen, JOURNAL.md, vier Textdokumente; über „Beispielfall laden“ (Werkzeug `beispiel_laden`) als neuer Fall kopierbar; Prüfung ohne Fehler |

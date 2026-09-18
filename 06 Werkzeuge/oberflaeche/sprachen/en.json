@@ -275,6 +275,7 @@
   "entw.fassung": "Version {n}",
   "entw.versandt_als": "sent as",
   "entw.eingefroren": "Frozen: {liste}",
+  "entw.eingefroren_meldung": "Version {n} frozen as “{status}”: the copy under 06 Entwürfe/Fassungen is read-only and has its own identifier.",
   "entw.fassung_status": "Version {n} {status} {datum}",
   "entw.keiner": "No draft recorded yet. A draft stays a draft until the dispatch is evidenced.",
   "entw.dateien": "Files in 06 Entwürfe",

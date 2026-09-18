@@ -147,10 +147,15 @@ def lese_akte(fall_id):
     roh = (fall_ordner(fall_id) / 'akte.json').read_bytes()
     return json.loads(roh.decode('utf-8')), sha(roh)
 
-def speichere_akte(fall_id, akte, revision, ohne_sicherung=False):
-    """Schreibt akte.json nur, wenn revision zum aktuellen Stand passt. Liefert neue Revision."""
+def speichere_akte(fall_id, akte, revision, ohne_sicherung=False, hinfaellig=None):
+    """Schreibt akte.json nur, wenn revision zum aktuellen Stand passt. Liefert neue Revision.
+    hinfaellig: von einem Werkzeug bereits ermittelte Liste zurückgesetzter Fristen (N02),
+    damit der Journaleintrag auch dann entsteht, wenn die Nachprüfung schon dort lief."""
     ordner = fall_ordner(fall_id); pfad = ordner / 'akte.json'
     if akte.get('fall', {}).get('id') != fall_id: raise ValueError('Fallkennung in der Akte passt nicht zum Fall.')
+    # N02: Eine Bestätigung gilt nur für den geprüften Stand. Hier, weil jeder Weg
+    # (Oberfläche, cli.py, MCP) durch diese Funktion läuft.
+    zurueckgesetzt = list(hinfaellig or []) + akte_schema.fristen_nachpruefen(akte)
     fehler, _ = akte_schema.validate(akte)
     if fehler: raise ValueError('Akte nicht gespeichert: ' + ' '.join(fehler[:5]))
     with sperre():
@@ -164,7 +169,16 @@ def speichere_akte(fall_id, akte, revision, ohne_sicherung=False):
             kopie.chmod(0o600)
         neu = json.dumps(akte, ensure_ascii=False, indent=2) + '\n'
         atomar(pfad, neu)
-        return sha(neu.encode('utf-8'))
+        revision_neu = sha(neu.encode('utf-8'))
+    if zurueckgesetzt:   # außerhalb der Sperre: journal_anhaengen sperrt selbst (sonst wartet der Prozess auf sich)
+        try:
+            journal_anhaengen(fall_id, 'Vermerk', 'Fristbestätigung hinfällig',
+                              'Die Grundlagen haben sich geändert; die Bestätigung gilt nicht mehr für '
+                              + ', '.join(f'{z["id"]} ({z["titel"]})' for z in zurueckgesetzt)
+                              + '. Prüfstatus steht wieder auf offen, die Rechnung trägt einen Marker [PRÜFEN].')
+        except Exception:
+            pass   # der Hinweis steht schon in der Akte selbst; ein Journal-Fehler darf das Speichern nicht nachträglich zerreißen
+    return revision_neu
 
 def neuer_fall(titel, bereich='Allgemein', rolle='', ziel=''):
     titel = str(titel or '').strip()
