@@ -24,10 +24,24 @@
 # AKA Recht
 
 Ein Strafzettel, eine Kündigung, eine Nebenkostenabrechnung, ein Bescheid
-vom Amt: Irgendwann hat jeder eine Rechtssache, und dann liegen Briefe,
+vom Amt, Strafanzeige, Wiederspruch: Irgendwann hat jeder eine Rechtssache, und dann liegen Briefe,
 Fotos, Mails und Fristen überall. **AKA Recht** ist der Ordner, in dem das
 alles seinen Platz findet, und die Anleitung, mit der deine KI dir hilft,
 es zu ordnen, zu prüfen und zu formulieren.
+
+AKA Recht hilft dir, Rechtssachen wie Kündigungen, Bußgelder, Strafanzeige, Widerspruch oder Mietstreitigkeiten selbst zu ordnen. 
+Deine Akten liegen lokal auf deinem Rechner, ohne Cloud-Speicher. 
+Jeder Fall hat eine eindeutige Kennung und eine feste Struktur für Dokumente, Beteiligte, Fristen und Verlauf. 
+Digitale Fingerabdrücke (Prüfsummen) machen Dateiveränderungen erkennbar.
+
+Das Fristende wird nach §§ 187, 188 und 193 BGB berechnet, unter Berücksichtigung von Wochenenden und den landesweiten 
+Feiertagen des maßgeblichen Bundeslands (nach § 193 BGB das des Erklärungs- oder Leistungsorts). 
+Welche Frist gilt und wann sie beginnt, musst du selbst klären.
+
+Über die KI-Schnittstelle MCP lassen sich Akten durchsuchen, Dokumente auswerten und Schreiben entwerfen. Dabei wird alles, 
+was der KI-Assistent aus der Akte liest, an den jeweiligen KI-Anbieter übermittelt. Änderungen an der Akte erfolgen nur nach deiner ausdrücklichen Bestätigung.
+
+AKA Recht ersetzt keine Rechtsberatung.
 
 - **Jede Sache ist ein Fall** mit fester Kennung, festen Ordnern, Ordnungsdaten
   in `akte.json` und einem Journal. Originale werden nie verändert.
