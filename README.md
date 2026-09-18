@@ -45,7 +45,7 @@ es zu ordnen, zu prüfen und zu formulieren.
 > Arbeitgeber). In der Oberfläche auf **„Beispielfall laden“** klicken, dann
 > durch Akte, Dokumente, Fristen und Entwurf klicken. Jederzeit löschbar.
 
-Produkt Version 0.2 vom 17.09.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · geprüft mit Python 3.14.7 auf macOS 26.7, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
+Produkt Version 0.3 vom 18.09.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · geprüft mit Python 3.14.7 auf macOS 26.7, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
 
 ## Herunterladen
 
