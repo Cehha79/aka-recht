@@ -107,71 +107,176 @@ no outside access.
   folder just reports that no text was read.
 
 <details>
-<summary><b>macOS</b></summary>
+<summary><b>macOS — step by step</b></summary>
 
-- Start with `Start.command` (double-click).
-- Text recognition with Homebrew: `brew install poppler tesseract tesseract-lang`.
-  On Intel Macs with a recent macOS there are sometimes no prebuilt packages;
-  Homebrew then builds from source, which can take a long time (seen on
-  macOS 26.7 on 17 Sep 2026).
-- Do not re-pack the folder yourself — neither with `zip` or `ditto` nor with
-  Finder ("Compress"). None of them writes a UTF-8 flag into the archive, so
-  extracting it elsewhere turns "06 Entwürfe" into a broken name such as
-  `06 Entwu╠êrfe` (tested 18 Sep 2026 for Finder and `zip`). On the Mac this
-  goes unnoticed because Finder reads its own archives correctly; it breaks
-  only when the archive moves to Windows, Linux or a Python tool. The GitHub
-  ZIP is clean, and the folder's own backup packs with Python's `zipfile`,
-  which is clean as well.
+**1. Start the folder**
+
+Double-click `Start.command`. The first time, macOS asks whether you really
+want to open the program — that is normal, the file came from the internet. If
+the double-click does nothing: right-click the file, **Open**, then **Open**
+again in the dialog.
+
+*It worked if:* a black window appears and the browser shows the folder. Keep
+that window open while you work.
+
+**2. Set up text recognition — optional**
+
+Only needed if you want to read photos or scanned letters without a text
+layer. Everything else works without this step.
+
+You need **Homebrew**, a package manager for macOS — a program that installs
+other programs. Check whether you already have it:
+
+```
+brew --version
+```
+
+If that fails, install Homebrew first (see [brew.sh](https://brew.sh)). Then:
+
+```
+brew install poppler tesseract tesseract-lang
+```
+
+*It worked if:* the next command lists `deu`.
+
+```
+tesseract --list-langs
+```
+
+> [!NOTE]
+> On Intel Macs with a recent macOS there are sometimes no prebuilt packages.
+> Homebrew then builds from source, which can take an hour or more (seen on
+> macOS 26.7 on 17 Sep 2026). Just let the window run.
+
+**3. Important: do not re-pack the folder yourself**
+
+Neither with `zip` or `ditto` nor with Finder ("Compress"). None of them writes
+a UTF-8 flag into the archive. Extract it on another machine and `06 Entwürfe`
+turns into a broken name such as `06 Entwu╠êrfe` (tested 18 Sep 2026 for
+Finder and `zip`).
+
+On the Mac you never notice, because Finder reads its own archives correctly.
+It breaks only when the archive moves to Windows or Linux.
+
+*To share:* send the GitHub link. *To back up:* use the button in the folder —
+it packs with Python's `zipfile`, which is clean.
 
 </details>
 
 <details>
-<summary><b>Linux</b></summary>
+<summary><b>Linux — step by step</b></summary>
 
-- Start with `Start.sh`.
-- Tested on Ubuntu 24.04 with Python 3.12; `xdg-open` serves as file manager.
-- Text recognition, e.g. on Ubuntu: `sudo apt install poppler-utils tesseract-ocr tesseract-ocr-deu`
-  (distribution package names). Tested on Ubuntu 24.04 on 18 Sep 2026: one
-  command is enough, after which a photo and a two-page scan without a text
-  layer are recognised (tesseract 5.3.4).
+**1. Start the folder**
+
+```
+./Start.sh
+```
+
+If the execute bit is missing, once:
+
+```
+chmod +x Start.sh
+```
+
+*It worked if:* the browser shows the folder. `xdg-open` serves as file
+manager.
+
+**2. Set up text recognition — optional**
+
+Only needed for photos and scanned letters without a text layer. On Ubuntu and
+Debian one command is enough:
+
+```
+sudo apt install poppler-utils tesseract-ocr tesseract-ocr-deu
+```
+
+It asks for your password; nothing shows while you type, that is intended.
+Other distributions use their own package names (Fedora: `dnf install
+poppler-utils tesseract tesseract-langpack-deu`).
+
+*It worked if:* `deu` is listed.
+
+```
+tesseract --list-langs
+```
+
+**3. Tested on 18 Sep 2026**
+
+Ubuntu 24.04 with Python 3.12: test suite with 61 checks, service via
+`Start.sh`, MCP server, sample case in a folder with spaces and umlauts. Text
+recognition read a photo and a two-page scan without a text layer
+(tesseract 5.3.4).
 
 </details>
 
 <details>
-<summary><b>Windows</b></summary>
+<summary><b>Windows — step by step</b></summary>
 
-- Start with `Start.bat` (double-click).
-- On Windows the command is `python` instead of `python3`; `python3.exe` there
-  is only a Microsoft Store stub. `Start.bat` therefore switches `.mcp.json`,
-  `.claude/settings.json` and `.codex/config.toml` to `python` on every start
-  (`06 Werkzeuge/einrichten_windows.py`; it changes only that one value and
-  nothing once set up). So run `Start.bat` once before using Claude Code or
-  Codex in the folder. If you use git, these three files then show as modified.
-- Windows ships neither `pdftotext` nor `tesseract`. Without them the folder
-  reports the text source "werkzeug-fehlt" for PDFs and extracts no text;
-  everything else works. Both are available through `winget`, the Windows
-  package manager:
+**1. Start the folder — and do it first**
 
-  ```
-  winget install --id UB-Mannheim.TesseractOCR
-  winget install --id oschwartz10612.Poppler
-  ```
+Double-click `Start.bat`.
 
-- **German language data for text recognition:** the tesseract installer ships
-  English only. Tick **German** under "Additional language data" in the
-  installer window. If it runs without a window, German is missing; then
-  download `deu.traineddata` from
-  [tessdata](https://github.com/tesseract-ocr/tessdata) and put it into
-  `C:\Program Files\Tesseract-OCR	essdata`. Check with
-  `tesseract --list-langs`: `deu` has to be listed.
-- The tesseract installer does **not** add the program to the search path. The
-  folder therefore also looks in the usual locations and finds it anyway.
-  Poppler adds itself; open a new window afterwards.
-- Tested on Windows 11 on 18 Sep 2026: test suite with 61 checks, text
-  recognition on a photo and a two-page scan, Claude Code with MCP server and
-  working original protection.
+> [!IMPORTANT]
+> This has to happen **before** you first start Claude Code or Codex. Reason:
+> on Windows the command is `python`, not `python3` — `python3.exe` is only a
+> Microsoft Store stub there. `Start.bat` therefore switches `.mcp.json`,
+> `.claude/settings.json` and `.codex/config.toml` to `python`. Start the AI
+> first and you get "Python was not found" and the hooks do not run.
+
+*It worked if:* the browser shows the folder. If you use git, those three
+files then show as modified — that is correct.
+
+**2. Set up text recognition — optional**
+
+Only needed for photos and scanned letters without a text layer, and for text
+from PDF. Windows ships neither `tesseract` nor `pdftotext`. Both are available
+through `winget`, the Windows package manager. Open a command prompt (Start
+menu, type `cmd`) and run one after the other:
+
+```
+winget install --id UB-Mannheim.TesseractOCR
+```
+
+```
+winget install --id oschwartz10612.Poppler
+```
+
+**3. Add the German language data**
+
+The tesseract installer ships **English only**. Tick **German** under
+"Additional language data" in the installer window.
+
+If it runs without a window, German is missing. Then download
+`deu.traineddata` from [tessdata](https://github.com/tesseract-ocr/tessdata)
+and put it into `C:\Program Files\Tesseract-OCR\tessdata` — Explorer needs
+administrator rights for that.
+
+**4. Check**
+
+Open a **new** window (the old one does not know the new programs yet):
+
+```
+tesseract --list-langs
+```
+
+*It worked if:* `deu`, `eng` and `osd` are listed.
+
+If Windows cannot find the command, that is the tesseract installer: it does
+**not** add the program to the search path. Not a problem for the folder — it
+also looks in the usual locations. To check by hand, use the full path:
+
+```
+"C:\Program Files\Tesseract-OCR\tesseract.exe" --list-langs
+```
+
+**5. Tested on 18 Sep 2026**
+
+Windows 11 with Python 3.14.7: test suite with 61 checks, text recognition on
+a photo and a two-page scan, Claude Code with MCP server (32 tools) and
+working original protection.
 
 </details>
+
 
 ## First start
 

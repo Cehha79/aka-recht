@@ -107,72 +107,179 @@ Framework und braucht keinen Zugang nach außen.
   meldet nur, dass kein Text gelesen wurde.
 
 <details>
-<summary><b>macOS</b></summary>
+<summary><b>macOS — Schritt für Schritt</b></summary>
 
-- Start mit `Start.command` (Doppelklick).
-- Texterkennung mit Homebrew: `brew install poppler tesseract tesseract-lang`.
-  Auf Intel-Macs mit neuem macOS gibt es dafür teils keine fertigen Pakete;
-  Homebrew baut dann aus dem Quelltext, das kann lange dauern (am 17.09.2026
-  auf macOS 26.7 so erlebt).
-- Den Ordner nicht selbst neu packen — weder mit `zip` oder `ditto` noch mit
-  dem Finder („Komprimieren“). Alle drei Wege schreiben keine UTF-8-Kennung
-  ins Archiv; wer es dann anderswo entpackt, bekommt aus „06 Entwürfe“ einen
-  kaputten Namen wie `06 Entwu╠êrfe` (am 18.09.2026 für Finder und `zip`
-  geprüft). Am Mac fällt das nicht auf, weil der Finder sein eigenes Archiv
-  wieder richtig öffnet; kaputt geht es erst beim Wechsel auf Windows, Linux
-  oder in ein Python-Werkzeug. Das ZIP von GitHub ist sauber, und die
-  Sicherung der Mappe packt mit Pythons `zipfile` ebenfalls sauber.
+**1. Mappe starten**
+
+Doppelklick auf `Start.command`. Beim ersten Mal fragt macOS nach, ob du das
+Programm wirklich öffnen willst — das ist normal, die Datei kommt aus dem
+Internet. Wenn der Doppelklick nichts tut: Rechtsklick auf die Datei,
+**Öffnen**, dann im Fenster noch einmal **Öffnen**.
+
+*Geklappt, wenn:* Ein schwarzes Fenster erscheint und der Browser die Mappe
+zeigt. Das Fenster muss offen bleiben, solange du arbeitest.
+
+**2. Texterkennung einrichten — freiwillig**
+
+Nur nötig, wenn du Fotos oder eingescannte Briefe ohne Textschicht einlesen
+willst. Ohne diesen Schritt läuft alles andere.
+
+Dafür brauchst du **Homebrew**, eine Paketverwaltung für macOS — ein Programm,
+das andere Programme installiert. Prüfen, ob du es schon hast:
+
+```
+brew --version
+```
+
+Kommt eine Fehlermeldung, zuerst Homebrew installieren (siehe
+[brew.sh](https://brew.sh)). Danach:
+
+```
+brew install poppler tesseract tesseract-lang
+```
+
+*Geklappt, wenn:* Der folgende Befehl `deu` in der Liste zeigt.
+
+```
+tesseract --list-langs
+```
+
+> [!NOTE]
+> Auf Intel-Macs mit neuem macOS gibt es teils keine fertigen Pakete. Homebrew
+> baut dann aus dem Quelltext, und das kann eine Stunde oder länger dauern
+> (am 17.09.2026 auf macOS 26.7 so erlebt). Das Fenster einfach laufen lassen.
+
+**3. Wichtig: den Ordner nicht selbst neu packen**
+
+Weder mit `zip` oder `ditto` noch mit dem Finder („Komprimieren"). Keiner
+dieser Wege schreibt eine UTF-8-Kennung ins Archiv. Wer es dann auf einem
+anderen Rechner entpackt, bekommt aus `06 Entwürfe` einen kaputten Namen wie
+`06 Entwu╠êrfe` (am 18.09.2026 für Finder und `zip` geprüft).
+
+Am Mac merkt man davon nichts, weil der Finder seine eigenen Archive wieder
+richtig öffnet. Kaputt geht es erst beim Wechsel auf Windows oder Linux.
+
+*Zum Weitergeben:* den GitHub-Link teilen. *Zum Sichern:* den Knopf in der
+Mappe benutzen — der packt mit Pythons `zipfile` und damit sauber.
 
 </details>
 
 <details>
-<summary><b>Linux</b></summary>
+<summary><b>Linux — Schritt für Schritt</b></summary>
 
-- Start mit `Start.sh`.
-- Geprüft auf Ubuntu 24.04 mit Python 3.12; als Dateimanager dient `xdg-open`.
-- Texterkennung, etwa unter Ubuntu: `sudo apt install poppler-utils tesseract-ocr tesseract-ocr-deu`
-  (Paketnamen der Distribution). Am 18.09.2026 auf Ubuntu 24.04 geprüft: ein
-  Befehl genügt, danach werden Foto und zweiseitiger Scan ohne Textschicht
-  erkannt (tesseract 5.3.4).
+**1. Mappe starten**
+
+```
+./Start.sh
+```
+
+Fehlt das Ausführungsrecht, einmalig:
+
+```
+chmod +x Start.sh
+```
+
+*Geklappt, wenn:* Der Browser zeigt die Mappe. Als Dateimanager dient
+`xdg-open`.
+
+**2. Texterkennung einrichten — freiwillig**
+
+Nur nötig für Fotos und eingescannte Briefe ohne Textschicht. Unter Ubuntu und
+Debian genügt ein Befehl:
+
+```
+sudo apt install poppler-utils tesseract-ocr tesseract-ocr-deu
+```
+
+Er fragt nach deinem Passwort; beim Tippen ist nichts zu sehen, das ist so
+gewollt. Andere Distributionen haben eigene Paketnamen (Fedora: `dnf install
+poppler-utils tesseract tesseract-langpack-deu`).
+
+*Geklappt, wenn:* `deu` in der Liste steht.
+
+```
+tesseract --list-langs
+```
+
+**3. Geprüft am 18.09.2026**
+
+Ubuntu 24.04 mit Python 3.12: Funktionstest mit 61 Prüfpunkten, Dienst über
+`Start.sh`, MCP-Server, Beispielfall in einem Ordner mit Leerzeichen und
+Umlauten. Die Texterkennung hat Foto und zweiseitigen Scan ohne Textschicht
+erkannt (tesseract 5.3.4).
 
 </details>
 
 <details>
-<summary><b>Windows</b></summary>
+<summary><b>Windows — Schritt für Schritt</b></summary>
 
-- Start mit `Start.bat` (Doppelklick).
-- Unter Windows heißt der Befehl `python` statt `python3`; `python3.exe` ist
-  dort nur ein Verweis auf den Microsoft Store. `Start.bat` stellt deshalb bei
-  jedem Start `.mcp.json`, `.claude/settings.json` und `.codex/config.toml` auf
-  `python` um (`06 Werkzeuge/einrichten_windows.py`, ändert nur diesen einen
-  Wert und nichts, wenn schon eingerichtet). Also einmal `Start.bat` starten,
-  bevor Claude Code oder Codex im Ordner laufen. Wer mit git arbeitet, sieht
-  diese drei Dateien danach als geändert.
-- Windows bringt weder `pdftotext` noch `tesseract` mit. Ohne sie zeigt die
-  Mappe bei PDFs die Textquelle „werkzeug-fehlt“ und liest keinen Text aus;
-  alles andere läuft. Beide gibt es über `winget`, die Paketverwaltung von
-  Windows:
+**1. Mappe starten — und zwar zuerst**
 
-  ```
-  winget install --id UB-Mannheim.TesseractOCR
-  winget install --id oschwartz10612.Poppler
-  ```
+Doppelklick auf `Start.bat`.
 
-- **Deutsche Sprache für die Texterkennung:** Der tesseract-Installer bringt
-  nur Englisch mit. Im Installationsfenster bei „Additional language data“
-  **German** mitwählen. Läuft er ohne Fenster durch, fehlt Deutsch; dann
-  `deu.traineddata` von
-  [tessdata](https://github.com/tesseract-ocr/tessdata) laden und nach
-  `C:\Program Files\Tesseract-OCR	essdata` legen. Prüfen mit
-  `tesseract --list-langs`: dort muss `deu` stehen.
-- Der tesseract-Installer trägt das Programm **nicht** in den Suchpfad ein.
-  Die Mappe sucht deshalb zusätzlich an den üblichen Orten und findet es auch
-  so. Poppler trägt sich selbst ein; danach ein neues Fenster öffnen.
-- Am 18.09.2026 auf Windows 11 geprüft: Funktionstest mit 61 Prüfpunkten,
-  Texterkennung an Foto und zweiseitigem Scan, Claude Code mit MCP-Server und
-  greifendem Originalschutz.
+> [!IMPORTANT]
+> Das muss **vor** dem ersten Start von Claude Code oder Codex passieren.
+> Grund: Unter Windows heißt der Befehl `python`, nicht `python3` — `python3.exe`
+> ist dort nur ein Verweis auf den Microsoft Store. `Start.bat` stellt deshalb
+> `.mcp.json`, `.claude/settings.json` und `.codex/config.toml` auf `python`
+> um. Wer die KI vorher startet, bekommt die Meldung „Python wurde nicht
+> gefunden" und die Hooks laufen nicht.
+
+*Geklappt, wenn:* Der Browser zeigt die Mappe. Wer mit git arbeitet, sieht die
+drei Dateien danach als geändert — das ist richtig so.
+
+**2. Texterkennung einrichten — freiwillig**
+
+Nur nötig für Fotos und eingescannte Briefe ohne Textschicht, und für Text aus
+PDF. Windows bringt weder `tesseract` noch `pdftotext` mit. Beide gibt es über
+`winget`, die Paketverwaltung von Windows. Eingabeaufforderung öffnen
+(Startmenü, `cmd` tippen) und nacheinander:
+
+```
+winget install --id UB-Mannheim.TesseractOCR
+```
+
+```
+winget install --id oschwartz10612.Poppler
+```
+
+**3. Deutsche Sprache nachlegen**
+
+Der tesseract-Installer bringt **nur Englisch** mit. Im Installationsfenster
+unter „Additional language data" **German** mitwählen.
+
+Läuft er ohne Fenster durch, fehlt Deutsch. Dann `deu.traineddata` von
+[tessdata](https://github.com/tesseract-ocr/tessdata) laden und nach
+`C:\Program Files\Tesseract-OCR\tessdata` legen — dafür braucht der Explorer
+Administratorrechte.
+
+**4. Prüfen**
+
+Ein **neues** Fenster öffnen (das alte kennt die neuen Programme noch nicht):
+
+```
+tesseract --list-langs
+```
+
+*Geklappt, wenn:* `deu`, `eng` und `osd` in der Liste stehen.
+
+Findet Windows den Befehl nicht, liegt das am tesseract-Installer: Er trägt das
+Programm **nicht** in den Suchpfad ein. Für die Mappe ist das kein Problem —
+sie sucht zusätzlich an den üblichen Orten. Zum Prüfen von Hand hilft der volle
+Pfad:
+
+```
+"C:\Program Files\Tesseract-OCR\tesseract.exe" --list-langs
+```
+
+**5. Geprüft am 18.09.2026**
+
+Windows 11 mit Python 3.14.7: Funktionstest mit 61 Prüfpunkten, Texterkennung
+an Foto und zweiseitigem Scan, Claude Code mit MCP-Server (32 Werkzeuge) und
+greifendem Originalschutz.
 
 </details>
+
 
 ## Erster Start
 
