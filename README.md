@@ -96,9 +96,10 @@ Framework und braucht keinen Zugang nach außen.
 
 - Python 3, geprüft mit 3.14.7 (`python3 --version`); ältere Fassungen
   sind ungeprüft. Keine weiteren Pakete.
-- Geprüft am 17.09.2026 auf macOS, auf Ubuntu 24.04 mit Python 3.12 und auf
-  Windows 11 mit Python 3.14: jeweils Funktionstest, Dienst über das
-  Startskript, MCP-Server, Beispielfall in einem Ordner mit Umlauten.
+- Geprüft am 18.09.2026 auf macOS 26.7, auf Ubuntu 24.04 (Python 3.12) und
+  auf Windows 11 (Python 3.14.7): jeweils Funktionstest mit 61 Prüfpunkten,
+  Dienst über das Startskript, MCP-Server, Beispielfall in einem Ordner mit
+  Leerzeichen und Umlauten, Texterkennung mit Foto und zweiseitigem Scan.
 - Für Textauszüge aus PDF optional das Programm `pdftotext` (Paket poppler).
 - Für Fotos und Scans ohne Textschicht optional die Texterkennung (OCR)
   `tesseract` mit deutscher Sprache; PDF-Scans brauchen dazu `pdftoppm` (auch
@@ -113,11 +114,14 @@ Framework und braucht keinen Zugang nach außen.
   Auf Intel-Macs mit neuem macOS gibt es dafür teils keine fertigen Pakete;
   Homebrew baut dann aus dem Quelltext, das kann lange dauern (am 17.09.2026
   auf macOS 26.7 so erlebt).
-- Den Ordner nicht mit dem Befehl `zip` oder `ditto` neu packen: Diese
-  Archive tragen keine UTF-8-Kennung, und je nach Entpackprogramm wird aus
-  „06 Entwürfe“ ein kaputter Ordnername (am 17.09.2026 mit Python geprüft;
-  den Finder nicht getestet, also auch nicht verwenden). Das ZIP von GitHub
-  ist sauber.
+- Den Ordner nicht selbst neu packen — weder mit `zip` oder `ditto` noch mit
+  dem Finder („Komprimieren“). Alle drei Wege schreiben keine UTF-8-Kennung
+  ins Archiv; wer es dann anderswo entpackt, bekommt aus „06 Entwürfe“ einen
+  kaputten Namen wie `06 Entwu╠êrfe` (am 18.09.2026 für Finder und `zip`
+  geprüft). Am Mac fällt das nicht auf, weil der Finder sein eigenes Archiv
+  wieder richtig öffnet; kaputt geht es erst beim Wechsel auf Windows, Linux
+  oder in ein Python-Werkzeug. Das ZIP von GitHub ist sauber, und die
+  Sicherung der Mappe packt mit Pythons `zipfile` ebenfalls sauber.
 
 </details>
 
@@ -127,7 +131,9 @@ Framework und braucht keinen Zugang nach außen.
 - Start mit `Start.sh`.
 - Geprüft auf Ubuntu 24.04 mit Python 3.12; als Dateimanager dient `xdg-open`.
 - Texterkennung, etwa unter Ubuntu: `sudo apt install poppler-utils tesseract-ocr tesseract-ocr-deu`
-  (Paketnamen der Distribution; unter Linux noch nicht geprüft).
+  (Paketnamen der Distribution). Am 18.09.2026 auf Ubuntu 24.04 geprüft: ein
+  Befehl genügt, danach werden Foto und zweiseitiger Scan ohne Textschicht
+  erkannt (tesseract 5.3.4).
 
 </details>
 
@@ -142,12 +148,29 @@ Framework und braucht keinen Zugang nach außen.
   Wert und nichts, wenn schon eingerichtet). Also einmal `Start.bat` starten,
   bevor Claude Code oder Codex im Ordner laufen. Wer mit git arbeitet, sieht
   diese drei Dateien danach als geändert.
-- Windows bringt `pdftotext` nicht mit (auf der Testmaschine Windows 11 fehlte
-  es); ohne das Programm zeigt die Mappe bei PDFs die Textquelle
-  „werkzeug-fehlt“ und liest keinen Text aus.
-- Für die Texterkennung gibt es unter Windows `tesseract` nur über
-  Installationsprogramme von Dritten; mit der Mappe unter Windows noch nicht
-  geprüft.
+- Windows bringt weder `pdftotext` noch `tesseract` mit. Ohne sie zeigt die
+  Mappe bei PDFs die Textquelle „werkzeug-fehlt“ und liest keinen Text aus;
+  alles andere läuft. Beide gibt es über `winget`, die Paketverwaltung von
+  Windows:
+
+  ```
+  winget install --id UB-Mannheim.TesseractOCR
+  winget install --id oschwartz10612.Poppler
+  ```
+
+- **Deutsche Sprache für die Texterkennung:** Der tesseract-Installer bringt
+  nur Englisch mit. Im Installationsfenster bei „Additional language data“
+  **German** mitwählen. Läuft er ohne Fenster durch, fehlt Deutsch; dann
+  `deu.traineddata` von
+  [tessdata](https://github.com/tesseract-ocr/tessdata) laden und nach
+  `C:\Program Files\Tesseract-OCR	essdata` legen. Prüfen mit
+  `tesseract --list-langs`: dort muss `deu` stehen.
+- Der tesseract-Installer trägt das Programm **nicht** in den Suchpfad ein.
+  Die Mappe sucht deshalb zusätzlich an den üblichen Orten und findet es auch
+  so. Poppler trägt sich selbst ein; danach ein neues Fenster öffnen.
+- Am 18.09.2026 auf Windows 11 geprüft: Funktionstest mit 61 Prüfpunkten,
+  Texterkennung an Foto und zweiseitigem Scan, Claude Code mit MCP-Server und
+  greifendem Originalschutz.
 
 </details>
 
@@ -561,6 +584,15 @@ den Pflichtinhalt dagegen.
 Eine Rechtsakte braucht mehr als Ordner. Diese Regeln setzt die Mappe
 technisch durch und prüft sie im Funktionstest:
 
+- **Originale bleiben Originale.** Schreiben in `02 Grundlagen`,
+  `03 Schriftverkehr`, `04 Verfahren`, `05 Beweise` und `08 Archiv` weist ein
+  Hook ab, bevor die KI die Datei anfasst — geprüft am aufgelösten Pfad, also
+  auch über Umwege wie `..` oder Verknüpfungen, und unabhängig davon, wie
+  Umlaute im Pfad geschrieben sind. Erfasst sind alle schreibenden Werkzeuge
+  einer KI. Neue Fassungen gehören nach `06 Entwürfe`, Vermerke nach
+  `07 Recherche`. **Grenze:** Der Hook greift an den Dateiwerkzeugen, nicht an
+  beliebigen Befehlen einer Shell — wer der KI erlaubt, Befehle auszuführen,
+  umgeht ihn.
 - **Lesen bleibt Lesen.** Kein lesendes Werkzeug fasst `akte.json`,
   `bestand.json` oder `zentrale.json` an. Neue Dateien registriert nur der
   Abgleich.

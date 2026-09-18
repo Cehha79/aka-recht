@@ -96,9 +96,10 @@ no outside access.
 
 - Python 3, tested with 3.14.7 (`python3 --version`); older versions are
   untested. No other packages.
-- Tested on 17 Sep 2026 on macOS, on Ubuntu 24.04 with Python 3.12 and on
-  Windows 11 with Python 3.14: test suite, service via the start script, MCP
-  server, sample case in a folder with umlauts on each.
+- Tested on 18 Sep 2026 on macOS 26.7, on Ubuntu 24.04 (Python 3.12) and on
+  Windows 11 (Python 3.14.7): test suite with 61 checks, service via the start
+  script, MCP server, sample case in a folder with spaces and umlauts, text
+  recognition on a photo and a two-page scan.
 - Optional for text extraction from PDF: the program `pdftotext` (poppler).
 - Optional for photos and scans without a text layer: text recognition (OCR)
   with `tesseract` and German language data; scanned PDFs also need
@@ -113,10 +114,14 @@ no outside access.
   On Intel Macs with a recent macOS there are sometimes no prebuilt packages;
   Homebrew then builds from source, which can take a long time (seen on
   macOS 26.7 on 17 Sep 2026).
-- Do not re-pack the folder with `zip` or `ditto`: those archives carry no
-  UTF-8 flag, and depending on the extractor "06 Entwürfe" turns into a
-  broken folder name (tested 17 Sep 2026 with Python; Finder not tested, so
-  avoid it too). The GitHub ZIP is clean.
+- Do not re-pack the folder yourself — neither with `zip` or `ditto` nor with
+  Finder ("Compress"). None of them writes a UTF-8 flag into the archive, so
+  extracting it elsewhere turns "06 Entwürfe" into a broken name such as
+  `06 Entwu╠êrfe` (tested 18 Sep 2026 for Finder and `zip`). On the Mac this
+  goes unnoticed because Finder reads its own archives correctly; it breaks
+  only when the archive moves to Windows, Linux or a Python tool. The GitHub
+  ZIP is clean, and the folder's own backup packs with Python's `zipfile`,
+  which is clean as well.
 
 </details>
 
@@ -126,7 +131,9 @@ no outside access.
 - Start with `Start.sh`.
 - Tested on Ubuntu 24.04 with Python 3.12; `xdg-open` serves as file manager.
 - Text recognition, e.g. on Ubuntu: `sudo apt install poppler-utils tesseract-ocr tesseract-ocr-deu`
-  (distribution package names; not yet tested on Linux).
+  (distribution package names). Tested on Ubuntu 24.04 on 18 Sep 2026: one
+  command is enough, after which a photo and a two-page scan without a text
+  layer are recognised (tesseract 5.3.4).
 
 </details>
 
@@ -140,11 +147,29 @@ no outside access.
   (`06 Werkzeuge/einrichten_windows.py`; it changes only that one value and
   nothing once set up). So run `Start.bat` once before using Claude Code or
   Codex in the folder. If you use git, these three files then show as modified.
-- Windows does not ship `pdftotext` (it was missing on the Windows 11 test
-  machine); without it the folder reports the text source "werkzeug-fehlt"
-  for PDFs and extracts no text.
-- On Windows `tesseract` for text recognition is only available through
-  third-party installers; not yet tested with the folder on Windows.
+- Windows ships neither `pdftotext` nor `tesseract`. Without them the folder
+  reports the text source "werkzeug-fehlt" for PDFs and extracts no text;
+  everything else works. Both are available through `winget`, the Windows
+  package manager:
+
+  ```
+  winget install --id UB-Mannheim.TesseractOCR
+  winget install --id oschwartz10612.Poppler
+  ```
+
+- **German language data for text recognition:** the tesseract installer ships
+  English only. Tick **German** under "Additional language data" in the
+  installer window. If it runs without a window, German is missing; then
+  download `deu.traineddata` from
+  [tessdata](https://github.com/tesseract-ocr/tessdata) and put it into
+  `C:\Program Files\Tesseract-OCR	essdata`. Check with
+  `tesseract --list-langs`: `deu` has to be listed.
+- The tesseract installer does **not** add the program to the search path. The
+  folder therefore also looks in the usual locations and finds it anyway.
+  Poppler adds itself; open a new window afterwards.
+- Tested on Windows 11 on 18 Sep 2026: test suite with 61 checks, text
+  recognition on a photo and a two-page scan, Claude Code with MCP server and
+  working original protection.
 
 </details>
 
@@ -550,6 +575,14 @@ from them, `/entwurf` checks the mandatory content against them.
 A legal file needs more than folders. The folder enforces these rules in
 code and checks them in the test suite:
 
+- **Originals stay originals.** Writing into `02 Grundlagen`,
+  `03 Schriftverkehr`, `04 Verfahren`, `05 Beweise` and `08 Archiv` is refused
+  by a hook before the AI touches the file — checked on the resolved path, so
+  detours via `..` or symlinks do not help, and regardless of how umlauts in
+  the path are spelled. All writing tools of an AI are covered. New versions
+  belong in `06 Entwürfe`, notes in `07 Recherche`. **Limit:** the hook acts on
+  the file tools, not on arbitrary shell commands — whoever lets the AI run
+  commands bypasses it.
 - **Reading stays reading.** No reading tool touches `akte.json`,
   `bestand.json` or `zentrale.json`. New files are registered only by the
   sync tool.
