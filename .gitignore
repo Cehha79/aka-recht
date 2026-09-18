@@ -1,12 +1,40 @@
-# AKA Recht: eigene Daten bleiben außerhalb von git
-.DS_Store
-__pycache__/
-*.pyc
-zentrale.json
-.claude/settings.local.json
+# Nutzerdaten: die Mappe eines echten Nutzers, nie im Repository
 01 Eingang/*
 02 Fälle/*
 03 Verträge und Vorsorge/*
 !01 Eingang/.gitkeep
 !02 Fälle/.gitkeep
 !03 Verträge und Vorsorge/.gitkeep
+zentrale.json
+
+# Interne Entwicklungsdoku: gehört zur Werkstatt, nicht zur Auslieferung
+DOKU/md/Live-Dokumentation.md
+DOKU/md/TODO.md
+DOKU/md/Fahrplan.md
+DOKU/md/Tests-Qualitaet.md
+DOKU/md/Produkt-Recht.md
+DOKU/md/WICHTIG.md
+DOKU/Live-Dokumentation.html
+DOKU/TODO.html
+DOKU/Fahrplan.html
+DOKU/Tests-Qualitaet.html
+DOKU/Produkt-Recht.html
+DOKU/WICHTIG.html
+DOKU/Archiv/
+DOKU/Pruefberichte/
+DOKU/Claude Ausgabe/
+
+# Bauwerkzeuge: enthalten die Liste der nicht zu veröffentlichenden Begriffe
+06 Werkzeuge/produkt_bauen.py
+06 Werkzeuge/produkt_readme.py
+06 Werkzeuge/produkt_bilder/
+06 Werkzeuge/lizenz/
+06 Werkzeuge/umwandlung/
+
+# Örtliches
+CLAUDE.local.md
+.claude/settings.local.json
+__pycache__/
+*.pyc
+.DS_Store
+.ruff_cache/
