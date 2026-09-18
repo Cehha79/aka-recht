@@ -1,6 +1,6 @@
 # Datenmodell
 
-*Stand: 17.09.2026*
+*Stand: 18.09.2026*
 
 ## Aufgabe dieser Datei
 
@@ -258,6 +258,8 @@ Die Oberfläche liest die Überschriftzeile und kann danach filtern.
 | Werkzeug | Aufgabe |
 |---|---|
 | `06 Werkzeuge/dienst/cli.py` | alle Werkzeuge ohne laufenden Dienst, für Claude und Skripte |
+| Ändern statt neu anlegen | `frist_setzen` und `ereignis_setzen` ändern einen vorhandenen Eintrag (nur die übergebenen Felder). Bei `ereignis_setzen` räumt `zeitpunkt: genau` die Felder `datum_bis` und `zeitpunkt_text` ab; bei `frist_setzen` gelten dieselben Sperren wie beim Eintragen: bestätigt nur mit Rechnung, Beleg und ohne offene Marker (seit 18.09.2026) |
+| Datei aus der KI heraus ablegen | `datei_ablegen` schreibt eine Textdatei (.md oder .txt) nach 01 Eingang, 06 Entwürfe oder 07 Recherche, nie in die Originalbereiche, überschreibt nichts und registriert die Datei anschließend im Bestand (seit 18.09.2026) |
 | `06 Werkzeuge/akte_schema.py` | leere Akte erzeugen, Akte prüfen (Fehler, Warnungen); der Dienst ruft `validate()` vor jedem Speichern |
 | `05 Vorlagen/Fallvorlage/` | Ordner 01 bis 08, leere akte.json, bestand.json, JOURNAL.md |
 | `05 Vorlagen/Beispielakte/` | vollständiger erfundener Fall „Kündigung durch den Arbeitgeber“ (R-9001): akte.json mit allen Blöcken, bestand.json mit Prüfsummen, JOURNAL.md, vier Textdokumente; über „Beispielfall laden“ (Werkzeug `beispiel_laden`) als neuer Fall kopierbar; Prüfung ohne Fehler |

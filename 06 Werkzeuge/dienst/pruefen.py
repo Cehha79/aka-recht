@@ -420,6 +420,27 @@ def run():
         assert next(x for x in u['ereignisse'] if x['id'] == e_unsicher['id'])['zeitpunkt'] == 'ungefähr' and next(x for x in u['fristen'] if x['id'] == r['frist']['id'])['ausloeser_ereignis'] == e_genau['id']
         assert any(f['id'] == 'R-0001' and any(x.get('eigenschaften', {}).get('ausloeser_sicher') is False for x in f['fristen']) for f in anfrage('/api/zentrale')['faelle'])
         ok('Unsichere Zeitpunkte (F13): ungefähr, Zeitraum, unbekannt als Feld mit Pflichtangaben; Fristen mit Verfahren und Auslöser-Ereignis als geprüfte Verweise; bestätigt nur mit genauem Auslöser, sonst „Auslöser unsicher“ bis in die Zentrale')
+        # Lücken für reine MCP-Clients (Abnahme F23, geschlossen am 18.09.2026): Beteiligte, Verfahren, Ändern, Datei ablegen
+        p = anfrage('/api/werkzeug', {'name': 'beteiligter_anlegen', 'parameter': {'fall': 'R-0001', 'name': 'Amtsgericht Musterstadt', 'rolle': 'Gericht', 'aktenzeichen': '5 C 1/26'}, 'bestaetigt': True})['beteiligter']
+        assert p['id'].startswith('P') and p['aktenzeichen'] == '5 C 1/26', p
+        anfrage('/api/werkzeug', {'name': 'beteiligter_anlegen', 'parameter': {'fall': 'R-0001', 'name': 'amtsgericht musterstadt'}, 'bestaetigt': True}, erwartet=400)   # keine Doppelung
+        v = anfrage('/api/werkzeug', {'name': 'verfahren_anlegen', 'parameter': {'fall': 'R-0001', 'art': 'Zivilklage', 'stelle': p['id'], 'aktenzeichen': '5 C 1/26'}, 'bestaetigt': True})['verfahren']
+        assert v['stelle'] == p['id'], v
+        anfrage('/api/werkzeug', {'name': 'verfahren_anlegen', 'parameter': {'fall': 'R-0001', 'art': 'Test', 'stelle': 'P99'}, 'bestaetigt': True}, erwartet=400)   # Verweis wird geprüft
+        g = anfrage('/api/werkzeug', {'name': 'ereignis_setzen', 'parameter': {'fall': 'R-0001', 'ereignis': e_unsicher['id'], 'datum': '2026-09-03', 'zeitpunkt': 'genau'}, 'bestaetigt': True})['ereignis']
+        assert g['datum'] == '2026-09-03' and 'zeitpunkt' not in g and 'zeitpunkt_text' not in g, g   # genau räumt die Unsicherheitsfelder ab
+        f_neu = anfrage('/api/werkzeug', {'name': 'frist_setzen', 'parameter': {'fall': 'R-0001', 'frist': 'F01', 'titel': 'Klagefrist, berichtigt', 'datum': '2026-10-02'}, 'bestaetigt': True})['frist']
+        assert f_neu['titel'] == 'Klagefrist, berichtigt' and f_neu['datum'] == '2026-10-02', f_neu   # bleibt die früheste Frist, damit die Sortierung der Folgeprüfungen stimmt
+        anfrage('/api/werkzeug', {'name': 'frist_setzen', 'parameter': {'fall': 'R-0001', 'frist': 'F99', 'titel': 'x'}, 'bestaetigt': True}, erwartet=400)
+        anfrage('/api/werkzeug', {'name': 'ereignis_setzen', 'parameter': {'fall': 'R-0001', 'ereignis': 'E99', 'titel': 'x'}, 'bestaetigt': True}, erwartet=400)
+        anfrage('/api/werkzeug', {'name': 'frist_setzen', 'parameter': {'fall': 'R-0001', 'frist': 'F01', 'berechnung': 'Ende 02.10.2026 [PRÜFEN: Zugang]', 'pruefstatus': 'bestätigt', 'geprueft_von': 'Prüflauf'}, 'bestaetigt': True}, erwartet=400)   # Marker bleibt eine Sperre
+        abl = anfrage('/api/werkzeug', {'name': 'datei_ablegen', 'parameter': {'fall': 'R-0001', 'bereich': '06 Entwürfe', 'name': 'Vermerk.md', 'text': '# Vermerk\n\nText aus dem Prüflauf.\n'}, 'bestaetigt': True})
+        assert abl['pfad'] == '06 Entwürfe/Vermerk.md' and abl['kennung'].startswith('D'), abl
+        anfrage('/api/werkzeug', {'name': 'datei_ablegen', 'parameter': {'fall': 'R-0001', 'bereich': '06 Entwürfe', 'name': 'Vermerk.md', 'text': 'zweimal'}, 'bestaetigt': True}, erwartet=400)   # nie überschreiben
+        for par in ({'bereich': '05 Beweise', 'name': 'x.txt'}, {'bereich': '01 Eingang', 'name': '../weg.txt'}, {'bereich': '01 Eingang', 'name': 'skript.py'}, {'bereich': '01 Eingang', 'name': 'unter/ordner.txt'}):
+            anfrage('/api/werkzeug', {'name': 'datei_ablegen', 'parameter': {'fall': 'R-0001', 'text': 'x', **par}, 'bestaetigt': True}, erwartet=400)
+        assert '# Vermerk' in anfrage('/api/werkzeug', {'name': 'dokument_text', 'parameter': {'fall': 'R-0001', 'dokument': abl['kennung']}})['text']   # abgelegte Datei ist über ihre Kennung lesbar
+        ok('MCP-Lücken geschlossen (F23): Beteiligte und Verfahren anlegen mit geprüften Verweisen und ohne Doppelung, vorhandene Frist und vorhandenes Ereignis ändern (genau räumt die Unsicherheit ab, Marker bleiben gesperrt), Textdatei ablegen nur in 01, 06, 07 ohne Überschreiben und mit eigener Kennung')
         anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'x', 'quelle': 'D9999'}, 'bestaetigt': True}, erwartet=400)
         r = anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0001', 'titel': 'Freitext-Quelle', 'quelle': 'Zustellung laut Bescheid'}, 'bestaetigt': True})
         assert r['aufgabe']['quelle'] == '' and 'Zustellung laut Bescheid' in r['aufgabe']['detail']

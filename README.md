@@ -35,7 +35,7 @@ es zu ordnen, zu prüfen und zu formulieren.
   Rechenweg nach §§ 187, 188, 193 BGB, mit den Feiertagen deines Bundeslands.
 - **Deine KI arbeitet mit:** Claude Code, Claude Desktop, Codex oder jede andere,
   die MCP (Model Context Protocol) oder Befehle ausführen kann. 7 Anleitungen
-  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 27 Werkzeuge
+  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 32 Werkzeuge
   lassen sie in der Akte lesen und, nach deiner Bestätigung, schreiben.
 - **Alles bleibt bei dir:** keine KI in der App, kein Konto, kein Schlüssel,
   kein Netz. Der Dienst läuft nur auf deinem Rechner.
@@ -414,7 +414,7 @@ ein Hook sperrt das für die KI. Neue Texte entstehen in 06, Vermerke in 07.
 
 <img src="bilder/kapitel-werkzeuge.svg" alt="Werkzeuge: MCP und Befehlszeile">
 
-Dieselben 27 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+Dieselben 32 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 oder über die Befehlszeile (`python3 "06 Werkzeuge/dienst/cli.py" <werkzeug> feld=wert`).
 Schreibende Werkzeuge laufen über MCP nur mit deiner Bestätigung (es zählt
 allein der JSON-Wert `true`); über die Befehlszeile soll die KI vorher
@@ -425,7 +425,7 @@ selbst. Jede Änderung an `akte.json` wird gegen das Datenmodell geprüft
 und mit Revision gespeichert.
 
 <details>
-<summary><b>Alle 27 Werkzeuge</b></summary>
+<summary><b>Alle 32 Werkzeuge</b></summary>
 
 | Werkzeug | Art | Zweck |
 |---|---|---|
@@ -441,18 +441,23 @@ und mit Revision gespeichert.
 | `rechtsinhalte_pruefen` | lesend | Meldet, welche mitgelieferten Rechtsinhalte wieder am amtlichen Volltext zu prüfen sind: Merkblätter (zwölf Monate nach „Letzte vollständige Prüfung“), Feiertagstabelle (ab 1. Dezember fürs Folgejahr), Quellenkatalog (sechs Monate). Status je Eintrag: fällig, bald fällig (30 Tage), unbekannt, in Ordnung. Schreibt nichts, ohne Netz. |
 | `fall_anlegen` | schreibend | Neuen Fall mit fester Kennung und Ordnerstruktur anlegen. |
 | `fall_status_setzen` | schreibend | Fallstatus auf offen, ruhend oder abgeschlossen setzen. Der Fall bleibt am gleichen Ort. |
+| `beteiligter_anlegen` | schreibend | Beteiligten in einem Fall anlegen (Person, Gericht, Behörde, Anwalt, Zeuge, Stelle). Gibt die neue P-Kennung zurück; Verweise aus Dokumenten, Verfahren und Fristen gehen auf diese Kennung. |
+| `verfahren_anlegen` | schreibend | Verfahren in einem Fall anlegen (Klage, Bußgeldverfahren, Widerspruch, Mahnverfahren, Strafanzeige). Ein Verfahren ist alles, was eine eigene Stelle und ein eigenes Aktenzeichen hat. |
 | `aufgabe_anlegen` | schreibend | Aufgabe in einem Fall anlegen. |
 | `aufgabe_setzen` | schreibend | Aufgabe als erledigt oder wieder offen setzen, optional Fälligkeit oder Detail ändern. |
 | `frist_eintragen` | schreibend | Frist oder Termin in einem Fall eintragen. Bestätigt nur, wenn die Rechnung das Fristende nennt, Auslöser, Rechtsgrundlage und Quelle da sind und kein Marker [PRÜFEN], [QUELLE], [BELEG] offen ist; die Bestätigung bekommt Prüfdatum und Prüfer. |
 | `vorlagen_auflisten` | lesend | Schreibvorlagen unter 05 Vorlagen/Schreiben mit erster Zeile (interne Hinweise, Merkblatt). |
 | `vorlage_fuellen` | schreibend | Entwurf aus einer Schreibvorlage anlegen: kopiert die Vorlage nach 06 Entwürfe des Falls und setzt Absender (Einstellungen oder Beteiligter mit Rolle Ich), Unterschrift, Datum und Fallkennung ein (Platzhalter 【ABSENDER】, 【ABSENDER_NAME】, 【DATUM】, 【R-0000】). Überschreibt nie. Alle anderen Platzhalter bleiben zum Ausfüllen. |
 | `ereignis_eintragen` | schreibend | Ereignis in die Chronologie eines Falls eintragen. |
+| `frist_setzen` | schreibend | Vorhandene Frist oder vorhandenen Termin ändern. Nur die übergebenen Felder werden geändert. Eine Bestätigung bekommt Prüfdatum und Prüfer; das Schema prüft weiter Rechnung, Beleg und offene Marker. |
+| `ereignis_setzen` | schreibend | Vorhandenes Ereignis ändern. Nur die übergebenen Felder werden geändert; „zeitpunkt“ genau entfernt die Angaben zur Unsicherheit. |
 | `notiz_anlegen` | schreibend | Ordnungsnotiz in einem Fall anlegen. |
 | `entwurf_erfassen` | schreibend | Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung. |
 | `texterkennung` | schreibend | Texterkennung (OCR) für ein Foto oder eine PDF ohne Textschicht, über das freiwillige Zusatzprogramm tesseract auf diesem Rechner. Legt den erkannten Text als neue Textdatei unter 07 Recherche/Texterkennung an (eigene D-Kennung, Verweis auf das Original, Kopf mit Quelle, Prüfsumme, Programm, Sprache, Datum und Warnhinweis) und vermerkt beim Original den Textstand „OCR-erkannt“, wenn dort noch keiner steht. Das Original bleibt unverändert, nichts wird überschrieben. Erkannter Text ist eine Ableitung: Zahlen, Daten, Fristen, Beträge und Namen am Original prüfen. |
 | `bestand_abgleichen` | schreibend | Bestand eines Falls mit den Dateien abgleichen: neue Dateien in 01 bis 08 bekommen eine Kennung, im Finder verschobene werden über die Prüfsumme wiedergefunden, fehlende Ordnungsangaben werden in der Akte ergänzt. Der einzige Weg, auf dem neue Dateien registriert werden. |
 | `dokument_ordnen` | schreibend | Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz, Textstand: direkt ausgelesen, OCR-erkannt, visuell geprüft, teilweise lesbar, nicht lesbar). Die Datei selbst bleibt unverändert. |
 | `dokument_verschieben` | schreibend | Datei in einen anderen Aktenbereich einsortieren. Kennung und Inhalt bleiben, nichts wird überschrieben. |
+| `datei_ablegen` | schreibend | Textdatei in einem Fall anlegen: Notiz, Vermerk oder Entwurf. Erlaubt sind nur 01 Eingang, 06 Entwürfe und 07 Recherche; die Originalbereiche 02 bis 05 und 08 bleiben gesperrt. Überschreibt nie eine vorhandene Datei und registriert die neue Datei anschließend im Bestand, sodass sie eine D-Kennung bekommt. |
 | `journal_schreiben` | schreibend | Eintrag an das Journal eines Falls anhängen. |
 | `sicherung_erstellen` | schreibend | Geprüfte ZIP-Sicherung des ganzen Projekts erstellen, mit Kopie an das zweite Ziel. |
 | `sicherung_probe` | schreibend | Wiederherstellungsprobe: die letzte Sicherung in einem Zwischenordner entpacken, Akten gegen das Schema und alle Dateien gegen die Prüfsummen prüfen, Zwischenordner wieder entfernen. Die Mappe bleibt unberührt. |

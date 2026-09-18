@@ -262,6 +262,37 @@ def _naechste(akte, block):
     """Nächste Kennung über den Zähler der Akte (akte_schema.naechste_kennung): entfernte Kennungen kommen nie wieder (F11)."""
     return akte_schema.naechste_kennung(akte, block)
 
+@werkzeug('beteiligter_anlegen', 'Beteiligten in einem Fall anlegen (Person, Gericht, Behörde, Anwalt, Zeuge, Stelle). Gibt die neue P-Kennung zurück; Verweise aus Dokumenten, Verfahren und Fristen gehen auf diese Kennung.',
+          {'fall': {'type': 'string'}, 'name': {'type': 'string', 'description': 'Name oder Stelle'},
+           'rolle': {'type': 'string', 'description': 'Übliche Rollen: ' + ', '.join(akte_schema.BETEILIGTE_ROLLE_VORSCHLAG)},
+           'anschrift': {'type': 'string'}, 'kontakt': {'type': 'string', 'description': 'Telefon, E-Mail, Fax'},
+           'aktenzeichen': {'type': 'string', 'description': 'Zeichen dieser Stelle, nicht das eigene'}},
+          schreibend=True, pflicht=['fall', 'name'])
+def beteiligter_anlegen(fall, name, rolle='', anschrift='', kontakt='', aktenzeichen=''):
+    akte, rev = store.lese_akte(fall)
+    if any((b.get('name', '').strip().lower() == name.strip().lower()) for b in akte['beteiligte']):
+        raise ValueError(f'„{name}“ steht schon in den Beteiligten. Schreibweisen zusammenführen statt doppelt anlegen.')
+    eintrag = {'id': _naechste(akte, 'beteiligte'), 'name': name.strip(), 'rolle': rolle.strip(),
+               'anschrift': anschrift.strip(), 'kontakt': kontakt.strip(), 'aktenzeichen': aktenzeichen.strip()}
+    akte['beteiligte'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
+    return {'beteiligter': eintrag, 'revision': rev}
+
+@werkzeug('verfahren_anlegen', 'Verfahren in einem Fall anlegen (Klage, Bußgeldverfahren, Widerspruch, Mahnverfahren, Strafanzeige). Ein Verfahren ist alles, was eine eigene Stelle und ein eigenes Aktenzeichen hat.',
+          {'fall': {'type': 'string'}, 'art': {'type': 'string', 'description': 'Arbeitsgericht, Bußgeldverfahren, Widerspruch, Mahnverfahren, Strafanzeige …'},
+           'stelle': {'type': 'string', 'description': 'P-Kennung des Gerichts oder der Behörde aus den Beteiligten, sonst leer'},
+           'aktenzeichen': {'type': 'string'}, 'stand': {'type': 'string', 'description': 'Verfahrensstand in einem Satz'},
+           'ordner': {'type': 'string', 'description': 'Unterordner in 04 Verfahren, etwa „01 Teilkündigung“'}},
+          schreibend=True, pflicht=['fall', 'art'])
+def verfahren_anlegen(fall, art, stelle='', aktenzeichen='', stand='', ordner=''):
+    akte, rev = store.lese_akte(fall)
+    stelle = (stelle or '').strip().upper()
+    if stelle and not any(b['id'] == stelle for b in akte['beteiligte']):
+        raise ValueError(f'Beteiligtenkennung {stelle} gibt es in diesem Fall nicht. Erst beteiligter_anlegen, dann verweisen.')
+    eintrag = {'id': _naechste(akte, 'verfahren'), 'art': art.strip(), 'stelle': stelle,
+               'aktenzeichen': aktenzeichen.strip(), 'stand': stand.strip(), 'ordner': ordner.strip()}
+    akte['verfahren'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
+    return {'verfahren': eintrag, 'revision': rev}
+
 @werkzeug('aufgabe_anlegen', 'Aufgabe in einem Fall anlegen.',
           {'fall': {'type': 'string'}, 'titel': {'type': 'string'}, 'detail': {'type': 'string'},
            'faellig': {'type': 'string', 'description': 'JJJJ-MM-TT oder leer'}, 'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001 aus der Fallübersicht, sonst leer lassen; kein Freitext'}},
@@ -362,6 +393,68 @@ def ereignis_eintragen(fall, datum, titel, art='Vermerk', quelle='', detail='', 
         if zeitpunkt_text: eintrag['zeitpunkt_text'] = zeitpunkt_text
     akte['ereignisse'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
     return {'ereignis': eintrag, 'revision': rev}
+
+@werkzeug('frist_setzen', 'Vorhandene Frist oder vorhandenen Termin ändern. Nur die übergebenen Felder werden geändert. Eine Bestätigung bekommt Prüfdatum und Prüfer; das Schema prüft weiter Rechnung, Beleg und offene Marker.',
+          {'fall': {'type': 'string'}, 'frist': {'type': 'string', 'description': 'F-Kennung wie F01'},
+           'datum': {'type': 'string'}, 'titel': {'type': 'string'}, 'art': {'type': 'string', 'enum': akte_schema.FRIST_ART},
+           'ausloeser': {'type': 'string'}, 'rechtsgrundlage': {'type': 'string'}, 'berechnung': {'type': 'string'},
+           'pruefstatus': {'type': 'string', 'enum': akte_schema.FRIST_STATUS},
+           'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'},
+           'geprueft_von': {'type': 'string'}, 'verfahren': {'type': 'string', 'description': 'V-Kennung'},
+           'ausloeser_ereignis': {'type': 'string', 'description': 'E-Kennung des auslösenden Ereignisses'}},
+          schreibend=True, pflicht=['fall', 'frist'])
+def frist_setzen(fall, frist, datum=None, titel=None, art=None, ausloeser=None, rechtsgrundlage=None, berechnung=None,
+                 pruefstatus=None, quelle=None, geprueft_von=None, verfahren=None, ausloeser_ereignis=None):
+    akte, rev = store.lese_akte(fall)
+    f = next((x for x in akte['fristen'] if x['id'] == str(frist).strip().upper()), None)
+    if not f: raise ValueError(f'Fristkennung {frist} gibt es in diesem Fall nicht.')
+    if quelle is not None:
+        q, berechnung = _quelle(fall, quelle, berechnung if berechnung is not None else f.get('berechnung', ''))
+        f['quelle'] = q
+    for feld, wert in (('datum', datum), ('titel', titel), ('art', art), ('ausloeser', ausloeser),
+                       ('rechtsgrundlage', rechtsgrundlage), ('berechnung', berechnung)):
+        if wert is not None: f[feld] = wert
+    for feld, wert in (('verfahren', verfahren), ('ausloeser_ereignis', ausloeser_ereignis)):
+        if wert is not None: f[feld] = str(wert).strip().upper()
+    if pruefstatus is not None:
+        f['pruefstatus'] = pruefstatus
+        if pruefstatus == 'bestätigt':   # F12: Bestätigung immer mit Prüfdatum und Prüfer
+            f['geprueft_am'] = date.today().isoformat()
+            f['geprueft_von'] = (geprueft_von if geprueft_von is not None else f.get('geprueft_von', '') or '').strip()
+    elif geprueft_von is not None:
+        f['geprueft_von'] = geprueft_von.strip()
+    rev = store.speichere_akte(fall, akte, rev)
+    return {'frist': f, 'eigenschaften': akte_schema.frist_eigenschaften(f, akte), 'revision': rev}
+
+@werkzeug('ereignis_setzen', 'Vorhandenes Ereignis ändern. Nur die übergebenen Felder werden geändert; „zeitpunkt“ genau entfernt die Angaben zur Unsicherheit.',
+          {'fall': {'type': 'string'}, 'ereignis': {'type': 'string', 'description': 'E-Kennung wie E01'},
+           'datum': {'type': 'string'}, 'titel': {'type': 'string'}, 'art': {'type': 'string'},
+           'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'},
+           'detail': {'type': 'string'}, 'zeitpunkt': {'type': 'string', 'enum': akte_schema.ZEITPUNKT},
+           'datum_bis': {'type': 'string'}, 'zeitpunkt_text': {'type': 'string'}},
+          schreibend=True, pflicht=['fall', 'ereignis'])
+def ereignis_setzen(fall, ereignis, datum=None, titel=None, art=None, quelle=None, detail=None,
+                    zeitpunkt=None, datum_bis=None, zeitpunkt_text=None):
+    akte, rev = store.lese_akte(fall)
+    e = next((x for x in akte['ereignisse'] if x['id'] == str(ereignis).strip().upper()), None)
+    if not e: raise ValueError(f'Ereigniskennung {ereignis} gibt es in diesem Fall nicht.')
+    if quelle is not None:
+        q, detail = _quelle(fall, quelle, detail if detail is not None else e.get('detail', ''))
+        e['quelle'] = q
+    for feld, wert in (('datum', datum), ('titel', titel), ('art', art), ('detail', detail)):
+        if wert is not None: e[feld] = wert
+    if zeitpunkt is not None:
+        if zeitpunkt == 'genau':          # F13: wieder sicher datiert, die Unsicherheitsfelder fallen weg
+            for feld in ('zeitpunkt', 'datum_bis', 'zeitpunkt_text'): e.pop(feld, None)
+        else:
+            e['zeitpunkt'] = zeitpunkt
+            if datum_bis is not None: e['datum_bis'] = datum_bis
+            if zeitpunkt_text is not None: e['zeitpunkt_text'] = zeitpunkt_text
+    else:
+        if datum_bis is not None: e['datum_bis'] = datum_bis
+        if zeitpunkt_text is not None: e['zeitpunkt_text'] = zeitpunkt_text
+    rev = store.speichere_akte(fall, akte, rev)
+    return {'ereignis': e, 'revision': rev}
 
 @werkzeug('notiz_anlegen', 'Ordnungsnotiz in einem Fall anlegen.',
           {'fall': {'type': 'string'}, 'titel': {'type': 'string'}, 'text': {'type': 'string'}}, schreibend=True, pflicht=['fall', 'titel', 'text'])
@@ -498,6 +591,33 @@ def dokument_verschieben(fall, dokument, bereich, unterordner=''):
     if dokument in akte['dokumente']:
         akte['dokumente'][dokument]['pfad'] = neu; rev = store.speichere_akte(fall, akte, rev, ohne_sicherung=True)
     return {'dokument': dokument, 'pfad': neu, 'revision': rev}
+
+ABLAGE_BEREICHE = ['01 Eingang', '06 Entwürfe', '07 Recherche']   # Originalbereiche (02 bis 05, 08) bleiben gesperrt
+
+@werkzeug('datei_ablegen', 'Textdatei in einem Fall anlegen: Notiz, Vermerk oder Entwurf. Erlaubt sind nur 01 Eingang, 06 Entwürfe und 07 Recherche; die Originalbereiche 02 bis 05 und 08 bleiben gesperrt. Überschreibt nie eine vorhandene Datei und registriert die neue Datei anschließend im Bestand, sodass sie eine D-Kennung bekommt.',
+          {'fall': {'type': 'string'}, 'bereich': {'type': 'string', 'enum': ABLAGE_BEREICHE},
+           'name': {'type': 'string', 'description': 'Dateiname mit Endung .md oder .txt, ohne Pfad'},
+           'text': {'type': 'string', 'description': 'Inhalt der Datei'},
+           'unterordner': {'type': 'string', 'description': 'Unterordner im Bereich, optional'}},
+          schreibend=True, pflicht=['fall', 'bereich', 'name', 'text'])
+def datei_ablegen(fall, bereich, name, text, unterordner=''):
+    name = (name or '').strip()
+    if '/' in name or '\\' in name or name.startswith('.'):
+        raise ValueError('„name“ ist ein Dateiname ohne Pfad.')
+    if not name.lower().endswith(('.md', '.txt')):
+        raise ValueError('Nur Textdateien (.md oder .txt). Andere Formate über den Dateimanager ablegen und bestand_abgleichen aufrufen.')
+    if bereich not in ABLAGE_BEREICHE:
+        raise ValueError('Erlaubt sind nur ' + ', '.join(ABLAGE_BEREICHE) + '. Originale werden nie geschrieben.')
+    ordner = store.fall_ordner(fall)
+    rel = '/'.join(x for x in (bereich, (unterordner or '').strip('/ '), name) if x)
+    ziel = store.sicher(rel, ordner)
+    if ziel.exists():
+        raise ValueError(f'„{rel}“ gibt es schon. Vorhandene Dateien werden nie überschrieben; anderen Namen wählen.')
+    ziel.parent.mkdir(parents=True, exist_ok=True)
+    ziel.write_text(text, encoding='utf-8')
+    abgleich = bestand_abgleichen(fall)
+    kennung = next((e['id'] for e in abgleich.get('neu', []) if e.get('pfad') == rel), '')
+    return {'pfad': rel, 'zeichen': len(text), 'kennung': kennung, 'abgleich': abgleich}
 
 @werkzeug('journal_schreiben', 'Eintrag an das Journal eines Falls anhängen.',
           {'fall': {'type': 'string'}, 'art': {'type': 'string', 'enum': store.JOURNAL_ARTEN}, 'titel': {'type': 'string'}, 'text': {'type': 'string'}},

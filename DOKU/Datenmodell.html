@@ -42,9 +42,9 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}
 </aside>
 <main>
 <article>
-<div class="stamp">aus md/Datenmodell.md, Stand 17.09.2026</div>
+<div class="stamp">aus md/Datenmodell.md, Stand 18.09.2026</div>
 <h1>Datenmodell</h1>
-<p><em>Stand: 17.09.2026</em></p>
+<p><em>Stand: 18.09.2026</em></p>
 <h2 id="aufgabe-dieser-datei">Aufgabe dieser Datei</h2>
 <p>Feldgenaue Beschreibung von <code>akte.json</code>, <code>bestand.json</code> und <code>JOURNAL.md</code> (Schema-Version 1). STRUKTUR.md gibt den Überblick, hier stehen die Details. Prüfbar mit <code>python3 "06 Werkzeuge/akte_schema.py" &lt;akte.json&gt;</code>.</p>
 <h2 id="grundsätze">Grundsätze</h2>
@@ -94,7 +94,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}
 Text mit Bezug auf Kennungen wie D0012, F01, A03.</code></pre>
 <p>Arten: Eingang, Versand, Entscheidung, Gespräch, Termin, Arbeit, Vermerk. Die Oberfläche liest die Überschriftzeile und kann danach filtern.</p>
 <h2 id="werkzeuge">Werkzeuge</h2>
-<table><thead><tr><th>Werkzeug</th><th>Aufgabe</th></tr></thead><tbody><tr><td><code>06 Werkzeuge/dienst/cli.py</code></td><td>alle Werkzeuge ohne laufenden Dienst, für Claude und Skripte</td></tr><tr><td><code>06 Werkzeuge/akte_schema.py</code></td><td>leere Akte erzeugen, Akte prüfen (Fehler, Warnungen); der Dienst ruft <code>validate()</code> vor jedem Speichern</td></tr><tr><td><code>05 Vorlagen/Fallvorlage/</code></td><td>Ordner 01 bis 08, leere akte.json, bestand.json, JOURNAL.md</td></tr><tr><td><code>05 Vorlagen/Beispielakte/</code></td><td>vollständiger erfundener Fall „Kündigung durch den Arbeitgeber“ (R-9001): akte.json mit allen Blöcken, bestand.json mit Prüfsummen, JOURNAL.md, vier Textdokumente; über „Beispielfall laden“ (Werkzeug <code>beispiel_laden</code>) als neuer Fall kopierbar; Prüfung ohne Fehler</td></tr></tbody></table>
+<table><thead><tr><th>Werkzeug</th><th>Aufgabe</th></tr></thead><tbody><tr><td><code>06 Werkzeuge/dienst/cli.py</code></td><td>alle Werkzeuge ohne laufenden Dienst, für Claude und Skripte</td></tr><tr><td>Ändern statt neu anlegen</td><td><code>frist_setzen</code> und <code>ereignis_setzen</code> ändern einen vorhandenen Eintrag (nur die übergebenen Felder). Bei <code>ereignis_setzen</code> räumt <code>zeitpunkt: genau</code> die Felder <code>datum_bis</code> und <code>zeitpunkt_text</code> ab; bei <code>frist_setzen</code> gelten dieselben Sperren wie beim Eintragen: bestätigt nur mit Rechnung, Beleg und ohne offene Marker (seit 18.09.2026)</td></tr><tr><td>Datei aus der KI heraus ablegen</td><td><code>datei_ablegen</code> schreibt eine Textdatei (.md oder .txt) nach 01 Eingang, 06 Entwürfe oder 07 Recherche, nie in die Originalbereiche, überschreibt nichts und registriert die Datei anschließend im Bestand (seit 18.09.2026)</td></tr><tr><td><code>06 Werkzeuge/akte_schema.py</code></td><td>leere Akte erzeugen, Akte prüfen (Fehler, Warnungen); der Dienst ruft <code>validate()</code> vor jedem Speichern</td></tr><tr><td><code>05 Vorlagen/Fallvorlage/</code></td><td>Ordner 01 bis 08, leere akte.json, bestand.json, JOURNAL.md</td></tr><tr><td><code>05 Vorlagen/Beispielakte/</code></td><td>vollständiger erfundener Fall „Kündigung durch den Arbeitgeber“ (R-9001): akte.json mit allen Blöcken, bestand.json mit Prüfsummen, JOURNAL.md, vier Textdokumente; über „Beispielfall laden“ (Werkzeug <code>beispiel_laden</code>) als neuer Fall kopierbar; Prüfung ohne Fehler</td></tr></tbody></table>
 </article>
 </main>
 </body>

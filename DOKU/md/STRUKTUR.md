@@ -1,6 +1,6 @@
 # STRUKTUR
 
-*Stand: 17.09.2026*
+*Stand: 18.09.2026*
 
 ## Aufgabe dieser Datei
 
@@ -172,7 +172,7 @@ Sicherungsziel iCloud Drive wird nur vorgeschlagen, wo es den Ordner gibt. Texta
 | `texterkennung.py` | Texterkennung (OCR, Stufe 13) über das freiwillige Zusatzprogramm `tesseract` (PDF-Seiten vorher mit `pdftoppm` gerastert, HEIC unter macOS mit `sips`); ohne Programm klare Meldung mit Installationsweg. Das Werkzeug `texterkennung` legt das Ergebnis als eigene Textdatei unter `07 Recherche/Texterkennung/D…_Texterkennung_JJJJ-MM-TT.txt` an (Kopf mit Quelle, Prüfsumme, Programm, Sprache, Datum, Warnhinweis; eigene D-Kennung mit Verweis auf das Original; überschreibt nie), setzt beim Original den Textstand „OCR-erkannt“ nur, wenn keiner steht; `dokument_text` zeigt den erkannten Text mit Textquelle `ocr`, die Suche findet Original und Ableitung. Keine Erkennung beim bloßen Lesen |
 | `pflege.py` | Pflege der Rechtsinhalte (Stufe 12): meldet nur lesend und ohne Netz, was wieder am Volltext zu prüfen ist; Merkblätter zwölf Monate nach der Kopfzeile „Letzte vollständige Prüfung: TT.MM.JJJJ“, Feiertagstabelle ab 1. Dezember (`fristen.FEIERTAGE_GEPRUEFT`), Quellenkatalog sechs Monate nach `catalog_checked`; „bald fällig“ 30 Tage vorher; Werkzeug `rechtsinhalte_pruefen`, Meldung im Sitzungsstart (seit 17.09.2026) |
 | `sicherung.py` | geprüfte ZIP-Sicherung außerhalb des Projekts, SHA-256, Kopie an das zweite Ziel (Rechte 0600); Status prüft beide Archive und nennt die Ziele mit Cloud-Hinweis; `wiederherstellen()` entpackt in einen neuen, leeren Ordner außerhalb und prüft Schema und Prüfsummen, `probe()` dasselbe in einem Zwischenordner (seit 17.09.2026, F19, F20) |
-| `werkzeuge.py` | Katalog aller Funktionen als beschriebene Werkzeuge (Name, Zweck, Parameter, lesend oder schreibend); Oberfläche und KI rufen dieselben Werkzeuge |
+| `werkzeuge.py` | Katalog aller Funktionen als beschriebene Werkzeuge (Name, Zweck, Parameter, lesend oder schreibend); Oberfläche und KI rufen dieselben Werkzeuge. Seit 18.09.2026 auch für reine MCP-Clients: `beteiligter_anlegen`, `verfahren_anlegen`, `frist_setzen`, `ereignis_setzen` (ändern vorhandene Einträge) und `datei_ablegen` (Textdatei nur in 01 Eingang, 06 Entwürfe, 07 Recherche, ohne Überschreiben, mit eigener Kennung) |
 | `cli.py` | alle Werkzeuge über die Befehlszeile, für Claude Code, Codex und andere Assistenten |
 | `mcp_server.py` | dieselben Werkzeuge als MCP-Server über die Standardeingabe (JSON-RPC 2.0), für Claude Code, Claude Desktop, Codex, Cursor, Gemini; schreibende nur mit `bestaetigt` |
 
@@ -207,7 +207,7 @@ Codex und andere. Dafür gibt es drei Standards, die wir bedienen:
 |---|---|---|---|
 | `AGENTS.md` und `CLAUDE.md` | Arbeitsanweisung im Projektordner, Klartext | Codex, Cursor, Gemini CLI, viele Agenten (`AGENTS.md`); Claude Code (`CLAUDE.md`) | eine Quelle, beide Dateien daraus erzeugt |
 | Agent Skills (`SKILL.md`) | Ordner mit Anleitung, offener Standard von Anthropic, von Codex übernommen | Claude Code (`.claude/skills/`), Codex (`.agents/skills/`) | Skills einmal gepflegt, für Codex kopiert |
-| MCP (Model Context Protocol) | offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe | Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini | eigener MCP-Server `mcp_server.py` ohne Fremdpaket, stellt die Werkzeuge für Assistenten bereit (Katalog ohne `fall_lesen` und `akte_speichern`; Stand 17.09.2026: 27 Werkzeuge für Assistenten, 29 im Katalog; die Zahl prüft der Produktbau gegen den Katalog, maßgeblich ist `cli.py liste`) |
+| MCP (Model Context Protocol) | offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe | Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini | eigener MCP-Server `mcp_server.py` ohne Fremdpaket, stellt die Werkzeuge für Assistenten bereit (Katalog ohne `fall_lesen` und `akte_speichern`; Stand 18.09.2026: 32 Werkzeuge für Assistenten, 34 im Katalog; die Zahl prüft der Produktbau gegen den Katalog, maßgeblich ist `cli.py liste`) |
 | Befehlszeile | `cli.py` | jede KI, die Befehle ausführen darf | vorhanden |
 
 Regeln für alle Wege: Lesen frei und wirklich nur lesend (kein Werkzeug mit
@@ -245,7 +245,7 @@ modelcontextprotocol.io): die Fassungen bis 2025-11-25 mit Handshake
 (`initialize`, `notifications/initialized`) und die Fassung 2026-07-28 ohne
 Handshake, bei der jede Anfrage ihre Version in `params._meta` trägt und es
 `server/discover` gibt. Methoden: `initialize`, `server/discover`, `ping`,
-`tools/list`, `tools/call`. Werkzeuge aus `werkzeuge.fuer_agenten()` (Katalog ohne `fall_lesen` und
+`tools/list`, `tools/call`. Werkzeuge aus `werkzeuge.fuer_agenten()` (seit dem 18.09.2026 sind es 32; Katalog ohne `fall_lesen` und
 `akte_speichern`, Zahl siehe oben), jedes mit `inputSchema` und
 `annotations.readOnlyHint` (seit 17.09.2026 zutreffend: lesende Werkzeuge
 schreiben nichts). Schreibende Werkzeuge tragen im Schema den

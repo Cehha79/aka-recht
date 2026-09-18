@@ -35,7 +35,7 @@ AI helps you to organise, check and formulate.
   the calculation under §§ 187, 188, 193 BGB with the holidays of your state.
 - **Your AI works with it:** Claude Code, Claude Desktop, Codex or any other
   that speaks MCP (Model Context Protocol) or can run commands. 7 guides
-  take it from case intake to a reviewed draft, 27 tools let it read
+  take it from case intake to a reviewed draft, 32 tools let it read
   the case and, after your confirmation, write to it.
 - **Everything stays with you:** no AI inside the app, no account, no key, no
   network. The service runs only on your machine.
@@ -405,7 +405,7 @@ blocks that for the AI. New texts go to 06, memos to 07.
 
 <img src="bilder/kapitel-werkzeuge-en.svg" alt="Tools: MCP and command line">
 
-The same 27 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+The same 32 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 and on the command line (`python3 "06 Werkzeuge/dienst/cli.py" <tool> field=value`).
 Over MCP, writing tools run only with your confirmation (only the JSON value
 `true` counts); on the command line the AI is told to ask first. Reading tools
@@ -414,7 +414,7 @@ through `bestand_abgleichen`; the UI does that when you open a case. Every
 change to `akte.json` is validated against the data model and saved with a revision.
 
 <details>
-<summary><b>All 27 tools</b></summary>
+<summary><b>All 32 tools</b></summary>
 
 | Tool | Kind | Purpose |
 |---|---|---|
@@ -430,18 +430,23 @@ change to `akte.json` is validated against the data model and saved with a revis
 | `rechtsinhalte_pruefen` | reads | Reports which bundled legal content is due for a new check against the official full text: fact sheets, holiday table, source catalogue; writes nothing, no network |
 | `fall_anlegen` | writes | Create a new case with a fixed id and folder structure |
 | `fall_status_setzen` | writes | Set case status to open, dormant or closed |
+| `beteiligter_anlegen` | writes | Beteiligten in einem Fall anlegen (Person, Gericht, Behörde, Anwalt, Zeuge, Stelle). Gibt die neue P-Kennung zurück; Verweise aus Dokumenten, Verfahren und Fristen gehen auf diese Kennung. |
+| `verfahren_anlegen` | writes | Verfahren in einem Fall anlegen (Klage, Bußgeldverfahren, Widerspruch, Mahnverfahren, Strafanzeige). Ein Verfahren ist alles, was eine eigene Stelle und ein eigenes Aktenzeichen hat. |
 | `aufgabe_anlegen` | writes | Add a task to a case |
 | `aufgabe_setzen` | writes | Mark a task done or open, optionally change due date or detail |
 | `frist_eintragen` | writes | Enter a deadline or appointment; "confirmed" only with trigger, legal basis, calculation naming the end date, source and no open marker; confirmation carries review date and reviewer |
 | `vorlagen_auflisten` | reads | List the letter templates under 05 Vorlagen/Schreiben with their first line |
 | `vorlage_fuellen` | writes | Create a draft from a template in 06 Entwürfe with sender, signature, date and case id filled in; never overwrites; other placeholders stay to be filled |
 | `ereignis_eintragen` | writes | Add an event to the case timeline |
+| `frist_setzen` | writes | Vorhandene Frist oder vorhandenen Termin ändern. Nur die übergebenen Felder werden geändert. Eine Bestätigung bekommt Prüfdatum und Prüfer; das Schema prüft weiter Rechnung, Beleg und offene Marker. |
+| `ereignis_setzen` | writes | Vorhandenes Ereignis ändern. Nur die übergebenen Felder werden geändert; „zeitpunkt“ genau entfernt die Angaben zur Unsicherheit. |
 | `notiz_anlegen` | writes | Add a note to a case |
 | `entwurf_erfassen` | writes | Register a draft or a new version; with status "geprüft" or "versandt" the file is frozen as a read-only copy under 06 Entwürfe/Fassungen with checksum and its own id |
 | `texterkennung` | writes | Text recognition (OCR) for a photo or a PDF without text layer via the optional program tesseract; stores the result as a separate text file under 07 Recherche/Texterkennung with its own id, a reference to the original and a warning header; marks the original as "OCR-erkannt" if no reading quality is set; never overwrites; the recognised text is derived, check figures and dates against the original |
 | `bestand_abgleichen` | writes | Sync the inventory of a case with its files: new files get an id, moved files are found by checksum; the only way new files are registered |
 | `dokument_ordnen` | writes | Change metadata of a document (title, date, kind, state, topics, exhibit, persons, references, note, reading quality); the file stays untouched |
 | `dokument_verschieben` | writes | File a document into another section; id and content stay, nothing is overwritten |
+| `datei_ablegen` | writes | Textdatei in einem Fall anlegen: Notiz, Vermerk oder Entwurf. Erlaubt sind nur 01 Eingang, 06 Entwürfe und 07 Recherche; die Originalbereiche 02 bis 05 und 08 bleiben gesperrt. Überschreibt nie eine vorhandene Datei und registriert die neue Datei anschließend im Bestand, sodass sie eine D-Kennung bekommt. |
 | `journal_schreiben` | writes | Append an entry to the case journal |
 | `sicherung_erstellen` | writes | Create a verified ZIP backup of the whole folder, with a copy to the second target |
 | `sicherung_probe` | writes | Restore test: extract the last backup into a scratch folder, check case files against the schema and all files against their checksums, remove the scratch folder |
