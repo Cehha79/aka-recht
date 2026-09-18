@@ -79,6 +79,7 @@ Schicht 1  Aktenkern           02 Fälle/R-XXXX …/  festes Datenformat
 │  │                          bestand.py, sicherung.py, werkzeuge.py, cli.py
 │  ├─ oberflaeche/            index.html, app.js, style.css, sprachen/ (de.json, en.json und die Anleitungen dazu; Umschaltung in den Einstellungen)
 │  ├─ verteilen.py            AGENTS.md und .agents/skills/ aus den Quellen erzeugen
+│  ├─ quellen_pruefen.py      prüft die Quellen der Merkblätter, des Quellenkatalogs und der Vorlagen: nur amtliche Stellen, keine Reste aus einer Chat-Sitzung, Kopfzeile mit Prüfdatum (18.09.2026; `--netz` ruft jede Adresse ab)
 │  ├─ einrichten_windows.py   nur Windows: python3 in .mcp.json, .claude/settings.json, .codex/config.toml durch python ersetzen (ruft Start.bat)
 │  └─ pruefen.py              Funktionstest mit künstlichen Akten
 ├─ .claude/recht/      Claude-Schicht als Plugin „recht“ (Stufe 5): Skills,

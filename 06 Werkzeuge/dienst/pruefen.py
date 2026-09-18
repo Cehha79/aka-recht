@@ -939,6 +939,22 @@ def run():
         feier = lambda tag, am: pflege.feiertage(_d.fromisoformat(tag), am)[0]
         assert feier('2026-10-31', '2026-09-17')['status'] == 'in Ordnung' and feier('2026-11-01', '2026-09-17')['status'] == 'bald fällig' and feier('2026-12-01', '2026-09-17')['status'] == 'fällig'
         assert feier('2026-12-20', '2026-12-05')['faellig_ab'] == '2027-12-01' and feier('2026-12-20', '2026-12-05')['status'] == 'in Ordnung' and feier('2026-12-20', '')['status'] == 'unbekannt'
+        # Quellenprüfung der Rechtsinhalte (18.09.2026, Gedanke aus check_legal_anchors.py, siehe DRITTE.md)
+        qp = QUELLE / '06 Werkzeuge' / 'quellen_pruefen.py'
+        r = subprocess.run([sys.executable, str(qp), '--root', str(QUELLE)], capture_output=True, text=True, encoding='utf-8', timeout=120)
+        assert r.returncode == 0, 'Quellenprüfung der ausgelieferten Rechtsinhalte schlägt an:\n' + r.stdout + r.stderr
+        assert 'Alle Quellen amtlich' in r.stdout, r.stdout
+        probe = base / 'quellenprobe'; (probe / '04 Rechtsquellen' / 'Verfahren').mkdir(parents=True)
+        (probe / '04 Rechtsquellen' / 'Verfahren' / 'Muster.md').write_text(
+            '# Muster\n\n*Letzte vollständige Prüfung: 18.09.2026*\n\n'
+            'Siehe https://www.gesetze-im-internet.de/zpo/__688.html und https://www.juraforum.de/x turn0search3\n', encoding='utf-8')
+        r = subprocess.run([sys.executable, str(qp), '--root', str(probe)], capture_output=True, text=True, encoding='utf-8', timeout=60)
+        assert r.returncode == 1 and 'juraforum' in r.stdout and 'turn0search' in r.stdout, r.stdout   # Sekundärquelle und Rest einer Chat-Sitzung
+        (probe / '04 Rechtsquellen' / 'Verfahren' / 'Ohnekopf.md').write_text('# Ohne Kopfzeile\n\nText.\n', encoding='utf-8')
+        r = subprocess.run([sys.executable, str(qp), '--root', str(probe)], capture_output=True, text=True, encoding='utf-8', timeout=60)
+        assert 'Kopfzeile' in r.stdout, r.stdout   # Merkblatt ohne Prüfdatum fällt auf
+        ok('Quellenprüfung der Rechtsinhalte: alle 561 Verweise der Merkblätter, des Quellenkatalogs und der Vorlagen zeigen auf amtliche Stellen, kein Rest einer Chat-Sitzung, jedes Merkblatt mit Prüfdatum; an einer künstlichen Datei fallen Sekundärquelle, Chat-Rest und fehlende Kopfzeile auf')
+
         ok('Pflege der Rechtsinhalte: rechtsinhalte_pruefen meldet Merkblätter zwölf Monate nach „Letzte vollständige Prüfung“ (bald fällig 30 Tage vorher), ohne Zeile und mit 31.02. als unbekannt, Quellenkatalog nach sechs Monaten, Feiertage ab 1. Dezember; Monatsende und Schalttag; falscher Stichtag 400; schreibt nichts')
 
         ergebnis = {'bestanden': len(bestanden), 'punkte': bestanden, 'ordner': str(base)}
