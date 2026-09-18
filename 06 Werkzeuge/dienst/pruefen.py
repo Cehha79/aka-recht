@@ -680,8 +680,17 @@ def run():
         #    einrichten_windows.py ersetzt nur den Befehlswert python3 durch python, ein zweiter Lauf ändert nichts
         einrichten = QUELLE / '06 Werkzeuge/einrichten_windows.py'
         if einrichten.is_file() and (QUELLE / '.claude/settings.json').is_file():
-            hooks = [h for gruppen in json.loads((QUELLE / '.claude/settings.json').read_text('utf-8'))['hooks'].values() for g in gruppen for h in g['hooks']]
+            einstellungen = json.loads((QUELLE / '.claude/settings.json').read_text('utf-8'))
+            hooks = [h for gruppen in einstellungen['hooks'].values() for g in gruppen for h in g['hooks']]
             assert len(hooks) >= 4 and all(h.get('args') and h['args'][0].startswith('${CLAUDE_PROJECT_DIR}/') and ' ' not in h['command'] for h in hooks), hooks
+            # Der Originalschutz muss jedes schreibende Werkzeug erfassen. NotebookEdit fehlte bis zum
+            # 18.09.2026 im Matcher: Der Hook konnte damit umgangen werden, indem eine .ipynb in einen
+            # Originalbereich geschrieben wurde (gefunden beim Windows-Test).
+            schutz = [g for g in einstellungen['hooks'].get('PreToolUse', [])
+                      if any('originalschutz' in (h.get('args') or [''])[0] for h in g['hooks'])]
+            assert len(schutz) == 1, schutz
+            erfasst = set(schutz[0]['matcher'].split('|'))
+            assert {'Write', 'Edit', 'MultiEdit', 'NotebookEdit'} <= erfasst, f'Originalschutz erfasst nicht alle schreibenden Werkzeuge: {erfasst}'
             win = base / 'Windows Probe ß'
             for datei in ('.mcp.json', '.claude/settings.json', '.codex/config.toml'):
                 (win / datei).parent.mkdir(parents=True, exist_ok=True); shutil.copy2(QUELLE / datei, win / datei)
@@ -712,7 +721,7 @@ def run():
             crlf = b'{\r\n  "mcpServers": {\r\n    "aka-recht": {\r\n      "command": "python3",\r\n      "args": ["06 Werkzeuge/dienst/mcp_server.py"]\r\n    }\r\n  }\r\n}\r\n'
             (win / '.mcp.json').write_bytes(crlf)
             code, aus = einrichten_lauf('--erzwingen'); assert code == 0 and (win / '.mcp.json').read_bytes() == crlf.replace(b'"python3"', b'"python"'), (code, aus, (win / '.mcp.json').read_bytes()[:80])   # Windows-Zeilenenden bleiben
-            ok('Windows einrichten: Hooks in Exec-Form mit ${CLAUDE_PROJECT_DIR}; einrichten_windows.py ersetzt in .mcp.json, settings.json und config.toml nur python3 durch python, zweiter Lauf ändert nichts, keine Zwischendateien; außerhalb von Windows ohne --erzwingen nichts, unerwartete Schreibweise und kaputte Datei bleiben unverändert, Windows-Zeilenenden (CRLF) bleiben erhalten')
+            ok('Windows einrichten und Hook-Abdeckung: Originalschutz erfasst Write, Edit, MultiEdit und NotebookEdit; Hooks in Exec-Form mit ${CLAUDE_PROJECT_DIR}; einrichten_windows.py ersetzt in .mcp.json, settings.json und config.toml nur python3 durch python, zweiter Lauf ändert nichts, keine Zwischendateien; außerhalb von Windows ohne --erzwingen nichts, unerwartete Schreibweise und kaputte Datei bleiben unverändert, Windows-Zeilenenden (CRLF) bleiben erhalten')
         # Texterkennung (Stufe 13): ohne tesseract klare Meldung; mit tesseract an einem erfundenen Foto und einem zweiseitigen Scan ohne Textschicht
         import texterkennung as _ocr
         pfad_vorher = os.environ.get('PATH', ''); os.environ['PATH'] = str(base / 'kein-programm')
