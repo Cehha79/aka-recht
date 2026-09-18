@@ -45,7 +45,7 @@ AI helps you to organise, check and formulate.
 > Click **"Beispielfall laden"** in the UI, then browse case, documents,
 > deadlines and draft. Delete it whenever you like.
 
-Product version 0.3 of 18.09.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · tested with Python 3.14.7 on macOS 26.7, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz
+Product version 0.4 of 18.09.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · tested with Python 3.14.7 on macOS 26.7, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz
 
 ## Download
 

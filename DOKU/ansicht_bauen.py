@@ -16,7 +16,7 @@ from pathlib import Path
 DOKU = Path(__file__).resolve().parent
 MD = DOKU / 'md'
 REIHENFOLGE = ['Live-Dokumentation', 'STRUKTUR', 'REGELN', 'TODO', 'WICHTIG',
-               'Fahrplan', 'Tests-Qualitaet']
+               'Fahrplan', 'Tests-Qualitaet', 'Endtest']
 CSS_VERSION = 1
 
 def inline(t):
