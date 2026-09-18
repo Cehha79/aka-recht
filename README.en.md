@@ -35,7 +35,7 @@ AI helps you to organise, check and formulate.
   the calculation under §§ 187, 188, 193 BGB with the holidays of your state.
 - **Your AI works with it:** Claude Code, Claude Desktop, Codex or any other
   that speaks MCP (Model Context Protocol) or can run commands. 7 guides
-  take it from case intake to a reviewed draft, 32 tools let it read
+  take it from case intake to a reviewed draft, 35 tools let it read
   the case and, after your confirmation, write to it.
 - **Everything stays with you:** no AI inside the app, no account, no key, no
   network. The service runs only on your machine.
@@ -344,6 +344,34 @@ restart Claude Desktop.
 Writing tools only run when you confirm the call. There are no tools for
 sending, deleting or changing originals.
 
+### What actually works in which assistant
+
+Three things to keep apart: **shipped** means the folder brings the
+configuration along; **tested here** means we ran it on our own machine;
+**open** means we do not know.
+
+| | Claude Code | Codex | Claude Desktop | Others (Cursor, Gemini CLI …) |
+|---|---|---|---|---|
+| Tools over MCP | shipped (`.mcp.json`), tested here | shipped (`.codex/config.toml`), tested here | shipped (manual entry), tested here | path described, not tested |
+| Tools over the command line | yes | yes | no (no shell access) | if the assistant may run commands |
+| Working profile is loaded | `CLAUDE.md`, tested here | `AGENTS.md`, tested here | no — a pure MCP client reads no project files | only if the assistant reads `AGENTS.md` (see below) |
+| Review workflows (skills) | `.claude/skills/`, tested here | `.agents/skills/`, listed | no | open |
+| Original protection via a hook | yes (`.claude/settings.json`, for Write, Edit, MultiEdit, NotebookEdit) | not set up | not applicable | no |
+| Word file and handover package | yes (separate scripts) | yes | no | only with command access |
+
+**Important for pure MCP clients** (Claude Desktop and similar): they receive
+the tools, but neither the working profile nor the review workflows. The rules
+of this folder apply there only as far as the tools themselves enforce them —
+and they do: original areas stay locked, deadlines without evidence cannot be
+confirmed, drafts without a frozen version cannot be saved as reviewed.
+
+**Gemini CLI:** the folder ships `AGENTS.md`, but Gemini looks for `GEMINI.md`
+by default. To load the profile it needs a `contextFileName` entry pointing to
+`AGENTS.md` in `.gemini/settings.json` (Gemini CLI documentation "Provide
+context with GEMINI.md files", retrieved 18 Sep 2026). We have **not** tested
+this path and therefore ship no ready-made Gemini configuration. Check inside
+the client which rules were loaded before letting it work on a case file.
+
 ## Updating
 
 Your own data lives in `01 Eingang`, `02 Fälle`, `03 Verträge und Vorsorge`
@@ -538,7 +566,7 @@ blocks that for the AI. New texts go to 06, memos to 07.
 
 <img src="bilder/kapitel-werkzeuge-en.svg" alt="Tools: MCP and command line">
 
-The same 32 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+The same 35 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 and on the command line (`python3 "06 Werkzeuge/dienst/cli.py" <tool> field=value`).
 Over MCP, writing tools run only with your confirmation (only the JSON value
 `true` counts); on the command line the AI is told to ask first. Reading tools
@@ -547,7 +575,7 @@ through `bestand_abgleichen`; the UI does that when you open a case. Every
 change to `akte.json` is validated against the data model and saved with a revision.
 
 <details>
-<summary><b>All 32 tools</b></summary>
+<summary><b>All 35 tools</b></summary>
 
 | Tool | Kind | Purpose |
 |---|---|---|
@@ -565,6 +593,9 @@ change to `akte.json` is validated against the data model and saved with a revis
 | `fall_status_setzen` | writes | Set case status to open, dormant or closed |
 | `beteiligter_anlegen` | writes | Beteiligten in einem Fall anlegen (Person, Gericht, Behörde, Anwalt, Zeuge, Stelle). Gibt die neue P-Kennung zurück; Verweise aus Dokumenten, Verfahren und Fristen gehen auf diese Kennung. |
 | `verfahren_anlegen` | writes | Verfahren in einem Fall anlegen (Klage, Bußgeldverfahren, Widerspruch, Mahnverfahren, Strafanzeige). Ein Verfahren ist alles, was eine eigene Stelle und ein eigenes Aktenzeichen hat. |
+| `beteiligter_setzen` | writes | Vorhandenen Beteiligten ändern (Name, Rolle, Anschrift, Kontakt, Aktenzeichen). Nur die übergebenen Felder werden geändert; die P-Kennung bleibt, damit Verweise gültig bleiben. |
+| `verfahren_setzen` | writes | Vorhandenes Verfahren ändern (Art, Stelle, Aktenzeichen, Stand, Ordner). Nur die übergebenen Felder werden geändert; die V-Kennung bleibt, damit Fristen ihren Bezug behalten. |
+| `quelle_eintragen` | writes | Fallbezogene Rechtsquelle in der Akte vermerken: Norm, Entscheidung oder amtliche Seite mit Abrufdatum und wofür sie gebraucht wird. Gehört zu diesem Fall; der gemeinsame Zugangskatalog steht in 04 Rechtsquellen/Quellen.md (Werkzeug quellen_katalog). Gleicher Titel überschreibt den vorhandenen Eintrag. |
 | `aufgabe_anlegen` | writes | Add a task to a case |
 | `aufgabe_setzen` | writes | Mark a task done or open, optionally change due date or detail |
 | `frist_eintragen` | writes | Enter a deadline or appointment; "confirmed" only with trigger, legal basis, calculation naming the end date, source and no open marker; confirmation carries review date and reviewer |

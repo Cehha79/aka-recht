@@ -299,6 +299,69 @@ def verfahren_anlegen(fall, art, stelle='', aktenzeichen='', stand='', ordner=''
     akte['verfahren'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
     return {'verfahren': eintrag, 'revision': rev}
 
+# N12 (Prüfbericht 18.09.2026): Beteiligte und Verfahren ließen sich anlegen, aber über den
+# Werkzeugkatalog nicht mehr ändern; fallbezogene Quellen fehlten ganz. Ein Client, der nur
+# diese Werkzeuge hat, konnte einen Tippfehler im Namen oder ein neues Aktenzeichen nicht
+# nachtragen. Muster wie bei frist_setzen: nur die übergebenen Felder ändern.
+@werkzeug('beteiligter_setzen', 'Vorhandenen Beteiligten ändern (Name, Rolle, Anschrift, Kontakt, Aktenzeichen). Nur die übergebenen Felder werden geändert; die P-Kennung bleibt, damit Verweise gültig bleiben.',
+          {'fall': {'type': 'string'}, 'beteiligter': {'type': 'string', 'description': 'P-Kennung wie P01'},
+           'name': {'type': 'string'}, 'rolle': {'type': 'string', 'description': 'Übliche Rollen: ' + ', '.join(akte_schema.BETEILIGTE_ROLLE_VORSCHLAG)},
+           'anschrift': {'type': 'string'}, 'kontakt': {'type': 'string'}, 'aktenzeichen': {'type': 'string'}},
+          schreibend=True, pflicht=['fall', 'beteiligter'])
+def beteiligter_setzen(fall, beteiligter, name=None, rolle=None, anschrift=None, kontakt=None, aktenzeichen=None):
+    akte, rev = store.lese_akte(fall)
+    kennung = str(beteiligter).strip().upper()
+    b = next((x for x in akte['beteiligte'] if x['id'] == kennung), None)
+    if not b: raise ValueError(f'Beteiligtenkennung {beteiligter} gibt es in diesem Fall nicht.')
+    if name is not None:
+        if not str(name).strip(): raise ValueError('„name“ darf nicht leer sein.')
+        if any(x['id'] != kennung and x.get('name', '').strip().lower() == name.strip().lower() for x in akte['beteiligte']):
+            raise ValueError(f'„{name}“ steht schon bei einem anderen Beteiligten. Schreibweisen zusammenführen statt doppelt führen.')
+    for feld, wert in (('name', name), ('rolle', rolle), ('anschrift', anschrift), ('kontakt', kontakt), ('aktenzeichen', aktenzeichen)):
+        if wert is not None: b[feld] = str(wert).strip()
+    rev = store.speichere_akte(fall, akte, rev)
+    return {'beteiligter': b, 'revision': rev}
+
+@werkzeug('verfahren_setzen', 'Vorhandenes Verfahren ändern (Art, Stelle, Aktenzeichen, Stand, Ordner). Nur die übergebenen Felder werden geändert; die V-Kennung bleibt, damit Fristen ihren Bezug behalten.',
+          {'fall': {'type': 'string'}, 'verfahren': {'type': 'string', 'description': 'V-Kennung wie V01'},
+           'art': {'type': 'string'}, 'stelle': {'type': 'string', 'description': 'P-Kennung des Gerichts oder der Behörde, leer entfernt den Bezug'},
+           'aktenzeichen': {'type': 'string'}, 'stand': {'type': 'string', 'description': 'Verfahrensstand in einem Satz'},
+           'ordner': {'type': 'string', 'description': 'Unterordner in 04 Verfahren'}},
+          schreibend=True, pflicht=['fall', 'verfahren'])
+def verfahren_setzen(fall, verfahren, art=None, stelle=None, aktenzeichen=None, stand=None, ordner=None):
+    akte, rev = store.lese_akte(fall)
+    kennung = str(verfahren).strip().upper()
+    v = next((x for x in akte['verfahren'] if x['id'] == kennung), None)
+    if not v: raise ValueError(f'Verfahrenskennung {verfahren} gibt es in diesem Fall nicht.')
+    if art is not None and not str(art).strip(): raise ValueError('„art“ darf nicht leer sein.')
+    if stelle is not None:
+        s = str(stelle).strip().upper()
+        if s and not any(b['id'] == s for b in akte['beteiligte']):
+            raise ValueError(f'Beteiligtenkennung {stelle} gibt es in diesem Fall nicht. Erst beteiligter_anlegen, dann verweisen.')
+        v['stelle'] = s
+    for feld, wert in (('art', art), ('aktenzeichen', aktenzeichen), ('stand', stand), ('ordner', ordner)):
+        if wert is not None: v[feld] = str(wert).strip()
+    rev = store.speichere_akte(fall, akte, rev)
+    return {'verfahren': v, 'revision': rev}
+
+@werkzeug('quelle_eintragen', 'Fallbezogene Rechtsquelle in der Akte vermerken: Norm, Entscheidung oder amtliche Seite mit Abrufdatum und wofür sie gebraucht wird. Gehört zu diesem Fall; der gemeinsame Zugangskatalog steht in 04 Rechtsquellen/Quellen.md (Werkzeug quellen_katalog). Gleicher Titel überschreibt den vorhandenen Eintrag.',
+          {'fall': {'type': 'string'}, 'titel': {'type': 'string', 'description': 'Norm mit Absatz und Gesetz oder Gericht, Datum, Aktenzeichen'},
+           'url': {'type': 'string', 'description': 'Adresse der amtlichen Fundstelle'},
+           'geprueft': {'type': 'string', 'description': 'Datum des Abrufs am Volltext, JJJJ-MM-TT; leer: heute'},
+           'verwendung': {'type': 'string', 'description': 'Wofür die Quelle im Fall gebraucht wird'}},
+          schreibend=True, pflicht=['fall', 'titel'])
+def quelle_eintragen(fall, titel, url='', geprueft='', verwendung=''):
+    akte, rev = store.lese_akte(fall)
+    titel = str(titel).strip()
+    if not titel: raise ValueError('„titel“ darf nicht leer sein.')
+    eintrag = {'titel': titel, 'url': str(url).strip(),
+               'geprueft': str(geprueft).strip() or date.today().isoformat(), 'verwendung': str(verwendung).strip()}
+    vorhanden = next((q for q in akte['quellen'] if isinstance(q, dict) and q.get('titel', '').strip().lower() == titel.lower()), None)
+    if vorhanden: vorhanden.update(eintrag)
+    else: akte['quellen'].append(eintrag)
+    rev = store.speichere_akte(fall, akte, rev)
+    return {'quelle': vorhanden or eintrag, 'anzahl': len(akte['quellen']), 'revision': rev}
+
 @werkzeug('aufgabe_anlegen', 'Aufgabe in einem Fall anlegen.',
           {'fall': {'type': 'string'}, 'titel': {'type': 'string'}, 'detail': {'type': 'string'},
            'faellig': {'type': 'string', 'description': 'JJJJ-MM-TT oder leer'}, 'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001 aus der Fallübersicht, sonst leer lassen; kein Freitext'}},

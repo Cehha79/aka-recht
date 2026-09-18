@@ -1,6 +1,6 @@
 # Merkblatt: Zuständige Stelle finden
 
-*Rechtsordnung DE · alle Bereiche · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, § 52 Nr. 4 VwGO am 17.09.2026 nachgelesen, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, Behördensuche des Bundes am 17.09.2026 abends geprüft und ersetzt*
+*Rechtsordnung DE · alle Bereiche · Stand der Prüfung: 16.09.2026, von einer zweiten Instanz am Rohtext gegengeprüft 17.09.2026, § 52 Nr. 4 VwGO am 17.09.2026 nachgelesen, Landesrecht Baden-Württemberg am 17.09.2026 abends im Browser ergänzt, Behördensuche des Bundes am 17.09.2026 abends geprüft und ersetzt, § 70 Abs. 1 VwGO am 18.09.2026 am Rohtext nachgelesen und Abschnitt 4 Nr. 3 berichtigt*
 
 *Letzte vollständige Prüfung: 17.09.2026*
 
@@ -70,9 +70,19 @@ ermittelt werden.
 2. Fehlt die Belehrung: Regel aus Abschnitt 2 anwenden, Gericht oder Behörde
    im Verzeichnis (Abschnitt 3) suchen, Anschrift von der amtlichen Seite
    übernehmen, Abrufdatum als Quelle in `quellen` speichern.
-3. Bei Zweifeln zwischen zwei Stellen: die Frist beim wahrscheinlichen
-   Adressaten wahren und in der Einlegung um Weiterleitung bitten; Zweifel
-   im Journal vermerken.
+3. Bei Zweifeln zwischen zwei Stellen: Die Frist wahrt nur, wer bei einer
+   Stelle einlegt, die das Gesetz für **diesen** Rechtsbehelf benennt. Beim
+   Widerspruch sind das zwei: die Behörde, die den Verwaltungsakt erlassen
+   hat, und die Behörde, die den Widerspruchsbescheid zu erlassen hat
+   (§ 70 Abs. 1 Satz 1 und 2 VwGO). Welche Stelle bei einem anderen
+   Rechtsbehelf fristwahrend ist, steht im jeweiligen Merkblatt; dort
+   nachsehen, bevor abgeschickt wird. Eine Bitte um Weiterleitung ersetzt das
+   nicht — sie ist eine Bitte, keine Fristwahrung
+   [QUELLE: allgemeine Weiterleitungspflichten und ihre Wirkung auf die Frist
+   nicht am Volltext gelesen]. Bleibt die Zuständigkeit vor Ablauf offen: an
+   die in der Rechtsbehelfsbelehrung genannte Stelle halten, dort nachfragen
+   und fachanwaltliche Hilfe einholen, statt auf die Weiterleitung zu
+   vertrauen. Zweifel und Nachfrage im Journal vermerken.
 4. Vor jedem Versand die Anschrift noch einmal am Verzeichnis prüfen
    (Umzüge von Gerichten, Zusammenlegungen).
 
@@ -80,6 +90,7 @@ ermittelt werden.
 
 | Quelle | URL | Stand |
 |---|---|---|
+| § 70 Abs. 1 VwGO Frist und fristwahrende Stelle beim Widerspruch | https://www.gesetze-im-internet.de/vwgo/__70.html | Satz 1 nennt die Ausgangsbehörde, Satz 2 wahrt die Frist auch bei der Widerspruchsbehörde; am Rohtext gelesen 18.09.2026, Fassungsangabe der VwGO wie unten (Vollzitat 20.05.2026) |
 | § 52 VwGO Örtliche Zuständigkeit (Nr. 1 bis 5) | https://www.gesetze-im-internet.de/vwgo/__52.html | VwGO, Vollzitat zuletzt geändert 20.05.2026 (Stand-Zeile 23.04.2026); Nr. 4 am 17.09.2026 |
 | § 57 SGG Örtliche Zuständigkeit (Abs. 1) | https://www.gesetze-im-internet.de/sgg/__57.html | SGG, Bek. 23.09.1975, Vollzitat zuletzt geändert 20.05.2026 (Stand-Zeile 09.04.2026) |
 | § 38 FGO Örtliche Zuständigkeit (Abs. 1, 2, 2a) | https://www.gesetze-im-internet.de/fgo/__38.html | FGO, Bek. 28.03.2001, Vollzitat zuletzt geändert 29.06.2026 (Stand-Zeile 22.12.2025) |

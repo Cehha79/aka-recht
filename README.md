@@ -35,7 +35,7 @@ es zu ordnen, zu prüfen und zu formulieren.
   Rechenweg nach §§ 187, 188, 193 BGB, mit den Feiertagen deines Bundeslands.
 - **Deine KI arbeitet mit:** Claude Code, Claude Desktop, Codex oder jede andere,
   die MCP (Model Context Protocol) oder Befehle ausführen kann. 7 Anleitungen
-  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 32 Werkzeuge
+  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 35 Werkzeuge
   lassen sie in der Akte lesen und, nach deiner Bestätigung, schreiben.
 - **Alles bleibt bei dir:** keine KI in der App, kein Konto, kein Schlüssel,
   kein Netz. Der Dienst läuft nur auf deinem Rechner.
@@ -350,6 +350,36 @@ Einstellungen, Entwickler, Konfiguration bearbeiten: Eintrag `aka-recht` mit
 Schreibende Werkzeuge laufen nur, wenn du den Aufruf bestätigst. Werkzeuge
 für Versand, Löschen oder Ändern von Originalen gibt es nicht.
 
+### Was in welchem Assistenten wirklich läuft
+
+Drei Dinge sind zu unterscheiden: **vorbereitet** heißt, die Mappe bringt die
+Konfiguration mit; **hier geprüft** heißt, wir haben es am eigenen Rechner
+durchgespielt; **offen** heißt, wir wissen es nicht.
+
+| | Claude Code | Codex | Claude Desktop | Andere (Cursor, Gemini CLI …) |
+|---|---|---|---|---|
+| Werkzeuge über MCP | vorbereitet (`.mcp.json`), hier geprüft | vorbereitet (`.codex/config.toml`), hier geprüft | vorbereitet (Eintrag von Hand), hier geprüft | Weg beschrieben, nicht geprüft |
+| Werkzeuge über die Befehlszeile | ja | ja | nein (kein Befehlszugriff) | wenn der Assistent Befehle ausführen darf |
+| Arbeitsprofil wird geladen | `CLAUDE.md`, hier geprüft | `AGENTS.md`, hier geprüft | nein — ein reiner MCP-Client liest keine Projektdateien | nur, wenn der Assistent `AGENTS.md` liest (siehe unten) |
+| Prüfabläufe (Skills) | `.claude/skills/`, hier geprüft | `.agents/skills/`, gelistet | nein | offen |
+| Originalschutz durch einen Hook | ja (`.claude/settings.json`, für Write, Edit, MultiEdit, NotebookEdit) | nicht eingerichtet | entfällt | nein |
+| Word-Datei und Übergabepaket | ja (eigene Skripte) | ja | nein | nur mit Befehlszugriff |
+
+**Wichtig für reine MCP-Clients** (Claude Desktop und ähnliche): Sie bekommen
+die Werkzeuge, aber weder das Arbeitsprofil noch die Prüfabläufe. Die Regeln
+dieser Mappe gelten dort nur, soweit die Werkzeuge selbst sie durchsetzen —
+und das tun sie: Originalbereiche bleiben gesperrt, Fristen ohne Nachweis
+lassen sich nicht bestätigen, Entwürfe ohne eingefrorene Fassung nicht als
+geprüft speichern.
+
+**Gemini CLI:** Die Mappe bringt `AGENTS.md` mit, Gemini sucht aber
+standardmäßig `GEMINI.md`. Damit es das Profil lädt, braucht es in
+`.gemini/settings.json` einen Eintrag `contextFileName` mit `AGENTS.md`
+(Gemini-CLI-Dokumentation „Provide context with GEMINI.md files“, abgerufen
+18.09.2026). Diesen Weg haben wir **nicht** geprüft; wir liefern deshalb keine
+fertige Gemini-Konfiguration mit. Prüfe im Client selbst nach, welche Regeln
+geladen wurden, bevor du eine Akte bearbeiten lässt.
+
 ## Aktualisieren
 
 Deine eigenen Daten liegen in `01 Eingang`, `02 Fälle`,
@@ -549,7 +579,7 @@ ein Hook sperrt das für die KI. Neue Texte entstehen in 06, Vermerke in 07.
 
 <img src="bilder/kapitel-werkzeuge.svg" alt="Werkzeuge: MCP und Befehlszeile">
 
-Dieselben 32 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+Dieselben 35 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 oder über die Befehlszeile (`python3 "06 Werkzeuge/dienst/cli.py" <werkzeug> feld=wert`).
 Schreibende Werkzeuge laufen über MCP nur mit deiner Bestätigung (es zählt
 allein der JSON-Wert `true`); über die Befehlszeile soll die KI vorher
@@ -560,7 +590,7 @@ selbst. Jede Änderung an `akte.json` wird gegen das Datenmodell geprüft
 und mit Revision gespeichert.
 
 <details>
-<summary><b>Alle 32 Werkzeuge</b></summary>
+<summary><b>Alle 35 Werkzeuge</b></summary>
 
 | Werkzeug | Art | Zweck |
 |---|---|---|
@@ -578,6 +608,9 @@ und mit Revision gespeichert.
 | `fall_status_setzen` | schreibend | Fallstatus auf offen, ruhend oder abgeschlossen setzen. Der Fall bleibt am gleichen Ort. |
 | `beteiligter_anlegen` | schreibend | Beteiligten in einem Fall anlegen (Person, Gericht, Behörde, Anwalt, Zeuge, Stelle). Gibt die neue P-Kennung zurück; Verweise aus Dokumenten, Verfahren und Fristen gehen auf diese Kennung. |
 | `verfahren_anlegen` | schreibend | Verfahren in einem Fall anlegen (Klage, Bußgeldverfahren, Widerspruch, Mahnverfahren, Strafanzeige). Ein Verfahren ist alles, was eine eigene Stelle und ein eigenes Aktenzeichen hat. |
+| `beteiligter_setzen` | schreibend | Vorhandenen Beteiligten ändern (Name, Rolle, Anschrift, Kontakt, Aktenzeichen). Nur die übergebenen Felder werden geändert; die P-Kennung bleibt, damit Verweise gültig bleiben. |
+| `verfahren_setzen` | schreibend | Vorhandenes Verfahren ändern (Art, Stelle, Aktenzeichen, Stand, Ordner). Nur die übergebenen Felder werden geändert; die V-Kennung bleibt, damit Fristen ihren Bezug behalten. |
+| `quelle_eintragen` | schreibend | Fallbezogene Rechtsquelle in der Akte vermerken: Norm, Entscheidung oder amtliche Seite mit Abrufdatum und wofür sie gebraucht wird. Gehört zu diesem Fall; der gemeinsame Zugangskatalog steht in 04 Rechtsquellen/Quellen.md (Werkzeug quellen_katalog). Gleicher Titel überschreibt den vorhandenen Eintrag. |
 | `aufgabe_anlegen` | schreibend | Aufgabe in einem Fall anlegen. |
 | `aufgabe_setzen` | schreibend | Aufgabe als erledigt oder wieder offen setzen, optional Fälligkeit oder Detail ändern. |
 | `frist_eintragen` | schreibend | Frist oder Termin in einem Fall eintragen. Bestätigt nur, wenn die Rechnung das Fristende nennt, Auslöser, Rechtsgrundlage und Quelle da sind und kein Marker [PRÜFEN], [QUELLE], [BELEG] offen ist; die Bestätigung bekommt Prüfdatum und Prüfer. |

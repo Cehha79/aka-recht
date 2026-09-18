@@ -44,8 +44,9 @@ ERSETZUNGEN = [
     ('# CLAUDE.md – AKA Recht',
      '# AGENTS.md – AKA Recht'),
     ('Arbeitsprofil für Claude in diesem Projekt.',
-     'Arbeitsprofil für jeden KI-Assistenten in diesem Projekt (Codex, Cursor,\n'
-     'Gemini CLI und andere; Claude Code liest dasselbe Profil als CLAUDE.md).'),
+     'Arbeitsprofil für jeden KI-Assistenten, der diese Datei lädt (geprüft mit\n'
+     'Codex; Claude Code liest dasselbe Profil als CLAUDE.md, andere nur wenn sie\n'
+     'so eingestellt sind — siehe README, Abschnitt „KI anbinden“).'),
     ('Die Regeln aus `~/.claude/CLAUDE.md` gelten weiter.',
      'Persönliche Regeln des Nutzers gelten zusätzlich, soweit der Assistent sie lädt.'),
     ('3. Der SessionStart-Hook meldet Eingang und Fristen der Fälle.',

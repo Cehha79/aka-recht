@@ -458,6 +458,21 @@ def run():
         for par in ({'bereich': '05 Beweise', 'name': 'x.txt'}, {'bereich': '01 Eingang', 'name': '../weg.txt'}, {'bereich': '01 Eingang', 'name': 'skript.py'}, {'bereich': '01 Eingang', 'name': 'unter/ordner.txt'}):
             anfrage('/api/werkzeug', {'name': 'datei_ablegen', 'parameter': {'fall': 'R-0001', 'text': 'x', **par}, 'bestaetigt': True}, erwartet=400)
         assert '# Vermerk' in anfrage('/api/werkzeug', {'name': 'dokument_text', 'parameter': {'fall': 'R-0001', 'dokument': abl['kennung']}})['text']   # abgelegte Datei ist über ihre Kennung lesbar
+        # N12 (Prüfbericht 18.09.2026): Beteiligte und Verfahren ließen sich anlegen, aber nicht ändern; Quellen fehlten ganz
+        b_neu = anfrage('/api/werkzeug', {'name': 'beteiligter_setzen', 'parameter': {'fall': 'R-0001', 'beteiligter': p['id'], 'name': 'Amtsgericht Musterstadt, 3. Abteilung', 'kontakt': '0700 123456'}, 'bestaetigt': True})['beteiligter']
+        assert b_neu['name'].endswith('3. Abteilung') and b_neu['kontakt'] == '0700 123456' and b_neu['aktenzeichen'] == '5 C 1/26' and b_neu['id'] == p['id'], b_neu   # übergebene Felder geändert, der Rest und die Kennung bleiben
+        anfrage('/api/werkzeug', {'name': 'beteiligter_setzen', 'parameter': {'fall': 'R-0001', 'beteiligter': 'P99', 'name': 'x'}, 'bestaetigt': True}, erwartet=400)
+        anfrage('/api/werkzeug', {'name': 'beteiligter_setzen', 'parameter': {'fall': 'R-0001', 'beteiligter': p['id'], 'name': ' '}, 'bestaetigt': True}, erwartet=400)
+        v_neu = anfrage('/api/werkzeug', {'name': 'verfahren_setzen', 'parameter': {'fall': 'R-0001', 'verfahren': v['id'], 'aktenzeichen': '5 C 1/26 neu', 'stand': 'Klage eingereicht'}, 'bestaetigt': True})['verfahren']
+        assert v_neu['aktenzeichen'] == '5 C 1/26 neu' and v_neu['stand'] == 'Klage eingereicht' and v_neu['stelle'] == p['id'] and v_neu['id'] == v['id'], v_neu
+        anfrage('/api/werkzeug', {'name': 'verfahren_setzen', 'parameter': {'fall': 'R-0001', 'verfahren': v['id'], 'stelle': 'P99'}, 'bestaetigt': True}, erwartet=400)
+        q1 = anfrage('/api/werkzeug', {'name': 'quelle_eintragen', 'parameter': {'fall': 'R-0001', 'titel': '§ 70 Abs. 1 VwGO', 'url': 'https://www.gesetze-im-internet.de/vwgo/__70.html', 'verwendung': 'Widerspruchsfrist'}, 'bestaetigt': True})
+        assert q1['anzahl'] == 1 and q1['quelle']['geprueft'] == date.today().isoformat() and q1['quelle']['verwendung'] == 'Widerspruchsfrist', q1   # Abrufdatum wird gesetzt
+        q2 = anfrage('/api/werkzeug', {'name': 'quelle_eintragen', 'parameter': {'fall': 'R-0001', 'titel': '§ 70 Abs. 1 VwGO', 'geprueft': '2026-09-17', 'verwendung': 'Widerspruchsfrist, am Volltext gelesen'}, 'bestaetigt': True})
+        assert q2['anzahl'] == 1 and q2['quelle']['geprueft'] == '2026-09-17', q2   # gleicher Titel überschreibt, statt doppelt zu führen
+        assert not akte_schema.validate(json.loads((root / f1['ordner'] / 'akte.json').read_text('utf-8')))[0]
+        ok('Beteiligte und Verfahren ändern, fallbezogene Quellen eintragen (N12): nur die übergebenen Felder ändern sich, Kennungen und Verweise bleiben, unbekannte Kennung und leerer Pflichtwert werden abgewiesen, gleicher Quellentitel überschreibt statt zu doppeln')
+
         ok('MCP-Lücken geschlossen (F23): Beteiligte und Verfahren anlegen mit geprüften Verweisen und ohne Doppelung, vorhandene Frist und vorhandenes Ereignis ändern (genau räumt die Unsicherheit ab, Marker bleiben gesperrt), Textdatei ablegen nur in 01, 06, 07 ohne Überschreiben und mit eigener Kennung')
 
         # N01 (Prüfbericht 18.09.2026): datei_ablegen kam über „unterordner“ aus dem erlaubten Bereich heraus

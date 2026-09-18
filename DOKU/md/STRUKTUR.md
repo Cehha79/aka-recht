@@ -39,7 +39,7 @@ Recht/
 ├─ Start.command              startet den Dienst und öffnet den Browser (macOS)
 ├─ Start.sh, Start.bat        dasselbe für Linux (Ubuntu 24.04) und Windows (Windows 11), beide geprüft 17.09.2026; Start.bat stellt vorher die KI-Konfigurationen auf `python` um
 ├─ CLAUDE.md                  Arbeitsprofil, Quelle (Stufe 5)
-├─ AGENTS.md                  erzeugt aus CLAUDE.md für Codex, Cursor, Gemini CLI (Stufe 7)
+├─ AGENTS.md                  erzeugt aus CLAUDE.md; gelesen von Codex (geprüft) und jedem Assistenten, der auf diesen Dateinamen eingestellt ist (Stufe 7)
 ├─ .agents/skills/            erzeugte Kopien der Skills für Codex (Stufe 7)
 ├─ .mcp.json                  MCP-Server für Claude Code (Stufe 7)
 ├─ .codex/config.toml         MCP-Server für Codex, projektbezogen (lädt nur, wenn genau dieser Ordner in ~/.codex/config.toml vertraut ist)
@@ -172,7 +172,7 @@ Sicherungsziel iCloud Drive wird nur vorgeschlagen, wo es den Ordner gibt. Texta
 | `texterkennung.py` | Texterkennung (OCR, Stufe 13) über das freiwillige Zusatzprogramm `tesseract` (PDF-Seiten vorher mit `pdftoppm` gerastert, HEIC unter macOS mit `sips`); ohne Programm klare Meldung mit Installationsweg. Das Werkzeug `texterkennung` legt das Ergebnis als eigene Textdatei unter `07 Recherche/Texterkennung/D…_Texterkennung_JJJJ-MM-TT.txt` an (Kopf mit Quelle, Prüfsumme, Programm, Sprache, Datum, Warnhinweis; eigene D-Kennung mit Verweis auf das Original; überschreibt nie), setzt beim Original den Textstand „OCR-erkannt“ nur, wenn keiner steht; `dokument_text` zeigt den erkannten Text mit Textquelle `ocr`, die Suche findet Original und Ableitung. Keine Erkennung beim bloßen Lesen |
 | `pflege.py` | Pflege der Rechtsinhalte (Stufe 12): meldet nur lesend und ohne Netz, was wieder am Volltext zu prüfen ist; Merkblätter zwölf Monate nach der Kopfzeile „Letzte vollständige Prüfung: TT.MM.JJJJ“, Feiertagstabelle ab 1. Dezember (`fristen.FEIERTAGE_GEPRUEFT`), Quellenkatalog sechs Monate nach `catalog_checked`; „bald fällig“ 30 Tage vorher; Werkzeug `rechtsinhalte_pruefen`, Meldung im Sitzungsstart (seit 17.09.2026) |
 | `sicherung.py` | geprüfte ZIP-Sicherung außerhalb des Projekts, SHA-256, Kopie an das zweite Ziel (Rechte 0600); Status prüft beide Archive und nennt die Ziele mit Cloud-Hinweis; `wiederherstellen()` entpackt in einen neuen, leeren Ordner außerhalb und prüft Schema und Prüfsummen, `probe()` dasselbe in einem Zwischenordner (seit 17.09.2026, F19, F20) |
-| `werkzeuge.py` | Katalog aller Funktionen als beschriebene Werkzeuge (Name, Zweck, Parameter, lesend oder schreibend); Oberfläche und KI rufen dieselben Werkzeuge. Seit 18.09.2026 auch für reine MCP-Clients: `beteiligter_anlegen`, `verfahren_anlegen`, `frist_setzen`, `ereignis_setzen` (ändern vorhandene Einträge) und `datei_ablegen` (Textdatei nur in 01 Eingang, 06 Entwürfe, 07 Recherche, ohne Überschreiben, mit eigener Kennung) |
+| `werkzeuge.py` | Katalog aller Funktionen als beschriebene Werkzeuge (Name, Zweck, Parameter, lesend oder schreibend); Oberfläche und KI rufen dieselben Werkzeuge. Seit 18.09.2026 auch für reine MCP-Clients: `beteiligter_anlegen`, `verfahren_anlegen`, `frist_setzen`, `ereignis_setzen` (ändern vorhandene Einträge), `datei_ablegen`, dazu seit dem Abend `beteiligter_setzen`, `verfahren_setzen` und `quelle_eintragen` (N12) (Textdatei nur in 01 Eingang, 06 Entwürfe, 07 Recherche, ohne Überschreiben, mit eigener Kennung) |
 | `cli.py` | alle Werkzeuge über die Befehlszeile, für Claude Code, Codex und andere Assistenten |
 | `mcp_server.py` | dieselben Werkzeuge als MCP-Server über die Standardeingabe (JSON-RPC 2.0), für Claude Code, Claude Desktop, Codex, Cursor, Gemini; schreibende nur mit `bestaetigt` |
 
@@ -205,9 +205,9 @@ Codex und andere. Dafür gibt es drei Standards, die wir bedienen:
 
 | Standard | Was er ist | Wer ihn liest | Bei uns |
 |---|---|---|---|
-| `AGENTS.md` und `CLAUDE.md` | Arbeitsanweisung im Projektordner, Klartext | Codex, Cursor, Gemini CLI, viele Agenten (`AGENTS.md`); Claude Code (`CLAUDE.md`) | eine Quelle, beide Dateien daraus erzeugt |
+| `AGENTS.md` und `CLAUDE.md` | Arbeitsanweisung im Projektordner, Klartext | Claude Code (`CLAUDE.md`, geprüft), Codex (`AGENTS.md`, geprüft); andere Assistenten nur, wenn sie auf diesen Dateinamen eingestellt sind — die Gemini CLI sucht standardmäßig `GEMINI.md` und braucht dafür `contextFileName` in `.gemini/settings.json` (N11, 18.09.2026 an der Gemini-Doku geprüft, bei uns nicht durchgespielt) | eine Quelle, beide Dateien daraus erzeugt |
 | Agent Skills (`SKILL.md`) | Ordner mit Anleitung, offener Standard von Anthropic, von Codex übernommen | Claude Code (`.claude/skills/`), Codex (`.agents/skills/`) | Skills einmal gepflegt, für Codex kopiert |
-| MCP (Model Context Protocol) | offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe | Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini | eigener MCP-Server `mcp_server.py` ohne Fremdpaket, stellt die Werkzeuge für Assistenten bereit (Katalog ohne `fall_lesen` und `akte_speichern`; Stand 18.09.2026: 32 Werkzeuge für Assistenten, 34 im Katalog; die Zahl prüft der Produktbau gegen den Katalog, maßgeblich ist `cli.py liste`) |
+| MCP (Model Context Protocol) | offene Schnittstelle, über die eine KI Werkzeuge aufruft; JSON über die Standardeingabe | Claude Desktop, Claude Code, ChatGPT, Codex, Cursor, Gemini | eigener MCP-Server `mcp_server.py` ohne Fremdpaket, stellt die Werkzeuge für Assistenten bereit (Katalog ohne `fall_lesen` und `akte_speichern`; Stand 18.09.2026 abends: 35 Werkzeuge für Assistenten, 37 im Katalog; die Zahl prüft der Produktbau gegen den Katalog, maßgeblich ist `cli.py liste`) |
 | Befehlszeile | `cli.py` | jede KI, die Befehle ausführen darf | vorhanden |
 
 Regeln für alle Wege: Lesen frei und wirklich nur lesend (kein Werkzeug mit
@@ -245,7 +245,7 @@ modelcontextprotocol.io): die Fassungen bis 2025-11-25 mit Handshake
 (`initialize`, `notifications/initialized`) und die Fassung 2026-07-28 ohne
 Handshake, bei der jede Anfrage ihre Version in `params._meta` trägt und es
 `server/discover` gibt. Methoden: `initialize`, `server/discover`, `ping`,
-`tools/list`, `tools/call`. Werkzeuge aus `werkzeuge.fuer_agenten()` (seit dem 18.09.2026 sind es 32; Katalog ohne `fall_lesen` und
+`tools/list`, `tools/call`. Werkzeuge aus `werkzeuge.fuer_agenten()` (seit dem 18.09.2026 abends sind es 35; Katalog ohne `fall_lesen` und
 `akte_speichern`, Zahl siehe oben), jedes mit `inputSchema` und
 `annotations.readOnlyHint` (seit 17.09.2026 zutreffend: lesende Werkzeuge
 schreiben nichts). Schreibende Werkzeuge tragen im Schema den
