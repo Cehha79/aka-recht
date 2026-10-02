@@ -404,6 +404,8 @@
   "form.ereignis": "Ereignis",
   "form.datum": "Datum",
   "form.art": "Art",
+  "form.art_eigen": "oder eigene Art",
+  "form.art_eigen_hinweis": "Leer lassen, wenn die Liste passt. Eine eigene Art steht danach in der Liste.",
   "form.kurztitel": "Kurztitel",
   "form.zeitpunkt": "Zeitpunkt",
   "form.zeitpunkt_hinweis": "Bei allem außer „genau“ ist das Datum nur das Sortierdatum.",

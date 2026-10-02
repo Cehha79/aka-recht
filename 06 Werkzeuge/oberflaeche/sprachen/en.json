@@ -404,6 +404,8 @@
   "form.ereignis": "Event",
   "form.datum": "Date",
   "form.art": "Type",
+  "form.art_eigen": "or your own type",
+  "form.art_eigen_hinweis": "Leave empty if the list fits. Your own type appears in the list afterwards.",
   "form.kurztitel": "Short title",
   "form.zeitpunkt": "Point in time",
   "form.zeitpunkt_hinweis": "For anything other than “exact”, the date is only the sorting date.",
