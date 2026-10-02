@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """Funktionstest des Dienstes mit künstlichen Akten außerhalb des Projekts.
 
-Aufruf: python3 "06 Werkzeuge/dienst/pruefen.py"
+Aufruf: python3 "06 Werkzeuge/dienst/pruefen.py" [--behalten]
 Kopiert Vorlagen und Werkzeuge in einen Temp-Ordner, startet dort einen eigenen
 Dienst, prüft die Schnittstelle Punkt für Punkt und beendet den Dienst wieder.
 Es werden keine echten Akten berührt. Nur Standardbibliothek.
+
+Nach einem bestandenen Lauf wird der Temp-Ordner wieder entfernt. Bricht der
+Lauf ab, bleibt er zum Nachsehen liegen und sein Pfad wird genannt; mit
+--behalten bleibt er auch nach einem bestandenen Lauf.
 """
 import sys
 
@@ -80,12 +84,12 @@ def pdf_gemischt(zeilen, ppm):
     objekte[1] = b'<< /Type /Pages /Kids [' + b' '.join(b'%d 0 R' % k for k in kinder) + b'] /Count %d >>' % len(kinder)
     return _pdf(objekte)
 
-def run():
+def run(behalten=False):
     base = Path(tempfile.mkdtemp(prefix='aka-recht-pruefung-', dir='/private/tmp' if Path('/private/tmp').is_dir() else None)).resolve(); root = vorbereiten(base)
     instanz = hashlib.sha256(str(root).encode()).hexdigest()[:14]
     laufzeit = Path(tempfile.gettempdir()) / f'aka-recht-dienst-{instanz}.json'
     if laufzeit.exists(): laufzeit.unlink()
-    bestanden = []; server = None
+    bestanden = []; server = None; fertig = False
     def ok(name): bestanden.append(name); print('ok ', name)
     try:
         with (base / 'server.log').open('wb') as log:
@@ -1068,9 +1072,10 @@ def run():
 
         ok('Pflege der Rechtsinhalte: rechtsinhalte_pruefen meldet Merkblätter zwölf Monate nach „Letzte vollständige Prüfung“ (bald fällig 30 Tage vorher), ohne Zeile und mit 31.02. als unbekannt, Quellenkatalog nach sechs Monaten, Feiertage ab 1. Dezember; Monatsende und Schalttag; falscher Stichtag 400; schreibt nichts')
 
-        ergebnis = {'bestanden': len(bestanden), 'punkte': bestanden, 'ordner': str(base)}
+        ergebnis = {'bestanden': len(bestanden), 'punkte': bestanden, 'ordner': str(base) if behalten else ''}
         (base / 'Ergebnis.json').write_text(json.dumps(ergebnis, ensure_ascii=False, indent=2), encoding='utf-8')
-        print(f'\n{len(bestanden)} Prüfpunkte bestanden. Testordner: {base}')
+        fertig = True
+        print(f'\n{len(bestanden)} Prüfpunkte bestanden. ' + (f'Testordner: {base}' if behalten else 'Testordner entfernt.'))
         return ergebnis
     finally:
         if server and server.poll() is None:
@@ -1078,6 +1083,15 @@ def run():
             try: server.wait(timeout=10)
             except subprocess.TimeoutExpired: server.kill(); server.wait()
         if laufzeit.exists(): laufzeit.unlink()
+        # Aufräumen (02.10.2026): Jeder Lauf ließ seinen Ordner und die Sperrdatei seiner Instanz liegen. Nach einem
+        # bestandenen Lauf ist beides entbehrlich; nach einem Abbruch bleibt der Ordner, damit man nachsehen kann.
+        sperre = Path(tempfile.gettempdir()) / f'aka-recht-{instanz}.lock'
+        if fertig and not behalten:
+            def _schreibbar(funktion, pfad, _fehler):   # eingefrorene Kopien sind nur lesbar; unter Windows lassen sie sich sonst nicht entfernen
+                os.chmod(pfad, 0o700); funktion(pfad)
+            shutil.rmtree(base, onexc=_schreibbar)
+            if sperre.exists(): sperre.unlink()
+        elif not fertig: print(f'Abgebrochen nach {len(bestanden)} Prüfpunkten. Testordner bleibt zum Nachsehen: {base}', file=sys.stderr)
 
 if __name__ == '__main__':
-    run()
+    run(behalten='--behalten' in sys.argv[1:])
