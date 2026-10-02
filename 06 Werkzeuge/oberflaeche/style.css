@@ -9,7 +9,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* Seitenleiste */
 .sidebar{background:var(--nav);color:var(--navtext);display:flex;flex-direction:column;overflow-y:auto;min-height:0;padding:24px 14px 18px}
 .marke{display:flex;gap:11px;align-items:center;color:#fff;text-decoration:none;font-size:1.25rem;font-weight:700;letter-spacing:-.01em;padding:0 8px 18px}
-.marke-zeichen{display:grid;place-items:center;width:40px;height:42px;border:1px solid #ffffff45;border-radius:9px;font-family:Georgia,serif;font-size:1.6rem;font-weight:400}
+.marke-zeichen{display:block;width:42px;height:42px;padding:3px;border-radius:9px;background:#fbfcfe;flex-shrink:0}
 .marke small{display:block;color:#a9b7cc;font-size:.68rem;font-weight:400;letter-spacing:0;max-width:150px;overflow-wrap:anywhere}
 .zurueck{display:block;margin:0 4px 12px;padding:8px 12px;border:1px solid #ffffff30;border-radius:6px;color:var(--navtext);text-decoration:none;font-size:.8rem}.zurueck:hover{background:#ffffff14}
 nav{display:grid;gap:3px}nav .abschnitt{font-size:.62rem;letter-spacing:.14em;color:#9fb0c9;padding:12px 12px 5px;text-transform:uppercase}

@@ -3,7 +3,15 @@
   <rect width="1200" height="260" rx="22" fill="url(#g)"/>
   <rect x="56" y="62" width="136" height="136" rx="28" fill="#ffffff" opacity="0.12"/>
   <rect x="66" y="72" width="116" height="116" rx="22" fill="#fbfcfe"/>
-  <text x="124" y="163" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="82" font-weight="700" fill="#1d2b44">R</text>
+  <!-- Logo: Formen aus 06 Werkzeuge/oberflaeche/logo.svg hineinkopiert; ändert sich das Logo, hier nachziehen -->
+  <g transform="translate(124 130) scale(0.27) translate(-256 -256)">
+    <path fill="#1F3A5F" d="M72 120 Q72 104 88 104 H200 L232 136 H424 Q440 136 440 152 V392 Q440 408 424 408 H88 Q72 408 72 392 Z"/>
+    <rect fill="#2E5A8C" x="72" y="160" width="368" height="248" rx="16"/>
+    <rect fill="#E0B040" x="250" y="196" width="12" height="156"/><circle fill="#E0B040" cx="256" cy="192" r="10"/>
+    <rect fill="#E0B040" x="164" y="214" width="184" height="10" rx="5"/><rect fill="#E0B040" x="208" y="348" width="96" height="14" rx="7"/>
+    <path stroke="#E0B040" stroke-width="3" fill="none" d="M172 224 L148 292 M172 224 L196 292 M340 224 L316 292 M340 224 L364 292"/>
+    <path fill="#E0B040" d="M142 292 H202 A30 22 0 0 1 142 292 Z M310 292 H370 A30 22 0 0 1 310 292 Z"/>
+  </g>
   <text x="232" y="118" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="58" font-weight="700" fill="#ffffff">AKA Recht</text>
   <text x="234" y="162" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="26" fill="#dbe4f2">Deine Aktenmappe für Rechtssachen. Lokal, offen, mit deiner KI.</text>
   <g font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" fill="#ffffff">

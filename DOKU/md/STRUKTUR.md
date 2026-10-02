@@ -52,7 +52,7 @@ Recht/
 ├─ 06 Werkzeuge/
 │  ├─ dienst/                 server.py, store.py, dokumente.py, fristen.py,
 │  │                          bestand.py, sicherung.py, werkzeuge.py, cli.py
-│  ├─ oberflaeche/            index.html, app.js, style.css, sprachen/ (de.json, en.json und die Anleitungen dazu; Umschaltung in den Einstellungen)
+│  ├─ oberflaeche/            index.html, app.js, style.css, logo.svg (Zeichen in Seitenleiste und Browser-Tab, seit 02.10.2026), sprachen/ (de.json, en.json und die Anleitungen dazu; Umschaltung in den Einstellungen)
 │  ├─ verteilen.py            AGENTS.md und .agents/skills/ aus den Quellen erzeugen
 │  ├─ quellen_pruefen.py      prüft die Quellen der Merkblätter, des Quellenkatalogs und der Vorlagen: nur amtliche Stellen, keine Reste aus einer Chat-Sitzung, Kopfzeile mit Prüfdatum (18.09.2026; `--netz` ruft jede Adresse ab)
 │  ├─ einrichten_windows.py   nur Windows: python3 in .mcp.json, .claude/settings.json, .codex/config.toml durch python ersetzen (ruft Start.bat)

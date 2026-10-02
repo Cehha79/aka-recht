@@ -110,7 +110,7 @@ class Handler(BaseHTTPRequestHandler):
                 kopf = {'Content-Security-Policy': CSP_ROH}
                 if m[1] == 'download': kopf['Content-Disposition'] = "attachment; filename*=UTF-8''" + urllib.request.quote(p.name)
                 self.antwort(200, p.read_bytes(), art, kopf); return
-            statisch = {'/': 'index.html', '/index.html': 'index.html', '/style.css': 'style.css', '/app.js': 'app.js'}
+            statisch = {'/': 'index.html', '/index.html': 'index.html', '/style.css': 'style.css', '/app.js': 'app.js', '/logo.svg': 'logo.svg'}
             if pfad in statisch:
                 p = OBERFLAECHE / statisch[pfad]
                 if p.is_file(): self.antwort(200, p.read_bytes(), (mimetypes.guess_type(p.name)[0] or 'text/plain') + '; charset=utf-8'); return
