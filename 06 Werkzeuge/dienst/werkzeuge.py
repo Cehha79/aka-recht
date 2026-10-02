@@ -589,18 +589,28 @@ def notiz_anlegen(fall, titel, text):
     akte['notizen'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
     return {'notiz': eintrag, 'revision': rev}
 
-@werkzeug('entwurf_erfassen', 'Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung; mit fassung_behalten bleibt die Nummer, wenn sich der Text seit dieser Fassung nicht geändert hat. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung.',
+@werkzeug('entwurf_erfassen', 'Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung; mit fassung_behalten bleibt die Nummer, wenn sich der Text seit dieser Fassung nicht geändert hat, mit fassung_nach_text entscheidet das Werkzeug das selbst an der Prüfsumme. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung.',
           {'fall': {'type': 'string'}, 'titel': {'type': 'string'}, 'datei': {'type': 'string', 'description': 'Pfad im Fallordner, z. B. 06 Entwürfe/Einspruch_ENTWURF.md'},
            'status': {'type': 'string', 'enum': akte_schema.ENTWURF_STATUS}, 'versandt_als': {'type': 'string', 'description': 'D-Kennung des Versandbelegs bei Status versandt'},
-           'fassung_behalten': {'type': 'boolean', 'description': 'true: die Fassungsnummer bleibt, nur der Status wechselt (etwa von geprüft zu versandt, oder um die eingefrorene Kopie nachzutragen). Geht nur, wenn die Datei seit dieser Fassung unverändert ist.'}},
+           'fassung_behalten': {'type': 'boolean', 'description': 'true: die Fassungsnummer bleibt, nur der Status wechselt (etwa von geprüft zu versandt, oder um die eingefrorene Kopie nachzutragen). Geht nur, wenn die Datei seit dieser Fassung unverändert ist.'},
+           'fassung_nach_text': {'type': 'boolean', 'description': 'true: das Werkzeug entscheidet an der Prüfsumme. Unveränderter Text behält die Fassungsnummer, geänderter Text bekommt eine neue; ist die Fassung mit diesem Status schon festgehalten, entsteht nichts Neues. So ruft die Oberfläche das Werkzeug auf.'}},
           schreibend=True, pflicht=['fall', 'titel', 'datei'])
-def entwurf_erfassen(fall, titel, datei, status='in Arbeit', versandt_als='', fassung_behalten=False):
+def entwurf_erfassen(fall, titel, datei, status='in Arbeit', versandt_als='', fassung_behalten=False, fassung_nach_text=False):
     from datetime import datetime
     akte, rev = _akte_mit_dokument(fall, versandt_als); ordner = store.fall_ordner(fall)
     quelle = store.sicher(datei, ordner)
     if not quelle.is_file(): raise ValueError(f'Entwurfsdatei fehlt: {datei}')
     e = next((x for x in akte['entwuerfe'] if x['titel'] == titel), None)
     sha = bestand.sha_datei(quelle); hinweise = []
+    if fassung_nach_text and e and not fassung_behalten:
+        # Die Oberfläche ruft bei jedem Speichern mit „geprüft“ oder „versandt“ hierher. Die Nummer soll dem Text folgen,
+        # nicht dem Klick: Gibt es für die laufende Fassung einen Stand mit derselben Prüfsumme, bleibt die Nummer.
+        nr = e.get('fassung', 1); frueher = [x for x in (e.get('fassungen') or []) if isinstance(x, dict) and x.get('fassung') == nr]
+        if frueher and all(x.get('sha256') == sha for x in frueher):
+            if any(x.get('status') == status and (x.get('kopien') or status not in ('geprüft', 'versandt')) for x in frueher):
+                e.update({'datei': datei, 'versandt_als': versandt_als}); rev = store.speichere_akte(fall, akte, rev)
+                return {'entwurf': e, 'revision': rev, 'unveraendert': True, 'hinweise': [f'Fassung {nr} ist mit Status „{status}“ schon festgehalten; es ist keine neue Fassung entstanden.']}
+            fassung_behalten = True
     if fassung_behalten:
         # Derselbe Text bekommt keine neue Nummer, nur weil sein Status wechselt (02.10.2026). Ohne das wurde aus einer
         # geprüften Fassung 2 beim Versand die Fassung 3, und eine ältere Akte ließ sich nur mit neuer Nummer nachziehen.

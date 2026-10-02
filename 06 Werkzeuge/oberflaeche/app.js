@@ -502,9 +502,10 @@ function eintragDialog(art, id, vorgabe = {}, hinweis = '') {
       // N03: „geprüft“ und „versandt“ frieren eine Fassung ein. Das kann nur entwurf_erfassen,
       // also geht dieser Statuswechsel über das Werkzeug statt über das Speichern der ganzen Akte.
       if (art === 'entwurf' && (neu.status === 'geprüft' || neu.status === 'versandt')) {
-        const r = await api.werkzeug('entwurf_erfassen', {fall: fallId(), titel: neu.titel, datei: neu.datei, status: neu.status, versandt_als: neu.versandt_als || ''});
+        // Die Fassungsnummer folgt dem Text: fassung_nach_text lässt das Werkzeug an der Prüfsumme entscheiden, ob es dieselbe Fassung bleibt.
+        const r = await api.werkzeug('entwurf_erfassen', {fall: fallId(), titel: neu.titel, datei: neu.datei, status: neu.status, versandt_als: neu.versandt_als || '', fassung_nach_text: true});
         await ladeFall(fallId());
-        toast((r.hinweise && r.hinweise.length ? r.hinweise.join(' ') + ' ' : '') + t('entw.eingefroren_meldung', {status: neu.status, n: r.entwurf.fassung}));
+        toast((r.hinweise && r.hinweise.length ? r.hinweise.join(' ') + ' ' : '') + (r.unveraendert ? '' : t('entw.eingefroren_meldung', {status: neu.status, n: r.entwurf.fassung})));
         await render(); return;
       }
       let ziel = id;

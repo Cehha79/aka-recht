@@ -656,6 +656,18 @@ def run():
         anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': {**par_b, 'titel': 'Gibt es nicht'}, 'bestaetigt': True}, erwartet=400)
         ent.write_text('Hinweise\n---\nSehr geehrte Damen und Herren, Fassung drei.\n', encoding='utf-8')
         assert not akte_schema.validate(json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8')))[0]
+        # Fassung nach Text (02.10.2026): so ruft die Oberfläche auf; die Nummer folgt der Prüfsumme, nicht dem Klick
+        par_t = {'fall': 'R-0002', 'titel': 'Antwort', 'datei': '06 Entwürfe/Antwort_ENTWURF.md', 'status': 'versandt', 'versandt_als': 'D0001', 'fassung_nach_text': True}
+        r_t = anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': par_t, 'bestaetigt': True})
+        assert r_t.get('unveraendert') and r_t['entwurf']['fassung'] == nr_b and len(r_t['entwurf']['fassungen']) == len(r_b['entwurf']['fassungen']), r_t   # schon festgehalten: nichts Neues
+        ent.write_text('Hinweise\n---\nSehr geehrte Damen und Herren, Fassung nach Text.\n', encoding='utf-8')
+        r_t2 = anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': {**par_t, 'status': 'geprüft'}, 'bestaetigt': True})
+        assert r_t2['entwurf']['fassung'] == nr_b + 1 and not r_t2.get('unveraendert'), r_t2   # Text geändert: neue Fassung
+        r_t3 = anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': par_t, 'bestaetigt': True})
+        l_t3 = r_t3['entwurf']['fassungen'][-1]
+        assert r_t3['entwurf']['fassung'] == nr_b + 1 and l_t3['status'] == 'versandt' and f'Fassung{nr_b + 1:02d}_versandt' in l_t3['kopien']['md'], r_t3   # derselbe Text: Nummer bleibt, Kopie entsteht
+        assert not akte_schema.validate(json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8')))[0]
+        ok('Fassung nach Text: unveränderter Text behält die Nummer beim Wechsel von „geprüft“ zu „versandt“, geänderter Text bekommt eine neue, ein schon festgehaltener Stand erzeugt nichts Neues')
         ok('Fassung behalten: derselbe Text wechselt von „geprüft“ zu „versandt“ ohne neue Nummer und wird als Kopie eingefroren; doppelt, bei geändertem Text und ohne vorhandenen Entwurf wird abgewiesen')
         ok('Entwurfsstatus „geprüft“ und „versandt“ nur mit eingefrorener Fassung (N03): der Weg der Oberfläche über die ganze Akte wird abgewiesen und schreibt nichts, „in Arbeit“ bleibt frei, und über entwurf_erfassen entsteht die unveränderliche Kopie mit Prüfsumme und eigener Kennung')
 
