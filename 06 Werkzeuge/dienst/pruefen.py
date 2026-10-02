@@ -1102,6 +1102,24 @@ def run(behalten=False):
         assert not akte_schema.validate(json.loads((fall_n / 'akte.json').read_text('utf-8')))[0]
         ok('Nur die eigene Datei: datei_ablegen und entwurf_erfassen registrieren allein ihre Datei (Entwurf samt eingefrorener Kopie), eine fremde neue Datei bleibt unerfasst und wird gemeldet, bis bestand_abgleichen sie aufnimmt')
 
+        # Start-Hook (02.10.2026): meldet nur echte Dateien im Eingang, mit Uhrzeit; eine Verknüpfung auf eine Datei außerhalb ist keine Post
+        start = QUELLE / '.claude/recht/hooks/sitzungsstart.py'
+        def start_lauf():
+            r = subprocess.run([sys.executable, str(start)], capture_output=True, text=True, encoding='utf-8', env={**os.environ, 'CLAUDE_PROJECT_DIR': str(root)}, timeout=30)
+            assert r.returncode == 0, r.stderr
+            return json.loads(r.stdout)['hookSpecificOutput']['additionalContext']
+        (fall_n / '01 Eingang' / 'Brief vom Amt.pdf').write_bytes(b'%PDF-1.4 Probe'); (root / '01 Eingang' / 'Sammelpost.txt').write_text('x', encoding='utf-8')
+        aussen = base / 'liegt außerhalb.txt'; aussen.write_text('nicht im Eingang', encoding='utf-8'); mit_verknuepfung = True
+        try: (fall_n / '01 Eingang' / 'Verknüpfung.txt').symlink_to(aussen)
+        except (OSError, NotImplementedError): mit_verknuepfung = False   # Windows ohne Entwicklermodus legt keine Verknüpfungen an
+        text_s = start_lauf(); zeile_s = next(z for z in text_s.splitlines() if z.startswith('R-0002'))
+        assert re.search(r'Sitzungsstart \d\d\.\d\d\.\d{4}, Stand \d\d:\d\d Uhr', text_s) and 'Gemeinsamer Eingang: Sammelpost.txt.' in text_s, text_s
+        assert re.search(r'neue Post \(Stand \d\d:\d\d Uhr\): .*Brief vom Amt\.pdf', zeile_s) and 'Verknüpfung.txt' not in text_s, zeile_s
+        (fall_n / '01 Eingang' / 'Brief vom Amt.pdf').unlink(); (root / '01 Eingang' / 'Sammelpost.txt').unlink()
+        if mit_verknuepfung: (fall_n / '01 Eingang' / 'Verknüpfung.txt').unlink()
+        text_s2 = start_lauf(); assert 'Gemeinsamer Eingang: leer.' in text_s2 and 'Brief vom Amt' not in text_s2, text_s2
+        ok('Start-Hook: meldet Dateien im Eingang des Falls und im gemeinsamen Eingang mit Uhrzeit, eine Verknüpfung auf eine Datei außerhalb zählt nicht als Post, nach dem Wegräumen meldet er sie nicht mehr')
+
         ergebnis = {'bestanden': len(bestanden), 'punkte': bestanden, 'ordner': str(base) if behalten else ''}
         (base / 'Ergebnis.json').write_text(json.dumps(ergebnis, ensure_ascii=False, indent=2), encoding='utf-8')
         fertig = True

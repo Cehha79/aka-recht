@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """SessionStart-Hook: meldet neue Post, nahe Fristen und offene Aufgaben aller Fälle.
-Liest nur. Gibt Kontext für Claude als JSON aus. Bei Fehlern still (Exit 0)."""
+Liest nur. Gibt Kontext für Claude als JSON aus. Bei Fehlern still (Exit 0).
+
+Die Meldung ist eine Momentaufnahme und nennt deshalb ihre Uhrzeit: Was beim Start im Eingang lag,
+kann kurz danach schon einsortiert sein. Verknüpfungen zählen nicht als Post, wie im Bestand
+(bestand.dateien): Sie bekämen nie eine Kennung und stünden bei jedem Start wieder da."""
 import sys
 
 # Ein- und Ausgabe immer UTF-8, auch unter Windows (Konsole dort cp1252); Ausgaben für Assistenten und Tests müssen UTF-8 sein (Stufe 9, 17.09.2026).
@@ -8,8 +12,12 @@ for _strom in (sys.stdin, sys.stdout, sys.stderr):
     if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
 import json, os
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
+
+def post(ordner):
+    """Dateinamen im Eingang: nur echte Dateien, keine Verknüpfungen, keine versteckten."""
+    return sorted(p.name for p in ordner.iterdir() if p.is_file() and not p.is_symlink() and not p.name.startswith('.')) if ordner.exists() else []
 
 def main():
     root = Path(os.environ.get('CLAUDE_PROJECT_DIR') or Path(__file__).resolve().parents[3])
@@ -21,16 +29,17 @@ def main():
         # Die Live-Dokumentation ist interne Entwicklungsdoku und liegt nicht in jeder Mappe;
         # nur nennen, wenn sie da ist (Befund 18.09.2026 beim Trennen von Akte und Entwicklung).
         uebergabe = '; Übergabe: DOKU/md/Live-Dokumentation.md' if (root / 'DOKU' / 'md' / 'Live-Dokumentation.md').exists() else ''
-        zeilen = [f'AKA Recht, Sitzungsstart {date.today():%d.%m.%Y}. Arbeitsprofil: CLAUDE.md im Projekt{uebergabe}.']
-        eingang = [p.name for p in (root / '01 Eingang').iterdir() if p.is_file() and not p.name.startswith('.')] if (root / '01 Eingang').exists() else []
+        stand = f'Stand {datetime.now():%H:%M} Uhr'
+        zeilen = [f'AKA Recht, Sitzungsstart {date.today():%d.%m.%Y}, {stand}. Arbeitsprofil: CLAUDE.md im Projekt{uebergabe}.']
+        eingang = post(root / '01 Eingang')
         zeilen.append('Gemeinsamer Eingang: ' + (', '.join(eingang) if eingang else 'leer') + '.')
         heute = date.today().isoformat()
         for f in werkzeuge.faelle_auflisten():
             if f.get('fehler'): zeilen.append(f'{f["id"]}: Fehler beim Lesen: {f["fehler"]}'); continue
-            ordner = store.fall_ordner(f['id']); post = [p.name for p in (ordner / '01 Eingang').iterdir() if p.is_file() and not p.name.startswith('.')] if (ordner / '01 Eingang').exists() else []
+            neue = post(store.fall_ordner(f['id']) / '01 Eingang')
             nah = [x for x in f['fristen'] if x['datum'] and (x['datum'] < heute or (date.fromisoformat(x['datum']) - date.today()).days <= 21)]
             teile = [f'{f["id"]} {f["titel"]} ({f["bereich"]}, {f["status"]})']
-            teile.append('neue Post: ' + (', '.join(post) if post else 'keine'))
+            teile.append(f'neue Post ({stand}): ' + ', '.join(neue) if neue else 'neue Post: keine')
             if f.get('nicht_erfasst'): teile.append(f'{f["nicht_erfasst"]} Datei(en) ohne Kennung (bestand_abgleichen nach Freigabe)')
             if nah: teile.append('Fristen: ' + '; '.join(f'{x["datum"]} {x["titel"]} [{x["pruefstatus"]}' + (', ohne Prüfdatum' if x['pruefstatus'] == 'bestätigt' and not x.get('eigenschaften', {}).get('geprueft') else '') + (', offener Marker' if x.get('eigenschaften', {}).get('offene_marker') else '') + (', Auslöser unsicher' if x.get('eigenschaften', {}).get('ausloeser_sicher') is False else '') + ']' + (' ÜBERSCHRITTEN' if x['datum'] < heute else '') for x in nah))
             teile.append(f'offene Aufgaben: {f["offene_aufgaben"]}')
