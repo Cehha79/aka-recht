@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>AKA Recht</title>
+
+  <!-- Farben an einer Stelle: hier ändern, dann ändert sich das ganze Logo -->
+  <defs>
+    <style>
+      .ordner-hinten { fill: #1F3A5F; }  /* dunkles Blau */
+      .ordner-vorne  { fill: #2E5A8C; }  /* mittleres Blau */
+      .waage         { fill: #E0B040; }  /* Gold */
+      .faden         { stroke: #E0B040; stroke-width: 3; fill: none; }
+    </style>
+  </defs>
+
+  <!-- 1. Aktenordner, hinterer Teil mit Reiter oben links -->
+  <path class="ordner-hinten"
+        d="M72 120 Q72 104 88 104 H200 L232 136 H424 Q440 136 440 152
+           V392 Q440 408 424 408 H88 Q72 408 72 392 Z"/>
+
+  <!-- 2. Aktenordner, vorderer Teil -->
+  <rect class="ordner-vorne" x="72" y="160" width="368" height="248" rx="16"/>
+
+  <!-- 3. Waage: Säule, Knauf, Balken, Fuß -->
+  <rect   class="waage" x="250" y="196" width="12"  height="156"/>
+  <circle class="waage" cx="256" cy="192" r="10"/>
+  <rect   class="waage" x="164" y="214" width="184" height="10" rx="5"/>
+  <rect   class="waage" x="208" y="348" width="96"  height="14" rx="7"/>
+
+  <!-- 4. Linke Schale mit zwei Fäden -->
+  <path class="faden" d="M172 224 L148 292 M172 224 L196 292"/>
+  <path class="waage" d="M142 292 H202 A30 22 0 0 1 142 292 Z"/>
+
+  <!-- 5. Rechte Schale mit zwei Fäden -->
+  <path class="faden" d="M340 224 L316 292 M340 224 L364 292"/>
+  <path class="waage" d="M310 292 H370 A30 22 0 0 1 310 292 Z"/>
+</svg>

@@ -29,10 +29,32 @@ photos, e-mails and deadlines are scattered everywhere. **AKA Recht** is the
 folder where all of it has its place, and the set of guides with which your
 AI helps you to organise, check and formulate.
 
+AKA Recht helps you to organise legal matters such as dismissals, fines,
+criminal complaints, administrative appeals or tenancy disputes yourself. Your
+files stay locally on your machine, without cloud storage. Every case has a
+unique id and a fixed structure for documents, parties, deadlines and history.
+Digital fingerprints (checksums) make changes to files detectable.
+
+The end of a deadline is calculated under §§ 187, 188 and 193 BGB, taking
+weekends and the state-wide public holidays of the relevant federal state into
+account (under § 193 BGB the state of the place of declaration or performance).
+Which deadline applies and when it starts is for you to clarify.
+
+Through the AI interface MCP, case files can be searched, documents evaluated
+and letters drafted. Everything the AI assistant reads from the case file is
+transmitted to the respective AI provider. Changes to the case file are made
+only after your explicit confirmation.
+
+AKA Recht does not replace legal advice.
+
 - **Every matter is a case** with a fixed id, fixed folders, structured data in
   `akte.json` and a journal. Originals are never changed.
 - **Deadlines with a calculation:** every deadline shows trigger, legal basis and
   the calculation under §§ 187, 188, 193 BGB with the holidays of your state.
+- **A timeline others can follow:** a time path with time in the middle, other
+  parties on the left, your own steps on the right. Key events at one click,
+  a colour per group, cause and reaction with the interval ("7 days later"),
+  and every reference opens the document.
 - **Your AI works with it:** Claude Code, Claude Desktop, Codex or any other
   that speaks MCP (Model Context Protocol) or can run commands. 7 guides
   take it from case intake to a reviewed draft, 35 tools let it read
@@ -43,9 +65,9 @@ AI helps you to organise, check and formulate.
 > [!TIP]
 > To try it out there is a fictional sample case (dismissal by the employer).
 > Click **"Beispielfall laden"** in the UI, then browse case, documents,
-> deadlines and draft. Delete it whenever you like.
+> timeline, deadlines and draft. Delete it whenever you like.
 
-Product version 0.4 of 18.09.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · tested with Python 3.14.7 on macOS 26.7, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz
+Product version 0.4 of 18.09.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · tested with Python 3.14.7 on macOS 26.7.1, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz
 
 ## Download
 
@@ -591,26 +613,26 @@ change to `akte.json` is validated against the data model and saved with a revis
 | `rechtsinhalte_pruefen` | reads | Reports which bundled legal content is due for a new check against the official full text: fact sheets, holiday table, source catalogue; writes nothing, no network |
 | `fall_anlegen` | writes | Create a new case with a fixed id and folder structure |
 | `fall_status_setzen` | writes | Set case status to open, dormant or closed |
-| `beteiligter_anlegen` | writes | Beteiligten in einem Fall anlegen (Person, Gericht, Behörde, Anwalt, Zeuge, Stelle). Gibt die neue P-Kennung zurück; Verweise aus Dokumenten, Verfahren und Fristen gehen auf diese Kennung. |
-| `verfahren_anlegen` | writes | Verfahren in einem Fall anlegen (Klage, Bußgeldverfahren, Widerspruch, Mahnverfahren, Strafanzeige). Ein Verfahren ist alles, was eine eigene Stelle und ein eigenes Aktenzeichen hat. |
-| `beteiligter_setzen` | writes | Vorhandenen Beteiligten ändern (Name, Rolle, Anschrift, Kontakt, Aktenzeichen). Nur die übergebenen Felder werden geändert; die P-Kennung bleibt, damit Verweise gültig bleiben. |
-| `verfahren_setzen` | writes | Vorhandenes Verfahren ändern (Art, Stelle, Aktenzeichen, Stand, Ordner). Nur die übergebenen Felder werden geändert; die V-Kennung bleibt, damit Fristen ihren Bezug behalten. |
-| `quelle_eintragen` | writes | Fallbezogene Rechtsquelle in der Akte vermerken: Norm, Entscheidung oder amtliche Seite mit Abrufdatum und wofür sie gebraucht wird. Gehört zu diesem Fall; der gemeinsame Zugangskatalog steht in 04 Rechtsquellen/Quellen.md (Werkzeug quellen_katalog). Gleicher Titel überschreibt den vorhandenen Eintrag. |
+| `beteiligter_anlegen` | writes | Add a party to a case (person, court, authority, lawyer, witness, body) and return its P id |
+| `verfahren_anlegen` | writes | Add proceedings to a case (action, fine proceedings, appeal, order for payment, criminal complaint) |
+| `beteiligter_setzen` | writes | Change an existing party; only the given fields change, the P id stays so references remain valid |
+| `verfahren_setzen` | writes | Change existing proceedings; only the given fields change, the V id stays so deadlines keep their link |
+| `quelle_eintragen` | writes | Record a case-specific legal source: provision, decision or official page with retrieval date and purpose; the same title overwrites the entry |
 | `aufgabe_anlegen` | writes | Add a task to a case |
 | `aufgabe_setzen` | writes | Mark a task done or open, optionally change due date or detail |
 | `frist_eintragen` | writes | Enter a deadline or appointment; "confirmed" only with trigger, legal basis, calculation naming the end date, source and no open marker; confirmation carries review date and reviewer |
 | `vorlagen_auflisten` | reads | List the letter templates under 05 Vorlagen/Schreiben with their first line |
 | `vorlage_fuellen` | writes | Create a draft from a template in 06 Entwürfe with sender, signature, date and case id filled in; never overwrites; other placeholders stay to be filled |
-| `ereignis_eintragen` | writes | Add an event to the case timeline |
-| `frist_setzen` | writes | Vorhandene Frist oder vorhandenen Termin ändern. Nur die übergebenen Felder werden geändert. Eine Bestätigung bekommt Prüfdatum und Prüfer; das Schema prüft weiter Rechnung, Beleg und offene Marker. |
-| `ereignis_setzen` | writes | Vorhandenes Ereignis ändern. Nur die übergebenen Felder werden geändert; „zeitpunkt“ genau entfernt die Angaben zur Unsicherheit. |
+| `ereignis_eintragen` | writes | Add an event to the case timeline: time, heading, type and factual account, optionally key event, persons, documents, reference to an earlier event, remark, amount, state of evidence and appointment status |
+| `frist_setzen` | writes | Change an existing deadline or appointment; only the given fields change; a confirmation gets review date and reviewer, the schema still checks calculation, source and open markers |
+| `ereignis_setzen` | writes | Change an existing event; only the given fields change; "zeitpunkt" exact removes the uncertainty details; for the timeline fields an empty value removes the field |
 | `notiz_anlegen` | writes | Add a note to a case |
 | `entwurf_erfassen` | writes | Register a draft or a new version; with status "geprüft" or "versandt" the file is frozen as a read-only copy under 06 Entwürfe/Fassungen with checksum and its own id |
 | `texterkennung` | writes | Text recognition (OCR) for a photo or a PDF without text layer via the optional program tesseract; stores the result as a separate text file under 07 Recherche/Texterkennung with its own id, a reference to the original and a warning header; marks the original as "OCR-erkannt" if no reading quality is set; never overwrites; the recognised text is derived, check figures and dates against the original |
 | `bestand_abgleichen` | writes | Sync the inventory of a case with its files: new files get an id, moved files are found by checksum; the only way new files are registered |
 | `dokument_ordnen` | writes | Change metadata of a document (title, date, kind, state, topics, exhibit, persons, references, note, reading quality); the file stays untouched |
 | `dokument_verschieben` | writes | File a document into another section; id and content stay, nothing is overwritten |
-| `datei_ablegen` | writes | Textdatei in einem Fall anlegen: Notiz, Vermerk oder Entwurf. Erlaubt sind nur 01 Eingang, 06 Entwürfe und 07 Recherche; die Originalbereiche 02 bis 05 und 08 bleiben gesperrt. Überschreibt nie eine vorhandene Datei und registriert die neue Datei anschließend im Bestand, sodass sie eine D-Kennung bekommt. |
+| `datei_ablegen` | writes | Create a text file in a case (note, memo or draft), only in 01 Eingang, 06 Entwürfe or 07 Recherche; never overwrites and registers the file with a D id |
 | `journal_schreiben` | writes | Append an entry to the case journal |
 | `sicherung_erstellen` | writes | Create a verified ZIP backup of the whole folder, with a copy to the second target |
 | `sicherung_probe` | writes | Restore test: extract the last backup into a scratch folder, check case files against the schema and all files against their checksums, remove the scratch folder |

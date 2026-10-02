@@ -147,9 +147,15 @@
       "id": "E01",
       "datum": "2021-03-01",
       "titel": "Beginn des Arbeitsverhältnisses",
-      "art": "Vorfall",
+      "art": "Vertrag",
       "quelle": "D0001",
-      "detail": "Lagerist in Vollzeit."
+      "detail": "Lagerist in Vollzeit.",
+      "personen": [
+        "P02",
+        "P01"
+      ],
+      "wichtig": true,
+      "belegstand": "Unterlage vorhanden"
     },
     {
       "id": "E02",
@@ -157,7 +163,16 @@
       "titel": "Kündigung zugegangen",
       "art": "Zugang",
       "quelle": "D0003",
-      "detail": "Einwurf in den Briefkasten am 04.09.2026 gegen 11 Uhr, Vermerk und Umschlagfoto."
+      "detail": "Einwurf in den Briefkasten am 04.09.2026 gegen 11 Uhr, Vermerk und Umschlagfoto.",
+      "personen": [
+        "P02"
+      ],
+      "wichtig": true,
+      "belegstand": "eigene Aufzeichnung",
+      "belege": [
+        "D0002"
+      ],
+      "anmerkung": "Der Zugang ist bisher nur durch den eigenen Vermerk und das Umschlagfoto belegt, ein Zeuge fehlt."
     },
     {
       "id": "E03",
@@ -165,7 +180,39 @@
       "titel": "Arbeitsuchend gemeldet",
       "art": "Vermerk",
       "quelle": "",
-      "detail": "Online bei der Agentur für Arbeit gemeldet, Bestätigung per E-Mail [BELEG: Bestätigung ablegen]."
+      "detail": "Online bei der Agentur für Arbeit gemeldet, Bestätigung per E-Mail [BELEG: Bestätigung ablegen].",
+      "personen": [
+        "P01",
+        "P04"
+      ],
+      "antwort_auf": "E02",
+      "belegstand": "eigene Aufzeichnung"
+    },
+    {
+      "id": "E04",
+      "datum": "2026-09-02",
+      "titel": "Kündigungsschreiben trägt das Datum 02.09.2026",
+      "art": "Kündigung",
+      "quelle": "D0002",
+      "detail": "Datum auf dem Schreiben. Wann es zugegangen ist, steht in einem eigenen Ereignis.",
+      "personen": [
+        "P02"
+      ],
+      "belegstand": "Unterlage vorhanden"
+    },
+    {
+      "id": "E05",
+      "datum": "2026-09-08",
+      "titel": "Entwurf der Klage angelegt",
+      "art": "Vermerk",
+      "quelle": "D0004",
+      "detail": "Entwurf unter 06 Entwürfe, noch nicht geprüft und nicht eingereicht.",
+      "personen": [
+        "P01",
+        "P03"
+      ],
+      "antwort_auf": "E02",
+      "belegstand": "Unterlage vorhanden"
     }
   ],
   "fristen": [

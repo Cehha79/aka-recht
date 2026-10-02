@@ -46,6 +46,19 @@ Original ändern; ein Textauszug ist eine Ableitung.
   `zeitpunkt_text` (was bekannt ist, woher); `datum` ist dann nur das
   Sortierdatum (frühester belegter oder gemeldeter Tag). Eine Frist auf einem
   solchen Ereignis kann nicht bestätigt werden, bis der Zeitpunkt geklärt ist.
+- Für die Chronologie der Fallakte (zweiseitiger Zeitpfad) je Ereignis mitgeben, was
+  belegt ist, und nichts erfinden: `personen` (P-Kennungen, die handelnde Person
+  zuerst; sie bestimmt Seite und Farbe), `belege` (weitere D-Kennungen neben
+  `quelle`), `fundstelle` (Seite, Absatz), `antwort_auf` (E-Kennung des Anlasses,
+  nur bei einer echten Reaktion), `belegstand` (Unterlage vorhanden, Versand
+  belegt, Zugang belegt, eigene Aufzeichnung, eigene Erinnerung, Zeuge benannt,
+  ungeklärt), bei Terminen `terminstatus`, bei Geld `betrag` mit
+  `betrag_einordnung`. `wichtig=true` nur für die wenigen Ereignisse, die den
+  Fall tragen, und erst nach Rücksprache mit dem Nutzer. `detail` ist die
+  sachliche Darstellung; jede eigene Einordnung gehört nach `anmerkung`, ein
+  wörtliches Zitat nach `originalnotiz`. Ein Monat ohne Tag ist ein Zeitraum vom
+  Ersten bis zum Letzten des Monats. Fehlt ein Beteiligter, erst
+  `beteiligter_anlegen`, dann die Kennung verwenden.
 - Zu jedem Ereignis: Dokumentkennung und Fundstelle (Seite, Absatz, Kopfzeile).
   Texte mit `cli.py dokument_text`, Bilder öffnen. Die Antwort nennt die
   `textquelle`: nur `direkt` und `pdf-text` sind gelesener Text; bei `bild`,
@@ -65,7 +78,10 @@ Original ändern; ein Textauszug ist eine Ableitung.
 
 ## Ablage
 
-- Ereignisse in die Chronologie: `cli.py ereignis_eintragen fall=$fall datum=… titel=… art=… quelle=D… detail=…`
+- Ereignisse in die Chronologie: `cli.py ereignis_eintragen fall=$fall datum=… titel=… art=… quelle=D… detail=…`,
+  mit Listen als JSON: `personen='["P02","P01"]' belege='["D0003"]'`; vorhandene
+  Ereignisse ergänzen mit `cli.py ereignis_setzen fall=$fall ereignis=E… …` statt
+  ein zweites anzulegen.
 - Prüfvermerk als Markdown unter `07 Recherche/Prüfvermerke/JJJJ-MM-TT_Sachverhalt.md`
   (Beweistabelle als Markdown-Tabelle). Vorhandenen Vermerk fortführen statt
   einen zweiten anzulegen. HTML-Ansicht nur, wenn der Nutzer sie will.

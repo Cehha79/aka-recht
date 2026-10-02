@@ -59,8 +59,9 @@ def verzeichnis(ak, docs, fehlend, args):
     z = [f'# Übergabe {f["id"]} · {f["titel"]}', f'Stand: {date.today():%d.%m.%Y} · Empfänger: {args.empfaenger} · Umfang: {args.umfang}', '']
     if args.umfang == 'voll':
         z += [f'Bereich: {f["bereich"]} · Rolle: {f["rolle"]} · Status: {f["status"]}', '', f'Ziel: {f["ziel"]}', '', '## Beteiligte']
-        z += [f'- {b["id"]} {b["name"]} ({b["rolle"]}){" · " + b["aktenzeichen"] if b["aktenzeichen"] else ""}' for b in ak['beteiligte']]
-        z += ['', '## Verfahren'] + [f'- {v["id"]} {v["art"]} · {pers.get(v["stelle"], {}).get("name", "")} · Az. {v["aktenzeichen"] or "offen"} · Stand: {v["stand"]}' for v in ak['verfahren']]
+        # Felder über .get: Akten, die die Oberfläche oder ältere Fassungen geschrieben haben, führen nicht jedes Feld
+        z += [f'- {b["id"]} {b["name"]} ({b.get("rolle") or "ohne Rolle"}){" · " + b["aktenzeichen"] if b.get("aktenzeichen") else ""}' for b in ak['beteiligte']]
+        z += ['', '## Verfahren'] + [f'- {v["id"]} {v["art"]} · {pers.get(v.get("stelle"), {}).get("name", "")} · Az. {v.get("aktenzeichen") or "offen"} · Stand: {v.get("stand", "")}' for v in ak['verfahren']]
     if args.umfang == 'voll' or args.mit_chronologie:
         def zeit(e):   # F13: unsichere Zeitpunkte sichtbar, datum ist dann nur das Sortierdatum
             z = e.get('zeitpunkt') or 'genau'; t = f' ({e["zeitpunkt_text"]})' if e.get('zeitpunkt_text') else ''
@@ -68,10 +69,20 @@ def verzeichnis(ak, docs, fehlend, args):
             if z == 'zeitraum': return f'{e["datum"]} bis {e.get("datum_bis") or e["datum"]}{t}'
             if z == 'unbekannt': return f'Zeitpunkt unbekannt, einsortiert bei {e["datum"]}{t}'
             return e['datum']
-        z += ['', '## Chronologie'] + [f'- {zeit(e)} {e["titel"]} ({e["art"]}){" · Quelle " + e["quelle"] if e["quelle"] else ""}: {e["detail"]}' for e in sorted(ak['ereignisse'], key=lambda x: x['datum'])]
+        def zeile(e):   # Chronologie (02.10.2026): Personen, Belege, Bezug und Belegstand stehen dabei; die eigene Einordnung (anmerkung) und die Originalnotiz nur im vollen Paket
+            belege = list(dict.fromkeys([e.get('quelle', '')] + list(e.get('belege', []))))
+            teile = [('Kernereignis' if e.get('wichtig') else ''), ', '.join(pers.get(p, {}).get('name', p) for p in e.get('personen', [])),
+                     ('Belege ' + ', '.join(b for b in belege if b)) if any(belege) else '', e.get('fundstelle', ''), ('Antwort auf ' + e['antwort_auf']) if e.get('antwort_auf') else '',
+                     e.get('belegstand', ''), e.get('terminstatus', ''), ' '.join(x for x in (e.get('betrag', ''), e.get('betrag_einordnung', '')) if x)]
+            s = f'- {zeit(e)} {e["id"]} {e["titel"]} ({e.get("art") or "ohne Art"})' + ''.join(' · ' + x for x in teile if x) + (': ' + e['detail'] if e.get('detail') else '')
+            if args.umfang == 'voll':
+                if e.get('anmerkung'): s += f'\n  Anmerkung (eigene Einordnung): {e["anmerkung"]}'
+                if e.get('originalnotiz'): s += f'\n  Originalnotiz: {e["originalnotiz"]}'
+            return s
+        z += ['', '## Chronologie'] + [zeile(e) for e in sorted(ak['ereignisse'], key=lambda x: (x['datum'], x.get('reihenfolge', 0)))]
     if args.umfang == 'voll':
-        z += ['', '## Fristen und Termine'] + [f'- {x["datum"]} {x["titel"]} · {x["art"]} · Prüfstatus {x["pruefstatus"]} · Auslöser: {x["ausloeser"]} · Grundlage: {x["rechtsgrundlage"]}' for x in sorted(ak['fristen'], key=lambda x: x['datum'])]
-        z += ['', '## Offene Aufgaben'] + [f'- {x["titel"]}{" (fällig " + x["faellig"] + ")" if x["faellig"] else ""}: {x["detail"]}' for x in ak['aufgaben'] if not x['erledigt']]
+        z += ['', '## Fristen und Termine'] + [f'- {x["datum"]} {x["titel"]} · {x["art"]} · Prüfstatus {x["pruefstatus"]} · Auslöser: {x.get("ausloeser", "")} · Grundlage: {x.get("rechtsgrundlage", "")}' for x in sorted(ak['fristen'], key=lambda x: x['datum'])]
+        z += ['', '## Offene Aufgaben'] + [f'- {x["titel"]}{" (fällig " + x["faellig"] + ")" if x.get("faellig") else ""}: {x.get("detail", "")}' for x in ak['aufgaben'] if not x.get('erledigt')]
     z += ['', '## Anlagenverzeichnis'] + [f'- {d["anlage"]}: {d["titel"]} ({d["id"]})' for d in sorted((d for d in docs if d['anlage']), key=lambda d: d['anlage'])]
     z += ['', '## Enthaltene Dokumente'] + [f'- {d["id"]} · {d["titel"]} · {d["datum"] or "ohne Datum"} · {d["stand"]}' for d in docs]
     if fehlend: z += ['', '## Nicht enthalten (Datei fehlt am registrierten Ort)'] + [f'- {d["id"]} · {d["titel"]} · {d["pfad"]}' for d in fehlend]

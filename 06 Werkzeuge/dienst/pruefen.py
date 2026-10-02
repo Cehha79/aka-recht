@@ -475,6 +475,52 @@ def run():
 
         ok('MCP-Lücken geschlossen (F23): Beteiligte und Verfahren anlegen mit geprüften Verweisen und ohne Doppelung, vorhandene Frist und vorhandenes Ereignis ändern (genau räumt die Unsicherheit ab, Marker bleiben gesperrt), Textdatei ablegen nur in 01, 06, 07 ohne Überschreiben und mit eigener Kennung')
 
+        # Chronologie (02.10.2026): neue optionale Felder am Ereignis. Alte Akten bleiben gültig, feste Werte und Verweise werden geprüft.
+        fall = anfrage('/api/fall/R-0001'); ak = fall['akte']
+        assert not akte_schema.validate(ak)[0] and not any(feld in e for e in ak['ereignisse'] for feld in ('wichtig', 'personen', 'belege', 'antwort_auf'))   # Akte ohne die neuen Felder
+        def chron(**felder):
+            k = json.loads(json.dumps(ak)); next(x for x in k['ereignisse'] if x['id'] == e_raum['id']).update(felder); return k
+        for felder, erwartet in (({'wichtig': 'ja'}, 'wichtig'), ({'seite': 'mitte'}, 'seite'), ({'personen': p['id']}, 'personen'), ({'personen': ['P99']}, 'P99'),
+                                 ({'belege': ['D9999']}, 'D9999'), ({'belege': [5]}, 'belege'), ({'antwort_auf': 'E99'}, 'E99'), ({'antwort_auf': e_raum['id']}, 'sich selbst'),
+                                 ({'betrag_einordnung': 'geschenkt'}, 'betrag_einordnung'), ({'reihenfolge': True}, 'reihenfolge'), ({'reihenfolge': '3'}, 'reihenfolge'),
+                                 ({'anmerkung': 5}, 'anmerkung'), ({'fundstelle': ['x']}, 'fundstelle'), ({'belegstand': None}, 'belegstand')):
+            fehler, _ = akte_schema.validate(chron(**felder)); assert any(erwartet in s for s in fehler), (felder, fehler)
+        fehler, warn = akte_schema.validate(chron(belegstand='vom Hörensagen', terminstatus='vielleicht', art='Zusage oder Angebot'))
+        assert not fehler and sum(s.startswith(e_raum['id']) and 'unüblich' in s for s in warn) == 2, (fehler, warn)   # vorgeschlagene Werte warnen nur, die neue Art ist bekannt
+        for art in ('Vermerk', 'Entscheidung', 'Arbeitsstand', 'Bescheid', 'Sonstiges'):
+            assert not any(s.startswith(e_raum['id']) for s in akte_schema.validate(chron(art=art))[1]), art   # ältere und neue Arten ohne Warnung
+        voll = {'wichtig': True, 'seite': 'links', 'personen': [p['id']], 'belege': ['D0001', abl['kennung']], 'fundstelle': 'Seite 2, zweiter Absatz', 'antwort_auf': e_genau['id'],
+                'anmerkung': 'Einordnung, keine Tatsache.', 'originalnotiz': 'Notiz im Wortlaut', 'betrag': '128 Euro', 'betrag_einordnung': 'Angebot',
+                'belegstand': 'Unterlage vorhanden', 'terminstatus': 'wahrgenommen', 'reihenfolge': 1.5, 'art': 'Gespräch'}
+        anfrage('/api/fall/R-0001', {'akte': chron(seite='mitte'), 'revision': fall['revision']}, erwartet=400)   # der Fehler hält auch das Speichern auf
+        anfrage('/api/fall/R-0001', {'akte': chron(**voll), 'revision': fall['revision']})
+        gespeichert = next(x for x in anfrage('/api/fall/R-0001')['akte']['ereignisse'] if x['id'] == e_raum['id'])
+        assert all(gespeichert[k] == w for k, w in voll.items()), gespeichert
+        fall = anfrage('/api/fall/R-0001'); ak = fall['akte']; ohne = json.loads(json.dumps(ak)); ohne['ereignisse'] = [x for x in ohne['ereignisse'] if x['id'] != e_genau['id']]
+        assert any('antwort_auf' in s for s in akte_schema.validate(ohne)[0])   # ein Ereignis, auf das ein anderes antwortet, lässt sich nicht still entfernen
+        assert set(akte_schema.BELEGSTAND_EIGENE_ANGABE) < set(akte_schema.BELEGSTAND_VORSCHLAG) and 'Unterlage vorhanden' not in akte_schema.BELEGSTAND_EIGENE_ANGABE
+        # Chronologie über die Werkzeuge: eine KI trägt dieselben Felder ein wie die Oberfläche (MCP und Befehlszeile nutzen denselben Katalog)
+        chron_kat = {w['name']: w['parameter']['properties'] for w in anfrage('/api/werkzeuge')}
+        for name in ('ereignis_eintragen', 'ereignis_setzen'):
+            assert chron_kat[name]['personen']['type'] == 'array' and chron_kat[name]['wichtig']['type'] == 'boolean' and chron_kat[name]['reihenfolge']['type'] == 'number', name
+        assert 'Bescheid' in chron_kat['ereignis_eintragen']['art']['enum'] and 'Vermerk' in chron_kat['ereignis_eintragen']['art']['enum']
+        neu = {'fall': 'R-0001', 'datum': '2026-09-10', 'titel': 'Antwort der Behörde', 'art': 'Antwort', 'wichtig': True, 'personen': [p['id'].lower()], 'belege': ['d0001'],
+               'antwort_auf': e_genau['id'].lower(), 'fundstelle': ' Seite 1 ', 'anmerkung': 'Einordnung', 'betrag': '128 Euro', 'betrag_einordnung': 'Angebot', 'belegstand': 'Unterlage vorhanden', 'reihenfolge': '1,5'}
+        e_chron = anfrage('/api/werkzeug', {'name': 'ereignis_eintragen', 'parameter': neu, 'bestaetigt': True})['ereignis']
+        assert e_chron['personen'] == [p['id']] and e_chron['belege'] == ['D0001'] and e_chron['antwort_auf'] == e_genau['id'] and e_chron['wichtig'] is True and e_chron['fundstelle'] == 'Seite 1' and e_chron['reihenfolge'] == 1.5, e_chron
+        for par in ({'personen': ['P99']}, {'belege': ['D9999']}, {'antwort_auf': 'E99'}, {'seite': 'mitte'}, {'betrag_einordnung': 'geschenkt'}, {'wichtig': 'vielleicht'}, {'personen': p['id']}, {'reihenfolge': 'oben'}):
+            anfrage('/api/werkzeug', {'name': 'ereignis_eintragen', 'parameter': {'fall': 'R-0001', 'datum': '2026-09-11', 'titel': 'kaputt', **par}, 'bestaetigt': True}, erwartet=400)
+        anfrage('/api/werkzeug', {'name': 'ereignis_setzen', 'parameter': {'fall': 'R-0001', 'ereignis': e_chron['id'], 'antwort_auf': e_chron['id']}, 'bestaetigt': True}, erwartet=400)   # nicht auf sich selbst
+        g = anfrage('/api/werkzeug', {'name': 'ereignis_setzen', 'parameter': {'fall': 'R-0001', 'ereignis': e_chron['id'], 'wichtig': False, 'personen': [], 'anmerkung': '', 'reihenfolge': 0, 'seite': 'rechts', 'terminstatus': 'wahrgenommen'}, 'bestaetigt': True})['ereignis']
+        assert 'wichtig' not in g and 'personen' not in g and 'anmerkung' not in g and g['reihenfolge'] == 0 and g['seite'] == 'rechts' and g['terminstatus'] == 'wahrgenommen', g   # leere Werte räumen ab, 0 ist ein Wert
+        assert g['belege'] == ['D0001'] and g['betrag'] == '128 Euro' and g['titel'] == 'Antwort der Behörde', g   # nicht übergebene Felder bleiben
+        u = anfrage('/api/werkzeug', {'name': 'fall_uebersicht', 'parameter': {'fall': 'R-0001'}})
+        ue = next(x for x in u['ereignisse'] if x['id'] == e_chron['id']); assert ue['belege'] == ['D0001'] and ue['antwort_auf'] == e_genau['id'] and 'anmerkung' not in ue, ue
+        assert 'wichtig' not in next(x for x in u['ereignisse'] if x['id'] == e_genau['id'])   # Ereignisse ohne die Felder bleiben unverändert knapp
+        assert not akte_schema.validate(anfrage('/api/fall/R-0001')['akte'])[0]
+        ok('Chronologie, Werkzeuge: ereignis_eintragen und ereignis_setzen tragen Kernereignis, Seite, Personen, Belege, Bezug, Anmerkung, Betrag, Belegstand, Terminstatus und Reihenfolge ein; Kennungen in Großschreibung, falsche Werte und Verweise abgewiesen, leere Werte entfernen das Feld, die Fallübersicht zeigt die gesetzten Felder')
+        ok('Chronologie, Datenmodell: Ereignisse mit Kernereignis, Seite, Personen, Belegen, Fundstelle, Bezug, Anmerkung, Originalnotiz, Betrag, Belegstand, Terminstatus und Reihenfolge; alle Felder optional, feste Werte und Verweise (P, D, E) geprüft, vorgeschlagene Werte nur als Warnung, ältere Arten bleiben gültig')
+
         # N01 (Prüfbericht 18.09.2026): datei_ablegen kam über „unterordner“ aus dem erlaubten Bereich heraus
         fallordner = root / f1['ordner']
         geschuetzt = ['02 Grundlagen', '03 Schriftverkehr', '04 Verfahren', '05 Beweise', '08 Archiv']
@@ -584,6 +630,12 @@ def run():
 
         # 7b Übergabepaket (F08, F27): Empfänger und Umfang, Vorschau, Manifest mit Rücklesen, harte Fehler
         anfrage('/api/werkzeug', {'name': 'notiz_anlegen', 'parameter': {'fall': 'R-0002', 'titel': 'intern', 'text': 'VERTRAULICH-PROBE'}, 'bestaetigt': True})
+        # Chronologie im Paket (02.10.2026): Personen und Kernereignis stehen dabei, die eigene Einordnung nur im vollen Paket; ein Beteiligter ohne Feld aktenzeichen bricht nicht mehr ab
+        pb = anfrage('/api/werkzeug', {'name': 'beteiligter_anlegen', 'parameter': {'fall': 'R-0002', 'name': 'Vermieter Beispiel', 'rolle': 'Gegner'}, 'bestaetigt': True})['beteiligter']['id']
+        anfrage('/api/werkzeug', {'name': 'ereignis_eintragen', 'parameter': {'fall': 'R-0002', 'datum': '2026-08-03', 'titel': 'Abrechnung erhalten', 'art': 'Zugang', 'personen': [pb], 'wichtig': True, 'belegstand': 'Unterlage vorhanden', 'anmerkung': 'EINORDNUNG-PROBE'}, 'bestaetigt': True})
+        fall2 = anfrage('/api/fall/R-0002'); ak2 = fall2['akte']
+        for feld in ('aktenzeichen', 'anschrift', 'kontakt'): next(b for b in ak2['beteiligte'] if b['id'] == pb).pop(feld, None)
+        anfrage('/api/fall/R-0002', {'akte': ak2, 'revision': fall2['revision']})
         skript = QUELLE / '.claude/recht/werkzeuge/uebergabe_paket.py'; umgebung = {**os.environ, 'CLAUDE_PROJECT_DIR': str(root), 'PYTHONDONTWRITEBYTECODE': '1'}
         def paket(*argv): return subprocess.run([sys.executable, str(skript), 'R-0002', *argv], capture_output=True, text=True, encoding='utf-8', env=umgebung, timeout=60)
         r = paket('--empfaenger', 'gericht', '--nur', 'D0001,D9999', '--ziel', str(base / 'x.zip')); assert r.returncode != 0 and 'D9999' in r.stdout + r.stderr and not (base / 'x.zip').exists()
@@ -600,8 +652,12 @@ def run():
         with zipfile.ZipFile(base / 'a.zip') as zf:
             namen = zf.namelist(); assert '00 Journal.md' in namen and '01 Eingang/Brief.pdf' in namen and not any(n.startswith('06 ') for n in namen), namen
             inhalt = zf.read('00 Inhaltsverzeichnis.md').decode(); assert '## Chronologie' in inhalt and '## Fristen' in inhalt and 'VERTRAULICH-PROBE' not in inhalt
+            assert 'Abrechnung erhalten (Zugang) · Kernereignis · Vermieter Beispiel' in inhalt and 'EINORDNUNG-PROBE' in inhalt and 'Vermieter Beispiel (Gegner)' in inhalt, inhalt
             assert zf.testzip() is None
-        ok('Übergabepaket: unbekannte Kennung und fehlendes --nur brechen ab, Vorschau schreibt nichts, Gericht bekommt nur die gewählten Dokumente ohne Journal und interne Angaben, Anwalt alles; Manifest zurückgelesen, nichts überschrieben')
+        r = paket('--empfaenger', 'gericht', '--nur', 'D0001', '--mit-chronologie', '--ziel', str(base / 'gc.zip')); assert r.returncode == 0, r.stdout + r.stderr
+        with zipfile.ZipFile(base / 'gc.zip') as zf:
+            inhalt = zf.read('00 Inhaltsverzeichnis.md').decode(); assert 'Abrechnung erhalten' in inhalt and 'Vermieter Beispiel' in inhalt and 'EINORDNUNG-PROBE' not in inhalt, inhalt
+        ok('Übergabepaket: unbekannte Kennung und fehlendes --nur brechen ab, Vorschau schreibt nichts, Gericht bekommt nur die gewählten Dokumente ohne Journal und interne Angaben, Anwalt alles; Chronologie mit Personen und Kernereignis, die eigene Einordnung nur im vollen Paket; Beteiligter ohne Aktenzeichen-Feld bricht nicht ab; Manifest zurückgelesen, nichts überschrieben')
 
         # 8 Sicherung
         if os.name != 'nt':   # N05: Probestücke mit besonderen Rechten, die die Wiederherstellung erhalten muss

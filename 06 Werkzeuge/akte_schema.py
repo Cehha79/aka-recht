@@ -30,8 +30,19 @@ DOKUMENT_ART_VORSCHLAG = ['Schreiben', 'E-Mail', 'Foto', 'Vertrag', 'Bescheid',
                           'Urteil', 'Entwurf', 'Beleg', 'Übersicht', 'Gesetz', 'Sonstiges']
 BETEILIGTE_ROLLE_VORSCHLAG = ['Ich', 'Gegner', 'Gericht', 'Behörde', 'Anwalt',
                               'Zeuge', 'Stelle', 'Versicherung', 'Sonstige']
-EREIGNIS_ART_VORSCHLAG = ['Zugang', 'Versand', 'Termin', 'Gespräch', 'Vorfall',
-                          'Entscheidung', 'Vermerk', 'Arbeitsstand']
+# Arten eines Ereignisses: neutrale Liste für jedes Rechtsgebiet (Chronologie, 02.10.2026); die drei letzten
+# Werte sind die älteren, die in bestehenden Akten stehen und gültig bleiben.
+EREIGNIS_ART_VORSCHLAG = ['Vertrag', 'Gespräch', 'Zusage oder Angebot', 'Schreiben', 'Antwort', 'Beschwerde',
+                          'Widerspruch', 'Antrag', 'Bescheid', 'Kündigung', 'Klage', 'Termin', 'Zugang',
+                          'Versand', 'Vorfall', 'Sonstiges', 'Entscheidung', 'Vermerk', 'Arbeitsstand']
+# Chronologie (02.10.2026): optionale Felder am Ereignis. Eine Akte ohne sie bleibt gültig.
+EREIGNIS_SEITE = ['links', 'rechts']   # Seite des Zeitpfads; leer: aus der Rolle der ersten Person (Rolle „Ich“ rechts, sonst links)
+BETRAG_EINORDNUNG = ['Ausgangslage', 'Angebot', 'abgelehntes Angebot', 'Zusage', 'vereinbart', 'gezahlt', 'ungeklärt']
+BELEGSTAND_VORSCHLAG = ['Unterlage vorhanden', 'Versand belegt', 'Zugang belegt',
+                        'eigene Aufzeichnung', 'eigene Erinnerung', 'Zeuge benannt', 'ungeklärt']
+BELEGSTAND_EIGENE_ANGABE = BELEGSTAND_VORSCHLAG[3:]   # noch keine Unterlage: die Oberfläche zeigt diese Karten mit gestricheltem Rand
+TERMINSTATUS_VORSCHLAG = ['vereinbart', 'geplant', 'wahrgenommen', 'abgesagt', 'verschoben']
+EREIGNIS_TEXTFELDER = ('fundstelle', 'anmerkung', 'originalnotiz', 'betrag', 'belegstand', 'terminstatus', 'betrag_einordnung', 'seite', 'antwort_auf')
 FRIST_ART = ['gesetzlich', 'selbst gesetzt', 'von Gegenseite gesetzt', 'vorsorglich', 'Termin']
 FRIST_STATUS = ['offen', 'bestätigt', 'abgelaufen', 'erledigt']
 ENTWURF_STATUS = ['in Arbeit', 'geprüft', 'versandt', 'verworfen']
@@ -249,6 +260,22 @@ def validate(akte):
         if zp == 'unbekannt' and not str(e.get('zeitpunkt_text', '')).strip(): f.append(f'{e["id"]}: Zeitpunkt unbekannt braucht zeitpunkt_text (was bekannt ist, etwa „vor dem Gespräch am …“); datum ist nur das Sortierdatum.')
         if zp == 'ungefähr' and not str(e.get('zeitpunkt_text', '')).strip(): w.append(f'{e["id"]}: Zeitpunkt ungefähr, zeitpunkt_text fehlt (woher die Schätzung stammt).')
         if 'zeitpunkt_text' in e and not isinstance(e['zeitpunkt_text'], str): f.append(f'{e["id"]}: zeitpunkt_text muss Text sein.')
+        # Chronologie (02.10.2026): alle Felder optional. Feste Werte sind Fehler, vorgeschlagene nur Warnung, Verweise werden geprüft.
+        for feld in EREIGNIS_TEXTFELDER:
+            if feld in e and not isinstance(e[feld], str): f.append(f'{e["id"]}: {feld} muss Text sein.')
+        if 'wichtig' in e and not isinstance(e['wichtig'], bool): f.append(f'{e["id"]}: wichtig muss true oder false sein.')
+        if isinstance(e.get('seite'), str) and e['seite'] and e['seite'] not in EREIGNIS_SEITE: f.append(f'{e["id"]}: seite muss eines von {EREIGNIS_SEITE} sein oder leer bleiben.')
+        if isinstance(e.get('betrag_einordnung'), str) and e['betrag_einordnung'] and e['betrag_einordnung'] not in BETRAG_EINORDNUNG: f.append(f'{e["id"]}: betrag_einordnung muss eines von {BETRAG_EINORDNUNG} sein oder leer bleiben.')
+        for feld, vorschlag in (('belegstand', BELEGSTAND_VORSCHLAG), ('terminstatus', TERMINSTATUS_VORSCHLAG)):
+            if isinstance(e.get(feld), str) and e[feld] and e[feld] not in vorschlag: w.append(f'{e["id"]}: {feld} „{e[feld]}“ ist unüblich.')
+        for feld, ziel in (('personen', 'beteiligte'), ('belege', 'dokumente')):
+            if feld not in e: continue
+            if not isinstance(e[feld], list) or not all(isinstance(x, str) for x in e[feld]): f.append(f'{e["id"]}: {feld} muss eine Liste von Kennungen sein.'); continue
+            for x in e[feld]: verweis(x, ziel, f'{e["id"]}.{feld}')
+        if isinstance(e.get('antwort_auf'), str) and e['antwort_auf']:
+            if e['antwort_auf'] == e['id']: f.append(f'{e["id"]}: antwort_auf verweist auf sich selbst.')
+            else: verweis(e['antwort_auf'], 'ereignisse', f'{e["id"]}.antwort_auf')
+        if 'reihenfolge' in e and not zahl(e['reihenfolge']): f.append(f'{e["id"]}: reihenfolge muss eine Zahl sein.')
     for fr in akte['fristen']:
         datum(fr.get('datum', ''), fr['id'], pflicht=True)
         if not str(fr.get('titel', '')).strip(): f.append(f'{fr["id"]}: titel fehlt.')

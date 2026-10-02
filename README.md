@@ -24,15 +24,37 @@
 # AKA Recht
 
 Ein Strafzettel, eine Kündigung, eine Nebenkostenabrechnung, ein Bescheid
-vom Amt: Irgendwann hat jeder eine Rechtssache, und dann liegen Briefe,
-Fotos, Mails und Fristen überall. **AKA Recht** ist der Ordner, in dem das
-alles seinen Platz findet, und die Anleitung, mit der deine KI dir hilft,
-es zu ordnen, zu prüfen und zu formulieren.
+vom Amt, Strafanzeige, Widerspruch: Irgendwann hat jeder eine Rechtssache, und
+dann liegen Briefe, Fotos, Mails und Fristen überall. **AKA Recht** ist der
+Ordner, in dem das alles seinen Platz findet, und die Anleitung, mit der deine
+KI dir hilft, es zu ordnen, zu prüfen und zu formulieren.
+
+AKA Recht hilft dir, Rechtssachen wie Kündigungen, Bußgelder, Strafanzeige,
+Widerspruch oder Mietstreitigkeiten selbst zu ordnen. Deine Akten liegen lokal
+auf deinem Rechner, ohne Cloud-Speicher. Jeder Fall hat eine eindeutige Kennung
+und eine feste Struktur für Dokumente, Beteiligte, Fristen und Verlauf.
+Digitale Fingerabdrücke (Prüfsummen) machen Dateiveränderungen erkennbar.
+
+Das Fristende wird nach §§ 187, 188 und 193 BGB berechnet, unter
+Berücksichtigung von Wochenenden und den landesweiten Feiertagen des
+maßgeblichen Bundeslands (nach § 193 BGB das des Erklärungs- oder
+Leistungsorts). Welche Frist gilt und wann sie beginnt, musst du selbst klären.
+
+Über die KI-Schnittstelle MCP lassen sich Akten durchsuchen, Dokumente
+auswerten und Schreiben entwerfen. Dabei wird alles, was der KI-Assistent aus
+der Akte liest, an den jeweiligen KI-Anbieter übermittelt. Änderungen an der
+Akte erfolgen nur nach deiner ausdrücklichen Bestätigung.
+
+AKA Recht ersetzt keine Rechtsberatung.
 
 - **Jede Sache ist ein Fall** mit fester Kennung, festen Ordnern, Ordnungsdaten
   in `akte.json` und einem Journal. Originale werden nie verändert.
 - **Fristen mit Rechnung:** Jede Frist zeigt Auslöser, Rechtsgrundlage und den
   Rechenweg nach §§ 187, 188, 193 BGB, mit den Feiertagen deines Bundeslands.
+- **Chronologie, der auch andere folgen können:** ein Zeitpfad mit der Zeit in
+  der Mitte, links die anderen Stellen, rechts deine eigenen Schritte.
+  Kernereignisse auf einen Klick, Farbe je Gruppe, Anlass und Reaktion mit
+  Abstand („7 Tage später“), und jede Fundstelle öffnet das Dokument.
 - **Deine KI arbeitet mit:** Claude Code, Claude Desktop, Codex oder jede andere,
   die MCP (Model Context Protocol) oder Befehle ausführen kann. 7 Anleitungen
   führen sie von der Fallaufnahme bis zum geprüften Entwurf, 35 Werkzeuge
@@ -43,9 +65,9 @@ es zu ordnen, zu prüfen und zu formulieren.
 > [!TIP]
 > Zum Ausprobieren gibt es einen erfundenen Beispielfall (Kündigung durch den
 > Arbeitgeber). In der Oberfläche auf **„Beispielfall laden“** klicken, dann
-> durch Akte, Dokumente, Fristen und Entwurf klicken. Jederzeit löschbar.
+> durch Akte, Dokumente, Chronologie, Fristen und Entwurf klicken. Jederzeit löschbar.
 
-Produkt Version 0.4 vom 18.09.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · geprüft mit Python 3.14.7 auf macOS 26.7, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
+Produkt Version 0.4 vom 18.09.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · geprüft mit Python 3.14.7 auf macOS 26.7.1, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
 
 ## Herunterladen
 
@@ -616,9 +638,9 @@ und mit Revision gespeichert.
 | `frist_eintragen` | schreibend | Frist oder Termin in einem Fall eintragen. Bestätigt nur, wenn die Rechnung das Fristende nennt, Auslöser, Rechtsgrundlage und Quelle da sind und kein Marker [PRÜFEN], [QUELLE], [BELEG] offen ist; die Bestätigung bekommt Prüfdatum und Prüfer. |
 | `vorlagen_auflisten` | lesend | Schreibvorlagen unter 05 Vorlagen/Schreiben mit erster Zeile (interne Hinweise, Merkblatt). |
 | `vorlage_fuellen` | schreibend | Entwurf aus einer Schreibvorlage anlegen: kopiert die Vorlage nach 06 Entwürfe des Falls und setzt Absender (Einstellungen oder Beteiligter mit Rolle Ich), Unterschrift, Datum und Fallkennung ein (Platzhalter 【ABSENDER】, 【ABSENDER_NAME】, 【DATUM】, 【R-0000】). Überschreibt nie. Alle anderen Platzhalter bleiben zum Ausfüllen. |
-| `ereignis_eintragen` | schreibend | Ereignis in die Chronologie eines Falls eintragen. |
+| `ereignis_eintragen` | schreibend | Ereignis in die Chronologie eines Falls eintragen: Zeitpunkt, Überschrift, Art und sachliche Darstellung, dazu wahlweise Kernereignis, Personen, Belege, Bezug auf ein früheres Ereignis, Anmerkung, Betrag, Belegstand und Terminstatus. |
 | `frist_setzen` | schreibend | Vorhandene Frist oder vorhandenen Termin ändern. Nur die übergebenen Felder werden geändert. Eine Bestätigung bekommt Prüfdatum und Prüfer; das Schema prüft weiter Rechnung, Beleg und offene Marker. |
-| `ereignis_setzen` | schreibend | Vorhandenes Ereignis ändern. Nur die übergebenen Felder werden geändert; „zeitpunkt“ genau entfernt die Angaben zur Unsicherheit. |
+| `ereignis_setzen` | schreibend | Vorhandenes Ereignis ändern. Nur die übergebenen Felder werden geändert; „zeitpunkt“ genau entfernt die Angaben zur Unsicherheit. Bei den Feldern der Chronologie (Kernereignis, Personen, Belege, Bezug, Anmerkung, Betrag, Belegstand, Terminstatus) entfernt ein leerer Wert das Feld. |
 | `notiz_anlegen` | schreibend | Ordnungsnotiz in einem Fall anlegen. |
 | `entwurf_erfassen` | schreibend | Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung. |
 | `texterkennung` | schreibend | Texterkennung (OCR) für ein Foto oder eine PDF ohne Textschicht, über das freiwillige Zusatzprogramm tesseract auf diesem Rechner. Legt den erkannten Text als neue Textdatei unter 07 Recherche/Texterkennung an (eigene D-Kennung, Verweis auf das Original, Kopf mit Quelle, Prüfsumme, Programm, Sprache, Datum und Warnhinweis) und vermerkt beim Original den Textstand „OCR-erkannt“, wenn dort noch keiner steht. Das Original bleibt unverändert, nichts wird überschrieben. Erkannter Text ist eine Ableitung: Zahlen, Daten, Fristen, Beträge und Namen am Original prüfen. |

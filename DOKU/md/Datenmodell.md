@@ -1,6 +1,6 @@
 # Datenmodell
 
-*Stand: 18.09.2026*
+*Stand: 02.10.2026*
 
 ## Aufgabe dieser Datei
 
@@ -89,7 +89,7 @@ Ordnungsangaben sind optional.
 | id | E01 | fest |
 | datum | Datum | Pflicht |
 | titel | Kurztitel | Pflicht |
-| art | Zugang, Versand, Termin, Gespräch, Vorfall, Entscheidung, Vermerk, Arbeitsstand | vorgeschlagen |
+| art | Vertrag, Gespräch, Zusage oder Angebot, Schreiben, Antwort, Beschwerde, Widerspruch, Antrag, Bescheid, Kündigung, Klage, Termin, Zugang, Versand, Vorfall, Sonstiges; aus älteren Akten weiter gültig: Entscheidung, Vermerk, Arbeitsstand | vorgeschlagen (Liste seit 02.10.2026 neutral für jedes Rechtsgebiet) |
 | quelle | D-Kennung | Verweis |
 | detail | Text | frei |
 | zeitpunkt | genau, ungefähr, zeitraum, unbekannt | fest, optional (Standard genau); seit 17.09.2026, F13 |
@@ -102,6 +102,36 @@ gemeldeter Tag), nie ein erfundener Tag. Oberfläche, Übergabepaket und
 Fallübersicht zeigen die Art vor dem Datum („ca.“, „von bis“, „unbekannt,
 einsortiert bei“). Eine Frist, deren `ausloeser_ereignis` nicht genau datiert
 ist, kann nicht bestätigt werden.
+
+### Felder für die Chronologie (seit 02.10.2026)
+
+Alle Felder sind optional. Eine Akte ohne sie bleibt gültig und wird wie
+bisher angezeigt. Sie tragen die Seite 05 „Chronologie“ der Fallakte:
+zweiseitiger Zeitpfad, Kernereignisse, Farbe nach Gruppe, Bezug zwischen
+Anlass und Reaktion.
+
+| Feld | Inhalt | Regel |
+|---|---|---|
+| wichtig | Kernereignis, das den Fall trägt | true oder false |
+| seite | links, rechts | fest, leer erlaubt; leer heißt: aus der Rolle der ersten Person (Rolle „Ich“ rechts, alle anderen links) |
+| personen | Liste von P-Kennungen | Verweise; die erste Person gilt als die handelnde und bestimmt die Farbgruppe der Karte |
+| belege | Liste von D-Kennungen | Verweise; ergänzt `quelle`, das als einzelner Hauptbeleg bleibt |
+| fundstelle | Seitenangabe oder Quelle ohne Dokument | Text |
+| antwort_auf | E-Kennung des Anlasses | Verweis, nicht auf sich selbst |
+| anmerkung | eigene Einordnung, getrennt von `detail` | Text; `detail` bleibt die sachliche Darstellung (REGELN Nr. 14) |
+| originalnotiz | Notiz oder Zitat im Wortlaut | Text |
+| betrag | Betrag oder Einstufung | Text, bewusst keine Zahl („128 Euro“, „Stufe 5“) |
+| betrag_einordnung | Ausgangslage, Angebot, abgelehntes Angebot, Zusage, vereinbart, gezahlt, ungeklärt | fest, leer erlaubt |
+| belegstand | Unterlage vorhanden, Versand belegt, Zugang belegt, eigene Aufzeichnung, eigene Erinnerung, Zeuge benannt, ungeklärt | vorgeschlagen; die letzten vier gelten als eigene Angabe ohne Unterlage (`BELEGSTAND_EIGENE_ANGABE`) |
+| terminstatus | vereinbart, geplant, wahrgenommen, abgesagt, verschoben | vorgeschlagen |
+| reihenfolge | Ordnung bei gleichem Zeitpunkt | Zahl, auch mit Komma (1.5 sortiert zwischen 1 und 2) |
+
+Ein Monat ohne Tag ist kein eigenes Datumsformat: Er wird als `zeitpunkt`
+„zeitraum“ vom Ersten bis zum Letzten des Monats gespeichert; die Oberfläche
+zeigt dann den Monatsnamen. Ein Ereignis, auf das ein anderes mit
+`antwort_auf` verweist oder an dem eine Frist hängt (`ausloeser_ereignis`),
+lässt sich nicht entfernen, solange der Verweis besteht: Das Schema weist
+die Akte ab.
 
 ## fristen
 
@@ -286,8 +316,9 @@ Die Oberfläche liest die Überschriftzeile und kann danach filtern.
 |---|---|
 | `06 Werkzeuge/dienst/cli.py` | alle Werkzeuge ohne laufenden Dienst, für Claude und Skripte |
 | Ändern statt neu anlegen | `frist_setzen` und `ereignis_setzen` ändern einen vorhandenen Eintrag (nur die übergebenen Felder). Bei `ereignis_setzen` räumt `zeitpunkt: genau` die Felder `datum_bis` und `zeitpunkt_text` ab; bei `frist_setzen` gelten dieselben Sperren wie beim Eintragen: bestätigt nur mit Rechnung, Beleg und ohne offene Marker (seit 18.09.2026) |
+| Chronologie über die Werkzeuge | `ereignis_eintragen` und `ereignis_setzen` kennen alle Felder der Chronologie (Kernereignis, Seite, Personen, Belege, Fundstelle, Bezug, Anmerkung, Originalnotiz, Betrag, Belegstand, Terminstatus, Reihenfolge). Kennungen werden groß geschrieben und vom Schema geprüft; bei `ereignis_setzen` entfernt ein leerer Wert (leerer Text, leere Liste, `wichtig=false`) das Feld. `fall_uebersicht` zeigt die gesetzten Felder ohne die langen Texte (seit 02.10.2026) |
 | Datei aus der KI heraus ablegen | `datei_ablegen` schreibt eine Textdatei (.md oder .txt) nach 01 Eingang, 06 Entwürfe oder 07 Recherche, nie in die Originalbereiche, überschreibt nichts und registriert die Datei anschließend im Bestand (seit 18.09.2026). Seit dem Abend des 18.09.2026 (Prüfbericht N01) wird der **aufgelöste** Zielpfad gegen den gewählten Bereich geprüft, nicht mehr nur gegen den Fallordner: `unterordner` muss ein einfacher Ordnername sein (kein `..`, kein absoluter Pfad, kein Laufwerksbuchstabe, kein Backslash), die Datei wird exklusiv angelegt, und zurückgegeben wird der normalisierte Pfad |
 | `06 Werkzeuge/akte_schema.py` | leere Akte erzeugen, Akte prüfen (Fehler, Warnungen); der Dienst ruft `validate()` vor jedem Speichern |
 | `05 Vorlagen/Fallvorlage/` | Ordner 01 bis 08, leere akte.json, bestand.json, JOURNAL.md |
-| `05 Vorlagen/Beispielakte/` | vollständiger erfundener Fall „Kündigung durch den Arbeitgeber“ (R-9001): akte.json mit allen Blöcken, bestand.json mit Prüfsummen, JOURNAL.md, vier Textdokumente; über „Beispielfall laden“ (Werkzeug `beispiel_laden`) als neuer Fall kopierbar; Prüfung ohne Fehler |
+| `05 Vorlagen/Beispielakte/` | vollständiger erfundener Fall „Kündigung durch den Arbeitgeber“ (R-9001): akte.json mit allen Blöcken (seit 02.10.2026 fünf Ereignisse mit den Feldern der Chronologie, auf beiden Seiten des Zeitpfads), bestand.json mit Prüfsummen, JOURNAL.md, vier Textdokumente; über „Beispielfall laden“ (Werkzeug `beispiel_laden`) als neuer Fall kopierbar; Prüfung ohne Fehler |
 

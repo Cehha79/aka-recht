@@ -49,6 +49,10 @@ def _pruefe_parameter(w, args):
         if typ == 'integer' and isinstance(wert, str) and wert.strip().lstrip('-').isdigit(): args[p] = wert = int(wert.strip())
         if typ == 'boolean' and isinstance(wert, str) and wert.strip().lower() in ('true', 'false', 'ja', 'nein'): args[p] = wert = wert.strip().lower() in ('true', 'ja')
         if typ == 'string' and isinstance(wert, (int, float)) and not isinstance(wert, bool): args[p] = wert = str(wert)
+        if typ == 'number' and isinstance(wert, str):   # die Befehlszeile liefert 1.5 als Text
+            try: args[p] = wert = float(wert.strip().replace(',', '.'))
+            except ValueError: pass
+        if typ == 'number' and (isinstance(wert, bool) or not isinstance(wert, (int, float))): raise ValueError(f'„{p}“ muss eine Zahl sein.')
         if typ == 'string' and not isinstance(wert, str): raise ValueError(f'„{p}“ muss Text sein.')
         if typ == 'integer' and not (isinstance(wert, int) and not isinstance(wert, bool)): raise ValueError(f'„{p}“ muss eine ganze Zahl sein.')
         if typ == 'boolean' and not isinstance(wert, bool): raise ValueError(f'„{p}“ muss true oder false sein.')
@@ -108,7 +112,9 @@ def fall_uebersicht(fall):
             'verfahren': [{'id': v['id'], 'art': v['art'], 'stelle': v.get('stelle', ''), 'aktenzeichen': v.get('aktenzeichen', ''), 'stand': kurz(v.get('stand'))} for v in akte['verfahren']],
             'fristen': [{'id': f['id'], 'datum': f['datum'], 'titel': f['titel'], 'art': f['art'], 'pruefstatus': f['pruefstatus'], 'quelle': f.get('quelle', ''), 'geprueft_am': f.get('geprueft_am', ''), 'verfahren': f.get('verfahren', ''), 'ausloeser_ereignis': f.get('ausloeser_ereignis', ''), 'eigenschaften': akte_schema.frist_eigenschaften(f, akte)} for f in sorted(akte['fristen'], key=lambda x: x['datum']) if f['pruefstatus'] != 'erledigt'],
             'aufgaben_offen': [{'id': a['id'], 'titel': a['titel'], 'faellig': a.get('faellig', ''), 'quelle': a.get('quelle', '')} for a in akte['aufgaben'] if not a['erledigt']],
-            'ereignisse': [{'id': e['id'], 'datum': e['datum'], 'titel': e['titel'], 'art': e.get('art', ''), 'quelle': e.get('quelle', ''), 'zeitpunkt': e.get('zeitpunkt', 'genau') or 'genau', 'datum_bis': e.get('datum_bis', ''), 'zeitpunkt_text': e.get('zeitpunkt_text', '')} for e in sorted(akte['ereignisse'], key=lambda x: x['datum'])],
+            'ereignisse': [{'id': e['id'], 'datum': e['datum'], 'titel': e['titel'], 'art': e.get('art', ''), 'quelle': e.get('quelle', ''), 'zeitpunkt': e.get('zeitpunkt', 'genau') or 'genau', 'datum_bis': e.get('datum_bis', ''), 'zeitpunkt_text': e.get('zeitpunkt_text', ''),
+                            **{k: e[k] for k in ('wichtig', 'seite', 'personen', 'belege', 'fundstelle', 'antwort_auf', 'betrag', 'betrag_einordnung', 'belegstand', 'terminstatus') if k in e}}   # Chronologie: nur gesetzte Felder, ohne die langen Texte
+                           for e in sorted(akte['ereignisse'], key=lambda x: (x['datum'], x.get('reihenfolge', 0)))],
             'entwuerfe': [{'id': w['id'], 'titel': w['titel'], 'fassung': w.get('fassung', 1), 'status': w.get('status', '')} for w in akte['entwuerfe']],
             'dokumente': [{'id': d['id'], 'titel': kurz(d['titel'], 90), 'datum': d.get('datum', ''), 'stand': d.get('stand', ''), 'anlage': d.get('anlage', ''), 'bereich': d.get('gruppe', ''), 'textstand': d.get('textstand', '')} for d in liste],
             'nicht_erfasst': abweichungen['nicht_erfasst'], 'verschoben': abweichungen['verschoben'],
@@ -263,6 +269,35 @@ def _quelle(fall, quelle, detail=''):
         if quelle.upper() in akte['dokumente']: return quelle.upper(), detail
         raise ValueError(f'Dokumentkennung {quelle} gibt es in diesem Fall nicht.')
     return '', (detail + ' ' if detail else '') + f'[Quelle laut Angabe: {quelle}; keine Dokumentkennung]'
+
+# Chronologie (02.10.2026): optionale Felder am Ereignis, für ereignis_eintragen und ereignis_setzen gleich.
+# Damit trägt eine KI dieselben Angaben ein wie die Oberfläche; geprüft werden sie vom Schema beim Speichern.
+CHRONOLOGIE_PARAMETER = {
+    'wichtig': {'type': 'boolean', 'description': 'Kernereignis, das den Fall trägt; false nimmt die Kennzeichnung zurück'},
+    'seite': {'type': 'string', 'enum': akte_schema.EREIGNIS_SEITE + [''], 'description': 'Seite des Zeitpfads; leer: aus der Rolle der ersten Person (Rolle „Ich“ rechts, sonst links)'},
+    'personen': {'type': 'array', 'items': {'type': 'string'}, 'description': 'P-Kennungen der Beteiligten; die erste Person ist die handelnde'},
+    'belege': {'type': 'array', 'items': {'type': 'string'}, 'description': 'D-Kennungen weiterer Belege, zusätzlich zu quelle'},
+    'fundstelle': {'type': 'string', 'description': 'Seitenangabe oder Quelle ohne Dokument, etwa „Seite 2, zweiter Absatz“'},
+    'antwort_auf': {'type': 'string', 'description': 'E-Kennung des Ereignisses, auf das dieses die Reaktion ist'},
+    'anmerkung': {'type': 'string', 'description': 'eigene Einordnung, getrennt von der sachlichen Darstellung in detail'},
+    'originalnotiz': {'type': 'string', 'description': 'Notiz oder Zitat im Wortlaut'},
+    'betrag': {'type': 'string', 'description': 'Betrag oder Einstufung als Text'},
+    'betrag_einordnung': {'type': 'string', 'enum': akte_schema.BETRAG_EINORDNUNG + ['']},
+    'belegstand': {'type': 'string', 'description': 'Üblich: ' + ', '.join(akte_schema.BELEGSTAND_VORSCHLAG)},
+    'terminstatus': {'type': 'string', 'description': 'Üblich: ' + ', '.join(akte_schema.TERMINSTATUS_VORSCHLAG)},
+    'reihenfolge': {'type': 'number', 'description': 'Ordnung bei gleichem Zeitpunkt, kleinere Zahl zuerst'},
+}
+
+def _chronologie_setzen(e, felder):
+    """Trägt die übergebenen Chronologie-Felder in das Ereignis ein. Kennungen in Großschreibung;
+    ein leerer Wert (leerer Text, leere Liste, wichtig=false) entfernt das Feld, damit die Akte schlank bleibt."""
+    for k, v in felder.items():
+        if v is None: continue
+        if k in ('personen', 'belege'): v = [str(x).strip().upper() for x in v if str(x).strip()]
+        elif k == 'antwort_auf': v = str(v).strip().upper()
+        elif isinstance(v, str): v = v.strip()
+        if v == '' or v == [] or v is False: e.pop(k, None)
+        else: e[k] = v
 
 def _naechste(akte, block):
     """Nächste Kennung über den Zähler der Akte (akte_schema.naechste_kennung): entfernte Kennungen kommen nie wieder (F11)."""
@@ -446,13 +481,14 @@ def vorlage_fuellen(fall, vorlage, ziel=''):
     return {'datei': rel, 'vorlage': name, 'absender': ab['zeile'], 'absender_quelle': ab['quelle'], 'ersetzt': ersetzt, 'offene_platzhalter': len(offen),
             'hinweis': ' '.join(hinweise + ['Die Datei ist noch nicht in der Akte: nach dem Ausfüllen entwurf_erfassen und bestand_abgleichen (nach Freigabe).'])}
 
-@werkzeug('ereignis_eintragen', 'Ereignis in die Chronologie eines Falls eintragen.',
+@werkzeug('ereignis_eintragen', 'Ereignis in die Chronologie eines Falls eintragen: Zeitpunkt, Überschrift, Art und sachliche Darstellung, dazu wahlweise Kernereignis, Personen, Belege, Bezug auf ein früheres Ereignis, Anmerkung, Betrag, Belegstand und Terminstatus.',
           {'fall': {'type': 'string'}, 'datum': {'type': 'string'}, 'titel': {'type': 'string'},
-           'art': {'type': 'string', 'enum': akte_schema.EREIGNIS_ART_VORSCHLAG}, 'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'}, 'detail': {'type': 'string'},
-           'zeitpunkt': {'type': 'string', 'enum': akte_schema.ZEITPUNKT, 'description': 'genau (Standard), ungefähr, zeitraum (mit datum_bis) oder unbekannt (mit zeitpunkt_text); datum ist dann nur das Sortierdatum, nie ein erfundener Tag'},
-           'datum_bis': {'type': 'string', 'description': 'Ende des Zeitraums, JJJJ-MM-TT'}, 'zeitpunkt_text': {'type': 'string', 'description': 'was über den Zeitpunkt bekannt ist, etwa „Anfang September laut Kollegin“'}},
+           'art': {'type': 'string', 'enum': akte_schema.EREIGNIS_ART_VORSCHLAG}, 'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'}, 'detail': {'type': 'string', 'description': 'sachliche Darstellung, ohne eigene Bewertung (die gehört in anmerkung)'},
+           'zeitpunkt': {'type': 'string', 'enum': akte_schema.ZEITPUNKT, 'description': 'genau (Standard), ungefähr, zeitraum (mit datum_bis) oder unbekannt (mit zeitpunkt_text); datum ist dann nur das Sortierdatum, nie ein erfundener Tag. Ein ganzer Monat ist ein Zeitraum vom Ersten bis zum Letzten'},
+           'datum_bis': {'type': 'string', 'description': 'Ende des Zeitraums, JJJJ-MM-TT'}, 'zeitpunkt_text': {'type': 'string', 'description': 'was über den Zeitpunkt bekannt ist, etwa „Anfang September laut Kollegin“'},
+           **CHRONOLOGIE_PARAMETER},
           schreibend=True, pflicht=['fall', 'datum', 'titel'])
-def ereignis_eintragen(fall, datum, titel, art='Vermerk', quelle='', detail='', zeitpunkt='genau', datum_bis='', zeitpunkt_text=''):
+def ereignis_eintragen(fall, datum, titel, art='Vermerk', quelle='', detail='', zeitpunkt='genau', datum_bis='', zeitpunkt_text='', **chronologie):
     quelle, detail = _quelle(fall, quelle, detail)
     akte, rev = store.lese_akte(fall)
     eintrag = {'id': _naechste(akte, 'ereignisse'), 'datum': datum, 'titel': titel, 'art': art, 'quelle': quelle, 'detail': detail}
@@ -460,6 +496,7 @@ def ereignis_eintragen(fall, datum, titel, art='Vermerk', quelle='', detail='', 
         eintrag['zeitpunkt'] = zeitpunkt
         if datum_bis: eintrag['datum_bis'] = datum_bis
         if zeitpunkt_text: eintrag['zeitpunkt_text'] = zeitpunkt_text
+    _chronologie_setzen(eintrag, chronologie)
     akte['ereignisse'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
     return {'ereignis': eintrag, 'revision': rev}
 
@@ -500,15 +537,15 @@ def frist_setzen(fall, frist, datum=None, titel=None, art=None, ausloeser=None, 
     return {'frist': f, 'eigenschaften': akte_schema.frist_eigenschaften(f, akte), 'revision': rev,
             **({'fristen_hinfaellig': hinfaellig} if hinfaellig else {})}
 
-@werkzeug('ereignis_setzen', 'Vorhandenes Ereignis ändern. Nur die übergebenen Felder werden geändert; „zeitpunkt“ genau entfernt die Angaben zur Unsicherheit.',
+@werkzeug('ereignis_setzen', 'Vorhandenes Ereignis ändern. Nur die übergebenen Felder werden geändert; „zeitpunkt“ genau entfernt die Angaben zur Unsicherheit. Bei den Feldern der Chronologie (Kernereignis, Personen, Belege, Bezug, Anmerkung, Betrag, Belegstand, Terminstatus) entfernt ein leerer Wert das Feld.',
           {'fall': {'type': 'string'}, 'ereignis': {'type': 'string', 'description': 'E-Kennung wie E01'},
            'datum': {'type': 'string'}, 'titel': {'type': 'string'}, 'art': {'type': 'string'},
            'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'},
            'detail': {'type': 'string'}, 'zeitpunkt': {'type': 'string', 'enum': akte_schema.ZEITPUNKT},
-           'datum_bis': {'type': 'string'}, 'zeitpunkt_text': {'type': 'string'}},
+           'datum_bis': {'type': 'string'}, 'zeitpunkt_text': {'type': 'string'}, **CHRONOLOGIE_PARAMETER},
           schreibend=True, pflicht=['fall', 'ereignis'])
 def ereignis_setzen(fall, ereignis, datum=None, titel=None, art=None, quelle=None, detail=None,
-                    zeitpunkt=None, datum_bis=None, zeitpunkt_text=None):
+                    zeitpunkt=None, datum_bis=None, zeitpunkt_text=None, **chronologie):
     akte, rev = store.lese_akte(fall)
     e = next((x for x in akte['ereignisse'] if x['id'] == str(ereignis).strip().upper()), None)
     if not e: raise ValueError(f'Ereigniskennung {ereignis} gibt es in diesem Fall nicht.')
@@ -527,6 +564,7 @@ def ereignis_setzen(fall, ereignis, datum=None, titel=None, art=None, quelle=Non
     else:
         if datum_bis is not None: e['datum_bis'] = datum_bis
         if zeitpunkt_text is not None: e['zeitpunkt_text'] = zeitpunkt_text
+    _chronologie_setzen(e, chronologie)
     hinfaellig = akte_schema.fristen_nachpruefen(akte)   # N02: hängende Bestätigungen fallen zurück, hier nur, um sie melden zu können
     rev = store.speichere_akte(fall, akte, rev, hinfaellig=hinfaellig)
     return {'ereignis': e, 'revision': rev, **({'fristen_hinfaellig': hinfaellig} if hinfaellig else {})}

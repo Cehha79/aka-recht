@@ -49,7 +49,9 @@ async function antwort(r) {
 }
 
 // ---------------------------------------------------------------- Zustand und Routen
-const S = {zentrale: null, fall: null, route: {}, auswahl: '', tab: 'vorschau', breit: false, filter: {q: '', gruppe: '', typ: '', stand: ''}, treffer: null, quellen: null, anleitung: null};
+// Ansicht der Chronologie: Suche, Filter und aufgeklappte Karten; wird nicht gespeichert und beim Fallwechsel geleert
+function chronLeer() { return {q: '', art: '', kern: false, person: '', anmerkungen: true, offen: new Set()}; }
+const S = {zentrale: null, fall: null, route: {}, auswahl: '', tab: 'vorschau', breit: false, filter: {q: '', gruppe: '', typ: '', stand: ''}, treffer: null, quellen: null, anleitung: null, chron: chronLeer()};
 // Seiten der Seitenleiste; die Namen stehen in der Sprachdatei unter nav.<Kennung>
 const ZENTRALE_SEITEN = ['home', 'faelle', 'eingang', 'fristen', 'quellen', 'bestand', 'einstellungen', 'anleitung'];
 const FALL_SEITEN = ['uebersicht', 'dokumente', 'beteiligte', 'verfahren', 'chronologie', 'fristen', 'aufgaben', 'entwuerfe', 'anlagen', 'journal'];
@@ -59,16 +61,10 @@ const DOK_STAND = ['Original', 'Entwurf', 'Versandt', 'Zugegangen', 'Historisch'
 const DOK_TEXTSTAND = ['direkt ausgelesen', 'OCR-erkannt', 'visuell geprüft', 'teilweise lesbar', 'nicht lesbar'];   // F34: was tatsächlich gelesen wurde
 const DOK_ART = ['Schreiben', 'E-Mail', 'Foto', 'Vertrag', 'Bescheid', 'Urteil', 'Entwurf', 'Beleg', 'Übersicht', 'Gesetz', 'Sonstiges'];
 const ROLLEN = ['Ich', 'Gegner', 'Gericht', 'Behörde', 'Anwalt', 'Zeuge', 'Stelle', 'Versicherung', 'Sonstige'];
-const EREIGNIS_ART = ['Zugang', 'Versand', 'Termin', 'Gespräch', 'Vorfall', 'Entscheidung', 'Vermerk', 'Arbeitsstand'];
+const EREIGNIS_ART = ['Vertrag', 'Gespräch', 'Zusage oder Angebot', 'Schreiben', 'Antwort', 'Beschwerde', 'Widerspruch', 'Antrag', 'Bescheid', 'Kündigung', 'Klage', 'Termin', 'Zugang', 'Versand', 'Vorfall', 'Sonstiges', 'Entscheidung', 'Vermerk', 'Arbeitsstand'];   // wie akte_schema.EREIGNIS_ART_VORSCHLAG; die drei letzten stammen aus älteren Akten
 const FRIST_ART = ['gesetzlich', 'selbst gesetzt', 'von Gegenseite gesetzt', 'vorsorglich', 'Termin'];
 const FRIST_STATUS = ['offen', 'bestätigt', 'abgelaufen', 'erledigt'];
 const ZEITPUNKT = ['genau', 'ungefähr', 'zeitraum', 'unbekannt'];   // F13; Anzeigenamen in der Sprachdatei unter wert.zeitpunkt.<Wert>
-// F13: Anzeige des Zeitpunkts eines Ereignisses; datum ist bei allem außer „genau“ nur das Sortierdatum
-const zeitAnzeige = e => { const z = e.zeitpunkt || 'genau'; const zt = e.zeitpunkt_text ? `<br><small>${esc(e.zeitpunkt_text)}</small>` : '';
-  if (z === 'ungefähr') return `${esc(t('allg.ca', {datum: datum(e.datum)}))}${zt}`;
-  if (z === 'zeitraum') return `${esc(t('allg.bis', {von: datum(e.datum), bis: datum(e.datum_bis || e.datum)}))}${zt}`;
-  if (z === 'unbekannt') return `<span class="u-rot">${esc(t('allg.unbekannt'))}</span><br><small>${esc(t('allg.einsortiert_bei', {datum: datum(e.datum)}))}</small>${zt}`;
-  return esc(datum(e.datum)); };
 const ereignisSicher = id => { const e = S.fall && akte().ereignisse.find(x => x.id === id); return e ? (e.zeitpunkt || 'genau') === 'genau' : null; };
 // F12: drei Eigenschaften einer Frist, gleiche Regel wie akte_schema.frist_eigenschaften (gerechnet, belegt, geprüft, offene Marker)
 const fristEigenschaften = f => {
@@ -113,7 +109,7 @@ async function render() {
   S.route = routeLesen();
   try {
     if (!S.zentrale) await ladeZentrale();
-    if (S.route.fall && (!S.fall || fallId() !== S.route.fall)) { await ladeFall(S.route.fall); S.auswahl = ''; S.treffer = null; }
+    if (S.route.fall && (!S.fall || fallId() !== S.route.fall)) { await ladeFall(S.route.fall); S.auswahl = ''; S.treffer = null; S.chron = chronLeer(); }
     if (!S.route.fall) S.fall = null;
   } catch (e) { $('#content').innerHTML = `<div class="leer"><h2>${esc(t('app.oeffnen'))}</h2><p>${esc(e.message)}</p></div>`; return; }
   if (S.route.dok) S.auswahl = S.route.dok;
@@ -244,8 +240,84 @@ function gefilterteDoks() {
   if (f.stand) l = l.filter(d => d.stand === f.stand);
   return l;
 }
-function zeitstrahl(eintraege, art) {
-  return `<div class="zeitstrahl">${eintraege.map(e => `<div class="zs-zeile"><div class="zs-datum">${zeitAnzeige(e)}</div><div class="zs-karte"><div class="zs-inhalt"><div class="tafel-kopf"><span>${badge(e.art)}${e.pruefstatus ? ' ' + badge(t('allg.pruefstatus', {status: wert(e.pruefstatus)}), statusTon(e.pruefstatus)) : ''}</span><button class="knopf klein" data-aktion="bearbeiten" data-art="${art}" data-id="${esc(e.id)}">${esc(t('allg.bearbeiten'))}</button></div><h3>${esc(e.titel)}</h3><p>${esc(e.detail || e.berechnung || '')}</p>${e.quelle ? `<p class="u-mt6"><a href="${fallLink(fallId(), 'dokumente', e.quelle)}">${esc(t('dok.quelle', {id: e.quelle}))}${dok(e.quelle) ? ' · ' + esc(dok(e.quelle).titel) : ''}</a></p>` : ''}</div></div></div>`).join('')}</div>`;
+// ---------------------------------------------------------------- Chronologie (Seite 05)
+// Zweiseitiger Zeitpfad: links andere Stellen, rechts die eigenen Schritte, in der Mitte die Zeit. Quelle ist allein akte.json
+// (REGELN Nr. 10). Farbe nach Gruppe, nicht nach Person: sechs Farben bleiben unterscheidbar, zwanzig nicht.
+const GRUPPEN_FARBE = ['ich', 'gegenseite', 'gericht', 'behoerde', 'zeuge', 'stelle'];   // Anzeigenamen in der Sprachdatei unter wert.gruppe.<Kennung>
+const ROLLE_GRUPPE = {'Ich': 'ich', 'Gegner': 'gegenseite', 'Gericht': 'gericht', 'Behörde': 'behoerde', 'Versicherung': 'behoerde', 'Zeuge': 'zeuge'};   // jede andere Rolle: stelle
+const BETRAG_EINORDNUNG = ['Ausgangslage', 'Angebot', 'abgelehntes Angebot', 'Zusage', 'vereinbart', 'gezahlt', 'ungeklärt'];   // fest, wie akte_schema.BETRAG_EINORDNUNG
+const BELEGSTAND = ['Unterlage vorhanden', 'Versand belegt', 'Zugang belegt', 'eigene Aufzeichnung', 'eigene Erinnerung', 'Zeuge benannt', 'ungeklärt'];   // vorgeschlagen
+const TERMINSTATUS = ['vereinbart', 'geplant', 'wahrgenommen', 'abgesagt', 'verschoben'];   // vorgeschlagen
+const BELEGSTAND_EIGEN = ['eigene Aufzeichnung', 'eigene Erinnerung', 'Zeuge benannt', 'ungeklärt'];   // wie akte_schema.BELEGSTAND_EIGENE_ANGABE: gestrichelter Rand
+const beteiligter = id => akte().beteiligte.find(b => b.id === id);
+// Die erste Person eines Ereignisses gilt als die handelnde. Seite: Rolle „Ich“ rechts, alles andere links; das Feld seite überschreibt.
+const chronSeite = e => e.seite || ((beteiligter((e.personen || [])[0]) || {}).rolle === 'Ich' ? 'rechts' : 'links');
+const chronGruppe = e => { const p = beteiligter((e.personen || [])[0]); return p ? (ROLLE_GRUPPE[p.rolle] || 'stelle') : chronSeite(e) === 'rechts' ? 'ich' : ''; };
+// Ein Monat ohne Tag ist ein Zeitraum vom Ersten bis zum Letzten des Monats (Datenmodell) und wird als Monatsname gezeigt.
+const ganzerMonat = e => { if ((e.zeitpunkt || 'genau') !== 'zeitraum' || !/^\d{4}-\d{2}-01$/.test(e.datum || '')) return false; const [j, m] = e.datum.split('-').map(Number); return e.datum_bis === e.datum.slice(0, 8) + String(new Date(j, m, 0).getDate()).padStart(2, '0'); };
+const chronZeit = e => { const z = e.zeitpunkt || 'genau';
+  if (ganzerMonat(e)) return new Date(e.datum + 'T12:00:00').toLocaleDateString(SPRACHE === 'de' ? 'de-DE' : SPRACHE, {month: 'long', year: 'numeric'});
+  if (z === 'ungefähr') return t('allg.ca', {datum: datum(e.datum)});
+  if (z === 'zeitraum') return t('allg.bis', {von: datum(e.datum), bis: datum(e.datum_bis || e.datum)});
+  if (z === 'unbekannt') return t('allg.unbekannt') + ' · ' + t('allg.einsortiert_bei', {datum: datum(e.datum)});
+  return datum(e.datum); };
+const tageZwischen = (von, bis) => Math.round((new Date(bis + 'T12:00:00') - new Date(von + 'T12:00:00')) / 86400000);
+function abstandText(tage, etwa) {
+  if (!(tage > 0)) return '';
+  const s = tage === 1 ? t('chron.spaeter_tag') : tage < 14 ? t('chron.spaeter_tage', {n: tage}) : tage < 60 ? t('chron.spaeter_wochen', {n: Math.round(tage / 7)}) : tage < 730 ? t('chron.spaeter_monate', {n: Math.round(tage / 30.4)}) : t('chron.spaeter_jahre', {n: Math.round(tage / 365)});
+  return etwa ? t('chron.etwa', {text: s}) : s;
+}
+const genau = e => (e.zeitpunkt || 'genau') === 'genau';
+function chronListe() {
+  const c = S.chron, q = c.q.trim().toLocaleLowerCase('de');
+  const alle = [...akte().ereignisse].sort((a, b) => a.datum.localeCompare(b.datum) || (a.reihenfolge || 0) - (b.reihenfolge || 0) || a.id.localeCompare(b.id));
+  const text = e => [e.id, datum(e.datum), e.art, e.titel, e.detail, e.anmerkung, e.originalnotiz, e.fundstelle, e.betrag, e.betrag_einordnung, e.belegstand, e.terminstatus, e.zeitpunkt_text, e.quelle, ...(e.belege || []), ...(e.personen || []).map(personName)].join(' ').toLocaleLowerCase('de');
+  return {alle, sicht: alle.filter(e => (!c.kern || e.wichtig) && (!c.person || (e.personen || []).includes(c.person)) && (!c.art || e.art === c.art) && (!q || text(e).includes(q)))};
+}
+function chronKarte(e, alle) {
+  const g = chronGruppe(e), offen = S.chron.offen.has(e.id);
+  const klassen = ['ck', g ? 'g-' + g : '', e.wichtig ? 'kern' : '', BELEGSTAND_EIGEN.includes(e.belegstand) ? 'eigen' : '', offen ? 'offen' : ''].filter(Boolean).join(' ');
+  const dokLink = id => dok(id) ? `<a href="${fallLink(fallId(), 'dokumente', id)}">${esc(id)} · ${esc(dok(id).titel)}</a>` : esc(id);
+  const belege = [...new Set([e.quelle, ...(e.belege || [])].filter(Boolean))];
+  const fund = [...belege.map(dokLink), e.fundstelle ? esc(e.fundstelle) : ''].filter(Boolean).join('; ');
+  const anlass = e.antwort_auf ? alle.find(x => x.id === e.antwort_auf) : null;
+  const tage = anlass ? tageZwischen(anlass.datum, e.datum) : 0, unscharf = anlass && (!genau(anlass) || !genau(e));   // „am selben Tag“ nur, wenn beide Tage genau bekannt sind
+  const abstand = !anlass ? '' : tage === 0 ? (unscharf ? '' : t('chron.selber_tag')) : abstandText(tage, unscharf);
+  const personen = (e.personen || []).map(id => { const p = beteiligter(id); return `<button type="button" class="chip g-${ROLLE_GRUPPE[(p || {}).rolle] || 'stelle'}" data-aktion="chron-person" data-id="${esc(id)}" title="${esc(t('chron.person_titel', {name: personName(id)}))}">${esc(personName(id))}</button>`; }).join('');
+  return `<article class="${klassen}" id="chron-${esc(e.id)}" tabindex="-1"><span class="ck-kennung">${esc(e.id)}${e.wichtig ? ` · <b>${esc(t('chron.kern'))}</b>` : ''}</span><h3>${esc(e.titel)}</h3>
+    <div class="ck-marken">${badge(e.art)}${badge(e.belegstand)}${badge(e.terminstatus)}${e.betrag ? badge(e.betrag + (e.betrag_einordnung ? ' · ' + e.betrag_einordnung : ''), 'gelb') : ''}</div>
+    ${personen ? `<div class="ck-personen">${personen}</div>` : ''}
+    ${anlass ? `<p class="ck-zeile"><b>${esc(t('chron.antwort_auf'))}</b> <button type="button" class="ck-link" data-aktion="chron-sprung" data-id="${esc(anlass.id)}">${esc(chronZeit(anlass))} · ${esc(anlass.titel)}</button>${abstand ? ` (${esc(abstand)})` : ''}</p>` : ''}
+    ${fund ? `<p class="ck-zeile"><b>${esc(t('chron.fundstelle'))}</b> ${fund}</p>` : ''}
+    <button type="button" class="knopf klein ck-auf" data-aktion="chron-auf" data-id="${esc(e.id)}" aria-expanded="${offen}">${esc(t(offen ? 'chron.zuklappen' : 'chron.einzelheiten'))}</button>
+    <div class="ck-mehr">${e.detail ? `<p class="ck-text">${esc(e.detail)}</p>` : ''}${e.zeitpunkt_text ? `<p class="ck-notiz"><b>${esc(t('form.zeitpunkt'))}:</b> ${esc(e.zeitpunkt_text)}</p>` : ''}${e.anmerkung ? `<p class="ck-anmerkung"><b>${esc(t('chron.anmerkung'))}</b> ${esc(e.anmerkung)}</p>` : ''}${e.originalnotiz ? `<p class="ck-notiz"><b>${esc(t('chron.originalnotiz'))}</b> ${esc(e.originalnotiz)}</p>` : ''}
+      <p><button type="button" class="knopf klein" data-aktion="bearbeiten" data-art="ereignis" data-id="${esc(e.id)}">${esc(t('allg.bearbeiten'))}</button></p></div></article>`;
+}
+function chronPfad() {
+  const {alle, sicht} = chronListe();
+  if (!sicht.length) return `<div class="leer"><h2>${esc(t('chron.kein_treffer'))}</h2></div>`;
+  const zeilen = [];   // aufeinanderfolgende Ereignisse mit demselben Zeitpunkt stehen in einer Zeile
+  for (const e of sicht) { const z = chronZeit(e), letzte = zeilen[zeilen.length - 1]; if (letzte && letzte.zeit === z) letzte.e.push(e); else zeilen.push({zeit: z, e: [e]}); }
+  const gefiltert = sicht.length !== alle.length;
+  return zeilen.map((z, i) => {
+    const davor = i ? zeilen[i - 1].e[0] : null, abstand = davor ? abstandText(tageZwischen(davor.datum, z.e[0].datum), !genau(davor) || !genau(z.e[0])) : '';
+    const plus = davor && !gefiltert ? `<button type="button" class="cz-plus" data-aktion="chron-neu" data-id="${esc(davor.id)}" data-nach="${esc(z.e[0].id)}" title="${esc(t('chron.plus', {von: zeilen[i - 1].zeit, bis: z.zeit}))}" aria-label="${esc(t('chron.plus', {von: zeilen[i - 1].zeit, bis: z.zeit}))}">+</button>` : '';
+    const seite = s => `<div class="cz-seite ${s}">${z.e.filter(e => chronSeite(e) === s).map(e => chronKarte(e, alle)).join('')}</div>`;
+    return `${abstand || plus ? `<div class="cz-abstand"><div>${abstand ? `<span>${esc(abstand)}</span>` : ''}${plus}</div></div>` : ''}<div class="cz">${seite('links')}<div class="cz-mitte"><div class="cz-datum">${esc(z.zeit)}</div><button type="button" class="knopf klein cz-dazu" data-aktion="chron-neu" data-id="${esc(z.e[0].id)}">${esc(t('chron.im_zeitraum'))}</button></div>${seite('rechts')}</div>`;
+  }).join('');
+}
+const chronZahl = () => { const l = akte().ereignisse; return t('chron.kern_zahl', {n: l.filter(e => e.wichtig).length, gesamt: l.length}); };
+const chronPille = () => S.chron.person ? `<span class="chron-pille">${esc(t('chron.nur_person', {name: personName(S.chron.person)}))}<button type="button" data-aktion="chron-person-weg" aria-label="${esc(t('chron.person_weg'))}">×</button></span>` : '';
+// Nur den Zeitpfad neu zeichnen: Suchfeld und Schalter behalten Fokus und Eingabe
+function chronAktualisieren() {
+  const p = $('#chron-pfad'); if (!p) return;
+  p.innerHTML = chronPfad(); p.classList.toggle('ohne-anmerkung', !S.chron.anmerkungen); $('#chron-zahl').textContent = chronZahl(); $('#chron-pille').innerHTML = chronPille();
+}
+function chronSprung(id, sofort = false) {
+  if (!document.getElementById('chron-' + id)) {   // der Anlass ist weggefiltert: Filter leeren, sonst führt der Sprung ins Leere
+    Object.assign(S.chron, {q: '', art: '', kern: false, person: ''}); $('#chron-suche').value = ''; $('#chron-art').value = ''; $('#chron-kern').checked = false; chronAktualisieren();
+  }
+  const ziel = document.getElementById('chron-' + id); if (ziel) { ziel.scrollIntoView({behavior: sofort ? 'auto' : 'smooth', block: 'center'}); ziel.focus({preventScroll: true}); }
 }
 const FALL = {
   async uebersicht() {
@@ -284,8 +356,15 @@ const FALL = {
     return [t('verf.titel'), t('verf.untertitel'), inhalt, `<button class="knopf primaer" data-aktion="neu" data-art="verfahren">${esc(t('verf.neu'))}</button>`];
   },
   async chronologie() {
-    const l = [...akte().ereignisse].sort((a, b) => a.datum.localeCompare(b.datum));
-    return [t('chron.titel'), t('chron.untertitel'), l.length ? zeitstrahl(l, 'ereignis') : `<div class="leer"><h2>${esc(t('chron.keins'))}</h2></div>`, `<button class="knopf primaer" data-aktion="neu" data-art="ereignis">${esc(t('chron.neu'))}</button>`];
+    const neu = `<button class="knopf primaer" data-aktion="neu" data-art="ereignis">${esc(t('chron.neu'))}</button>`;
+    if (!akte().ereignisse.length) return [t('chron.titel'), t('chron.untertitel'), `<div class="leer"><h2>${esc(t('chron.keins'))}</h2></div>`, neu];
+    const c = S.chron, arten = [...new Set([...EREIGNIS_ART, ...akte().ereignisse.map(e => e.art).filter(Boolean)])];
+    const inhalt = `<div class="filter chron-steuerung"><input id="chron-suche" type="search" value="${esc(c.q)}" placeholder="${esc(t('chron.suchen'))}" aria-label="${esc(t('chron.suchen_label'))}"><select id="chron-art" aria-label="${esc(t('chron.art_label'))}">${opt(arten, c.art, t('chron.alle_arten'))}</select></div>
+      <div class="chron-schalter chron-steuerung"><label class="chron-haken"><input type="checkbox" id="chron-kern" ${c.kern ? 'checked' : ''}> ${esc(t('chron.nur_kern'))} <span id="chron-zahl" class="u-muted">${esc(chronZahl())}</span></label><label class="chron-haken"><input type="checkbox" id="chron-anm" ${c.anmerkungen ? 'checked' : ''}> ${esc(t('chron.anmerkungen'))}</label><button type="button" class="knopf klein" data-aktion="chron-alle">${esc(t('chron.alle_klappen'))}</button><span id="chron-pille">${chronPille()}</span></div>
+      <div class="chron-legende"><b>${esc(t('chron.legende'))}</b>${GRUPPEN_FARBE.map(g => `<span><i class="farbe g-${g}"></i>${esc(wert('gruppe.' + g))}</span>`).join('')}<span><i class="farbe eigen"></i>${esc(t('chron.gestrichelt'))}</span></div>
+      <div class="chron-kopf" aria-hidden="true"><span>${esc(t('chron.links'))}</span><span>${esc(t('chron.mitte'))}</span><span>${esc(t('chron.rechts'))}</span></div>
+      <div id="chron-pfad" class="chron${c.anmerkungen ? '' : ' ohne-anmerkung'}">${chronPfad()}</div>`;
+    return [t('chron.titel'), t('chron.untertitel'), inhalt, neu];
   },
   async fristen() {
     const l = [...akte().fristen].sort((a, b) => a.datum.localeCompare(b.datum));
@@ -365,7 +444,7 @@ function feld(name, label, wert = '', art = 'text', extra = {}) {
 function dialog(titel, inhalt, speichern, knopf = t('allg.speichern')) {
   $('#dialog-titel').textContent = titel; $('#dialog-inhalt').innerHTML = inhalt; $('#dialog-fehler').hidden = true;
   $('#dialog-speichern').textContent = knopf; $('#dialog-speichern').hidden = !speichern; $('#dialog-abbrechen').textContent = t(speichern ? 'allg.abbrechen' : 'allg.schliessen');
-  dialogSpeichern = speichern; dialogVeraendert = false; $('#dialog').showModal();
+  dialogSpeichern = speichern; dialogVeraendert = false; if (!$('#dialog').open) $('#dialog').showModal(); $('#dialog-inhalt').scrollTop = 0;
 }
 function dialogZu() { if (dialogVeraendert && !confirm(t('dialog.verwerfen'))) return; dialogVeraendert = false; $('#dialog').close(); }
 async function akteSpeichern(aendern, meldung = t('allg.gespeichert')) {
@@ -381,8 +460,29 @@ const FORMULARE = {
     lesen: f => ({name: f.get('name').trim(), rolle: f.get('rolle'), anschrift: f.get('anschrift').trim(), kontakt: f.get('kontakt').trim(), aktenzeichen: f.get('aktenzeichen').trim()}), leer: {name: '', rolle: '', anschrift: '', kontakt: '', aktenzeichen: ''}},
   verfahren: {liste: 'verfahren', kennung: 'V', titel: 'form.verfahren', felder: v => `${feld('art', t('form.verfahren_art'), v.art, 'text', {hinweis: t('form.verfahren_art_hinweis')})}<div class="feld-reihe">${feld('stelle', t('form.stelle'), v.stelle, 'select', {optionen: personOptionen(v.stelle)})}${feld('aktenzeichen', t('form.aktenzeichen'), v.aktenzeichen)}</div>${feld('stand', t('form.verfahrensstand'), v.stand)}${feld('ordner', t('form.unterordner_04'), v.ordner, 'text', {hinweis: t('form.unterordner_04_hinweis')})}`,
     lesen: f => ({art: f.get('art').trim(), stelle: f.get('stelle'), aktenzeichen: f.get('aktenzeichen').trim(), stand: f.get('stand').trim(), ordner: f.get('ordner').trim()}), leer: {art: '', stelle: '', aktenzeichen: '', stand: '', ordner: ''}},
-  ereignis: {liste: 'ereignisse', kennung: 'E', titel: 'form.ereignis', felder: e => `<div class="feld-reihe">${feld('datum', t('form.datum'), e.datum, 'date')}${feld('art', t('form.art'), e.art, 'select', {optionen: opt(EREIGNIS_ART, e.art || 'Vermerk')})}</div>${feld('titel', t('form.kurztitel'), e.titel)}<div class="feld-reihe drei">${feld('zeitpunkt', t('form.zeitpunkt'), e.zeitpunkt || 'genau', 'select', {optionen: opt(ZEITPUNKT.map(k => [k, wert('zeitpunkt.' + k)]), e.zeitpunkt || 'genau'), hinweis: t('form.zeitpunkt_hinweis')})}${feld('datum_bis', t('form.bis'), e.datum_bis, 'date')}${feld('zeitpunkt_text', t('form.bekannt'), e.zeitpunkt_text, 'text', {hinweis: t('form.bekannt_hinweis')})}</div>${feld('quelle', t('form.quelle'), e.quelle, 'select', {optionen: dokOptionen(e.quelle)})}${feld('detail', t('form.einzelheiten'), e.detail, 'textarea', {hinweis: t('form.einzelheiten_hinweis')})}`,
-    lesen: f => { const z = f.get('zeitpunkt') || 'genau'; return {datum: f.get('datum'), art: f.get('art'), titel: f.get('titel').trim(), quelle: f.get('quelle'), detail: f.get('detail').trim(), ...(z !== 'genau' ? {zeitpunkt: z, datum_bis: f.get('datum_bis') || '', zeitpunkt_text: f.get('zeitpunkt_text').trim()} : {zeitpunkt: 'genau', datum_bis: '', zeitpunkt_text: ''})}; }, leer: {datum: heute(), titel: '', art: 'Vermerk', quelle: '', detail: '', zeitpunkt: 'genau', datum_bis: '', zeitpunkt_text: ''}},
+  ereignis: {liste: 'ereignisse', kennung: 'E', titel: 'form.ereignis', felder: e => { const pers = e.personen || [], andere = akte().ereignisse.filter(x => x.id !== e.id).sort((x, y) => x.datum.localeCompare(y.datum));
+      return `<div class="feld-reihe">${feld('datum', t('form.datum'), e.datum, 'date')}${feld('art', t('form.art'), e.art, 'select', {optionen: opt([...new Set([...EREIGNIS_ART, e.art].filter(Boolean))], e.art || 'Vermerk')})}</div>${feld('titel', t('form.kurztitel'), e.titel)}
+      <div class="feld-reihe drei">${feld('zeitpunkt', t('form.zeitpunkt'), e.zeitpunkt || 'genau', 'select', {optionen: opt(ZEITPUNKT.map(k => [k, wert('zeitpunkt.' + k)]), e.zeitpunkt || 'genau'), hinweis: t('form.zeitpunkt_hinweis')})}${feld('datum_bis', t('form.bis'), e.datum_bis, 'date', {hinweis: t('form.monat_hinweis')})}${feld('zeitpunkt_text', t('form.bekannt'), e.zeitpunkt_text, 'text', {hinweis: t('form.bekannt_hinweis')})}</div>
+      ${feld('detail', t('form.einzelheiten'), e.detail, 'textarea', {hinweis: t('form.einzelheiten_hinweis')})}${feld('anmerkung', t('form.anmerkung'), e.anmerkung, 'textarea', {hinweis: t('form.anmerkung_hinweis'), rows: 2})}
+      <h3 class="form-gruppe">${esc(t('form.g_wer'))}</h3>
+      <div class="feld-reihe">${feld('handelnd', t('form.handelnd'), pers[0] || '', 'select', {optionen: personOptionen(pers[0] || ''), hinweis: t('form.handelnd_hinweis')})}${feld('seite', t('form.seite'), e.seite || '', 'select', {optionen: opt([['', t('form.seite_auto')], ['links', t('form.seite_links')], ['rechts', t('form.seite_rechts')]], e.seite || '')})}</div>
+      <div class="feld">${esc(t('form.weitere_personen'))}${personenAuswahl(akte().beteiligte, pers.slice(1))}</div>
+      <h3 class="form-gruppe">${esc(t('form.g_belege'))}</h3>
+      ${feld('quelle', t('form.quelle'), e.quelle, 'select', {optionen: dokOptionen(e.quelle)})}
+      <div class="feld-reihe">${feld('belege', t('form.belege'), (e.belege || []).join(', '), 'text', {hinweis: t('form.belege_hinweis')})}${feld('fundstelle', t('form.fundstelle'), e.fundstelle, 'text', {hinweis: t('form.fundstelle_hinweis')})}</div>
+      ${feld('antwort_auf', t('form.antwort_auf'), e.antwort_auf || '', 'select', {optionen: opt(andere.map(x => [x.id, `${x.id} · ${chronZeit(x)} · ${x.titel}`.slice(0, 110)]), e.antwort_auf || '', t('form.kein_bezug'))})}
+      ${feld('originalnotiz', t('form.originalnotiz'), e.originalnotiz, 'textarea', {rows: 2})}
+      <h3 class="form-gruppe">${esc(t('form.g_einordnung'))}</h3>
+      <div class="feld-reihe">${feld('wichtig', t('form.wichtig'), e.wichtig ? 'ja' : 'nein', 'select', {optionen: jaNein(e.wichtig)})}${feld('belegstand', t('form.belegstand'), e.belegstand || '', 'select', {optionen: opt([...new Set([...BELEGSTAND, e.belegstand].filter(Boolean))], e.belegstand || '', t('allg.keine_angabe'))})}</div>
+      <div class="feld-reihe">${feld('betrag', t('form.betrag'), e.betrag)}${feld('betrag_einordnung', t('form.betrag_einordnung'), e.betrag_einordnung || '', 'select', {optionen: opt(BETRAG_EINORDNUNG, e.betrag_einordnung || '', t('allg.keine_angabe'))})}</div>
+      <div class="feld-reihe">${feld('terminstatus', t('form.terminstatus'), e.terminstatus || '', 'select', {optionen: opt([...new Set([...TERMINSTATUS, e.terminstatus].filter(Boolean))], e.terminstatus || '', t('form.kein_termin'))})}${feld('reihenfolge', t('form.reihenfolge'), e.reihenfolge ?? '', 'number', {attr: 'step="any"', hinweis: t('form.reihenfolge_hinweis')})}</div>`; },
+    // Leere Angaben der Chronologie werden nicht gespeichert: undefined fällt beim Übertragen als JSON weg, die Akte bleibt schlank
+    lesen: f => { const z = f.get('zeitpunkt') || 'genau', oder = w => w === '' || (Array.isArray(w) && !w.length) ? undefined : w, h = f.get('handelnd'), nr = parseFloat(String(f.get('reihenfolge')).replace(',', '.'));
+      return {datum: f.get('datum'), art: f.get('art'), titel: f.get('titel').trim(), quelle: f.get('quelle'), detail: f.get('detail').trim(), ...(z !== 'genau' ? {zeitpunkt: z, datum_bis: f.get('datum_bis') || '', zeitpunkt_text: f.get('zeitpunkt_text').trim()} : {zeitpunkt: 'genau', datum_bis: '', zeitpunkt_text: ''}),
+        wichtig: f.get('wichtig') === 'ja' || undefined, seite: oder(f.get('seite')), personen: oder([...(h ? [h] : []), ...f.getAll('personen').filter(p => p !== h)]), belege: oder(liste(f.get('belege')).map(s => s.toUpperCase())), fundstelle: oder(f.get('fundstelle').trim()),
+        antwort_auf: oder(f.get('antwort_auf')), anmerkung: oder(f.get('anmerkung').trim()), originalnotiz: oder(f.get('originalnotiz').trim()), betrag: oder(f.get('betrag').trim()), betrag_einordnung: oder(f.get('betrag_einordnung')),
+        belegstand: oder(f.get('belegstand')), terminstatus: oder(f.get('terminstatus')), reihenfolge: Number.isFinite(nr) ? nr : undefined}; },
+    leer: {datum: heute(), titel: '', art: 'Vermerk', quelle: '', detail: '', zeitpunkt: 'genau', datum_bis: '', zeitpunkt_text: ''}},
   frist: {liste: 'fristen', kennung: 'F', titel: 'form.frist', felder: x => rechnerHtml(x, true) + `
     <div class="feld-reihe">${feld('datum', t('form.fristende'), x.datum, 'date')}${feld('art', t('form.art'), x.art, 'select', {optionen: opt(FRIST_ART, x.art || 'gesetzlich')})}</div>${feld('titel', t('form.kurztitel'), x.titel)}<div class="feld-reihe">${feld('verfahren', t('form.verfahren'), x.verfahren, 'select', {optionen: opt(akte().verfahren.map(v => [v.id, v.id + ' · ' + v.art]), x.verfahren, t('allg.keine_angabe'))})}${feld('ausloeser_ereignis', t('form.ausloeser_ereignis'), x.ausloeser_ereignis, 'select', {optionen: opt([...akte().ereignisse].sort((a, b) => a.datum.localeCompare(b.datum)).map(e => [e.id, e.id + ' · ' + datum(e.datum) + ((e.zeitpunkt || 'genau') !== 'genau' ? ' (' + wert('zeitpunkt.' + e.zeitpunkt) + ')' : '') + ' · ' + e.titel]), x.ausloeser_ereignis, t('allg.keine_angabe')), hinweis: t('form.ausloeser_ereignis_hinweis')})}</div>${feld('ausloeser', t('form.ausloeser'), x.ausloeser, 'text', {hinweis: t('form.ausloeser_hinweis')})}${feld('rechtsgrundlage', t('form.rechtsgrundlage'), x.rechtsgrundlage, 'text', {hinweis: t('form.rechtsgrundlage_hinweis')})}${feld('berechnung', t('form.rechnung'), x.berechnung, 'textarea')}<div class="feld-reihe">${feld('pruefstatus', t('form.pruefstatus'), x.pruefstatus, 'select', {optionen: opt(FRIST_STATUS, x.pruefstatus || 'offen'), hinweis: t('form.pruefstatus_hinweis')})}${feld('quelle', t('form.quelle'), x.quelle, 'select', {optionen: dokOptionen(x.quelle)})}</div>${feld('geprueft_von', t('form.geprueft_von'), x.geprueft_von, 'text', {hinweis: t('form.geprueft_von_hinweis')})}<input type="hidden" name="geprueft_am" value="${esc(x.geprueft_am || '')}">`,
     lesen: f => ({datum: f.get('datum'), art: f.get('art'), titel: f.get('titel').trim(), ausloeser: f.get('ausloeser').trim(), rechtsgrundlage: f.get('rechtsgrundlage').trim(), berechnung: f.get('berechnung').trim(), pruefstatus: f.get('pruefstatus'), quelle: f.get('quelle'), geprueft_von: f.get('geprueft_von').trim(), geprueft_am: f.get('pruefstatus') === 'bestätigt' ? (f.get('geprueft_am') || heute()) : '', verfahren: f.get('verfahren') || '', ausloeser_ereignis: f.get('ausloeser_ereignis') || ''}), leer: {datum: '', titel: '', art: 'gesetzlich', ausloeser: '', rechtsgrundlage: '', berechnung: '', pruefstatus: 'offen', quelle: '', geprueft_von: '', geprueft_am: '', verfahren: '', ausloeser_ereignis: ''}},
@@ -393,9 +493,9 @@ const FORMULARE = {
   notiz: {liste: 'notizen', kennung: 'N', titel: 'form.notiz', felder: n => `${feld('titel', t('form.titel'), n.titel)}${feld('text', t('form.text'), n.text, 'textarea', {rows: 8})}`,
     lesen: f => ({titel: f.get('titel').trim(), text: f.get('text').trim(), datum: heute()}), leer: {titel: '', text: '', datum: ''}},
 };
-function eintragDialog(art, id) {
-  const F = FORMULARE[art]; const vorhanden = id ? akte()[F.liste].find(x => x.id === id) : null; const werte = vorhanden || {id: '', ...F.leer};
-  dialog(id ? t('dialog.bearbeiten', {was: t(F.titel), id}) : t('dialog.neu', {was: t(F.titel)}), F.felder(werte) + (id ? `<p><button type="button" class="knopf klein" data-aktion="eintrag-entfernen" data-art="${art}" data-id="${esc(id)}">${esc(t('dialog.entfernen'))}</button> <small class="u-muted">${esc(t('dialog.entfernen_hinweis'))}</small></p>` : ''),
+function eintragDialog(art, id, vorgabe = {}, hinweis = '') {
+  const F = FORMULARE[art]; const vorhanden = id ? akte()[F.liste].find(x => x.id === id) : null; const werte = vorhanden || {id: '', ...F.leer, ...vorgabe};
+  dialog(id ? t('dialog.bearbeiten', {was: t(F.titel), id}) : t('dialog.neu', {was: t(F.titel)}), (hinweis ? `<div class="hinweis">${esc(hinweis)}</div>` : '') + F.felder(werte) + (id ? `<p><button type="button" class="knopf klein" data-aktion="eintrag-entfernen" data-art="${art}" data-id="${esc(id)}">${esc(t('dialog.entfernen'))}</button> <small class="u-muted">${esc(t('dialog.entfernen_hinweis'))}</small></p>` : ''),
     async f => {
       const neu = F.lesen(f);
       // N03: „geprüft“ und „versandt“ frieren eine Fassung ein. Das kann nur entwurf_erfassen,
@@ -406,8 +506,17 @@ function eintragDialog(art, id) {
         toast((r.hinweise && r.hinweise.length ? r.hinweise.join(' ') + ' ' : '') + t('entw.eingefroren_meldung', {status: neu.status, n: r.entwurf.fassung}));
         await render(); return;
       }
-      await akteSpeichern(a => { const l = a[F.liste]; if (id) Object.assign(l.find(x => x.id === id), neu); else l.push({id: naechste(a, F.liste, F.kennung), ...neu}); });
+      let ziel = id;
+      await akteSpeichern(a => { const l = a[F.liste]; if (id) Object.assign(l.find(x => x.id === id), neu); else { ziel = naechste(a, F.liste, F.kennung); l.push({id: ziel, ...neu}); } });
+      if (art === 'ereignis' && $('#chron-pfad')) setTimeout(() => chronSprung(ziel, true), 0);   // render() springt nach oben; zurück zur bearbeiteten Karte, sobald der Dialog zu ist (sonst nimmt sein Schließen den Fokus wieder weg)
     });
+}
+// Entfernen fragt im eigenen Dialog nach, nicht über das Fenster des Browsers. Verweist noch etwas auf den Eintrag
+// (Frist, Bezug eines anderen Ereignisses), weist das Schema das Speichern ab und die Meldung erscheint im Dialog.
+function entfernenDialog(art, id) {
+  const F = FORMULARE[art], x = akte()[F.liste].find(y => y.id === id); if (!x) return;
+  dialog(t('dialog.entfernen_titel', {was: t(F.titel), id}), `<p><b>${esc(x.titel || x.name || x.art || id)}</b></p><p class="u-mt8">${esc(t('dialog.entfernen_frage', {id}))}</p><div class="hinweis gelb">${esc(t('dialog.entfernen_folge', {id}))}</div>`,
+    async () => { await akteSpeichern(a => { a[F.liste] = a[F.liste].filter(y => y.id !== id); }, t('dialog.entfernt')); S.chron.offen.delete(id); }, t('dialog.entfernen'));
 }
 const jaNein = w => opt([['nein', t('form.nein')], ['ja', t('form.ja')]], w ? 'ja' : 'nein');
 function ordnenDialog(d) {
@@ -533,7 +642,14 @@ document.addEventListener('click', async e => {
     else if (a === 'fall-bearbeiten') fallBearbeitenDialog();
     else if (a === 'neu') eintragDialog(b.dataset.art, '');
     else if (a === 'bearbeiten') eintragDialog(b.dataset.art, b.dataset.id);
-    else if (a === 'eintrag-entfernen') { const F = FORMULARE[b.dataset.art]; if (!confirm(t('dialog.entfernen_frage', {id: b.dataset.id}))) return; await akteSpeichern(x => { x[F.liste] = x[F.liste].filter(y => y.id !== b.dataset.id); }, t('dialog.entfernt')); $('#dialog').close(); }
+    else if (a === 'eintrag-entfernen') entfernenDialog(b.dataset.art, b.dataset.id);
+    else if (a === 'chron-auf') { const id = b.dataset.id, auf = !S.chron.offen.has(id); if (auf) S.chron.offen.add(id); else S.chron.offen.delete(id); b.closest('.ck').classList.toggle('offen', auf); b.textContent = t(auf ? 'chron.zuklappen' : 'chron.einzelheiten'); b.setAttribute('aria-expanded', String(auf)); }
+    else if (a === 'chron-alle') { const ids = chronListe().sicht.map(e => e.id), zu = ids.every(id => S.chron.offen.has(id)); ids.forEach(id => { if (zu) S.chron.offen.delete(id); else S.chron.offen.add(id); }); chronAktualisieren(); }
+    else if (a === 'chron-person') { S.chron.person = b.dataset.id; chronAktualisieren(); }
+    else if (a === 'chron-person-weg') { S.chron.person = ''; chronAktualisieren(); }
+    else if (a === 'chron-sprung') chronSprung(b.dataset.id);
+    else if (a === 'chron-neu') { const e = akte().ereignisse.find(x => x.id === b.dataset.id) || {}, n = akte().ereignisse.find(x => x.id === b.dataset.nach);   // + zwischen zwei Zeilen: Tag der oberen Zeile als Vorschlag; „Im Zeitraum ergänzen“: derselbe Zeitpunkt
+      eintragDialog('ereignis', '', n ? {datum: e.datum} : {datum: e.datum, zeitpunkt: e.zeitpunkt || 'genau', datum_bis: e.datum_bis || '', zeitpunkt_text: e.zeitpunkt_text || ''}, n ? t('chron.zwischen_hinweis', {von: chronZeit(e), bis: chronZeit(n)}) : t('chron.im_zeitraum_hinweis', {zeit: chronZeit(e)})); }
     else if (a === 'ordnen') ordnenDialog(dok(S.auswahl));
     else if (a === 'einsortieren') einsortierenDialog(dok(S.auswahl));
     else if (a === 'vorlage') await vorlageDialog();
@@ -553,6 +669,7 @@ let suchTimer;
 document.addEventListener('input', e => {
   if (e.target.closest('#formular') && e.target.id !== 'personen-suche') dialogVeraendert = true;
   if (e.target.id === 'personen-suche') { const q = e.target.value.trim().toLocaleLowerCase('de'); let sichtbar = 0; document.querySelectorAll('.personen-liste label').forEach(l => { l.hidden = !!q && !l.dataset.suchtext.includes(q); if (!l.hidden) sichtbar++; }); $('.personen-leer').hidden = sichtbar > 0; }
+  if (e.target.id === 'chron-suche') { S.chron.q = e.target.value; chronAktualisieren(); }
   if (e.target.id === 'dok-suche') { S.filter.q = e.target.value; clearTimeout(suchTimer); suchTimer = setTimeout(async () => { try { S.treffer = S.filter.q.trim().length > 1 ? (await api.get(`/api/fall/${fallId()}/suche?q=${encodeURIComponent(S.filter.q.trim())}`)).treffer : null; } catch (err) { toast(err.message, true); } const f = $('#dok-suche'); const pos = f && f.selectionStart; await render(); const g = $('#dok-suche'); if (g) { g.focus(); g.setSelectionRange(pos, pos); } }, 300); }
   if (e.target.id === 'fall-suche' || e.target.id === 'fall-filter') { const q = $('#fall-suche').value.toLocaleLowerCase('de'), s = $('#fall-filter').value; $('#fall-liste').innerHTML = S.zentrale.faelle.filter(c => (c.id + ' ' + c.titel + ' ' + (c.bereich || '')).toLocaleLowerCase('de').includes(q) && (s === 'Alle' || c.status === s)).map(fallKarte).join('') || `<div class="leer">${esc(t('faelle.kein_treffer'))}</div>`; }
   if (e.target.id === 'quellen-suche') { const q = e.target.value.toLocaleLowerCase('de'); $('#quellen-liste').innerHTML = S._quellenKarten(S.quellen.quellen.filter(x => JSON.stringify(x).toLocaleLowerCase('de').includes(q))); }
@@ -560,6 +677,9 @@ document.addEventListener('input', e => {
 document.addEventListener('change', async e => {
   try {
     if (['f-gruppe', 'f-typ', 'f-stand'].includes(e.target.id)) { S.filter[e.target.id.slice(2)] = e.target.value; await render(); }
+    if (e.target.id === 'chron-art') { S.chron.art = e.target.value; chronAktualisieren(); }
+    if (e.target.id === 'chron-kern') { S.chron.kern = e.target.checked; chronAktualisieren(); }
+    if (e.target.id === 'chron-anm') { S.chron.anmerkungen = e.target.checked; chronAktualisieren(); }
     if (e.target.id === 'fall-filter') e.target.dispatchEvent(new Event('input', {bubbles: true}));
     if (e.target.dataset.fallstatus) { await api.werkzeug('fall_status_setzen', {fall: e.target.dataset.fallstatus, status: e.target.value}); S.zentrale = null; toast(t('faelle.status_gespeichert')); await render(); }
     if (e.target.dataset.aufgabe) { const id = e.target.dataset.aufgabe, w = e.target.checked; await akteSpeichern(a => { a.aufgaben.find(x => x.id === id).erledigt = w; }, t(w ? 'meld.erledigt' : 'meld.wieder_offen')); }
