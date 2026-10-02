@@ -114,7 +114,7 @@ Anlass und Reaktion.
 | Feld | Inhalt | Regel |
 |---|---|---|
 | wichtig | Kernereignis, das den Fall trägt | true oder false |
-| seite | links, rechts | fest, leer erlaubt; leer heißt: aus der Rolle der ersten Person (Rolle „Ich“ rechts, alle anderen links) |
+| seite | links, rechts | fest, leer erlaubt; leer heißt: aus der Rolle der ersten Person (Rolle „Ich“ rechts, alle anderen links). Der Farbrand folgt der Seite: rechts immer die eigene Farbe, links die Gruppe der ersten Person |
 | personen | Liste von P-Kennungen | Verweise; die erste Person gilt als die handelnde und bestimmt die Farbgruppe der Karte |
 | belege | Liste von D-Kennungen | Verweise; ergänzt `quelle`, das als einzelner Hauptbeleg bleibt |
 | fundstelle | Seitenangabe oder Quelle ohne Dokument | Text |

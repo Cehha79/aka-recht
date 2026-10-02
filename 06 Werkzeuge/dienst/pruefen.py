@@ -482,6 +482,13 @@ def run():
         ak_f = json.loads((root / f1['ordner'] / 'akte.json').read_text('utf-8')); b_f = next(b for b in ak_f['beteiligte'] if b['id'] == pf['id'])
         del b_f['funktion']; assert not akte_schema.validate(ak_f)[0]   # Beteiligte ohne das Feld (ältere Akten) bleiben gültig
         b_f['funktion'] = 7; assert any('funktion muss Text sein' in s for s in akte_schema.validate(ak_f)[0])
+        # Eigene Art eines Ereignisses (02.10.2026): im Datenmodell ein Vorschlag, also auch über die Werkzeuge möglich
+        e_art = anfrage('/api/werkzeug', {'name': 'ereignis_eintragen', 'parameter': {'fall': 'R-0001', 'datum': '2026-09-03', 'titel': 'Eigene Art', 'art': 'Tätigkeit'}, 'bestaetigt': True})['ereignis']
+        assert e_art['art'] == 'Tätigkeit', e_art
+        e_art2 = anfrage('/api/werkzeug', {'name': 'ereignis_setzen', 'parameter': {'fall': 'R-0001', 'ereignis': e_art['id'], 'art': 'Leitung'}, 'bestaetigt': True})['ereignis']
+        fehler_a, warn_a = akte_schema.validate(json.loads((root / f1['ordner'] / 'akte.json').read_text('utf-8')))
+        assert e_art2['art'] == 'Leitung' and not fehler_a and any(e_art['id'] in s and 'unüblich' in s for s in warn_a), (fehler_a, warn_a)
+        ok('Eigene Art eines Ereignisses: ereignis_eintragen und ereignis_setzen nehmen eine Art außerhalb der üblichen Liste an, das Datenmodell meldet sie als unüblich, nicht als Fehler')
         ok('Funktion eines Beteiligten: anlegen und ändern über die Werkzeuge, Rolle und Name bleiben; fall_uebersicht nennt sie; ältere Akten ohne das Feld bleiben gültig, ein Wert, der kein Text ist, wird abgewiesen')
 
         ok('MCP-Lücken geschlossen (F23): Beteiligte und Verfahren anlegen mit geprüften Verweisen und ohne Doppelung, vorhandene Frist und vorhandenes Ereignis ändern (genau räumt die Unsicherheit ab, Marker bleiben gesperrt), Textdatei ablegen nur in 01, 06, 07 ohne Überschreiben und mit eigener Kennung')
@@ -514,7 +521,8 @@ def run():
         chron_kat = {w['name']: w['parameter']['properties'] for w in anfrage('/api/werkzeuge')}
         for name in ('ereignis_eintragen', 'ereignis_setzen'):
             assert chron_kat[name]['personen']['type'] == 'array' and chron_kat[name]['wichtig']['type'] == 'boolean' and chron_kat[name]['reihenfolge']['type'] == 'number', name
-        assert 'Bescheid' in chron_kat['ereignis_eintragen']['art']['enum'] and 'Vermerk' in chron_kat['ereignis_eintragen']['art']['enum']
+        for name in ('ereignis_eintragen', 'ereignis_setzen'):   # die Art ist ein Vorschlag: Liste in der Beschreibung, kein enum
+            assert 'enum' not in chron_kat[name]['art'] and 'Bescheid' in chron_kat[name]['art']['description'] and 'Vermerk' in chron_kat[name]['art']['description'], name
         neu = {'fall': 'R-0001', 'datum': '2026-09-10', 'titel': 'Antwort der Behörde', 'art': 'Antwort', 'wichtig': True, 'personen': [p['id'].lower()], 'belege': ['d0001'],
                'antwort_auf': e_genau['id'].lower(), 'fundstelle': ' Seite 1 ', 'anmerkung': 'Einordnung', 'betrag': '128 Euro', 'betrag_einordnung': 'Angebot', 'belegstand': 'Unterlage vorhanden', 'reihenfolge': '1,5'}
         e_chron = anfrage('/api/werkzeug', {'name': 'ereignis_eintragen', 'parameter': neu, 'bestaetigt': True})['ereignis']

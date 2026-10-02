@@ -435,8 +435,19 @@ Start wieder).
    in `zentrale.json` sind relativ zum Ordner.
 5. Hast du Codex oder Claude Desktop mit dem vollen Pfad zu
    `mcp_server.py` eingerichtet, den Pfad auf den neuen Ordner ändern.
+6. Was du außerhalb dieser vier Orte selbst in der Mappe abgelegt oder
+   geändert hast (eigene Dateien, eine angepasste `CLAUDE.md`), kommt nicht von
+   selbst mit: von Hand in den neuen Ordner übernehmen. Den alten Ordner erst
+   entfernen, wenn im neuen alles da ist.
 
 </details>
+
+> [!NOTE]
+> Eine neue Version kann strenger prüfen als die alte. Erfüllt eine bestehende
+> Akte eine neue Regel noch nicht, zeigt die Mappe sie weiter an, speichert sie
+> aber erst wieder, wenn der Punkt behoben ist; auch die Wiederherstellungsprobe
+> meldet ihn dann. `python3 "06 Werkzeuge/akte_schema.py" "02 Fälle/<Fall>/akte.json"`
+> nennt, was fehlt. Die Sicherung selbst ist davon nicht betroffen.
 
 ## Häufige Fragen
 

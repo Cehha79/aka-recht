@@ -425,8 +425,19 @@ run `git checkout -- .mcp.json .claude/settings.json .codex/config.toml`
    `zentrale.json` are relative to the folder.
 5. If you set up Codex or Claude Desktop with the full path to
    `mcp_server.py`, change that path to the new folder.
+6. Anything you stored or changed in the folder outside these four places
+   (your own files, an adapted `CLAUDE.md`) does not come along by itself:
+   carry it over by hand. Remove the old folder only once everything is in
+   the new one.
 
 </details>
+
+> [!NOTE]
+> A new version may check more strictly than the old one. If an existing case
+> file does not yet meet a new rule, the folder still shows it but saves it
+> again only once the point is fixed; the restore test reports it as well.
+> `python3 "06 Werkzeuge/akte_schema.py" "02 Fälle/<case>/akte.json"` names
+> what is missing. The backup itself is not affected.
 
 ## FAQ
 

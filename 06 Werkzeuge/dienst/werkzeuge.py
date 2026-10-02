@@ -270,6 +270,10 @@ def _quelle(fall, quelle, detail=''):
         raise ValueError(f'Dokumentkennung {quelle} gibt es in diesem Fall nicht.')
     return '', (detail + ' ' if detail else '') + f'[Quelle laut Angabe: {quelle}; keine Dokumentkennung]'
 
+# Die Art ist im Datenmodell ein Vorschlag (unübliche Werte geben nur eine Warnung). ereignis_eintragen führte die Liste
+# als enum und wies jede andere Art ab, ereignis_setzen nahm sie an; beide beschreiben die Liste jetzt nur (02.10.2026).
+EREIGNIS_ART_PARAMETER = {'type': 'string', 'description': 'Üblich: ' + ', '.join(akte_schema.EREIGNIS_ART_VORSCHLAG) + '. Eine eigene Art ist möglich; das Datenmodell meldet sie als unüblich.'}
+
 # Chronologie (02.10.2026): optionale Felder am Ereignis, für ereignis_eintragen und ereignis_setzen gleich.
 # Damit trägt eine KI dieselben Angaben ein wie die Oberfläche; geprüft werden sie vom Schema beim Speichern.
 CHRONOLOGIE_PARAMETER = {
@@ -490,7 +494,7 @@ def vorlage_fuellen(fall, vorlage, ziel=''):
 
 @werkzeug('ereignis_eintragen', 'Ereignis in die Chronologie eines Falls eintragen: Zeitpunkt, Überschrift, Art und sachliche Darstellung, dazu wahlweise Kernereignis, Personen, Belege, Bezug auf ein früheres Ereignis, Anmerkung, Betrag, Belegstand und Terminstatus.',
           {'fall': {'type': 'string'}, 'datum': {'type': 'string'}, 'titel': {'type': 'string'},
-           'art': {'type': 'string', 'enum': akte_schema.EREIGNIS_ART_VORSCHLAG}, 'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'}, 'detail': {'type': 'string', 'description': 'sachliche Darstellung, ohne eigene Bewertung (die gehört in anmerkung)'},
+           'art': EREIGNIS_ART_PARAMETER, 'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'}, 'detail': {'type': 'string', 'description': 'sachliche Darstellung, ohne eigene Bewertung (die gehört in anmerkung)'},
            'zeitpunkt': {'type': 'string', 'enum': akte_schema.ZEITPUNKT, 'description': 'genau (Standard), ungefähr, zeitraum (mit datum_bis) oder unbekannt (mit zeitpunkt_text); datum ist dann nur das Sortierdatum, nie ein erfundener Tag. Ein ganzer Monat ist ein Zeitraum vom Ersten bis zum Letzten'},
            'datum_bis': {'type': 'string', 'description': 'Ende des Zeitraums, JJJJ-MM-TT'}, 'zeitpunkt_text': {'type': 'string', 'description': 'was über den Zeitpunkt bekannt ist, etwa „Anfang September laut Kollegin“'},
            **CHRONOLOGIE_PARAMETER},
@@ -546,7 +550,7 @@ def frist_setzen(fall, frist, datum=None, titel=None, art=None, ausloeser=None, 
 
 @werkzeug('ereignis_setzen', 'Vorhandenes Ereignis ändern. Nur die übergebenen Felder werden geändert; „zeitpunkt“ genau entfernt die Angaben zur Unsicherheit. Bei den Feldern der Chronologie (Kernereignis, Personen, Belege, Bezug, Anmerkung, Betrag, Belegstand, Terminstatus) entfernt ein leerer Wert das Feld.',
           {'fall': {'type': 'string'}, 'ereignis': {'type': 'string', 'description': 'E-Kennung wie E01'},
-           'datum': {'type': 'string'}, 'titel': {'type': 'string'}, 'art': {'type': 'string'},
+           'datum': {'type': 'string'}, 'titel': {'type': 'string'}, 'art': EREIGNIS_ART_PARAMETER,
            'quelle': {'type': 'string', 'description': 'Dokumentkennung wie D0001, sonst leer; kein Freitext'},
            'detail': {'type': 'string'}, 'zeitpunkt': {'type': 'string', 'enum': akte_schema.ZEITPUNKT},
            'datum_bis': {'type': 'string'}, 'zeitpunkt_text': {'type': 'string'}, **CHRONOLOGIE_PARAMETER},
