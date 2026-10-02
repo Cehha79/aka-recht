@@ -57,7 +57,7 @@ AKA Recht does not replace legal advice.
   and every reference opens the document.
 - **Your AI works with it:** Claude Code, Claude Desktop, Codex or any other
   that speaks MCP (Model Context Protocol) or can run commands. 7 guides
-  take it from case intake to a reviewed draft, 35 tools let it read
+  take it from case intake to a reviewed draft, 36 tools let it read
   the case and, after your confirmation, write to it.
 - **Everything stays with you:** no AI inside the app, no account, no key, no
   network. The service runs only on your machine.
@@ -599,7 +599,7 @@ blocks that for the AI. New texts go to 06, memos to 07.
 
 <img src="bilder/kapitel-werkzeuge-en.svg" alt="Tools: MCP and command line">
 
-The same 35 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+The same 36 tools are available over MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 and on the command line (`python3 "06 Werkzeuge/dienst/cli.py" <tool> field=value`).
 Over MCP, writing tools run only with your confirmation (only the JSON value
 `true` counts); on the command line the AI is told to ask first. Reading tools
@@ -608,7 +608,7 @@ through `bestand_abgleichen`; the UI does that when you open a case. Every
 change to `akte.json` is validated against the data model and saved with a revision.
 
 <details>
-<summary><b>All 35 tools</b></summary>
+<summary><b>All 36 tools</b></summary>
 
 | Tool | Kind | Purpose |
 |---|---|---|
@@ -639,6 +639,7 @@ change to `akte.json` is validated against the data model and saved with a revis
 | `ereignis_setzen` | writes | Change an existing event; only the given fields change; "zeitpunkt" exact removes the uncertainty details; for the timeline fields an empty value removes the field |
 | `notiz_anlegen` | writes | Add a note to a case |
 | `entwurf_erfassen` | writes | Register a draft or a new version (with fassung_behalten the number stays when the text is unchanged; with fassung_nach_text the tool decides by checksum); with status "geprüft" or "versandt" the file is frozen as a read-only copy under 06 Entwürfe/Fassungen with checksum and its own id |
+| `entwurf_setzen` | writes | Change the title of an existing draft; id, versions and frozen copies stay, the copies get the new title |
 | `texterkennung` | writes | Text recognition (OCR) for a photo or a PDF without text layer via the optional program tesseract; stores the result as a separate text file under 07 Recherche/Texterkennung with its own id, a reference to the original and a warning header; marks the original as "OCR-erkannt" if no reading quality is set; never overwrites; the recognised text is derived, check figures and dates against the original |
 | `bestand_abgleichen` | writes | Sync the inventory of a case with its files: new files get an id, moved files are found by checksum; the only way new files are registered |
 | `dokument_ordnen` | writes | Change metadata of a document (title, date, kind, state, topics, exhibit, persons, references, note, reading quality); the file stays untouched |

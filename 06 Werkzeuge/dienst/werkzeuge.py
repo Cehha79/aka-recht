@@ -649,6 +649,28 @@ def entwurf_erfassen(fall, titel, datei, status='in Arbeit', versandt_als='', fa
     rev = store.speichere_akte(fall, akte, rev)
     return {'entwurf': e, 'revision': rev, 'hinweise': hinweise}
 
+# Der Titel ist der Schlüssel, über den entwurf_erfassen einen Entwurf wiederfindet. Ein Tippfehler oder ein überholter
+# Titel ließ sich deshalb über die Werkzeuge nicht berichtigen: Ein neuer Titel hätte einen zweiten Entwurf angelegt (02.10.2026).
+@werkzeug('entwurf_setzen', 'Titel eines vorhandenen Entwurfs ändern. Die W-Kennung, Fassungen und eingefrorenen Kopien bleiben; die Kopien bekommen den neuen Titel. Status und Datei ändert weiter nur entwurf_erfassen.',
+          {'fall': {'type': 'string'}, 'entwurf': {'type': 'string', 'description': 'W-Kennung wie W01'}, 'titel': {'type': 'string', 'description': 'neuer Titel; darf bei keinem anderen Entwurf des Falls stehen'}},
+          schreibend=True, pflicht=['fall', 'entwurf', 'titel'])
+def entwurf_setzen(fall, entwurf, titel):
+    akte, rev = store.lese_akte(fall)
+    kennung = str(entwurf).strip().upper(); neu = str(titel).strip()
+    e = next((x for x in akte['entwuerfe'] if x['id'] == kennung), None)
+    if not e: raise ValueError(f'Entwurfskennung {entwurf} gibt es in diesem Fall nicht.')
+    if not neu: raise ValueError('„titel“ darf nicht leer sein.')
+    if any(x['id'] != kennung and x.get('titel', '').strip().lower() == neu.lower() for x in akte['entwuerfe']):
+        raise ValueError(f'„{neu}“ steht schon bei einem anderen Entwurf. Der Titel ordnet eine neue Fassung ihrem Entwurf zu und muss eindeutig sein.')
+    alt = e['titel']; e['titel'] = neu; kopien = []
+    pfad_zu_id = {d['pfad']: k for k, d in akte['dokumente'].items()}
+    for x in e.get('fassungen') or []:   # die eingefrorenen Kopien tragen den Titel des Entwurfs im Anzeigenamen
+        for rel in (x.get('kopien') or {}).values():
+            k = pfad_zu_id.get(rel); erwartet = f'{alt}, Fassung {x.get("fassung")} ({x.get("status")})'
+            if k and akte['dokumente'][k].get('titel') == erwartet: akte['dokumente'][k]['titel'] = f'{neu}, Fassung {x.get("fassung")} ({x.get("status")})'; kopien.append(k)
+    rev = store.speichere_akte(fall, akte, rev)
+    return {'entwurf': e, 'titel_bisher': alt, 'kopien_umbenannt': kopien, 'revision': rev}
+
 def _akte_mit_dokument(fall, dokument=''):
     """Akte lesen, nur für schreibende Werkzeuge. Ist die Dokumentkennung unbekannt, den Bestand abgleichen
     und den Katalog nachziehen (neu zugeordnete oder im Finder abgelegte Dateien bekommen so ihren

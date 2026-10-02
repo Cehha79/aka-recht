@@ -57,7 +57,7 @@ AKA Recht ersetzt keine Rechtsberatung.
   Abstand („7 Tage später“), und jede Fundstelle öffnet das Dokument.
 - **Deine KI arbeitet mit:** Claude Code, Claude Desktop, Codex oder jede andere,
   die MCP (Model Context Protocol) oder Befehle ausführen kann. 7 Anleitungen
-  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 35 Werkzeuge
+  führen sie von der Fallaufnahme bis zum geprüften Entwurf, 36 Werkzeuge
   lassen sie in der Akte lesen und, nach deiner Bestätigung, schreiben.
 - **Alles bleibt bei dir:** keine KI in der App, kein Konto, kein Schlüssel,
   kein Netz. Der Dienst läuft nur auf deinem Rechner.
@@ -612,7 +612,7 @@ ein Hook sperrt das für die KI. Neue Texte entstehen in 06, Vermerke in 07.
 
 <img src="bilder/kapitel-werkzeuge.svg" alt="Werkzeuge: MCP und Befehlszeile">
 
-Dieselben 35 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
+Dieselben 36 Werkzeuge erreicht die KI über MCP (`06 Werkzeuge/dienst/mcp_server.py`)
 oder über die Befehlszeile (`python3 "06 Werkzeuge/dienst/cli.py" <werkzeug> feld=wert`).
 Schreibende Werkzeuge laufen über MCP nur mit deiner Bestätigung (es zählt
 allein der JSON-Wert `true`); über die Befehlszeile soll die KI vorher
@@ -623,7 +623,7 @@ selbst. Jede Änderung an `akte.json` wird gegen das Datenmodell geprüft
 und mit Revision gespeichert.
 
 <details>
-<summary><b>Alle 35 Werkzeuge</b></summary>
+<summary><b>Alle 36 Werkzeuge</b></summary>
 
 | Werkzeug | Art | Zweck |
 |---|---|---|
@@ -654,6 +654,7 @@ und mit Revision gespeichert.
 | `ereignis_setzen` | schreibend | Vorhandenes Ereignis ändern. Nur die übergebenen Felder werden geändert; „zeitpunkt“ genau entfernt die Angaben zur Unsicherheit. Bei den Feldern der Chronologie (Kernereignis, Personen, Belege, Bezug, Anmerkung, Betrag, Belegstand, Terminstatus) entfernt ein leerer Wert das Feld. |
 | `notiz_anlegen` | schreibend | Ordnungsnotiz in einem Fall anlegen. |
 | `entwurf_erfassen` | schreibend | Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung; mit fassung_behalten bleibt die Nummer, wenn sich der Text seit dieser Fassung nicht geändert hat, mit fassung_nach_text entscheidet das Werkzeug das selbst an der Prüfsumme. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung. |
+| `entwurf_setzen` | schreibend | Titel eines vorhandenen Entwurfs ändern. Die W-Kennung, Fassungen und eingefrorenen Kopien bleiben; die Kopien bekommen den neuen Titel. Status und Datei ändert weiter nur entwurf_erfassen. |
 | `texterkennung` | schreibend | Texterkennung (OCR) für ein Foto oder eine PDF ohne Textschicht, über das freiwillige Zusatzprogramm tesseract auf diesem Rechner. Legt den erkannten Text als neue Textdatei unter 07 Recherche/Texterkennung an (eigene D-Kennung, Verweis auf das Original, Kopf mit Quelle, Prüfsumme, Programm, Sprache, Datum und Warnhinweis) und vermerkt beim Original den Textstand „OCR-erkannt“, wenn dort noch keiner steht. Das Original bleibt unverändert, nichts wird überschrieben. Erkannter Text ist eine Ableitung: Zahlen, Daten, Fristen, Beträge und Namen am Original prüfen. |
 | `bestand_abgleichen` | schreibend | Bestand eines Falls mit den Dateien abgleichen: neue Dateien in 01 bis 08 bekommen eine Kennung, im Finder verschobene werden über die Prüfsumme wiedergefunden, fehlende Ordnungsangaben werden in der Akte ergänzt. Der einzige Weg, auf dem neue Dateien registriert werden. |
 | `dokument_ordnen` | schreibend | Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz, Textstand: direkt ausgelesen, OCR-erkannt, visuell geprüft, teilweise lesbar, nicht lesbar). Die Datei selbst bleibt unverändert. |

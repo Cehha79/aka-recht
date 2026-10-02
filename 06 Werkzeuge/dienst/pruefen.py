@@ -671,6 +671,19 @@ def run(behalten=False):
         l_t3 = r_t3['entwurf']['fassungen'][-1]
         assert r_t3['entwurf']['fassung'] == nr_b + 1 and l_t3['status'] == 'versandt' and f'Fassung{nr_b + 1:02d}_versandt' in l_t3['kopien']['md'], r_t3   # derselbe Text: Nummer bleibt, Kopie entsteht
         assert not akte_schema.validate(json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8')))[0]
+        # Entwurf umbenennen (02.10.2026): der Titel ist der Schlüssel von entwurf_erfassen und ließ sich über die Werkzeuge nicht ändern
+        w_id = r_t3['entwurf']['id']; ak_u = json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8')); anzahl_u = len(ak_u['entwuerfe'])
+        r_u = anfrage('/api/werkzeug', {'name': 'entwurf_setzen', 'parameter': {'fall': 'R-0002', 'entwurf': w_id.lower(), 'titel': ' Antwort an die Behörde '}, 'bestaetigt': True})
+        ak_u2 = json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8'))
+        assert r_u['entwurf']['titel'] == 'Antwort an die Behörde' and r_u['titel_bisher'] == 'Antwort' and r_u['entwurf']['id'] == w_id and len(ak_u2['entwuerfe']) == anzahl_u and r_u['entwurf']['fassung'] == nr_b + 1, r_u
+        assert r_u['kopien_umbenannt'] and all(ak_u2['dokumente'][k]['titel'].startswith('Antwort an die Behörde, Fassung ') for k in r_u['kopien_umbenannt']), r_u
+        anfrage('/api/werkzeug', {'name': 'entwurf_setzen', 'parameter': {'fall': 'R-0002', 'entwurf': 'W99', 'titel': 'x'}, 'bestaetigt': True}, erwartet=400)
+        anfrage('/api/werkzeug', {'name': 'entwurf_setzen', 'parameter': {'fall': 'R-0002', 'entwurf': w_id, 'titel': ' '}, 'bestaetigt': True}, erwartet=400)
+        r_u3 = anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': {**par_t, 'titel': 'Antwort an die Behörde'}, 'bestaetigt': True})
+        assert r_u3.get('unveraendert') and r_u3['entwurf']['id'] == w_id, r_u3   # der neue Titel findet denselben Entwurf
+        anfrage('/api/werkzeug', {'name': 'entwurf_setzen', 'parameter': {'fall': 'R-0002', 'entwurf': w_id, 'titel': 'Antwort'}, 'bestaetigt': True})   # zurück, die folgenden Prüfungen kennen den alten Titel
+        assert not akte_schema.validate(json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8')))[0]
+        ok('Entwurf umbenennen: entwurf_setzen ändert den Titel, Kennung, Fassung und Zahl der Entwürfe bleiben, die eingefrorenen Kopien tragen den neuen Titel; unbekannte Kennung und leerer Titel werden abgewiesen')
         ok('Fassung nach Text: unveränderter Text behält die Nummer beim Wechsel von „geprüft“ zu „versandt“, geänderter Text bekommt eine neue, ein schon festgehaltener Stand erzeugt nichts Neues')
         ok('Fassung behalten: derselbe Text wechselt von „geprüft“ zu „versandt“ ohne neue Nummer und wird als Kopie eingefroren; doppelt, bei geändertem Text und ohne vorhandenen Entwurf wird abgewiesen')
         ok('Entwurfsstatus „geprüft“ und „versandt“ nur mit eingefrorener Fassung (N03): der Weg der Oberfläche über die ganze Akte wird abgewiesen und schreibt nichts, „in Arbeit“ bleibt frei, und über entwurf_erfassen entsteht die unveränderliche Kopie mit Prüfsumme und eigener Kennung')
