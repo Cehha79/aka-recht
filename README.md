@@ -67,7 +67,19 @@ AKA Recht ersetzt keine Rechtsberatung.
 > Arbeitgeber). In der Oberfläche auf **„Beispielfall laden“** klicken, dann
 > durch Akte, Dokumente, Chronologie, Fristen und Entwurf klicken. Jederzeit löschbar.
 
-Produkt Version 0.4 vom 18.09.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · geprüft mit Python 3.14.7 auf macOS 26.7.1, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
+Produkt Version 0.4 vom 18.09.2026, neuester Stand vom 02.10.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · geprüft mit Python 3.14.7 auf macOS 26.7.1, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
+
+## Neu seit Version 0.4
+
+Diese Punkte stehen im neuesten Stand vom 02.10.2026, noch nicht in der festen Version 0.4. Wer die feste Version von der Release-Seite lädt, bekommt sie mit der nächsten Version. Geprüft sind sie bisher nur auf macOS.
+
+- **Chronologie als Zeitpfad:** links die anderen Stellen, rechts die eigenen Schritte, die Zeit in der Mitte; Kernereignisse, Farbe je Gruppe, Bezug „Antwort auf“ mit Abstand, eigene Art eines Ereignisses neben der Liste der üblichen.
+- **Beteiligte mit Rolle und Funktion:** Die Rolle ordnet der Gruppe zu und bestimmt Seite und Farbe in der Chronologie; die Funktion sagt in freien Worten, wer jemand ist, etwa „Rechtsanwalt der Gegenseite“.
+- **Entwürfe:** Die Fassungsnummer folgt dem Text: Unveränderter Text behält die Nummer, wenn sein Status wechselt, geänderter bekommt eine neue. Ein Entwurf lässt sich umbenennen (`entwurf_setzen`).
+- **Bestand:** Werkzeuge, die selbst eine Datei anlegen, geben nur dieser eine Kennung; andere neue Dateien bleiben unerfasst, bis du `bestand_abgleichen` aufrufst.
+- **Sicherung:** Die Wiederherstellungsprobe meldet getrennt, ob das Archiv vollständig ist und ob jede Akte alle Regeln des Datenmodells erfüllt.
+- **Sitzungsstart:** Die Meldung des Hooks nennt ihre Uhrzeit; Verknüpfungen im Eingang zählen nicht als Post.
+- **Rechtsinhalte:** Ein Prüflauf stellt sicher, dass alle Verweise der Merkblätter, des Quellenkatalogs und der Vorlagen auf amtliche Stellen zeigen.
 
 ## Herunterladen
 
@@ -573,7 +585,7 @@ nichts bei. Andere Assistenten halten die Regeln aus `AGENTS.md` selbst ein.
 
 | Zeitpunkt | Was der Hook tut |
 |---|---|
-| `SessionStart` | meldet beim Start Eingang, nahe Fristen und offene Aufgaben je Fall, dazu fällige Rechtsinhalte |
+| `SessionStart` | meldet beim Start mit Uhrzeit Eingang, nahe Fristen und offene Aufgaben je Fall, dazu fällige Rechtsinhalte; Verknüpfungen im Eingang zählen nicht als Post |
 | `PreToolUse` | Originalschutz: Schreiben in 02 Grundlagen, 03 Schriftverkehr, 04 Verfahren, 05 Beweise, 08 Archiv und in bestand.json wird abgewiesen, geprüft am aufgelösten Pfad |
 | `PostToolUse` | Fremdtext-Wächter: warnt mit Herkunft, wenn gelesener Text (Datei, Befehl, Web oder MCP-Werkzeug) Sätze enthält, die wie Anweisungen an die KI klingen |
 | `Stop` | Doku-Abgleich: prüft HTML-Ansichten gegen ihre md-Quellen und die Kopien für andere Assistenten gegen CLAUDE.md und Skills, nennt jede Abweichung |
@@ -748,7 +760,7 @@ den Pflichtinhalt dagegen.
 | `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" <Entwurf.md>` | Word-Datei aus einem Entwurf, mit Vorabbericht (offene Marker, Platzhalter, Kopfzeilen, Anlagen); `--pruefen` nur der Bericht |
 | `python3 ".claude/recht/werkzeuge/uebergabe_paket.py" R-0001 --empfaenger anwalt --vorschau` | Übergabepaket je Empfänger (anwalt: alles; gericht, behoerde, gegenseite, beratung: nur `--nur D0001,D0002`), erst Vorschau, dann ohne `--vorschau` als geprüfte ZIP mit Manifest außerhalb der Mappe |
 | `python3 "06 Werkzeuge/verteilen.py"` | `AGENTS.md` und `.agents/skills/` aus `CLAUDE.md` und `.claude/skills/` erzeugen; `--pruefen` nur vergleichen |
-| `python3 "06 Werkzeuge/dienst/pruefen.py"` | Funktionstest mit künstlichen Akten in einem Temp-Ordner |
+| `python3 "06 Werkzeuge/dienst/pruefen.py"` | Funktionstest mit künstlichen Akten in einem Temp-Ordner, der nach einem bestandenen Lauf wieder entfernt wird; `--behalten` lässt ihn liegen |
 
 </details>
 

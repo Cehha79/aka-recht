@@ -67,7 +67,19 @@ AKA Recht does not replace legal advice.
 > Click **"Beispielfall laden"** in the UI, then browse case, documents,
 > timeline, deadlines and draft. Delete it whenever you like.
 
-Product version 0.4 of 18.09.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · tested with Python 3.14.7 on macOS 26.7.1, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz
+Product version 0.4 of 18.09.2026, latest state of 02.10.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · tested with Python 3.14.7 on macOS 26.7.1, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz
+
+## New since version 0.4
+
+These points are in the latest state of 02.10.2026, not yet in the fixed version 0.4. If you download the fixed version from the release page, you get them with the next version. So far they are tested on macOS only.
+
+- **Timeline as a time path:** other parties on the left, your own steps on the right, time in the middle; key events, a colour per group, "reply to" with the interval, your own event type next to the usual list.
+- **Parties with role and function:** The role assigns the group and decides side and colour in the timeline; the function says in your own words who someone is, such as "lawyer of the opposing party".
+- **Drafts:** The version number follows the text: unchanged text keeps its number when the status changes, changed text gets a new one. A draft can be renamed (`entwurf_setzen`).
+- **Inventory:** Tools that create a file themselves give an id only to that file; other new files stay unregistered until you call `bestand_abgleichen`.
+- **Backup:** The restore test reports separately whether the archive is complete and whether every case file meets all rules of the data model.
+- **Session start:** The hook message states its time; symbolic links in the inbox do not count as mail.
+- **Legal content:** A check makes sure that every reference in the fact sheets, the source catalogue and the templates points to an official source.
 
 ## Download
 
@@ -560,7 +572,7 @@ rules in `AGENTS.md` themselves.
 
 | Event | What the hook does |
 |---|---|
-| `SessionStart` | reports new mail, near deadlines and open tasks per case at session start, plus legal content due for a check |
+| `SessionStart` | reports new mail, near deadlines and open tasks per case at session start, with the time of the snapshot, plus legal content due for a check; symbolic links in the inbox do not count as mail |
 | `PreToolUse` | original protection: writing into 02 to 05, 08 and bestand.json is refused, checked on the resolved path |
 | `PostToolUse` | foreign-text guard: warns with the source when read text (file, command, web or MCP tool) contains sentences that look like instructions to the AI |
 | `Stop` | doc check: compares the HTML views with their md sources and the copies for other assistants with CLAUDE.md and the skills, names every mismatch |
@@ -733,7 +745,7 @@ from them, `/entwurf` checks the mandatory content against them.
 | `python3 ".claude/recht/werkzeuge/docx_erzeugen.py" <draft.md>` | Word file from a draft, with a pre-check report (open markers, placeholders, header lines, attachments); `--pruefen` report only |
 | `python3 ".claude/recht/werkzeuge/uebergabe_paket.py" R-0001 --empfaenger anwalt --vorschau` | hand-over package per recipient (anwalt: everything; gericht, behoerde, gegenseite, beratung: only `--nur D0001,D0002`), preview first, then without `--vorschau` as a verified ZIP with manifest outside the folder |
 | `python3 "06 Werkzeuge/verteilen.py"` | generate `AGENTS.md` and `.agents/skills/` from `CLAUDE.md` and `.claude/skills/`; `--pruefen` compare only |
-| `python3 "06 Werkzeuge/dienst/pruefen.py"` | functional test with artificial cases in a temp folder |
+| `python3 "06 Werkzeuge/dienst/pruefen.py"` | functional test with artificial cases in a temp folder that is removed after a passed run; `--behalten` keeps it |
 
 </details>
 
