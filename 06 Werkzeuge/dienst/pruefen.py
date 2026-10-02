@@ -1085,6 +1085,23 @@ def run(behalten=False):
 
         ok('Pflege der Rechtsinhalte: rechtsinhalte_pruefen meldet Merkblätter zwölf Monate nach „Letzte vollständige Prüfung“ (bald fällig 30 Tage vorher), ohne Zeile und mit 31.02. als unbekannt, Quellenkatalog nach sechs Monaten, Feiertage ab 1. Dezember; Monatsende und Schalttag; falscher Stichtag 400; schreibt nichts')
 
+        # Nur die eigene Datei (02.10.2026): Werkzeuge, die selbst eine Datei anlegen, registrieren allein diese; fremde neue
+        # Dateien bleiben unerfasst und werden gemeldet, bis bestand_abgleichen sie aufnimmt. Am Ende des Laufs, damit die
+        # zusätzlichen Dateien keine der früheren Prüfungen verschieben.
+        fall_n = root / f2['ordner']; pfade_n = lambda: {d['pfad'] for d in json.loads((fall_n / 'akte.json').read_text('utf-8'))['dokumente'].values()}
+        (fall_n / '01 Eingang').mkdir(exist_ok=True); (fall_n / '01 Eingang' / 'Fremd eins.txt').write_text('liegt nur da\n', encoding='utf-8')
+        abl_n = anfrage('/api/werkzeug', {'name': 'datei_ablegen', 'parameter': {'fall': 'R-0002', 'bereich': '07 Recherche', 'name': 'Eigener Vermerk.md', 'text': '# Eigener Vermerk\n'}, 'bestaetigt': True})
+        assert abl_n['kennung'].startswith('D') and abl_n['abgleich']['nicht_erfasst'] == ['01 Eingang/Fremd eins.txt'] and '1 weitere' in abl_n['abgleich']['hinweis'], abl_n
+        assert '07 Recherche/Eigener Vermerk.md' in pfade_n() and '01 Eingang/Fremd eins.txt' not in pfade_n()
+        (fall_n / '06 Entwürfe' / 'Zweites_ENTWURF.md').write_text('Hinweise\n---\nZweites Schreiben.\n', encoding='utf-8')
+        r_n = anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': {'fall': 'R-0002', 'titel': 'Zweites Schreiben', 'datei': '06 Entwürfe/Zweites_ENTWURF.md', 'status': 'geprüft'}, 'bestaetigt': True})
+        kopie_n = r_n['entwurf']['fassungen'][-1]['kopien']['md']
+        assert any('1 weitere' in h for h in r_n['hinweise']) and {'06 Entwürfe/Zweites_ENTWURF.md', kopie_n} <= pfade_n() and '01 Eingang/Fremd eins.txt' not in pfade_n(), r_n   # Entwurf und Kopie ja, Fremdes nein
+        ab_n = anfrage('/api/werkzeug', {'name': 'bestand_abgleichen', 'parameter': {'fall': 'R-0002'}, 'bestaetigt': True})
+        assert [x['pfad'] for x in ab_n['neu']] == ['01 Eingang/Fremd eins.txt'] and 'nicht_erfasst' not in ab_n and '01 Eingang/Fremd eins.txt' in pfade_n(), ab_n
+        assert not akte_schema.validate(json.loads((fall_n / 'akte.json').read_text('utf-8')))[0]
+        ok('Nur die eigene Datei: datei_ablegen und entwurf_erfassen registrieren allein ihre Datei (Entwurf samt eingefrorener Kopie), eine fremde neue Datei bleibt unerfasst und wird gemeldet, bis bestand_abgleichen sie aufnimmt')
+
         ergebnis = {'bestanden': len(bestanden), 'punkte': bestanden, 'ordner': str(base) if behalten else ''}
         (base / 'Ergebnis.json').write_text(json.dumps(ergebnis, ensure_ascii=False, indent=2), encoding='utf-8')
         fertig = True

@@ -78,6 +78,10 @@ def ausfuehren(name, args, bestaetigt=False):
 # Lesende Werkzeuge schreiben nichts: weder akte.json noch bestand.json noch zentrale.json (Prüfbericht 16.09.2026, F03).
 # Neue oder verschobene Dateien melden sie als Abweichung; registriert werden sie erst durch bestand_abgleichen.
 ABGLEICH_HINWEIS = 'Nicht erfasste Dateien bekommen ihre Kennung erst durch das schreibende Werkzeug bestand_abgleichen.'
+def _weitere_neue(bericht):
+    """Hinweis eines Werkzeugs, das nur seine eigene Datei registriert hat, auf andere neue Dateien im Fallordner."""
+    n = len(bericht.get('nicht_erfasst', []))
+    return f'{n} weitere neue Datei(en) im Fallordner sind nicht erfasst; dafür bestand_abgleichen.' if n else ''
 
 @werkzeug('faelle_auflisten', 'Alle Fälle mit Kennung, Titel, Bereich, Status, Zahl der Dokumente, nicht erfassten Dateien und offenen Aufgaben.', {})
 def faelle_auflisten():
@@ -639,7 +643,9 @@ def entwurf_erfassen(fall, titel, datei, status='in Arbeit', versandt_als='', fa
             else: shutil.copyfile(q, ziel); ziel.chmod(0o444)   # nur lesbar: die Kopie ist das Original dieser Fassung
             kopien[q.suffix.lower().lstrip('.')] = ziel.relative_to(ordner).as_posix()
         stand['kopien'] = kopien
-        bestand.abgleichen(ordner, weg='Fassung eingefroren'); dokumente.katalog(fall, akte)
+        eigene = set(kopien.values()) | {q.relative_to(ordner).as_posix() for q in dateien}   # der Entwurf selbst und seine Kopien, sonst nichts
+        _, ber = bestand.abgleichen(ordner, weg='Fassung eingefroren', nur=eigene); dokumente.katalog(fall, akte)
+        if _weitere_neue(ber): hinweise.append(_weitere_neue(ber))
         pfad_zu_id = {d['pfad']: k for k, d in akte['dokumente'].items()}
         for rel in kopien.values():
             k = pfad_zu_id.get(rel)
@@ -711,7 +717,7 @@ def texterkennung(fall, dokument, sprache='deu'):
             f'Erstellt: {jetzt:%d.%m.%Y, %H:%M} Uhr · Seiten: {e["seiten"]} · erkannte Zeichen: {zeichen}',
             f'Achtung: {ocr.WARNUNG}', dokumente.OCR_TRENNER]
     ziel.parent.mkdir(parents=True, exist_ok=True); ziel.write_text('\n'.join(kopf) + '\n' + e['text'].strip() + '\n', 'utf-8')
-    bestand.abgleichen(ordner, weg='Texterkennung'); dokumente.katalog(fall, akte)
+    _, ber = bestand.abgleichen(ordner, weg='Texterkennung', nur={rel}); dokumente.katalog(fall, akte)   # nur die eigene Ableitung registrieren
     neu = next((k for k, x in akte['dokumente'].items() if x['pfad'] == rel), '')
     if neu:
         akte['dokumente'][neu].update({'titel': f'Texterkennung zu {dokument}: {d["titel"]}'[:200], 'art': 'Sonstiges', 'stand': 'Vermerk', 'verweise': [dokument],
@@ -721,18 +727,24 @@ def texterkennung(fall, dokument, sprache='deu'):
     if textstand_gesetzt: d['textstand'] = 'OCR-erkannt'
     rev = store.speichere_akte(fall, akte, rev)
     return {'dokument': dokument, 'texterkennung': neu, 'datei': rel, 'seiten': e['seiten'], 'zeichen': zeichen, 'programm': e['programm'], 'sprache': e['sprache'],
-            'textstand': d.get('textstand', ''), 'textstand_gesetzt': textstand_gesetzt, 'hinweis': ocr.WARNUNG, 'revision': rev}
+            'textstand': d.get('textstand', ''), 'textstand_gesetzt': textstand_gesetzt, 'hinweis': ocr.WARNUNG, 'weitere_neue': _weitere_neue(ber), 'revision': rev}
 
 @werkzeug('bestand_abgleichen', 'Bestand eines Falls mit den Dateien abgleichen: neue Dateien in 01 bis 08 bekommen eine Kennung, im Finder verschobene werden über die Prüfsumme wiedergefunden, fehlende Ordnungsangaben werden in der Akte ergänzt. Der einzige Weg, auf dem neue Dateien registriert werden.',
           {'fall': {'type': 'string'}}, schreibend=True, pflicht=['fall'])
 def bestand_abgleichen(fall):
+    return _abgleichen(fall)
+
+def _abgleichen(fall, nur=None):
+    """Abgleich mit Nachzug der Akte. nur beschränkt neue Kennungen auf die genannten Pfade (siehe bestand.abgleichen)."""
     ordner = store.fall_ordner(fall)
-    _, bericht = bestand.abgleichen(ordner)
+    _, bericht = bestand.abgleichen(ordner, nur=nur)
     akte, rev = store.lese_akte(fall)
     _, ergaenzt, _ = dokumente.katalog(fall, akte)
     if ergaenzt: rev = store.speichere_akte(fall, akte, rev, ohne_sicherung=True)
-    return {'fall': fall, 'neu': bericht['neu'], 'verschoben': bericht['verschoben'], 'fehlend': bericht['fehlend'],
+    ergebnis = {'fall': fall, 'neu': bericht['neu'], 'verschoben': bericht['verschoben'], 'fehlend': bericht['fehlend'],
             'in_akte_ergaenzt': ergaenzt, 'revision': rev}
+    if nur is not None: ergebnis['nicht_erfasst'] = bericht['nicht_erfasst']; ergebnis['hinweis'] = _weitere_neue(bericht)
+    return ergebnis
 
 
 @werkzeug('dokument_ordnen', 'Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz, Textstand: direkt ausgelesen, OCR-erkannt, visuell geprüft, teilweise lesbar, nicht lesbar). Die Datei selbst bleibt unverändert.',
@@ -794,7 +806,7 @@ def datei_ablegen(fall, bereich, name, text, unterordner=''):
         with open(ziel, 'x', encoding='utf-8') as f: f.write(text)   # exklusiv: kein paralleler Aufruf überschreibt
     except FileExistsError:
         raise ValueError(f'„{rel}“ gibt es schon. Vorhandene Dateien werden nie überschrieben; anderen Namen wählen.')
-    abgleich = bestand_abgleichen(fall)
+    abgleich = _abgleichen(fall, nur={rel})   # nur die eigene Datei registrieren
     kennung = next((e['id'] for e in abgleich.get('neu', []) if _nfc(e.get('pfad', '')) == _nfc(rel)), '')
     return {'pfad': rel, 'zeichen': len(text), 'kennung': kennung, 'abgleich': abgleich}
 

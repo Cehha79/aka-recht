@@ -9,7 +9,7 @@ Pfad nicht mehr existiert und die Zuordnung eindeutig ist. abgleich() rechnet
 dasselbe nur lesend und meldet Abweichungen (Prüfbericht 16.09.2026, F03).
 Nur Standardbibliothek.
 """
-import hashlib, json, re
+import hashlib, json, re, unicodedata
 from datetime import datetime
 from pathlib import Path
 import store
@@ -38,14 +38,18 @@ def dateien(ordner):
                 liste.append(p.relative_to(ordner).as_posix())
     return liste
 
-def _rechnen(ordner, weg, kennungen_vergeben):
+def _rechnen(ordner, weg, kennungen_vergeben, nur=None):
     """Vergleicht bestand.json mit den Dateien der Gruppen 01 bis 08, ohne zu schreiben.
 
     Liefert (daten, alt, ergebnis, bericht): daten ist der abgeglichene Stand (Kopie), alt der gelesene,
     ergebnis {kennung: pfad} der vorhandenen registrierten Dateien, bericht die Abweichungen:
     neu (frisch vergebene Kennungen, nur mit kennungen_vergeben), nicht_erfasst (Dateien ohne Kennung),
-    verschoben (über die Prüfsumme wiedergefunden), fehlend (registriert, aber nicht mehr vorhanden)."""
+    verschoben (über die Prüfsumme wiedergefunden), fehlend (registriert, aber nicht mehr vorhanden).
+    Mit nur (Menge relativer Pfade) bekommen allein diese Dateien eine neue Kennung; andere neue Dateien bleiben
+    in nicht_erfasst. Verschiebungen werden immer übernommen: Sie vergeben keine Kennung, sie berichtigen einen Ort."""
     ordner = Path(ordner)
+    nfc = lambda s: unicodedata.normalize('NFC', s)   # macOS liefert Dateinamen zerlegt, die Werkzeuge nennen sie zusammengesetzt
+    if nur is not None: nur = {nfc(x) for x in nur}
     alt = lese(ordner); daten = json.loads(json.dumps(alt))
     vorhanden = dateien(ordner); vorhanden_set = set(vorhanden)
     pfad_zu_id = {e['pfad']: k for k, e in daten['dateien'].items()}
@@ -70,7 +74,7 @@ def _rechnen(ordner, weg, kennungen_vergeben):
                 daten['verschiebungen'].append({'id': kennung, 'von': daten['dateien'][kennung]['pfad'], 'nach': rel,
                                                 'zeit': datetime.now().isoformat(timespec='seconds'), 'weg': weg + ', über Prüfsumme erkannt'})
                 pfad_zu_id.pop(daten['dateien'][kennung]['pfad'], None)
-            elif kennungen_vergeben:
+            elif kennungen_vergeben and (nur is None or nfc(rel) in nur):
                 kennung = akte_pfade.pop(rel, None)
                 if not kennung: kennung = f'D{naechste:04d}'; naechste += 1
                 daten['dateien'][kennung] = {'pfad': rel, 'sha256_erst': h, 'sha256': h, 'alt': '', 'erfasst': heute}
@@ -91,12 +95,16 @@ def abgleich(ordner):
     _, _, ergebnis, bericht = _rechnen(ordner, 'Lesen', kennungen_vergeben=False)
     return ergebnis, bericht
 
-def abgleichen(ordner, weg='Abgleich'):
+def abgleichen(ordner, weg='Abgleich', nur=None):
     """Schreibend: vergibt Kennungen für neue Dateien, übernimmt Verschiebungen, schreibt bestand.json.
-    Liefert (ergebnis, bericht)."""
+    Liefert (ergebnis, bericht).
+
+    nur: Menge relativer Pfade. Ein Werkzeug, das selbst eine Datei anlegt (eingefrorene Fassung, Texterkennung,
+    abgelegter Text), registriert damit allein diese Datei. Ohne die Einschränkung bekam dabei jede neue Datei des
+    Fallordners eine Kennung, obwohl das dem Werkzeug bestand_abgleichen vorbehalten ist (02.10.2026)."""
     ordner = Path(ordner)
     with store.sperre():
-        daten, alt, ergebnis, bericht = _rechnen(ordner, weg, kennungen_vergeben=True)
+        daten, alt, ergebnis, bericht = _rechnen(ordner, weg, kennungen_vergeben=True, nur=nur)
         if daten != alt: store.atomar(ordner / 'bestand.json', json.dumps(daten, ensure_ascii=False, indent=2) + '\n')
     return ergebnis, bericht
 
