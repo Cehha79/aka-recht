@@ -34,6 +34,7 @@
       "id": "P02",
       "name": "Muster Logistik GmbH",
       "rolle": "Gegner",
+      "funktion": "Arbeitgeber",
       "anschrift": "Lagerstraße 8, 70000 Beispielstadt",
       "kontakt": "Geschäftsführerin Erika Beispiel",
       "aktenzeichen": "Personal-Nr. 4711"
@@ -50,6 +51,7 @@
       "id": "P04",
       "name": "Agentur für Arbeit Beispielstadt",
       "rolle": "Behörde",
+      "funktion": "zuständig für die Arbeitsuchendmeldung",
       "anschrift": "",
       "kontakt": "",
       "aktenzeichen": ""

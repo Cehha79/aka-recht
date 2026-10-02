@@ -108,7 +108,7 @@ def fall_uebersicht(fall):
     akte, _ = store.lese_akte(fall); liste, _, abweichungen = dokumente.katalog(fall, akte)
     kurz = lambda s, n=160: (s or '')[:n]
     return {'fall': {k: akte['fall'].get(k, '') for k in ('id', 'titel', 'bereich', 'rolle', 'ziel', 'status', 'themen')},
-            'beteiligte': [{'id': b['id'], 'name': b['name'], 'rolle': b.get('rolle', ''), 'aktenzeichen': b.get('aktenzeichen', '')} for b in akte['beteiligte']],
+            'beteiligte': [{'id': b['id'], 'name': b['name'], 'rolle': b.get('rolle', ''), 'funktion': b.get('funktion', ''), 'aktenzeichen': b.get('aktenzeichen', '')} for b in akte['beteiligte']],
             'verfahren': [{'id': v['id'], 'art': v['art'], 'stelle': v.get('stelle', ''), 'aktenzeichen': v.get('aktenzeichen', ''), 'stand': kurz(v.get('stand'))} for v in akte['verfahren']],
             'fristen': [{'id': f['id'], 'datum': f['datum'], 'titel': f['titel'], 'art': f['art'], 'pruefstatus': f['pruefstatus'], 'quelle': f.get('quelle', ''), 'geprueft_am': f.get('geprueft_am', ''), 'verfahren': f.get('verfahren', ''), 'ausloeser_ereignis': f.get('ausloeser_ereignis', ''), 'eigenschaften': akte_schema.frist_eigenschaften(f, akte)} for f in sorted(akte['fristen'], key=lambda x: x['datum']) if f['pruefstatus'] != 'erledigt'],
             'aufgaben_offen': [{'id': a['id'], 'titel': a['titel'], 'faellig': a.get('faellig', ''), 'quelle': a.get('quelle', '')} for a in akte['aufgaben'] if not a['erledigt']],
@@ -303,17 +303,23 @@ def _naechste(akte, block):
     """Nächste Kennung über den Zähler der Akte (akte_schema.naechste_kennung): entfernte Kennungen kommen nie wieder (F11)."""
     return akte_schema.naechste_kennung(akte, block)
 
-@werkzeug('beteiligter_anlegen', 'Beteiligten in einem Fall anlegen (Person, Gericht, Behörde, Anwalt, Zeuge, Stelle). Gibt die neue P-Kennung zurück; Verweise aus Dokumenten, Verfahren und Fristen gehen auf diese Kennung.',
+# Rolle und Funktion sind zweierlei (02.10.2026): Die Rolle ordnet einen Beteiligten einer Gruppe zu und steuert in der
+# Chronologie Seite und Farbrand; die Funktion sagt in freien Worten, wer er ist. Ohne das Feld landete die Erläuterung in
+# der Rolle, und die Zuordnung zur Gruppe griff nicht mehr.
+FUNKTION_PARAMETER = {'type': 'string', 'description': 'Wer der Beteiligte ist, in freien Worten, etwa „Einrichtungsleitung“ oder „Rechtsanwalt der Gegenseite“. Die Rolle bleibt einer der üblichen Werte.'}
+
+@werkzeug('beteiligter_anlegen', 'Beteiligten in einem Fall anlegen (Person, Gericht, Behörde, Anwalt, Zeuge, Stelle), mit Rolle und wahlweise Funktion. Gibt die neue P-Kennung zurück; Verweise aus Dokumenten, Verfahren und Fristen gehen auf diese Kennung.',
           {'fall': {'type': 'string'}, 'name': {'type': 'string', 'description': 'Name oder Stelle'},
            'rolle': {'type': 'string', 'description': 'Übliche Rollen: ' + ', '.join(akte_schema.BETEILIGTE_ROLLE_VORSCHLAG)},
+           'funktion': FUNKTION_PARAMETER,
            'anschrift': {'type': 'string'}, 'kontakt': {'type': 'string', 'description': 'Telefon, E-Mail, Fax'},
            'aktenzeichen': {'type': 'string', 'description': 'Zeichen dieser Stelle, nicht das eigene'}},
           schreibend=True, pflicht=['fall', 'name'])
-def beteiligter_anlegen(fall, name, rolle='', anschrift='', kontakt='', aktenzeichen=''):
+def beteiligter_anlegen(fall, name, rolle='', anschrift='', kontakt='', aktenzeichen='', funktion=''):
     akte, rev = store.lese_akte(fall)
     if any((b.get('name', '').strip().lower() == name.strip().lower()) for b in akte['beteiligte']):
         raise ValueError(f'„{name}“ steht schon in den Beteiligten. Schreibweisen zusammenführen statt doppelt anlegen.')
-    eintrag = {'id': _naechste(akte, 'beteiligte'), 'name': name.strip(), 'rolle': rolle.strip(),
+    eintrag = {'id': _naechste(akte, 'beteiligte'), 'name': name.strip(), 'rolle': rolle.strip(), 'funktion': funktion.strip(),
                'anschrift': anschrift.strip(), 'kontakt': kontakt.strip(), 'aktenzeichen': aktenzeichen.strip()}
     akte['beteiligte'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
     return {'beteiligter': eintrag, 'revision': rev}
@@ -338,12 +344,13 @@ def verfahren_anlegen(fall, art, stelle='', aktenzeichen='', stand='', ordner=''
 # Werkzeugkatalog nicht mehr ändern; fallbezogene Quellen fehlten ganz. Ein Client, der nur
 # diese Werkzeuge hat, konnte einen Tippfehler im Namen oder ein neues Aktenzeichen nicht
 # nachtragen. Muster wie bei frist_setzen: nur die übergebenen Felder ändern.
-@werkzeug('beteiligter_setzen', 'Vorhandenen Beteiligten ändern (Name, Rolle, Anschrift, Kontakt, Aktenzeichen). Nur die übergebenen Felder werden geändert; die P-Kennung bleibt, damit Verweise gültig bleiben.',
+@werkzeug('beteiligter_setzen', 'Vorhandenen Beteiligten ändern (Name, Rolle, Funktion, Anschrift, Kontakt, Aktenzeichen). Nur die übergebenen Felder werden geändert; die P-Kennung bleibt, damit Verweise gültig bleiben.',
           {'fall': {'type': 'string'}, 'beteiligter': {'type': 'string', 'description': 'P-Kennung wie P01'},
            'name': {'type': 'string'}, 'rolle': {'type': 'string', 'description': 'Übliche Rollen: ' + ', '.join(akte_schema.BETEILIGTE_ROLLE_VORSCHLAG)},
+           'funktion': FUNKTION_PARAMETER,
            'anschrift': {'type': 'string'}, 'kontakt': {'type': 'string'}, 'aktenzeichen': {'type': 'string'}},
           schreibend=True, pflicht=['fall', 'beteiligter'])
-def beteiligter_setzen(fall, beteiligter, name=None, rolle=None, anschrift=None, kontakt=None, aktenzeichen=None):
+def beteiligter_setzen(fall, beteiligter, name=None, rolle=None, anschrift=None, kontakt=None, aktenzeichen=None, funktion=None):
     akte, rev = store.lese_akte(fall)
     kennung = str(beteiligter).strip().upper()
     b = next((x for x in akte['beteiligte'] if x['id'] == kennung), None)
@@ -352,7 +359,7 @@ def beteiligter_setzen(fall, beteiligter, name=None, rolle=None, anschrift=None,
         if not str(name).strip(): raise ValueError('„name“ darf nicht leer sein.')
         if any(x['id'] != kennung and x.get('name', '').strip().lower() == name.strip().lower() for x in akte['beteiligte']):
             raise ValueError(f'„{name}“ steht schon bei einem anderen Beteiligten. Schreibweisen zusammenführen statt doppelt führen.')
-    for feld, wert in (('name', name), ('rolle', rolle), ('anschrift', anschrift), ('kontakt', kontakt), ('aktenzeichen', aktenzeichen)):
+    for feld, wert in (('name', name), ('rolle', rolle), ('funktion', funktion), ('anschrift', anschrift), ('kontakt', kontakt), ('aktenzeichen', aktenzeichen)):
         if wert is not None: b[feld] = str(wert).strip()
     rev = store.speichere_akte(fall, akte, rev)
     return {'beteiligter': b, 'revision': rev}

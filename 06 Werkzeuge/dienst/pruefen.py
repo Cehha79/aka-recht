@@ -472,6 +472,17 @@ def run():
         assert q2['anzahl'] == 1 and q2['quelle']['geprueft'] == '2026-09-17', q2   # gleicher Titel überschreibt, statt doppelt zu führen
         assert not akte_schema.validate(json.loads((root / f1['ordner'] / 'akte.json').read_text('utf-8')))[0]
         ok('Beteiligte und Verfahren ändern, fallbezogene Quellen eintragen (N12): nur die übergebenen Felder ändern sich, Kennungen und Verweise bleiben, unbekannte Kennung und leerer Pflichtwert werden abgewiesen, gleicher Quellentitel überschreibt statt zu doppeln')
+        # Funktion eines Beteiligten (02.10.2026): freier Text neben der Rolle, damit die Rolle ein üblicher Wert bleibt und die Chronologie Gruppe und Seite daraus ableiten kann
+        pf = anfrage('/api/werkzeug', {'name': 'beteiligter_anlegen', 'parameter': {'fall': 'R-0001', 'name': 'Erika Beispiel', 'rolle': 'Gegner', 'funktion': ' Geschäftsführerin '}, 'bestaetigt': True})['beteiligter']
+        assert pf['rolle'] == 'Gegner' and pf['funktion'] == 'Geschäftsführerin', pf
+        pf2 = anfrage('/api/werkzeug', {'name': 'beteiligter_setzen', 'parameter': {'fall': 'R-0001', 'beteiligter': pf['id'], 'funktion': 'Prokuristin'}, 'bestaetigt': True})['beteiligter']
+        assert pf2['funktion'] == 'Prokuristin' and pf2['rolle'] == 'Gegner' and pf2['name'] == 'Erika Beispiel', pf2   # nur die Funktion geändert
+        ueb = anfrage('/api/werkzeug', {'name': 'fall_uebersicht', 'parameter': {'fall': 'R-0001'}})['beteiligte']
+        assert next(b for b in ueb if b['id'] == pf['id'])['funktion'] == 'Prokuristin' and all('funktion' in b for b in ueb), ueb
+        ak_f = json.loads((root / f1['ordner'] / 'akte.json').read_text('utf-8')); b_f = next(b for b in ak_f['beteiligte'] if b['id'] == pf['id'])
+        del b_f['funktion']; assert not akte_schema.validate(ak_f)[0]   # Beteiligte ohne das Feld (ältere Akten) bleiben gültig
+        b_f['funktion'] = 7; assert any('funktion muss Text sein' in s for s in akte_schema.validate(ak_f)[0])
+        ok('Funktion eines Beteiligten: anlegen und ändern über die Werkzeuge, Rolle und Name bleiben; fall_uebersicht nennt sie; ältere Akten ohne das Feld bleiben gültig, ein Wert, der kein Text ist, wird abgewiesen')
 
         ok('MCP-Lücken geschlossen (F23): Beteiligte und Verfahren anlegen mit geprüften Verweisen und ohne Doppelung, vorhandene Frist und vorhandenes Ereignis ändern (genau räumt die Unsicherheit ab, Marker bleiben gesperrt), Textdatei ablegen nur in 01, 06, 07 ohne Überschreiben und mit eigener Kennung')
 

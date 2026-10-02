@@ -613,7 +613,7 @@ change to `akte.json` is validated against the data model and saved with a revis
 | `rechtsinhalte_pruefen` | reads | Reports which bundled legal content is due for a new check against the official full text: fact sheets, holiday table, source catalogue; writes nothing, no network |
 | `fall_anlegen` | writes | Create a new case with a fixed id and folder structure |
 | `fall_status_setzen` | writes | Set case status to open, dormant or closed |
-| `beteiligter_anlegen` | writes | Add a party to a case (person, court, authority, lawyer, witness, body) and return its P id |
+| `beteiligter_anlegen` | writes | Add a party to a case (person, court, authority, lawyer, witness, body), with role and optional function, and return its P id |
 | `verfahren_anlegen` | writes | Add proceedings to a case (action, fine proceedings, appeal, order for payment, criminal complaint) |
 | `beteiligter_setzen` | writes | Change an existing party; only the given fields change, the P id stays so references remain valid |
 | `verfahren_setzen` | writes | Change existing proceedings; only the given fields change, the V id stays so deadlines keep their link |

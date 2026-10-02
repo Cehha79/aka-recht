@@ -60,7 +60,7 @@ def verzeichnis(ak, docs, fehlend, args):
     if args.umfang == 'voll':
         z += [f'Bereich: {f["bereich"]} · Rolle: {f["rolle"]} · Status: {f["status"]}', '', f'Ziel: {f["ziel"]}', '', '## Beteiligte']
         # Felder über .get: Akten, die die Oberfläche oder ältere Fassungen geschrieben haben, führen nicht jedes Feld
-        z += [f'- {b["id"]} {b["name"]} ({b.get("rolle") or "ohne Rolle"}){" · " + b["aktenzeichen"] if b.get("aktenzeichen") else ""}' for b in ak['beteiligte']]
+        z += [f'- {b["id"]} {b["name"]} ({b.get("rolle") or "ohne Rolle"}{", " + b["funktion"] if b.get("funktion") else ""}){" · " + b["aktenzeichen"] if b.get("aktenzeichen") else ""}' for b in ak['beteiligte']]
         z += ['', '## Verfahren'] + [f'- {v["id"]} {v["art"]} · {pers.get(v.get("stelle"), {}).get("name", "")} · Az. {v.get("aktenzeichen") or "offen"} · Stand: {v.get("stand", "")}' for v in ak['verfahren']]
     if args.umfang == 'voll' or args.mit_chronologie:
         def zeit(e):   # F13: unsichere Zeitpunkte sichtbar, datum ist dann nur das Sortierdatum

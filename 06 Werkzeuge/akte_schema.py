@@ -242,6 +242,7 @@ def validate(akte):
     for b in akte['beteiligte']:
         if not str(b.get('name', '')).strip(): f.append(f'{b["id"]}: name fehlt.')
         if b.get('rolle') and b['rolle'] not in BETEILIGTE_ROLLE_VORSCHLAG: w.append(f'{b["id"]}: rolle „{b["rolle"]}“ ist unüblich.')
+        if 'funktion' in b and not isinstance(b['funktion'], str): f.append(f'{b["id"]}: funktion muss Text sein.')
     for v in akte['verfahren']:
         if not str(v.get('art', '')).strip(): f.append(f'{v["id"]}: art fehlt.')
         verweis(v.get('stelle', ''), 'beteiligte', f'{v["id"]}.stelle')

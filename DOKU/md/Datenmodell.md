@@ -48,7 +48,8 @@ Prüfbar mit `python3 "06 Werkzeuge/akte_schema.py" <akte.json>`.
 |---|---|---|
 | id | P01 | fest |
 | name | Name oder Stelle | Pflicht |
-| rolle | Ich, Gegner, Gericht, Behörde, Anwalt, Zeuge, Stelle, Versicherung, Sonstige | vorgeschlagen |
+| rolle | Ich, Gegner, Gericht, Behörde, Anwalt, Zeuge, Stelle, Versicherung, Sonstige | vorgeschlagen; ordnet der Gruppe zu und bestimmt in der Chronologie Seite und Farbrand |
+| funktion | wer der Beteiligte ist, in freien Worten, etwa „Einrichtungsleitung“ oder „Rechtsanwalt der Gegenseite“ | Text, optional (seit 02.10.2026); die Erläuterung gehört hierher, nicht in die Rolle |
 | anschrift, kontakt | Text | frei |
 | aktenzeichen | Zeichen dieser Stelle | frei |
 
