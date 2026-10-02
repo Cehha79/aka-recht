@@ -589,20 +589,31 @@ def notiz_anlegen(fall, titel, text):
     akte['notizen'].append(eintrag); rev = store.speichere_akte(fall, akte, rev)
     return {'notiz': eintrag, 'revision': rev}
 
-@werkzeug('entwurf_erfassen', 'Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung.',
+@werkzeug('entwurf_erfassen', 'Entwurf in der Akte erfassen oder fortschreiben (Titel, Datei, Fassung, Status). Gleicher Titel = neue Fassung; mit fassung_behalten bleibt die Nummer, wenn sich der Text seit dieser Fassung nicht geändert hat. Bei Status „geprüft“ oder „versandt“ wird die Datei (und eine gleichnamige .docx) als unveränderliche Kopie unter 06 Entwürfe/Fassungen eingefroren, mit Prüfsumme in der Akte; die Kopie bekommt eine eigene D-Kennung.',
           {'fall': {'type': 'string'}, 'titel': {'type': 'string'}, 'datei': {'type': 'string', 'description': 'Pfad im Fallordner, z. B. 06 Entwürfe/Einspruch_ENTWURF.md'},
-           'status': {'type': 'string', 'enum': akte_schema.ENTWURF_STATUS}, 'versandt_als': {'type': 'string', 'description': 'D-Kennung des Versandbelegs bei Status versandt'}},
+           'status': {'type': 'string', 'enum': akte_schema.ENTWURF_STATUS}, 'versandt_als': {'type': 'string', 'description': 'D-Kennung des Versandbelegs bei Status versandt'},
+           'fassung_behalten': {'type': 'boolean', 'description': 'true: die Fassungsnummer bleibt, nur der Status wechselt (etwa von geprüft zu versandt, oder um die eingefrorene Kopie nachzutragen). Geht nur, wenn die Datei seit dieser Fassung unverändert ist.'}},
           schreibend=True, pflicht=['fall', 'titel', 'datei'])
-def entwurf_erfassen(fall, titel, datei, status='in Arbeit', versandt_als=''):
+def entwurf_erfassen(fall, titel, datei, status='in Arbeit', versandt_als='', fassung_behalten=False):
     from datetime import datetime
     akte, rev = _akte_mit_dokument(fall, versandt_als); ordner = store.fall_ordner(fall)
     quelle = store.sicher(datei, ordner)
     if not quelle.is_file(): raise ValueError(f'Entwurfsdatei fehlt: {datei}')
     e = next((x for x in akte['entwuerfe'] if x['titel'] == titel), None)
-    if e: e.update({'datei': datei, 'fassung': e.get('fassung', 1) + 1, 'status': status, 'versandt_als': versandt_als})
+    sha = bestand.sha_datei(quelle); hinweise = []
+    if fassung_behalten:
+        # Derselbe Text bekommt keine neue Nummer, nur weil sein Status wechselt (02.10.2026). Ohne das wurde aus einer
+        # geprüften Fassung 2 beim Versand die Fassung 3, und eine ältere Akte ließ sich nur mit neuer Nummer nachziehen.
+        if not e: raise ValueError('„fassung_behalten“ setzt einen vorhandenen Entwurf mit diesem Titel voraus.')
+        nr = e.get('fassung', 1); frueher = [x for x in (e.get('fassungen') or []) if isinstance(x, dict) and x.get('fassung') == nr]
+        if any(x.get('sha256') != sha for x in frueher): raise ValueError(f'Die Datei hat sich seit Fassung {nr} geändert (Prüfsumme weicht ab). Das ist eine neue Fassung: ohne „fassung_behalten“ erfassen.')
+        if any(x.get('status') == status and (x.get('kopien') or status not in ('geprüft', 'versandt')) for x in frueher): raise ValueError(f'Fassung {nr} ist mit Status „{status}“ schon erfasst.')
+        if not frueher: hinweise.append(f'Für Fassung {nr} lag kein Stand mit Prüfsumme vor; festgehalten wird die Datei im heutigen Zustand.')
+        e.update({'datei': datei, 'status': status, 'versandt_als': versandt_als})
+    elif e: e.update({'datei': datei, 'fassung': e.get('fassung', 1) + 1, 'status': status, 'versandt_als': versandt_als})
     else: e = {'id': _naechste(akte, 'entwuerfe'), 'titel': titel, 'datei': datei, 'fassung': 1, 'status': status, 'versandt_als': versandt_als}; akte['entwuerfe'].append(e)
     # Jede erfasste Fassung mit Prüfsumme; freigegebene und versandte Fassungen als Kopie einfrieren (Prüfbericht F28)
-    sha = bestand.sha_datei(quelle); fassungen = e.setdefault('fassungen', []); hinweise = []
+    fassungen = e.setdefault('fassungen', [])
     stand = {'fassung': e['fassung'], 'datei': datei, 'sha256': sha, 'zeit': datetime.now().isoformat(timespec='seconds'), 'status': status}
     if status == 'versandt':
         geprueft = [x for x in fassungen if x.get('status') == 'geprüft']
@@ -765,7 +776,7 @@ def journal_schreiben(fall, art, titel, text):
 def sicherung_erstellen():
     return sicherung.erstellen()
 
-@werkzeug('sicherung_probe', 'Wiederherstellungsprobe: die letzte Sicherung in einem Zwischenordner entpacken, Akten gegen das Schema und alle Dateien gegen die Prüfsummen prüfen, Zwischenordner wieder entfernen. Die Mappe bleibt unberührt.',
+@werkzeug('sicherung_probe', 'Wiederherstellungsprobe: die letzte Sicherung in einem Zwischenordner entpacken, Akten gegen das Schema und alle Dateien gegen die Prüfsummen prüfen, Zwischenordner wieder entfernen. „bestanden“ sagt, ob das Archiv vollständig und unverändert ist; erfüllt eine Akte eine Regel des Datenmodells nicht, steht das getrennt unter „aktenfehler“. Die Mappe bleibt unberührt.',
           {'archiv': {'type': 'string', 'description': 'Pfad eines Archivs; leer: die letzte Sicherung'}}, schreibend=True)
 def sicherung_probe(archiv=''):
     return sicherung.probe(archiv or None)

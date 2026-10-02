@@ -228,6 +228,9 @@ der Dienst die Datei und eine gleichnamige .docx nach
 `06 Entwürfe/Fassungen/<Name>_FassungNN_<status>.<ext>`, setzt die Kopie auf
 nur lesbar, registriert sie im Bestand mit eigener D-Kennung (Stand
 „Entwurf“ oder „Versandt“) und merkt Prüfsumme und Kennung in `fassungen`.
+Mit `fassung_behalten` wechselt derselbe Text den Status ohne neue Nummer
+(seit 02.10.2026); hat sich die Datei seit dieser Fassung geändert, wird das
+abgewiesen und eine neue Fassung ist nötig.
 Die Arbeitsdatei darf danach weiter geändert werden, die Kopie nie; eine
 vorhandene Kopie mit anderem Inhalt wird nicht überschrieben. Weicht der
 Sendetext beim Status „versandt“ von der zuletzt geprüften Fassung ab,

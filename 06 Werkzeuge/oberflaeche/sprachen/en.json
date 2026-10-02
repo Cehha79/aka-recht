@@ -159,6 +159,7 @@
   "bestand.probe_bestanden": "Restore tested: passed.",
   "bestand.probe_nicht_bestanden": "Restore tested: not passed.",
   "bestand.probe_dateien": "{n} files unpacked{zusatz}.",
+  "bestand.probe_akten": "The backup is fine. About the case file itself, the same holds in the folder:",
   "bestand.probe_pruefsummen": ", checksum file does not match",
   "bestand.sicherung_laeuft": "Backup running …",
   "bestand.sicherung_hinweis": "All files are packed, the ZIP file is read back completely and compared. For large folders this can take up to a minute.",

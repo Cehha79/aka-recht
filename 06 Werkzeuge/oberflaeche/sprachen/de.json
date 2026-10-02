@@ -159,6 +159,7 @@
   "bestand.probe_bestanden": "Wiederherstellung geprüft: bestanden.",
   "bestand.probe_nicht_bestanden": "Wiederherstellung geprüft: nicht bestanden.",
   "bestand.probe_dateien": "{n} Dateien entpackt{zusatz}.",
+  "bestand.probe_akten": "Die Sicherung ist in Ordnung. Zur Akte selbst, in der Mappe genauso:",
   "bestand.probe_pruefsummen": ", Prüfsummendatei passt nicht",
   "bestand.sicherung_laeuft": "Sicherung läuft …",
   "bestand.sicherung_hinweis": "Alle Dateien werden gepackt, die ZIP wird vollständig zurückgelesen und verglichen. Bei großen Mappen dauert das bis zu einer Minute.",

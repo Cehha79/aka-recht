@@ -645,6 +645,18 @@ def run():
         letzte = r_n03['entwurf']['fassungen'][-1]
         assert letzte['status'] == 'geprüft' and letzte['kopien'] and (root / f2['ordner'] / letzte['kopien']['md']).is_file(), letzte
         assert not akte_schema.validate(json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8')))[0]
+        # Fassung behalten (02.10.2026): derselbe Text wechselt den Status ohne neue Nummer; geänderter Text braucht eine neue Fassung
+        nr_b = r_n03['entwurf']['fassung']; par_b = {'fall': 'R-0002', 'titel': 'Antwort', 'datei': '06 Entwürfe/Antwort_ENTWURF.md', 'status': 'versandt', 'versandt_als': 'D0001', 'fassung_behalten': True}
+        r_b = anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': par_b, 'bestaetigt': True})
+        letzte_b = r_b['entwurf']['fassungen'][-1]
+        assert r_b['entwurf']['fassung'] == nr_b and r_b['entwurf']['status'] == 'versandt' and letzte_b['fassung'] == nr_b and letzte_b['kopien'] and f'Fassung{nr_b:02d}_versandt' in letzte_b['kopien']['md'], r_b
+        anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': par_b, 'bestaetigt': True}, erwartet=400)   # schon erfasst
+        ent.write_text('Hinweise\n---\nSehr geehrte Damen und Herren, Fassung vier.\n', encoding='utf-8')
+        anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': {**par_b, 'status': 'geprüft'}, 'bestaetigt': True}, erwartet=400)   # Text geändert: neue Fassung nötig
+        anfrage('/api/werkzeug', {'name': 'entwurf_erfassen', 'parameter': {**par_b, 'titel': 'Gibt es nicht'}, 'bestaetigt': True}, erwartet=400)
+        ent.write_text('Hinweise\n---\nSehr geehrte Damen und Herren, Fassung drei.\n', encoding='utf-8')
+        assert not akte_schema.validate(json.loads((root / f2['ordner'] / 'akte.json').read_text('utf-8')))[0]
+        ok('Fassung behalten: derselbe Text wechselt von „geprüft“ zu „versandt“ ohne neue Nummer und wird als Kopie eingefroren; doppelt, bei geändertem Text und ohne vorhandenen Entwurf wird abgewiesen')
         ok('Entwurfsstatus „geprüft“ und „versandt“ nur mit eingefrorener Fassung (N03): der Weg der Oberfläche über die ganze Akte wird abgewiesen und schreibt nichts, „in Arbeit“ bleibt frei, und über entwurf_erfassen entsteht die unveränderliche Kopie mit Prüfsumme und eigener Kennung')
 
         # 7b Übergabepaket (F08, F27): Empfänger und Umfang, Vorschau, Manifest mit Rücklesen, harte Fehler
@@ -708,6 +720,18 @@ def run():
         st = anfrage('/api/sicherung/status'); assert st['unveraendert'] and not st['zweites_ziel_unveraendert']
         pr = anfrage('/api/sicherung/probe', {'archiv': str(kopie)}); assert not pr['bestanden'] and pr['fehler'], pr
         kaputt = base / 'kaputt.zip'; kaputt.write_bytes(b'PK\x03\x04 kein archiv'); anfrage('/api/sicherung/probe', {'archiv': str(kaputt)}, erwartet=400)
+        # Probe trennt Archiv und Akte (02.10.2026): eine Regel des Datenmodells, die eine Akte nicht erfüllt, ist kein Fehler der Sicherung
+        assert pr['fehler'] and 'aktenfehler' in pr
+        pfad_p = root / f1['ordner'] / 'akte.json'; original_p = pfad_p.read_text('utf-8'); ak_p = json.loads(original_p)
+        ak_p['entwuerfe'].append({'id': 'W99', 'titel': 'Ohne Nachweis', 'datei': '06 Entwürfe/fehlt.md', 'fassung': 1, 'status': 'versandt'})
+        pfad_p.write_text(json.dumps(ak_p, ensure_ascii=False, indent=2), 'utf-8')
+        try:
+            time.sleep(1.1); anfrage('/api/sicherung', {}); pr_a = anfrage('/api/sicherung/probe', {})
+        finally:
+            pfad_p.write_text(original_p, 'utf-8')
+        time.sleep(1.1); anfrage('/api/sicherung', {})
+        assert pr_a['bestanden'] and pr_a['archiv_in_ordnung'] and not pr_a['akten_in_ordnung'] and not pr_a['fehler'] and any('W99' in s for s in pr_a['aktenfehler']), pr_a
+        ok('Probe trennt Archiv und Akte: eine Akte, die eine Regel des Datenmodells nicht erfüllt, steht unter „aktenfehler“, die Probe des vollständigen Archivs besteht trotzdem')
         ok('Wiederherstellungsprobe bestanden, echte Wiederherstellung nur in leeren Ordner außerhalb, manipulierte Kopie und kaputtes Archiv fallen auf; die Kopie behält Ausführungsrecht der Startdateien und Schreibschutz eingefrorener Fassungen (N05)')
 
         # 9 MCP-Server über die Standardeingabe

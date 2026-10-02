@@ -590,7 +590,7 @@ async function sicherungProbe(b) {
   try {
     const r = await api.post('/api/sicherung/probe', {});
     const faelle = r.faelle.map(c => esc(t('bestand.probe_fall', {fall: c.fall, geprueft: c.geprueft, veraendert: c.veraendert.length, fehlend: c.fehlend.length, schema: c.schema_fehler.length}))).join('<br>');
-    ziel.innerHTML = `<div class="ergebnisblock ${r.bestanden ? 'gut' : 'schlecht'}">${esc(t(r.bestanden ? 'bestand.probe_bestanden' : 'bestand.probe_nicht_bestanden'))}<br>${esc(t('bestand.probe_dateien', {n: r.dateien, zusatz: r.pruefsummendatei === false ? t('bestand.probe_pruefsummen') : ''}))}<br>${faelle}${r.fehler.length ? '<br>' + r.fehler.map(esc).join('<br>') : ''}${(r.hinweise || []).length ? '<br>' + r.hinweise.map(esc).join('<br>') : ''}</div><p class="untertitel">${esc(r.hinweis)}</p>`;
+    ziel.innerHTML = `<div class="ergebnisblock ${r.bestanden ? 'gut' : 'schlecht'}">${esc(t(r.bestanden ? 'bestand.probe_bestanden' : 'bestand.probe_nicht_bestanden'))}<br>${esc(t('bestand.probe_dateien', {n: r.dateien, zusatz: r.pruefsummendatei === false ? t('bestand.probe_pruefsummen') : ''}))}<br>${faelle}${r.fehler.length ? '<br>' + r.fehler.map(esc).join('<br>') : ''}${(r.aktenfehler || []).length ? '<br><b>' + esc(t('bestand.probe_akten')) + '</b><br>' + r.aktenfehler.map(esc).join('<br>') : ''}${(r.hinweise || []).length ? '<br>' + r.hinweise.map(esc).join('<br>') : ''}</div><p class="untertitel">${esc(r.hinweis)}</p>`;
   } catch (e) { ziel.innerHTML = `<div class="hinweis rot">${esc(e.message)}</div>`; }
   finally { b.disabled = false; }
 }

@@ -115,7 +115,7 @@ def wiederherstellen(archiv, zielordner, erwartete_pruefsumme=None):
     if not archiv.is_file(): raise ValueError(f'Archiv fehlt: {archiv}')
     if ziel == root or root in ziel.parents or ziel in root.parents: raise ValueError('Der Prüfordner muss außerhalb des Projekts liegen.')
     if ziel.exists() and any(ziel.iterdir()): raise ValueError(f'Der Prüfordner ist nicht leer: {ziel}. Nichts wird überschrieben.')
-    bericht = {'archiv': str(archiv), 'ordner': str(ziel), 'pruefsummendatei': None, 'dateien': 0, 'faelle': [], 'fehler': []}
+    bericht = {'archiv': str(archiv), 'ordner': str(ziel), 'pruefsummendatei': None, 'dateien': 0, 'faelle': [], 'fehler': [], 'aktenfehler': []}
     inhalt = archiv.read_bytes(); pruefsumme = sha(inhalt)
     sha_datei = archiv.with_suffix('.zip.sha256')
     if sha_datei.is_file():
@@ -134,20 +134,25 @@ def wiederherstellen(archiv, zielordner, erwartete_pruefsumme=None):
     for eintrag in json.loads(zentrale.read_text('utf-8')).get('faelle', []):
         fall = {'fall': eintrag['id'], 'schema_fehler': [], 'geprueft': 0, 'veraendert': [], 'fehlend': []}
         ordner = ziel / eintrag['ordner']
+        unlesbar = []   # eine unlesbare Datei ist ein Fehler des Archivs, eine nicht erfüllte Regel des Datenmodells einer der Akte
         try: fall['schema_fehler'] = akte_schema.validate(json.loads((ordner / 'akte.json').read_text('utf-8')))[0]
-        except Exception as e: fall['schema_fehler'] = [f'akte.json nicht lesbar: {e}']
+        except Exception as e: unlesbar.append(f'akte.json nicht lesbar: {e}')
         try: bestand = json.loads((ordner / 'bestand.json').read_text('utf-8'))
-        except Exception as e: bestand = {'dateien': {}}; fall['schema_fehler'].append(f'bestand.json nicht lesbar: {e}')
+        except Exception as e: bestand = {'dateien': {}}; unlesbar.append(f'bestand.json nicht lesbar: {e}')
         for k, e in bestand.get('dateien', {}).items():
             p = ordner / e['pfad']
             if not p.is_file(): fall['fehlend'].append(k)
             elif sha(p.read_bytes()) != e.get('sha256'): fall['veraendert'].append(k)   # sha256 = zuletzt gesehener Stand vor der Sicherung
             else: fall['geprueft'] += 1
         bericht['faelle'].append(fall)
-        if fall['schema_fehler'] or fall['veraendert']: bericht['fehler'].append(f'{eintrag["id"]}: Schemafehler {len(fall["schema_fehler"])}, verändert {len(fall["veraendert"])}.')
+        # Die Probe trennt beides (02.10.2026): Nach einem Update meldete sie „nicht bestanden“, obwohl das Archiv vollständig
+        # war und nur die Akte eine neue Regel noch nicht erfüllte. Das Archiv entscheidet über „bestanden“.
+        if unlesbar or fall['veraendert']: bericht['fehler'].append(f'{eintrag["id"]}: ' + '; '.join(unlesbar + ([f'verändert {len(fall["veraendert"])}'] if fall['veraendert'] else [])) + '.')
+        if fall['schema_fehler']: bericht['aktenfehler'].append(f'{eintrag["id"]}: {len(fall["schema_fehler"])} Regel(n) des Datenmodells nicht erfüllt. ' + ' '.join(fall['schema_fehler'][:3]))
         if fall['fehlend']: bericht.setdefault('hinweise', []).append(f'{eintrag["id"]}: {len(fall["fehlend"])} in bestand.json registrierte Datei(en) nicht im Archiv ({", ".join(fall["fehlend"][:5])}). Fehlten sie schon in der Mappe (server.py --check), ist das kein Sicherungsfehler.')
     bericht.setdefault('hinweise', [])
-    bericht['bestanden'] = not bericht['fehler']
+    bericht['archiv_in_ordnung'] = not bericht['fehler']; bericht['akten_in_ordnung'] = not bericht['aktenfehler']
+    bericht['bestanden'] = bericht['archiv_in_ordnung']   # Aktenfehler stehen daneben: sie gelten in der Mappe genauso und sind kein Mangel der Sicherung
     return bericht
 
 def probe(archiv=None):
