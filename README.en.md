@@ -70,7 +70,8 @@ AKA Recht does not replace legal advice.
 > [!TIP]
 > To try it out there is a fictional sample case (dismissal by the employer).
 > Click **"Beispielfall laden"** in the UI, then browse case, documents,
-> timeline, deadlines and draft.
+> timeline, deadlines and draft. A case cannot be removed again yet, see
+> [FAQ](#faq).
 
 <div align="justify">
 
@@ -596,6 +597,22 @@ against the original.
 
 No. Deadline calculator, fact sheets and templates apply to German law
 only, see [Scope](#scope).
+
+</div>
+
+</details>
+
+<details>
+<summary><b>Can I remove a case again?</b></summary>
+
+<div align="justify">
+
+Not yet. The folder has no function for that so far; single entries of a case
+(event, task, deadline) can be removed, a whole case cannot. This also applies
+to the sample case. Archiving or removing a case is planned. Until then, do
+not take the case folder away by hand: the case would stay in the case list as
+an entry with an error message. If you no longer need a case, set it to
+"abgeschlossen" (closed).
 
 </div>
 

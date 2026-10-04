@@ -70,7 +70,8 @@ AKA Recht ersetzt keine Rechtsberatung.
 > [!TIP]
 > Zum Ausprobieren gibt es einen erfundenen Beispielfall (Kündigung durch den
 > Arbeitgeber). In der Oberfläche auf **„Beispielfall laden“** klicken, dann
-> durch Akte, Dokumente, Chronologie, Fristen und Entwurf klicken.
+> durch Akte, Dokumente, Chronologie, Fristen und Entwurf klicken. Wieder
+> entfernen lässt sich ein Fall noch nicht, siehe [Häufige Fragen](#häufige-fragen).
 
 <div align="justify">
 
@@ -606,6 +607,22 @@ am Original prüfen.
 
 Nein. Fristenrechner, Merkblätter und Vorlagen gelten nur für deutsches
 Recht, siehe [Geltungsbereich](#geltungsbereich).
+
+</div>
+
+</details>
+
+<details>
+<summary><b>Kann ich einen Fall wieder entfernen?</b></summary>
+
+<div align="justify">
+
+Noch nicht. Die Mappe hat dafür bisher keine Funktion; einzelne Einträge
+eines Falls (Ereignis, Aufgabe, Frist) lassen sich entfernen, ein ganzer Fall
+nicht. Das gilt auch für den Beispielfall. Geplant ist, einen Fall zu
+archivieren oder zu entfernen. Bis dahin den Fallordner nicht von Hand
+wegnehmen: Der Fall bliebe als Eintrag mit Fehlermeldung in der Fallliste
+stehen. Wer einen Fall nicht mehr braucht, setzt ihn auf „abgeschlossen“.
 
 </div>
 
