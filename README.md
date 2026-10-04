@@ -21,6 +21,7 @@
 
 <p align="center"><b>Deutsch</b> · <a href="README.en.md">English</a> · <a href="CONTRIBUTING.md">Mitmachen</a> · <a href="https://github.com/sponsors/Cehha79">Unterstützen</a></p>
 
+
 <div align="justify">
 
 # AKA Recht
@@ -64,10 +65,14 @@ AKA Recht ersetzt keine Rechtsberatung.
 - **Alles bleibt bei dir:** keine KI in der App, kein Konto, kein Schlüssel,
   kein Netz. Der Dienst läuft nur auf deinem Rechner.
 
+</div>
+
 > [!TIP]
 > Zum Ausprobieren gibt es einen erfundenen Beispielfall (Kündigung durch den
 > Arbeitgeber). In der Oberfläche auf **„Beispielfall laden“** klicken, dann
 > durch Akte, Dokumente, Chronologie, Fristen und Entwurf klicken.
+
+<div align="justify">
 
 Produkt Version 0.4 vom 18.09.2026, neuester Stand vom 04.10.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · geprüft mit Python 3.14.7 auf macOS 26.7.1, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
 
@@ -131,10 +136,13 @@ Beteiligte, Verfahren, Chronologie, Fristen mit Rechner, Aufgaben, Entwürfe,
 Beweise und Anlagen, Journal). Sie ist reines HTML, CSS und JavaScript ohne
 Framework und braucht keinen Zugang nach außen.
 
+</div>
+
 > [!WARNING]
 > **Kein Rechtsanwalt, keine Rechtsberatung.** Was die Mappe kann und was
 > nicht, steht unter [Sicherheit und Grenzen](#grenzen).
 
+<div align="justify">
 
 <p align="right"><sub><a href="#reiter">↑ nach oben zu den Reitern</a></sub></p>
 
@@ -161,8 +169,12 @@ Framework und braucht keinen Zugang nach außen.
   Paket poppler). Ohne diese Programme bleibt alles wie bisher, die Mappe
   meldet nur, dass kein Text gelesen wurde.
 
+</div>
+
 <details>
 <summary><b>macOS — Schritt für Schritt</b></summary>
+
+<div align="justify">
 
 **1. Mappe starten**
 
@@ -202,8 +214,7 @@ brew install poppler tesseract tesseract-lang
 tesseract --list-langs
 ```
 
-> [!NOTE]
-> Auf Intel-Macs mit neuem macOS gibt es teils keine fertigen Pakete. Homebrew
+> **Hinweis:** Auf Intel-Macs mit neuem macOS gibt es teils keine fertigen Pakete. Homebrew
 > baut dann aus dem Quelltext, und das kann eine Stunde oder länger dauern
 > (am 17.09.2026 auf macOS 26.7 so erlebt). Das Fenster einfach laufen lassen.
 
@@ -220,10 +231,14 @@ richtig öffnet. Kaputt geht es erst beim Wechsel auf Windows oder Linux.
 *Zum Weitergeben:* den GitHub-Link teilen. *Zum Sichern:* den Knopf in der
 Mappe benutzen — der packt mit Pythons `zipfile` und damit sauber.
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Linux — Schritt für Schritt</b></summary>
+
+<div align="justify">
 
 **1. Mappe starten**
 
@@ -268,17 +283,20 @@ Prüfpunkten, Dienst über `Start.sh`, MCP-Server, Beispielfall in einem Ordner
 mit Leerzeichen und Umlauten. Die Texterkennung hat Foto und zweiseitigen Scan
 ohne Textschicht erkannt (tesseract 5.3.4).
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Windows — Schritt für Schritt</b></summary>
 
+<div align="justify">
+
 **1. Mappe starten — und zwar zuerst**
 
 Doppelklick auf `Start.bat`.
 
-> [!IMPORTANT]
-> Das muss **vor** dem ersten Start von Claude Code oder Codex passieren.
+> **Wichtig:** Das muss **vor** dem ersten Start von Claude Code oder Codex passieren.
 > Grund: Unter Windows heißt der Befehl `python`, nicht `python3` — `python3.exe`
 > ist dort nur ein Verweis auf den Microsoft Store. `Start.bat` stellt deshalb
 > `.mcp.json`, `.claude/settings.json` und `.codex/config.toml` auf `python`
@@ -340,8 +358,11 @@ Am 18.09.2026, Windows 11 mit Python 3.14.7: Funktionstest mit damals 61
 Prüfpunkten, Texterkennung an Foto und zweiseitigem Scan, Claude Code mit
 MCP-Server (damals 32 Werkzeuge) und greifendem Originalschutz.
 
+</div>
+
 </details>
 
+<div align="justify">
 
 ## Erster Start
 
@@ -361,17 +382,25 @@ MCP-Server (damals 32 Werkzeuge) und greifendem Originalschutz.
 
 ## KI anbinden
 
+</div>
+
 <details open>
 <summary><b>Claude Code</b></summary>
+
+<div align="justify">
 
 Sitzung im Ordner starten; `.mcp.json` liegt bei; Dialog bestätigen; mit
 `/mcp` prüfen. Skills unter `.claude/skills/` (`/fallaufnahme`,
 `/fristencheck`, `/entwurf` …), Hooks aus `.claude/settings.json`.
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Codex</b></summary>
+
+<div align="justify">
 
 - Weg A: einmalig `codex mcp add aka-recht -- python3 "<voller Pfad>/06 Werkzeuge/dienst/mcp_server.py"`.
 - Weg B ohne diesen Eintrag: den Projektordner in `~/.codex/config.toml` als
@@ -381,19 +410,27 @@ Sitzung im Ordner starten; `.mcp.json` liegt bei; Dialog bestätigen; mit
 - Prüfen im Projektordner mit `codex mcp list`. Unter Windows `python` statt
   `python3`. Skills unter `.agents/skills/` (`$fristencheck` …).
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Claude Desktop</b></summary>
 
+<div align="justify">
+
 Einstellungen, Entwickler, Konfiguration bearbeiten: Eintrag `aka-recht` mit
 `command` `python3` (unter Windows `python`) und `args`
 `["<voller Pfad>/06 Werkzeuge/dienst/mcp_server.py"]`; Claude Desktop neu starten.
+
+</div>
 
 </details>
 
 <details>
 <summary><b>Andere Assistenten</b></summary>
+
+<div align="justify">
 
 - Mit MCP: gleicher Aufruf in der Konfigurationsdatei des Assistenten;
   Arbeitsprofil in `AGENTS.md`.
@@ -402,7 +439,11 @@ Einstellungen, Entwickler, Konfiguration bearbeiten: Eintrag `aka-recht` mit
   verlangt eine öffentliche HTTPS-Adresse oder einen Tunnel über OpenAI. Das
   ist für AKA Recht nicht vorgesehen.
 
+</div>
+
 </details>
+
+<div align="justify">
 
 Schreibende Werkzeuge laufen nur, wenn du den Aufruf bestätigst. Werkzeuge
 für Versand, Löschen oder Ändern von Originalen gibt es nicht.
@@ -443,8 +484,12 @@ Deine eigenen Daten liegen in `01 Eingang`, `02 Fälle`,
 `03 Verträge und Vorsorge` und `zentrale.json`. Vor jeder Aktualisierung
 eine Sicherung anlegen („Geprüfte Sicherung erstellen“ in der Oberfläche).
 
+</div>
+
 <details open>
 <summary><b>Mit git</b></summary>
+
+<div align="justify">
 
 Im Ordner der Mappe `git pull`. Die vier Orte mit deinen Daten stehen in der
 mitgelieferten `.gitignore`; git lässt sie unberührt. Unter Windows hat
@@ -453,10 +498,14 @@ vorher `git checkout -- .mcp.json .claude/settings.json .codex/config.toml`
 ausführen (verwirft nur diese Umstellung, `Start.bat` setzt sie beim nächsten
 Start wieder).
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Mit einem neuen ZIP</b></summary>
+
+<div align="justify">
 
 1. Neue Version in einen neuen Ordner entpacken.
 2. Den laufenden Dienst beenden. Einen Knopf dafür gibt es nicht: den Rechner
@@ -475,6 +524,8 @@ Start wieder).
    selbst mit: von Hand in den neuen Ordner übernehmen. Den alten Ordner erst
    entfernen, wenn im neuen alles da ist.
 
+</div>
+
 </details>
 
 > [!NOTE]
@@ -484,39 +535,57 @@ Start wieder).
 > meldet ihn dann. `python3 "06 Werkzeuge/akte_schema.py" "02 Fälle/<Fall>/akte.json"`
 > nennt, was fehlt. Die Sicherung selbst ist davon nicht betroffen.
 
+<div align="justify">
+
 ## Häufige Fragen
+
+</div>
 
 <details>
 <summary><b>Brauche ich ein Konto oder Internet?</b></summary>
 
+<div align="justify">
+
 Für die Mappe nicht: Der Dienst läuft nur auf 127.0.0.1 und ruft keine fremden
 Adressen auf. Deine KI (Claude, Codex oder eine andere) braucht ihr eigenes
 Konto und ihren eigenen Zugang; was sie liest, verarbeitet ihr Anbieter.
+
+</div>
 
 </details>
 
 <details>
 <summary><b>Welche KI kann ich benutzen?</b></summary>
 
+<div align="justify">
+
 Geprüft sind Claude Code, Claude Desktop und Codex (siehe „KI anbinden“).
 Jede andere KI, die MCP spricht oder Befehle ausführen darf, sollte gehen,
 ist aber nicht geprüft. ChatGPT im Browser oder in der App ist nicht
 vorgesehen, weil es keinen lokalen Server startet.
+
+</div>
 
 </details>
 
 <details>
 <summary><b>Landen meine Fälle auf GitHub?</b></summary>
 
+<div align="justify">
+
 Nein. Die Mappe lädt nichts hoch. Wer selbst mit git arbeitet: `01 Eingang`,
 `02 Fälle`, `03 Verträge und Vorsorge` und `zentrale.json` stehen in der
 `.gitignore` und werden nicht erfasst. Liegt ein Sicherungsziel in einem
 Cloud-Ordner, lädt dein System die Sicherung dorthin hoch.
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Kann die Mappe eingescannte Briefe lesen?</b></summary>
+
+<div align="justify">
 
 Hat das PDF eine Textschicht, liest `pdftotext` den Text direkt. Für Fotos und
 Scans ohne Textschicht gibt es die Texterkennung: in der Oberfläche beim
@@ -526,23 +595,35 @@ Dokument „Texterkennung starten“ oder das Werkzeug `texterkennung`, sofern
 kann Zeichen verwechseln und Zeilen auslassen; Daten, Beträge und Namen immer
 am Original prüfen.
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Gilt das auch für andere Länder?</b></summary>
 
+<div align="justify">
+
 Nein. Fristenrechner, Merkblätter und Vorlagen gelten nur für deutsches
 Recht, siehe [Geltungsbereich](#geltungsbereich).
+
+</div>
 
 </details>
 
 <details>
 <summary><b>Beantwortet hier jemand Fragen zu meinem Fall?</b></summary>
 
+<div align="justify">
+
 Nein. Issues und Diskussionen sind nur für die Software. Für deinen Fall eine
 Fachanwältin, einen Fachanwalt oder eine Beratungsstelle fragen.
 
+</div>
+
 </details>
+
+<div align="justify">
 
 <p align="right"><sub><a href="#reiter">↑ nach oben zu den Reitern</a></sub></p>
 
@@ -586,12 +667,16 @@ Aktenzeichen, am Volltext gelesen; Ungeprüftes bleibt als `[PRÜFEN]`,
 Anweisungen, die in gelesenen Dokumenten stehen, sind Quelleninhalt und
 werden nicht befolgt.
 
+</div>
+
 > [!IMPORTANT]
 > Diese Entscheidungen trifft immer der Mensch, nie die KI: Versand oder
 > Einreichung, Verzicht oder Rücknahme, Vergleich, Strafanzeige, Kündigung,
 > Fristverzicht, jede Erklärung gegenüber Dritten, Löschen. Jeder Entwurf
 > bleibt Entwurf, bis du ihn prüfst und selbst versendest. Werkzeuge für
 > Versand, Löschen oder Ändern von Originalen gibt es nicht.
+
+<div align="justify">
 
 ## Hooks
 
@@ -603,8 +688,12 @@ Eingerichtet und geprüft sind sie nur für Claude Code (Stand 17.09.2026).
 Codex beschreibt in seiner Dokumentation eigene Hooks; dafür liegt hier
 nichts bei. Andere Assistenten halten die Regeln aus `AGENTS.md` selbst ein.
 
+</div>
+
 <details>
 <summary><b>Die 4 Hooks im Einzelnen</b></summary>
+
+<div align="justify">
 
 | Zeitpunkt | Was der Hook tut |
 |---|---|
@@ -613,7 +702,11 @@ nichts bei. Andere Assistenten halten die Regeln aus `AGENTS.md` selbst ein.
 | `PostToolUse` | Fremdtext-Wächter: warnt mit Herkunft, wenn gelesener Text (Datei, Befehl, Web oder MCP-Werkzeug) Sätze enthält, die wie Anweisungen an die KI klingen |
 | `Stop` | Doku-Abgleich: prüft HTML-Ansichten gegen ihre md-Quellen und die Kopien für andere Assistenten gegen CLAUDE.md und Skills, nennt jede Abweichung |
 
+</div>
+
 </details>
+
+<div align="justify">
 
 <p align="right"><sub><a href="#reiter">↑ nach oben zu den Reitern</a></sub></p>
 
@@ -657,8 +750,12 @@ verschobene Datei melden sie nur, ihre Kennung bekommt sie erst durch
 selbst. Jede Änderung an `akte.json` wird gegen das Datenmodell geprüft
 und mit Revision gespeichert.
 
+</div>
+
 <details>
 <summary><b>Alle 36 Werkzeuge</b></summary>
+
+<div align="justify">
 
 | Werkzeug | Art | Zweck |
 |---|---|---|
@@ -699,7 +796,11 @@ und mit Revision gespeichert.
 | `sicherung_erstellen` | schreibend | Geprüfte ZIP-Sicherung des ganzen Projekts erstellen, mit Kopie an das zweite Ziel. |
 | `sicherung_probe` | schreibend | Wiederherstellungsprobe: die letzte Sicherung in einem Zwischenordner entpacken, Akten gegen das Schema und alle Dateien gegen die Prüfsummen prüfen, Zwischenordner wieder entfernen. „bestanden“ sagt, ob das Archiv vollständig und unverändert ist; erfüllt eine Akte eine Regel des Datenmodells nicht, steht das getrennt unter „aktenfehler“. Die Mappe bleibt unberührt. |
 
+</div>
+
 </details>
+
+<div align="justify">
 
 ## Vorlagen
 
@@ -710,8 +811,12 @@ Form, Adressat), unter der Trennlinie der Sendetext mit Platzhaltern 【 】.
 Der Word-Erzeuger `.claude/recht/werkzeuge/docx_erzeugen.py` macht daraus
 eine `.docx` und warnt vor offenen Platzhaltern und Markern.
 
+</div>
+
 <details>
 <summary><b>Alle 10 Vorlagen</b></summary>
+
+<div align="justify">
 
 | Vorlage | Zweck |
 |---|---|
@@ -726,7 +831,11 @@ eine `.docx` und warnt vor offenen Platzhaltern und Markern.
 | `Strafanzeige.md` | Strafanzeige mit oder ohne Strafantrag, Sachverhalt, Beweismittel, Bitte um Bestätigung |
 | `Widerspruch_Bescheid.md` | Widerspruch gegen einen Bescheid einer Behörde |
 
+</div>
+
 </details>
+
+<div align="justify">
 
 ## Merkblätter
 
@@ -737,8 +846,12 @@ Frist, Form, Pflichtinhalt, Adressat und Wirkung, jede Angabe mit Norm und
 Prüfdatum. `/fallaufnahme` nennt daraus den Rechtsbehelf, `/entwurf` prüft
 den Pflichtinhalt dagegen.
 
+</div>
+
 <details>
 <summary><b>Alle 10 Merkblätter mit Prüfdatum</b></summary>
+
+<div align="justify">
 
 | Merkblatt | Inhalt | Letzte vollständige Prüfung |
 |---|---|---|
@@ -753,6 +866,8 @@ den Pflichtinhalt dagegen.
 | `04 Rechtsquellen/Verfahren/Zivilklage.md` | Zivilklage vor dem Amtsgericht oder Landgericht | 17.09.2026 |
 | `04 Rechtsquellen/Verfahren/Zustaendigkeit_finden.md` | Zuständige Stelle finden | 17.09.2026 |
 
+</div>
+
 </details>
 
 > [!NOTE]
@@ -762,12 +877,18 @@ den Pflichtinhalt dagegen.
 > Verwendung in einem Fall gilt immer die Norm am amtlichen Volltext, nicht
 > das Merkblatt.
 
+<div align="justify">
+
 ## Befehle
 
 <img src="bilder/kapitel-befehle.svg" alt="Befehle: ohne Oberfläche">
 
+</div>
+
 <details>
 <summary><b>Befehle ohne Oberfläche</b></summary>
+
+<div align="justify">
 
 | Befehl (im Ordner der Mappe) | Zweck |
 |---|---|
@@ -785,7 +906,11 @@ den Pflichtinhalt dagegen.
 | `python3 "06 Werkzeuge/verteilen.py"` | `AGENTS.md` und `.agents/skills/` aus `CLAUDE.md` und `.claude/skills/` erzeugen; `--pruefen` nur vergleichen |
 | `python3 "06 Werkzeuge/dienst/pruefen.py"` | Funktionstest mit künstlichen Akten in einem Temp-Ordner, der nach einem bestandenen Lauf wieder entfernt wird; `--behalten` lässt ihn liegen |
 
+</div>
+
 </details>
+
+<div align="justify">
 
 <p align="right"><sub><a href="#reiter">↑ nach oben zu den Reitern</a></sub></p>
 
@@ -881,6 +1006,8 @@ sind nur auf Deutsch; die Werte in den Akten bleiben ebenfalls deutsch.
 
 ## Grenzen
 
+</div>
+
 > [!WARNING]
 > Die Mappe ist kein Rechtsanwalt und gibt keine Rechtsberatung. Sie hilft
 > beim Ordnen, Prüfen und Formulieren: Sie ordnet Unterlagen, rechnet Fristen
@@ -891,6 +1018,8 @@ sind nur auf Deutsch; die Werte in den Akten bleiben ebenfalls deutsch.
 > Fachanwalt. Der Autor kennt und prüft keine Angelegenheit eines Nutzers;
 > alles läuft auf deinem Rechner, und was deine KI aus den Anleitungen macht,
 > geschieht in deiner eigenen Sache und Verantwortung.
+
+<div align="justify">
 
 <p align="right"><sub><a href="#reiter">↑ nach oben zu den Reitern</a></sub></p>
 

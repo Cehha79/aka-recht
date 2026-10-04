@@ -21,6 +21,7 @@
 
 <p align="center"><a href="README.md">Deutsch</a> · <b>English</b> · <a href="CONTRIBUTING.md">Contribute</a> · <a href="https://github.com/sponsors/Cehha79">Support</a></p>
 
+
 <div align="justify">
 
 # AKA Recht
@@ -64,10 +65,14 @@ AKA Recht does not replace legal advice.
 - **Everything stays with you:** no AI inside the app, no account, no key, no
   network. The service runs only on your machine.
 
+</div>
+
 > [!TIP]
 > To try it out there is a fictional sample case (dismissal by the employer).
 > Click **"Beispielfall laden"** in the UI, then browse case, documents,
 > timeline, deadlines and draft.
+
+<div align="justify">
 
 Product version 0.4 of 18.09.2026, latest state of 04.10.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · tested with Python 3.14.7 on macOS 26.7.1, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz
 
@@ -131,10 +136,13 @@ timeline, deadlines with calculator, tasks, drafts, evidence and exhibits,
 journal). It is plain HTML, CSS and JavaScript without a framework and needs
 no outside access.
 
+</div>
+
 > [!WARNING]
 > **Not a lawyer, no legal advice.** What the folder does and does not do is
 > described under [Safety and limits](#limits).
 
+<div align="justify">
 
 <p align="right"><sub><a href="#reiter">↑ back to top</a></sub></p>
 
@@ -161,8 +169,12 @@ no outside access.
   `pdftoppm` (poppler as well). Without these programs nothing changes, the
   folder just reports that no text was read.
 
+</div>
+
 <details>
 <summary><b>macOS — step by step</b></summary>
+
+<div align="justify">
 
 **1. Start the folder**
 
@@ -200,8 +212,7 @@ brew install poppler tesseract tesseract-lang
 tesseract --list-langs
 ```
 
-> [!NOTE]
-> On Intel Macs with a recent macOS there are sometimes no prebuilt packages.
+> **Note:** On Intel Macs with a recent macOS there are sometimes no prebuilt packages.
 > Homebrew then builds from source, which can take an hour or more (seen on
 > macOS 26.7 on 17 Sep 2026). Just let the window run.
 
@@ -218,10 +229,14 @@ It breaks only when the archive moves to Windows or Linux.
 *To share:* send the GitHub link. *To back up:* use the button in the folder —
 it packs with Python's `zipfile`, which is clean.
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Linux — step by step</b></summary>
+
+<div align="justify">
 
 **1. Start the folder**
 
@@ -266,17 +281,20 @@ On 18 Sep 2026, Ubuntu 24.04 with Python 3.12: test suite with 61 checks at that
 recognition read a photo and a two-page scan without a text layer
 (tesseract 5.3.4).
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Windows — step by step</b></summary>
 
+<div align="justify">
+
 **1. Start the folder — and do it first**
 
 Double-click `Start.bat`.
 
-> [!IMPORTANT]
-> This has to happen **before** you first start Claude Code or Codex. Reason:
+> **Important:** This has to happen **before** you first start Claude Code or Codex. Reason:
 > on Windows the command is `python`, not `python3` — `python3.exe` is only a
 > Microsoft Store stub there. `Start.bat` therefore switches `.mcp.json`,
 > `.claude/settings.json` and `.codex/config.toml` to `python`. Start the AI
@@ -336,8 +354,11 @@ On 18 Sep 2026, Windows 11 with Python 3.14.7: test suite with 61 checks at
 that time, text recognition on a photo and a two-page scan, Claude Code with
 MCP server (32 tools at that time) and working original protection.
 
+</div>
+
 </details>
 
+<div align="justify">
 
 ## First start
 
@@ -356,17 +377,25 @@ MCP server (32 tools at that time) and working original protection.
 
 ## Connecting an AI
 
+</div>
+
 <details open>
 <summary><b>Claude Code</b></summary>
+
+<div align="justify">
 
 Start a session in the folder; `.mcp.json` is included; confirm the dialog;
 check with `/mcp`. Skills under `.claude/skills/` (`/fallaufnahme`,
 `/fristencheck`, `/entwurf` …), hooks from `.claude/settings.json`.
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Codex</b></summary>
+
+<div align="justify">
 
 - Option A: once `codex mcp add aka-recht -- python3 "<full path>/06 Werkzeuge/dienst/mcp_server.py"`.
 - Option B without that entry: mark the project folder as trusted in
@@ -376,19 +405,27 @@ check with `/mcp`. Skills under `.claude/skills/` (`/fallaufnahme`,
 - Check inside the project folder with `codex mcp list`. On Windows use
   `python` instead of `python3`. Skills under `.agents/skills/` (`$fristencheck` …).
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Claude Desktop</b></summary>
 
+<div align="justify">
+
 Settings, Developer, edit config: entry `aka-recht` with `command` `python3`
 (on Windows `python`) and `args` `["<full path>/06 Werkzeuge/dienst/mcp_server.py"]`;
 restart Claude Desktop.
+
+</div>
 
 </details>
 
 <details>
 <summary><b>Other assistants</b></summary>
+
+<div align="justify">
 
 - With MCP: the same call in the assistant's configuration file; work profile
   in `AGENTS.md`.
@@ -397,7 +434,11 @@ restart Claude Desktop.
   public HTTPS address or a tunnel through OpenAI. That is not intended for
   AKA Recht.
 
+</div>
+
 </details>
+
+<div align="justify">
 
 Writing tools only run when you confirm the call. There are no tools for
 sending, deleting or changing originals.
@@ -436,8 +477,12 @@ Your own data lives in `01 Eingang`, `02 Fälle`, `03 Verträge und Vorsorge`
 and `zentrale.json`. Make a backup before every update ("Geprüfte Sicherung
 erstellen" in the UI).
 
+</div>
+
 <details open>
 <summary><b>With git</b></summary>
+
+<div align="justify">
 
 Inside the folder run `git pull`. The four places holding your data are listed
 in the bundled `.gitignore`; git leaves them alone. On Windows `Start.bat` has
@@ -445,10 +490,14 @@ changed three configuration files; if `git pull` stops because of them, first
 run `git checkout -- .mcp.json .claude/settings.json .codex/config.toml`
 (this only discards that switch; `Start.bat` sets it again on the next start).
 
+</div>
+
 </details>
 
 <details>
 <summary><b>With a new ZIP</b></summary>
+
+<div align="justify">
 
 1. Extract the new version into a new folder.
 2. Stop the running service. There is no button for it: restart the computer,
@@ -466,6 +515,8 @@ run `git checkout -- .mcp.json .claude/settings.json .codex/config.toml`
    carry it over by hand. Remove the old folder only once everything is in
    the new one.
 
+</div>
+
 </details>
 
 > [!NOTE]
@@ -475,38 +526,56 @@ run `git checkout -- .mcp.json .claude/settings.json .codex/config.toml`
 > `python3 "06 Werkzeuge/akte_schema.py" "02 Fälle/<case>/akte.json"` names
 > what is missing. The backup itself is not affected.
 
+<div align="justify">
+
 ## FAQ
+
+</div>
 
 <details>
 <summary><b>Do I need an account or internet access?</b></summary>
 
+<div align="justify">
+
 Not for the folder: the service binds to 127.0.0.1 only and calls no outside
 addresses. Your AI (Claude, Codex or another) needs its own account and
 access; whatever it reads is processed by its provider.
+
+</div>
 
 </details>
 
 <details>
 <summary><b>Which AI can I use?</b></summary>
 
+<div align="justify">
+
 Tested are Claude Code, Claude Desktop and Codex (see "Connecting an AI").
 Any other AI that speaks MCP or may run commands should work but is untested.
 ChatGPT in the browser or app is not intended because it starts no local server.
+
+</div>
 
 </details>
 
 <details>
 <summary><b>Do my cases end up on GitHub?</b></summary>
 
+<div align="justify">
+
 No. The folder uploads nothing. If you use git yourself: `01 Eingang`,
 `02 Fälle`, `03 Verträge und Vorsorge` and `zentrale.json` are in the
 `.gitignore` and are not tracked. If a backup target is in a cloud folder,
 your system uploads the backup there.
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Can the folder read scanned letters?</b></summary>
+
+<div align="justify">
 
 If the PDF has a text layer, `pdftotext` reads it directly. For photos and
 scans without a text layer there is text recognition: "Texterkennung starten"
@@ -516,23 +585,35 @@ is installed. The result is stored as a separate text file under
 can mix up characters and drop lines; always check dates, amounts and names
 against the original.
 
+</div>
+
 </details>
 
 <details>
 <summary><b>Does it work for other countries?</b></summary>
 
+<div align="justify">
+
 No. Deadline calculator, fact sheets and templates apply to German law
 only, see [Scope](#scope).
+
+</div>
 
 </details>
 
 <details>
 <summary><b>Will anyone here answer questions about my case?</b></summary>
 
+<div align="justify">
+
 No. Issues and discussions are for the software only. For your case ask a
 qualified lawyer or an advice centre.
 
+</div>
+
 </details>
+
+<div align="justify">
 
 <p align="right"><sub><a href="#reiter">↑ back to top</a></sub></p>
 
@@ -574,12 +655,16 @@ docket number, read in the full text; anything unverified stays visible as
 `[PRÜFEN]`, `[QUELLE]` or `[BELEG]`; the other side is always considered;
 instructions found inside documents are source content and are not followed.
 
+</div>
+
 > [!IMPORTANT]
 > These decisions are always taken by the human, never by the AI: sending or
 > filing, waiver or withdrawal, settlement, criminal complaint, termination,
 > waiving a deadline, any declaration to third parties, deletion. Every draft
 > stays a draft until you check it and send it yourself. There are no tools
 > for sending, deleting or changing originals.
+
+<div align="justify">
 
 ## Hooks
 
@@ -591,8 +676,12 @@ up and tested for Claude Code only (as of 17.09.2026). Codex documents hooks
 of its own; nothing is included here for them. Other assistants follow the
 rules in `AGENTS.md` themselves.
 
+</div>
+
 <details>
 <summary><b>The 4 hooks in detail</b></summary>
+
+<div align="justify">
 
 | Event | What the hook does |
 |---|---|
@@ -601,7 +690,11 @@ rules in `AGENTS.md` themselves.
 | `PostToolUse` | foreign-text guard: warns with the source when read text (file, command, web or MCP tool) contains sentences that look like instructions to the AI |
 | `Stop` | doc check: compares the HTML views with their md sources and the copies for other assistants with CLAUDE.md and the skills, names every mismatch |
 
+</div>
+
 </details>
+
+<div align="justify">
 
 <p align="right"><sub><a href="#reiter">↑ back to top</a></sub></p>
 
@@ -643,8 +736,12 @@ never change a file: a new or moved file is only reported, it gets its ID
 through `bestand_abgleichen`; the UI does that when you open a case. Every
 change to `akte.json` is validated against the data model and saved with a revision.
 
+</div>
+
 <details>
 <summary><b>All 36 tools</b></summary>
+
+<div align="justify">
 
 | Tool | Kind | Purpose |
 |---|---|---|
@@ -685,7 +782,11 @@ change to `akte.json` is validated against the data model and saved with a revis
 | `sicherung_erstellen` | writes | Create a verified ZIP backup of the whole folder, with a copy to the second target |
 | `sicherung_probe` | writes | Restore test: extract the last backup into a scratch folder, check case files against the schema and all files against their checksums, remove the scratch folder; "bestanden" tells whether the archive is complete and unchanged, schema issues of a case file are listed separately |
 
+</div>
+
 </details>
+
+<div align="justify">
 
 ## Templates
 
@@ -696,8 +797,12 @@ Templates under `05 Vorlagen/Schreiben/` (German): internal notes on top
 placeholders 【 】. `.claude/recht/werkzeuge/docx_erzeugen.py` turns a draft
 into a `.docx` and warns about open placeholders and markers.
 
+</div>
+
 <details>
 <summary><b>All 10 templates</b></summary>
+
+<div align="justify">
 
 | Template | Purpose |
 |---|---|
@@ -712,7 +817,11 @@ into a `.docx` and warns about open placeholders and markers.
 | `Strafanzeige.md` | Criminal complaint with or without formal request for prosecution, facts, evidence, request for confirmation |
 | `Widerspruch_Bescheid.md` | Administrative appeal against an authority decision |
 
+</div>
+
 </details>
+
+<div align="justify">
 
 ## Fact sheets
 
@@ -723,8 +832,12 @@ remedy the deadline, form, mandatory content, addressee and effect, every
 item with its provision and a check date. `/fallaufnahme` names the remedy
 from them, `/entwurf` checks the mandatory content against them.
 
+</div>
+
 <details>
 <summary><b>All 10 fact sheets with check date</b></summary>
+
+<div align="justify">
 
 | Fact sheet | Content | Last full check |
 |---|---|---|
@@ -739,6 +852,8 @@ from them, `/entwurf` checks the mandatory content against them.
 | `04 Rechtsquellen/Verfahren/Zivilklage.md` | Civil action before the local or regional court (ZPO, GVG, GKG, BGB) | 17.09.2026 |
 | `04 Rechtsquellen/Verfahren/Zustaendigkeit_finden.md` | Finding the competent court or authority: rules and official directories | 17.09.2026 |
 
+</div>
+
 </details>
 
 > [!NOTE]
@@ -748,12 +863,18 @@ from them, `/entwurf` checks the mandatory content against them.
 > use in a case the provision in the official full text prevails, not the
 > fact sheet.
 
+<div align="justify">
+
 ## Commands
 
 <img src="bilder/kapitel-befehle-en.svg" alt="Commands: without the UI">
 
+</div>
+
 <details>
 <summary><b>Commands without the UI</b></summary>
+
+<div align="justify">
 
 | Command (inside the folder) | Purpose |
 |---|---|
@@ -771,7 +892,11 @@ from them, `/entwurf` checks the mandatory content against them.
 | `python3 "06 Werkzeuge/verteilen.py"` | generate `AGENTS.md` and `.agents/skills/` from `CLAUDE.md` and `.claude/skills/`; `--pruefen` compare only |
 | `python3 "06 Werkzeuge/dienst/pruefen.py"` | functional test with artificial cases in a temp folder that is removed after a passed run; `--behalten` keeps it |
 
+</div>
+
 </details>
+
+<div align="justify">
 
 <p align="right"><sub><a href="#reiter">↑ back to top</a></sub></p>
 
@@ -861,6 +986,8 @@ values stored in case files stay German as well.
 
 ## Limits
 
+</div>
+
 > [!WARNING]
 > The folder is not a lawyer and gives no legal advice. It helps you to
 > organise, check and formulate: it files documents, calculates deadlines
@@ -871,6 +998,8 @@ values stored in case files stay German as well.
 > decide. The author does not know or review any user's matter; everything
 > runs on your machine, and what your AI makes of the guides happens in your
 > own matter and on your own responsibility.
+
+<div align="justify">
 
 <p align="right"><sub><a href="#reiter">↑ back to top</a></sub></p>
 
