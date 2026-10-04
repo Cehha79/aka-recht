@@ -21,6 +21,8 @@
 
 <p align="center"><a href="README.md">Deutsch</a> · <b>English</b> · <a href="CONTRIBUTING.md">Contribute</a> · <a href="https://github.com/sponsors/Cehha79">Support</a></p>
 
+<div align="justify">
+
 # AKA Recht
 
 A parking ticket, a dismissal, a service-charge statement, a notice from the
@@ -65,13 +67,13 @@ AKA Recht does not replace legal advice.
 > [!TIP]
 > To try it out there is a fictional sample case (dismissal by the employer).
 > Click **"Beispielfall laden"** in the UI, then browse case, documents,
-> timeline, deadlines and draft. Delete it whenever you like.
+> timeline, deadlines and draft.
 
-Product version 0.4 of 18.09.2026, latest state of 02.10.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · tested with Python 3.14.7 on macOS 26.7.1, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz
+Product version 0.4 of 18.09.2026, latest state of 04.10.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · tested with Python 3.14.7 on macOS 26.7.1, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz
 
 ## New since version 0.4
 
-These points are in the latest state of 02.10.2026, not yet in the fixed version 0.4. If you download the fixed version from the release page, you get them with the next version. So far they are tested on macOS only.
+These points are in the latest state of 04.10.2026, not yet in the fixed version 0.4. If you download the fixed version from the release page, you get them with the next version. Tested with the test suite (77 checks) and in the UI on macOS, Linux and Windows.
 
 - **Timeline as a time path:** other parties on the left, your own steps on the right, time in the middle; key events, a colour per group, "reply to" with the interval, your own event type next to the usual list.
 - **Parties with role and function:** The role assigns the group and decides side and colour in the timeline; the function says in your own words who someone is, such as "lawyer of the opposing party".
@@ -92,6 +94,17 @@ Then continue with **[Setup](#setup)**: requirements, first start
 per system, connecting an AI. To pass it on, share the GitHub link and do not
 re-pack the folder yourself (the reason is under Setup).
 
+## On the web
+
+| Where | What |
+|---|---|
+| [mika-tec.com/aka-recht.html](https://mika-tec.com/aka-recht.html) | Introduction with screenshots and first steps (in German) |
+| [Glama](https://glama.ai/mcp/servers/Cehha79/aka-recht) | Entry in the directory of MCP servers, with a quality score for the tools |
+
+On Glama you can try the tools in the browser. That runs in a third-party
+test environment, shows only the tool responses without the UI, and is not
+meant for real documents.
+
 ## What it looks like
 
 Click to enlarge. All pictures show the fictional sample case ("Max Muster"
@@ -105,6 +118,9 @@ v. "Muster Logistik GmbH"), no real persons. The UI is in German.
 <tr>
 <td width="50%"><a href="bilder/03-dokumente.jpg"><img src="bilder/03-dokumente.jpg" alt="Documents"></a><br><sub><b>Documents:</b> preview, id, exhibit number, filing</sub></td>
 <td width="50%"><a href="bilder/04-fristen.jpg"><img src="bilder/04-fristen.jpg" alt="Deadlines"></a><br><sub><b>Deadlines:</b> legal basis, calculation, check status</sub></td>
+</tr>
+<tr>
+<td colspan="2"><a href="bilder/05-chronologie.jpg"><img src="bilder/05-chronologie.jpg" alt="Timeline as a time path"></a><br><sub><b>Timeline:</b> time path with key events, intervals and sources</sub></td>
 </tr>
 </table>
 
@@ -131,11 +147,14 @@ no outside access.
 - Python 3.12 or newer (`python3 --version`). Tested with 3.12.3 on Ubuntu and
   3.14.7 on macOS and Windows; older versions are untested. No other
   packages.
+- Tested on 2 Oct 2026 on macOS, Linux and Windows: test suite with 77 checks
+  and the UI.
 - Tested on 18 Sep 2026 on macOS 26.7, on Ubuntu 24.04 (Python 3.12) and on
-  Windows 11 (Python 3.14.7): test suite with 61 checks (more checks have been
-  added since; those have only run on macOS so far), service via the start
-  script, MCP server, sample case in a folder with spaces and umlauts, text
-  recognition on a photo and a two-page scan.
+  Windows 11 (Python 3.14.7), at that time with 61 checks: service via the
+  start script, MCP server, sample case in a folder with spaces and umlauts,
+  text recognition on a photo and a two-page scan. Connecting the assistants,
+  text recognition and backup have not been re-tested on Linux and Windows
+  since.
 - Optional for text extraction from PDF: the program `pdftotext` (poppler).
 - Optional for photos and scans without a text layer: text recognition (OCR)
   with `tesseract` and German language data; scanned PDFs also need
@@ -154,7 +173,8 @@ again in the dialog.
 
 *It worked if:* a black window appears and the browser shows the folder. You
 can close that window afterwards — the service keeps running in its own
-session. Stop it from "Bestand und Sicherung" or by restarting the computer.
+session. There is no button to stop it: the service ends when you restart the
+computer or run `pkill -f "06 Werkzeuge/dienst/server.py"` in the terminal.
 
 **2. Set up text recognition — optional**
 
@@ -237,9 +257,11 @@ poppler-utils tesseract tesseract-langpack-deu`).
 tesseract --list-langs
 ```
 
-**3. Tested on 18 Sep 2026**
+**3. Tested**
 
-Ubuntu 24.04 with Python 3.12: test suite with 61 checks, service via
+On 2 Oct 2026: test suite with 77 checks and the UI.
+
+On 18 Sep 2026, Ubuntu 24.04 with Python 3.12: test suite with 61 checks at that time, service via
 `Start.sh`, MCP server, sample case in a folder with spaces and umlauts. Text
 recognition read a photo and a two-page scan without a text layer
 (tesseract 5.3.4).
@@ -306,11 +328,13 @@ also looks in the usual locations. To check by hand, use the full path:
 "C:\Program Files\Tesseract-OCR\tesseract.exe" --list-langs
 ```
 
-**5. Tested on 18 Sep 2026**
+**5. Tested**
 
-Windows 11 with Python 3.14.7: test suite with 61 checks, text recognition on
-a photo and a two-page scan, Claude Code with MCP server (32 tools) and
-working original protection.
+On 2 Oct 2026: test suite with 77 checks and the UI.
+
+On 18 Sep 2026, Windows 11 with Python 3.14.7: test suite with 61 checks at
+that time, text recognition on a photo and a two-page scan, Claude Code with
+MCP server (32 tools at that time) and working original protection.
 
 </details>
 
@@ -911,3 +935,5 @@ AKA Recht contains no AI itself. Service, interface, deadline calculator and too
 Anyone using the folder with their own AI assistant is working with a third-party AI system. Its output consists of drafts, not verified statements of law: it may be wrong, outdated or invented. That is why it carries the markers `[PRÜFEN]` (check), `[QUELLE]` (source) and `[BELEG]` (evidence) and must be checked against the original full text before any use. Deadlines, letters and declarations remain the sole responsibility of the user.
 
 AKA Recht provides no legal advice and no legal service within the meaning of § 2 RDG (German Legal Services Act). At any fork in the road: consult a specialist lawyer or a recognised advice centre.
+
+</div>

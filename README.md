@@ -21,6 +21,8 @@
 
 <p align="center"><b>Deutsch</b> · <a href="README.en.md">English</a> · <a href="CONTRIBUTING.md">Mitmachen</a> · <a href="https://github.com/sponsors/Cehha79">Unterstützen</a></p>
 
+<div align="justify">
+
 # AKA Recht
 
 Ein Strafzettel, eine Kündigung, eine Nebenkostenabrechnung, ein Bescheid
@@ -65,13 +67,13 @@ AKA Recht ersetzt keine Rechtsberatung.
 > [!TIP]
 > Zum Ausprobieren gibt es einen erfundenen Beispielfall (Kündigung durch den
 > Arbeitgeber). In der Oberfläche auf **„Beispielfall laden“** klicken, dann
-> durch Akte, Dokumente, Chronologie, Fristen und Entwurf klicken. Jederzeit löschbar.
+> durch Akte, Dokumente, Chronologie, Fristen und Entwurf klicken.
 
-Produkt Version 0.4 vom 18.09.2026, neuester Stand vom 02.10.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · geprüft mit Python 3.14.7 auf macOS 26.7.1, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
+Produkt Version 0.4 vom 18.09.2026, neuester Stand vom 04.10.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · geprüft mit Python 3.14.7 auf macOS 26.7.1, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
 
 ## Neu seit Version 0.4
 
-Diese Punkte stehen im neuesten Stand vom 02.10.2026, noch nicht in der festen Version 0.4. Wer die feste Version von der Release-Seite lädt, bekommt sie mit der nächsten Version. Geprüft sind sie bisher nur auf macOS.
+Diese Punkte stehen im neuesten Stand vom 04.10.2026, noch nicht in der festen Version 0.4. Wer die feste Version von der Release-Seite lädt, bekommt sie mit der nächsten Version. Geprüft mit dem Funktionstest (77 Prüfpunkte) und in der Oberfläche auf macOS, Linux und Windows.
 
 - **Chronologie als Zeitpfad:** links die anderen Stellen, rechts die eigenen Schritte, die Zeit in der Mitte; Kernereignisse, Farbe je Gruppe, Bezug „Antwort auf“ mit Abstand, eigene Art eines Ereignisses neben der Liste der üblichen.
 - **Beteiligte mit Rolle und Funktion:** Die Rolle ordnet der Gruppe zu und bestimmt Seite und Farbe in der Chronologie; die Funktion sagt in freien Worten, wer jemand ist, etwa „Rechtsanwalt der Gegenseite“.
@@ -92,6 +94,17 @@ Danach weiter mit **[Einrichten](#einrichten)**: Voraussetzungen, erster
 Start je System, KI anbinden. Zum Weitergeben den GitHub-Link teilen und den
 Ordner nicht selbst neu packen (warum, steht unter Einrichten).
 
+## Im Netz
+
+| Wo | Was |
+|---|---|
+| [mika-tec.com/aka-recht.html](https://mika-tec.com/aka-recht.html) | Vorstellung der Mappe mit Bildern und den ersten Schritten |
+| [Glama](https://glama.ai/mcp/servers/Cehha79/aka-recht) | Eintrag im Verzeichnis für MCP-Server, mit Bewertung der Werkzeuge |
+
+Bei Glama lassen sich die Werkzeuge im Browser ausprobieren. Das läuft in
+einer fremden Testumgebung, zeigt nur die Antworten der Werkzeuge ohne die
+Oberfläche und ist nicht für echte Unterlagen gedacht.
+
 ## So sieht es aus
 
 Zum Vergrößern anklicken. Alle Bilder zeigen den erfundenen Beispielfall
@@ -105,6 +118,9 @@ Zum Vergrößern anklicken. Alle Bilder zeigen den erfundenen Beispielfall
 <tr>
 <td width="50%"><a href="bilder/03-dokumente.jpg"><img src="bilder/03-dokumente.jpg" alt="Dokumente mit Vorschau, Kennung und Anlagennummer"></a><br><sub><b>Dokumente:</b> Vorschau, Kennung, Anlagennummer, Einsortieren</sub></td>
 <td width="50%"><a href="bilder/04-fristen.jpg"><img src="bilder/04-fristen.jpg" alt="Fristen mit Rechtsgrundlage, Rechnung und Prüfstatus"></a><br><sub><b>Fristen:</b> Rechtsgrundlage, Rechenweg, Prüfstatus</sub></td>
+</tr>
+<tr>
+<td colspan="2"><a href="bilder/05-chronologie.jpg"><img src="bilder/05-chronologie.jpg" alt="Chronologie als Zeitpfad: links andere Stellen, rechts eigene Schritte, die Zeit in der Mitte"></a><br><sub><b>Chronologie:</b> Zeitpfad mit Kernereignissen, Abständen und Fundstellen</sub></td>
 </tr>
 </table>
 
@@ -131,12 +147,14 @@ Framework und braucht keinen Zugang nach außen.
 - Python 3.12 oder neuer (`python3 --version`). Geprüft mit 3.12.3 unter
   Ubuntu und 3.14.7 unter macOS und Windows; ältere Fassungen sind
   ungeprüft. Keine weiteren Pakete.
+- Geprüft am 02.10.2026 auf macOS, Linux und Windows: Funktionstest mit 77
+  Prüfpunkten und die Oberfläche.
 - Geprüft am 18.09.2026 auf macOS 26.7, auf Ubuntu 24.04 (Python 3.12) und
-  auf Windows 11 (Python 3.14.7): jeweils Funktionstest mit 61 Prüfpunkten
-  (seither sind weitere Prüfpunkte dazugekommen; die sind bisher nur auf
-  macOS gelaufen),
-  Dienst über das Startskript, MCP-Server, Beispielfall in einem Ordner mit
-  Leerzeichen und Umlauten, Texterkennung mit Foto und zweiseitigem Scan.
+  auf Windows 11 (Python 3.14.7), damals mit 61 Prüfpunkten: Dienst über das
+  Startskript, MCP-Server, Beispielfall in einem Ordner mit Leerzeichen und
+  Umlauten, Texterkennung mit Foto und zweiseitigem Scan. Die Anbindung der
+  Assistenten, die Texterkennung und die Sicherung sind auf Linux und Windows
+  seither nicht erneut geprüft.
 - Für Textauszüge aus PDF optional das Programm `pdftotext` (Paket poppler).
 - Für Fotos und Scans ohne Textschicht optional die Texterkennung (OCR)
   `tesseract` mit deutscher Sprache; PDF-Scans brauchen dazu `pdftoppm` (auch
@@ -155,8 +173,9 @@ Internet. Wenn der Doppelklick nichts tut: Rechtsklick auf die Datei,
 
 *Geklappt, wenn:* Ein schwarzes Fenster erscheint und der Browser die Mappe
 zeigt. Das Fenster kannst du danach schließen — der Dienst läuft in einer
-eigenen Sitzung weiter. Beenden kannst du ihn über „Bestand und Sicherung“
-oder indem du den Rechner neu startest.
+eigenen Sitzung weiter. Einen Knopf zum Beenden gibt es nicht: Der Dienst
+endet, wenn du den Rechner neu startest oder im Terminal
+`pkill -f "06 Werkzeuge/dienst/server.py"` eingibst.
 
 **2. Texterkennung einrichten — freiwillig**
 
@@ -240,12 +259,14 @@ poppler-utils tesseract tesseract-langpack-deu`).
 tesseract --list-langs
 ```
 
-**3. Geprüft am 18.09.2026**
+**3. Geprüft**
 
-Ubuntu 24.04 mit Python 3.12: Funktionstest mit 61 Prüfpunkten, Dienst über
-`Start.sh`, MCP-Server, Beispielfall in einem Ordner mit Leerzeichen und
-Umlauten. Die Texterkennung hat Foto und zweiseitigen Scan ohne Textschicht
-erkannt (tesseract 5.3.4).
+Am 02.10.2026: Funktionstest mit 77 Prüfpunkten und die Oberfläche.
+
+Am 18.09.2026, Ubuntu 24.04 mit Python 3.12: Funktionstest mit damals 61
+Prüfpunkten, Dienst über `Start.sh`, MCP-Server, Beispielfall in einem Ordner
+mit Leerzeichen und Umlauten. Die Texterkennung hat Foto und zweiseitigen Scan
+ohne Textschicht erkannt (tesseract 5.3.4).
 
 </details>
 
@@ -311,11 +332,13 @@ Pfad:
 "C:\Program Files\Tesseract-OCR\tesseract.exe" --list-langs
 ```
 
-**5. Geprüft am 18.09.2026**
+**5. Geprüft**
 
-Windows 11 mit Python 3.14.7: Funktionstest mit 61 Prüfpunkten, Texterkennung
-an Foto und zweiseitigem Scan, Claude Code mit MCP-Server (32 Werkzeuge) und
-greifendem Originalschutz.
+Am 02.10.2026: Funktionstest mit 77 Prüfpunkten und die Oberfläche.
+
+Am 18.09.2026, Windows 11 mit Python 3.14.7: Funktionstest mit damals 61
+Prüfpunkten, Texterkennung an Foto und zweiseitigem Scan, Claude Code mit
+MCP-Server (damals 32 Werkzeuge) und greifendem Originalschutz.
 
 </details>
 
@@ -933,3 +956,5 @@ AKA Recht enthält selbst keine KI. Dienst, Oberfläche, Fristenrechner und Werk
 Wer die Mappe mit einem eigenen KI-Assistenten nutzt, arbeitet mit einem fremden KI-System. Dessen Ausgaben sind Entwürfe, keine geprüften Rechtsaussagen: Sie können falsch, veraltet oder erfunden sein. Sie tragen deshalb die Marker `[PRÜFEN]`, `[QUELLE]` und `[BELEG]` und sind vor jeder Verwendung am Originalvolltext zu prüfen. Fristen, Schreiben und Erklärungen verantwortet allein die Nutzerin oder der Nutzer.
 
 AKA Recht leistet keine Rechtsberatung und keine Rechtsdienstleistung im Sinne des § 2 RDG. Bei Weichenstellungen: Fachanwältin, Fachanwalt oder eine anerkannte Beratungsstelle.
+
+</div>
