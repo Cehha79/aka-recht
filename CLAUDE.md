@@ -17,7 +17,8 @@ Strafsachen und mehr). Die Regeln aus `~/.claude/CLAUDE.md` gelten weiter.
 - Ein Fall = `02 Fälle/R-XXXX <Name>/` mit `akte.json` (Ordnungsdaten),
   `bestand.json` (nur Dienst), `JOURNAL.md` (nur anhängen), Ordner 01 bis 08.
 - Originale in 02 Grundlagen, 03 Schriftverkehr, 04 Verfahren, 05 Beweise,
-  08 Archiv nie ändern. Ein Hook sperrt das. Neue Texte nach 06 Entwürfe,
+  08 Archiv nie ändern. Ein Hook sperrt dort Write und Edit; Shell-Befehle
+  deckt er nicht ab, für sie gilt die Regel ohne Sperre. Neue Texte nach 06 Entwürfe,
   Vermerke nach 07 Recherche.
 - Änderungen an der Akte über die Werkzeuge, nie akte.json von Hand:
   `python3 "06 Werkzeuge/dienst/cli.py" liste` zeigt alle.

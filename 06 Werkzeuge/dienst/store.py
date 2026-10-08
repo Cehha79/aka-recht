@@ -7,7 +7,7 @@ hat). Vor jedem Schreiben von akte.json wird die alte Fassung außerhalb des
 Projekts gesichert und die neue mit akte_schema geprüft.
 Nur Standardbibliothek.
 """
-import hashlib, json, os, re, shutil, sys, tempfile, uuid
+import hashlib, json, os, re, shutil, stat, sys, tempfile, unicodedata, uuid
 try: import fcntl   # macOS und Linux
 except ImportError: fcntl = None; import msvcrt   # Windows
 from contextlib import contextmanager
@@ -21,6 +21,17 @@ ROOT = Path(__file__).resolve().parents[2]
 GRUPPEN = ['01 Eingang', '02 Grundlagen', '03 Schriftverkehr', '04 Verfahren',
            '05 Beweise', '06 Entwürfe', '07 Recherche', '08 Archiv']
 VORLAGE = '05 Vorlagen/Fallvorlage'
+
+MINDEST_PYTHON = (3, 12)
+
+def python_hinweis():
+    """Meldung, wenn die laufende Python-Fassung älter als die Mindestfassung ist, sonst ''. Ältere Fassungen
+    scheitern nicht beim Start, sondern erst mitten in einem Ablauf (tomllib ab 3.11, Rückstrich im
+    f-String ab 3.12); deshalb prüfen Dienst, cli.py, MCP-Server und Sitzungsstart vorher (AUDIT-004, 08.10.2026)."""
+    if sys.version_info >= MINDEST_PYTHON: return ''
+    return (f'AKA Recht braucht Python {MINDEST_PYTHON[0]}.{MINDEST_PYTHON[1]} oder neuer, gestartet wurde '
+            f'{sys.version.split()[0]} ({sys.executable}). Neuere Fassung von python.org installieren und '
+            'dafür sorgen, dass „python3“ (Windows: „python“) auf sie zeigt.')
 
 def konfigurieren(root, schluessel_datei=None):
     global ROOT
@@ -51,9 +62,26 @@ def atomar(pfad, daten):
     finally:
         if Path(tmp).exists(): Path(tmp).unlink()
 
+def laufzeit_ordner():
+    """Eigener Ordner für Sperr-, Laufzeit- und Protokolldatei, nur für diesen Benutzer (Rechte 0700). Vorher lagen die
+    Dateien unter festen Namen direkt im System-Temp-Ordner; unter Linux ist das meist das gemeinsame /tmp, und ein
+    anderes Konto hätte sie vorab anlegen können (AUDIT-007, 08.10.2026). Unter Linux bevorzugt $XDG_RUNTIME_DIR."""
+    xdg = os.environ.get('XDG_RUNTIME_DIR')
+    basis = Path(xdg) if xdg and Path(xdg).is_dir() else Path(tempfile.gettempdir())
+    uid = os.getuid() if hasattr(os, 'getuid') else None   # Windows: Temp-Ordner liegt ohnehin im Benutzerprofil
+    ordner = basis / (f'aka-recht-{uid}' if uid is not None else 'aka-recht')
+    try: ordner.mkdir(mode=0o700)
+    except FileExistsError: pass
+    if uid is not None:
+        s = os.lstat(ordner)
+        if not stat.S_ISDIR(s.st_mode) or s.st_uid != uid or s.st_mode & 0o077:
+            raise RuntimeError(f'Laufzeitordner {ordner} ist kein eigener Ordner dieses Benutzers mit Rechten 0700. '
+                               'Bitte prüfen und entfernen; AKA Recht legt ihn beim nächsten Start neu an.')
+    return ordner
+
 @contextmanager
 def sperre():
-    datei = Path(tempfile.gettempdir()) / f'aka-recht-{instanz()}.lock'
+    datei = laufzeit_ordner() / f'{instanz()}.lock'
     with datei.open('a+') as f:
         if fcntl: fcntl.flock(f, fcntl.LOCK_EX)
         else: f.seek(0); msvcrt.locking(f.fileno(), msvcrt.LK_LOCK, 1)   # Windows: ein Byte sperren, wartet bis frei
@@ -68,7 +96,7 @@ ABSENDER_FELDER = ('name', 'strasse', 'plz_ort', 'telefon', 'email')   # Standar
 def zentrale_standard():
     return {'schema': 1, 'app': 'AKA Recht', 'faelle': [],
             'sicherung': {'ziel': str(Path.home() / 'Desktop/AKA Recht Sicherungen'),
-                          'zweites_ziel': str(Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs/AKA Recht Sicherungen') if (Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs').is_dir() else '',   # iCloud Drive nur, wo es eines gibt
+                          'zweites_ziel': '',   # ab Werk leer: eine Sicherung geht nur nach ausdrücklicher Wahl in den Einstellungen in einen Cloud-Ordner (AUDIT-003, 08.10.2026; vorher iCloud Drive, wo vorhanden)
                           'letzte': None},
             'einstellungen': {'feiertagsland': 'BW', 'sprache': 'de', 'absender': dict.fromkeys(ABSENDER_FELDER, '')},
             'verbindungen': {}}
@@ -96,8 +124,9 @@ def einrichten():
     """Legt zentrale.json an, wenn sie fehlt. Nur beim Start des Dienstes (Einrichtung durch den Nutzer),
     nie beim bloßen Lesen. Liefert True, wenn die Datei neu angelegt wurde."""
     p = zentrale_pfad()
-    if p.exists(): return False
-    atomar(p, json.dumps(zentrale_standard(), ensure_ascii=False, indent=2) + '\n'); return True
+    with sperre():
+        if p.exists(): return False
+        atomar(p, json.dumps(zentrale_standard(), ensure_ascii=False, indent=2) + '\n'); return True
 
 def lade_zentrale():
     """Liest zentrale.json; fehlt sie, den Standard nur im Speicher (schreibt nichts, Prüfbericht F03)."""
@@ -127,7 +156,26 @@ def absender(fall_id=None):
 def feiertagsland(): return lade_zentrale()['einstellungen'].get('feiertagsland') or 'BW'
 
 def speichere_zentrale(z):
+    """Nur unter sperre() mit frisch gelesenem Stand aufrufen; von außen über zentrale_aendern."""
     atomar(zentrale_pfad(), json.dumps(z, ensure_ascii=False, indent=2) + '\n')
+
+def zentrale_aendern(aendern):
+    """Einziger Weg, zentrale.json von außerhalb dieses Moduls zu ändern: unter Sperre frisch lesen,
+    aendern(z) anwenden, schreiben. Vorher lasen Einstellungen und Sicherung ohne Sperre und schrieben den
+    alten Stand zurück; ein Fall, der dazwischen angelegt wurde, verschwand aus dem Verzeichnis (AUDIT-001,
+    08.10.2026). aendern darf selbst nicht sperren, die Sperre ist nicht wiedereintrittsfähig."""
+    with sperre():
+        z = lade_zentrale(); ergebnis = aendern(z); speichere_zentrale(z)
+    return ergebnis
+
+def verwaiste_faelle():
+    """Fallordner mit akte.json unter 02 Fälle, die in zentrale.json fehlen (Folge eines früheren Wettlaufs,
+    AUDIT-001, oder eines Abbruchs). Nur lesen; Eintragen bleibt Sache des Nutzers."""
+    ordner = ROOT / '02 Fälle'
+    if not ordner.is_dir(): return []
+    bekannt = {unicodedata.normalize('NFC', f['ordner']) for f in faelle()}
+    return sorted(p.name for p in ordner.iterdir() if p.is_dir() and re.match(r'R-\d+', p.name) and (p / 'akte.json').is_file()
+                  and unicodedata.normalize('NFC', f'02 Fälle/{p.name}') not in bekannt)
 
 def sicherungsziel(): return Path(lade_zentrale()['sicherung']['ziel']).expanduser()
 
@@ -223,15 +271,15 @@ def beispiel_laden():
         titel = akte['fall'].get('titel') or 'Beispielfall'
         name = re.sub(r'[^\w äöüÄÖÜß.-]', '', titel).strip(' .')[:65] or 'Beispiel'
         rel = f'02 Fälle/{kennung} {name}'; ziel_ordner = sicher(rel)
+        akte['fall']['id'] = kennung; akte['fall']['angelegt'] = datetime.now().date().isoformat()
+        fehler, _ = akte_schema.validate(akte)   # erst prüfen, dann kopieren: sonst bliebe ein Ordner ohne Eintrag (AUDIT-012)
+        if fehler: raise ValueError('Beispielakte fehlerhaft: ' + '; '.join(fehler[:3]))
         shutil.copytree(quelle, ziel_ordner, ignore=shutil.ignore_patterns('.DS_Store'))
         for g in GRUPPEN: (ziel_ordner / g).mkdir(exist_ok=True)
-        akte['fall']['id'] = kennung; akte['fall']['angelegt'] = datetime.now().date().isoformat()
-        fehler, _ = akte_schema.validate(akte)
-        if fehler: raise ValueError('Beispielakte fehlerhaft: ' + '; '.join(fehler[:3]))
         atomar(ziel_ordner / 'akte.json', json.dumps(akte, ensure_ascii=False, indent=2) + '\n')
         if not (ziel_ordner / 'JOURNAL.md').exists(): atomar(ziel_ordner / 'JOURNAL.md', '# Journal\n\n')
         z['faelle'].append({'id': kennung, 'ordner': rel}); speichere_zentrale(z)
-    journal_anhaengen(kennung, 'Arbeit', 'Beispielfall geladen', f'Beispielakte als {kennung} übernommen. Erfundener Fall zum Ausprobieren; jederzeit löschbar.')
+    journal_anhaengen(kennung, 'Arbeit', 'Beispielfall geladen', f'Beispielakte als {kennung} übernommen. Erfundener Fall zum Ausprobieren.')
     return {'id': kennung, 'ordner': rel, 'titel': titel}
 
 def fall_status(fall_id, status):

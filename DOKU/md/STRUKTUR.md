@@ -30,7 +30,13 @@ Schicht 1  Aktenkern           02 Fälle/R-XXXX …/  festes Datenformat
 Beide Schichten arbeiten auf denselben Dateien. Damit sie sich nicht in die
 Quere kommen, gilt: Der Dienst schreibt nur mit Revisionsprüfung (Prüfsumme
 der Datei vor dem Speichern), und Claude schreibt nur, wenn der Dienst nicht
-gerade dieselbe Datei hält (Sperrdatei im temporären Ordner).
+gerade dieselbe Datei hält (Sperrdatei). Sperr-, Laufzeit- und Protokolldatei
+liegen seit 08.10.2026 in einem eigenen Ordner des Benutzers mit Rechten 0700
+(`aka-recht-<Benutzernummer>` im temporären Ordner, unter Linux bevorzugt in
+`$XDG_RUNTIME_DIR`), nicht mehr unter festen Namen direkt im gemeinsamen
+temporären Ordner (AUDIT-007). `zentrale.json` wird nur noch unter dieser
+Sperre geändert, mit frisch gelesenem Stand (`store.zentrale_aendern`,
+AUDIT-001).
 
 ## Projektordner
 
@@ -162,7 +168,7 @@ Python-Standardbibliothek, ein Prozess, nur 127.0.0.1, Sitzungsschlüssel
 außen. Systemabhängig sind nur drei Stellen, je mit Weiche: Browser öffnen
 (`webbrowser`), Datei im Dateimanager zeigen (`open`, `xdg-open`,
 `explorer`), Sperre (`fcntl` oder unter Windows `msvcrt`); das zweite
-Sicherungsziel iCloud Drive wird nur vorgeschlagen, wo es den Ordner gibt. Textauszug aus PDF über das vorhandene `pdftotext`, wenn installiert.
+Sicherungsziel ist ab Werk leer und wird nur in den Einstellungen gewählt (bis 08.10.2026 wurde iCloud Drive vorgeschlagen, wo es den Ordner gab; AUDIT-003). Textauszug aus PDF über das vorhandene `pdftotext`, wenn installiert.
 
 | Modul | Aufgabe |
 |---|---|

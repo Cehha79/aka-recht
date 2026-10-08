@@ -31,10 +31,13 @@ def main():
         uebergabe = '; Übergabe: DOKU/md/Live-Dokumentation.md' if (root / 'DOKU' / 'md' / 'Live-Dokumentation.md').exists() else ''
         stand = f'Stand {datetime.now():%H:%M} Uhr'
         zeilen = [f'AKA Recht, Sitzungsstart {date.today():%d.%m.%Y}, {stand}. Arbeitsprofil: CLAUDE.md im Projekt{uebergabe}.']
+        # Hooks laufen mit dem „python3“ aus dem Suchpfad; ist das zu alt, dem Nutzer sagen statt still Teile zu verlieren (AUDIT-004)
+        if store.python_hinweis(): zeilen.append('ACHTUNG, dem Nutzer melden: ' + store.python_hinweis() + ' Bis dahin können Hooks und Werkzeuge ausfallen.')
         eingang = post(root / '01 Eingang')
         zeilen.append('Gemeinsamer Eingang: ' + (', '.join(eingang) if eingang else 'leer') + '.')
         heute = date.today().isoformat()
-        for f in werkzeuge.faelle_auflisten():
+        faelle = werkzeuge.faelle_auflisten()   # einmal lesen, nicht für die Leerprüfung ein zweites Mal (AUDIT-020)
+        for f in faelle:
             if f.get('fehler'): zeilen.append(f'{f["id"]}: Fehler beim Lesen: {f["fehler"]}'); continue
             neue = post(store.fall_ordner(f['id']) / '01 Eingang')
             nah = [x for x in f['fristen'] if x['datum'] and (x['datum'] < heute or (date.fromisoformat(x['datum']) - date.today()).days <= 21)]
@@ -44,7 +47,9 @@ def main():
             if nah: teile.append('Fristen: ' + '; '.join(f'{x["datum"]} {x["titel"]} [{x["pruefstatus"]}' + (', ohne Prüfdatum' if x['pruefstatus'] == 'bestätigt' and not x.get('eigenschaften', {}).get('geprueft') else '') + (', offener Marker' if x.get('eigenschaften', {}).get('offene_marker') else '') + (', Auslöser unsicher' if x.get('eigenschaften', {}).get('ausloeser_sicher') is False else '') + ']' + (' ÜBERSCHRITTEN' if x['datum'] < heute else '') for x in nah))
             teile.append(f'offene Aufgaben: {f["offene_aufgaben"]}')
             zeilen.append(' · '.join(teile))
-        if not werkzeuge.faelle_auflisten(): zeilen.append('Noch kein Fall im neuen Format eingetragen (zentrale.json).')
+        if not faelle: zeilen.append('Noch kein Fall im neuen Format eingetragen (zentrale.json).')
+        verwaist = store.verwaiste_faelle()
+        if verwaist: zeilen.append('Fallordner ohne Eintrag in zentrale.json (in Oberfläche und Werkzeugen unsichtbar, dem Nutzer melden): ' + ', '.join(verwaist) + '.')
         try:   # Stufe 12: Rechtsinhalte, die wieder am Volltext zu prüfen sind; nur melden, wenn etwas ansteht
             r = werkzeuge.rechtsinhalte_pruefen()
             offen = [e for e in r['eintraege'] if e['status'] != 'in Ordnung']

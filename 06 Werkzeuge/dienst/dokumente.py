@@ -19,6 +19,7 @@ import bestand, store
 TEXT_EXT = {'.md', '.txt', '.json', '.xml', '.py', '.sh', '.csv'}
 BILD_EXT = {'.jpg', '.jpeg', '.png', '.heic', '.gif'}
 TEXT_CACHE = {}
+TEXT_CACHE_GRENZE = 300   # Textauszüge im Speicher; darüber fällt der älteste heraus (AUDIT-011)
 OCR_ORDNER = '07 Recherche/Texterkennung'   # Ablage erkannter Texte (Stufe 13)
 OCR_TRENNER = '=' * 72                     # trennt den Kopf der Ableitung vom erkannten Text
 
@@ -143,9 +144,13 @@ def befund(pfad):
         else: quelle = 'kein-auszug'; hinweis = 'Für dieses Dateiformat gibt es keine Textvorschau.'
     except Exception:
         quelle = 'fehler'; hinweis = 'Textvorschau konnte nicht erstellt werden. Das Original bleibt verfügbar.'
+    while len(TEXT_CACHE) >= TEXT_CACHE_GRENZE: TEXT_CACHE.pop(next(iter(TEXT_CACHE)))   # ältesten Eintrag zuerst (AUDIT-011)
     TEXT_CACHE[k] = {'text': t, 'hinweis': hinweis, 'textquelle': quelle, 'textquelle_text': TEXTQUELLEN[quelle], 'seiten': seiten,
                      'seiten_ohne_text': ohne_text, 'zeichen': len(t.strip())}   # N06: welche Seiten nicht ausgelesen wurden
     return TEXT_CACHE[k]
+
+# Vorgabe für neu registrierte Dateien nach Bereich; 07 Recherche enthält eigene Vermerke und Ableitungen, keine Originale (AUDIT-002)
+STAND_VORGABE = {'06 ': 'Entwurf', '07 ': 'Vermerk', '08 ': 'Historisch'}
 
 def katalog(fall_id, akte):
     """Dokumentliste: registrierter Bestand plus Ordnungsangaben aus der Akte. Liest nur.
@@ -162,7 +167,7 @@ def katalog(fall_id, akte):
             name = Path(rel)
             dat, dat_hinweis = datum_aus_name(name.name)   # N08: nur ein echter Kalendertag wird übernommen
             d = {'pfad': rel, 'titel': re.sub(r'_+', ' ', name.stem), 'datum': dat,
-                 'art': '', 'stand': 'Entwurf' if rel.startswith('06 ') else 'Historisch' if rel.startswith('08 ') else 'Original',
+                 'art': '', 'stand': STAND_VORGABE.get(rel[:3], 'Original'),
                  'themen': [], 'anlage': '', 'personen': [], 'verweise': [], 'notiz': dat_hinweis}
             akte['dokumente'][kennung] = d; ergaenzt.append(kennung)
         elif d['pfad'] != rel: d['pfad'] = rel; ergaenzt.append(kennung)

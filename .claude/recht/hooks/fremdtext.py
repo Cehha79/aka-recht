@@ -109,7 +109,10 @@ def funde(text):
         m = re.search(muster, text, re.I)
         if m:
             anfang = max(0, m.start() - 60); ende = min(len(text), m.end() + 60)
-            treffer.append(f'{name}: „…{re.sub(r"\s+", " ", text[anfang:ende]).strip()}…“')
+            # Ausschnitt vorher bilden: Ein Rückstrich im f-String-Ausdruck ist erst ab Python 3.12 gültig, unter
+            # älterer Fassung fiele der Wächter still aus (App-Prüfung AUDIT-004, 08.10.2026)
+            ausschnitt = re.sub(r'\s+', ' ', text[anfang:ende]).strip()
+            treffer.append(f'{name}: „…{ausschnitt}…“')
     return treffer
 
 

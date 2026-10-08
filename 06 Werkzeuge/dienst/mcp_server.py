@@ -78,7 +78,7 @@ def werkzeug_aufrufen(params):
         raise Protokollfehler(-32602, f'Unbekanntes Werkzeug: {name}')
     bestaetigt = args.pop('bestaetigt', False)   # nur der JSON-Wahrheitswert true zählt; ausfuehren() weist andere Typen ab (F05)
     try:
-        ergebnis = werkzeuge.ausfuehren(name, args, bestaetigt=bestaetigt)
+        ergebnis = werkzeuge.ausfuehren(name, args, bestaetigt=bestaetigt, weg='MCP')
     except Exception as e:
         return {'content': [{'type': 'text', 'text': f'Fehler: {e}'}], 'isError': True}
     if isinstance(ergebnis, dict) and ergebnis.get('bestaetigung_noetig'):
@@ -161,6 +161,7 @@ def schleife(eingabe=sys.stdin):
         if antwort is not None: senden(antwort)
 
 if __name__ == '__main__':
+    if store.python_hinweis(): print('AKA Recht MCP: ' + store.python_hinweis(), file=sys.stderr); sys.exit(1)
     p = argparse.ArgumentParser(description='AKA Recht als MCP-Server über die Standardeingabe.')
     p.add_argument('--root', type=Path, default=store.ROOT, help='Projektordner mit zentrale.json')
     a = p.parse_args(); store.konfigurieren(a.root)

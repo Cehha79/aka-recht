@@ -7,7 +7,7 @@ Werkzeuge. Schreibende Werkzeuge laufen für Assistenten nur mit Bestätigung. W
 Löschen oder Ändern von Originalen gibt es absichtlich nicht.
 Nur Standardbibliothek.
 """
-import json, re, shutil, sys, unicodedata
+import contextvars, json, re, shutil, sys, unicodedata
 from datetime import date
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -60,8 +60,12 @@ def _pruefe_parameter(w, args):
         if typ == 'object' and not isinstance(wert, dict): raise ValueError(f'„{p}“ muss ein Objekt sein.')
         if 'enum' in erlaubt[p] and wert not in erlaubt[p]['enum']: raise ValueError(f'„{p}“ muss eines von {erlaubt[p]["enum"]} sein.')
 
-def ausfuehren(name, args, bestaetigt=False):
-    """Führt ein Werkzeug aus. Schreibende Werkzeuge nur mit bestaetigt=True.
+# Über welchen Zugang ein Werkzeug gerufen wurde (Oberfläche, cli.py, MCP); steht im Verlauf von bestand.json.
+# ContextVar, weil der Dienst Anfragen in eigenen Threads bearbeitet (AUDIT-019, 08.10.2026).
+AUFRUF_WEG = contextvars.ContextVar('aufruf_weg', default='Oberfläche')
+
+def ausfuehren(name, args, bestaetigt=False, weg=None):
+    """Führt ein Werkzeug aus. Schreibende Werkzeuge nur mit bestaetigt=True. weg: Zugang für den Verlauf.
 
     Als Bestätigung zählt allein der JSON-Wahrheitswert true. Text („true“, „false“), Zahlen oder null
     werden abgewiesen, denn bool("false") wäre wahr (Prüfbericht 16.09.2026, F05)."""
@@ -72,6 +76,7 @@ def ausfuehren(name, args, bestaetigt=False):
     if w['schreibend'] and not bestaetigt:
         return {'bestaetigung_noetig': True, 'werkzeug': name, 'parameter': args,
                 'hinweis': 'Dieses Werkzeug ändert Daten. Bitte bestätigen.'}
+    if weg: AUFRUF_WEG.set(weg)
     return w['fn'](**args)
 
 # ---------------------------------------------------------------- lesend
@@ -207,14 +212,17 @@ def _oeffnen_befehl(p, zeigen):
 
 # Nur bekannte Dokumentformate werden direkt mit dem Systemprogramm geöffnet; alles andere (Skripte, Programme, Webseiten,
 # Archive, Office-Dateien mit Makros, Unbekanntes) wird nur im Dateimanager gezeigt (Prüfbericht 16.09.2026, F36).
-DOKUMENTFORMATE = {'.pdf', '.txt', '.md', '.rtf', '.docx', '.doc', '.odt', '.xlsx', '.xls', '.ods', '.csv', '.pptx', '.ppt', '.odp',
+# Die alten Office-Formate .doc, .xls und .ppt können Makros tragen wie .docm; sie gehören seit 08.10.2026 dazu (AUDIT-010).
+DOKUMENTFORMATE = {'.pdf', '.txt', '.md', '.rtf', '.docx', '.odt', '.xlsx', '.ods', '.csv', '.pptx', '.odp',
                    '.jpg', '.jpeg', '.png', '.gif', '.heic', '.tif', '.tiff', '.bmp', '.webp', '.eml', '.msg',
                    '.mp3', '.m4a', '.wav', '.aac', '.mp4', '.mov', '.m4v'}
+ALT_OFFICE = {'.doc', '.xls', '.ppt'}
 
 def oeffnen_art(pfad):
     """(direkt öffnen?, Hinweis). Dateityp entscheidet; ohne Endung oder unbekannt gilt: nur zeigen."""
     endung = Path(pfad).suffix.lower()
     if endung in DOKUMENTFORMATE: return True, ''
+    if endung in ALT_OFFICE: return False, f'Datei vom Typ „{endung}“ (altes Office-Format, kann Makros enthalten) wird nicht direkt geöffnet, sondern nur im Dateimanager gezeigt. Bei Bedarf dort bewusst öffnen, Makros nicht zulassen.'
     art = 'ohne Endung' if not endung else f'Typ „{endung}“'
     return False, f'Datei {art} wird nicht direkt geöffnet, sondern nur im Dateimanager gezeigt: kein bekanntes Dokumentformat, könnte ein Programm, Skript oder aktiver Inhalt sein. Bei Bedarf dort bewusst öffnen.'
 
@@ -678,13 +686,15 @@ def entwurf_setzen(fall, entwurf, titel):
     return {'entwurf': e, 'titel_bisher': alt, 'kopien_umbenannt': kopien, 'revision': rev}
 
 def _akte_mit_dokument(fall, dokument=''):
-    """Akte lesen, nur für schreibende Werkzeuge. Ist die Dokumentkennung unbekannt, den Bestand abgleichen
-    und den Katalog nachziehen (neu zugeordnete oder im Finder abgelegte Dateien bekommen so ihren
-    Eintrag), erst dann gilt sie als unbekannt."""
+    """Akte lesen, nur für schreibende Werkzeuge. Ist die Dokumentkennung unbekannt, Verschiebungen im Bestand
+    übernehmen und den Katalog nachziehen (registrierte Dateien ohne Eintrag in der Akte bekommen so ihren
+    Eintrag), erst dann gilt sie als unbekannt. Neue Dateien bekommen dabei keine Kennung: Das bleibt
+    bestand_abgleichen vorbehalten; vorher vergab ein Tippfehler in der Kennung allen neuen Dateien des
+    Fallordners Kennungen, auch wenn der Aufruf danach mit Fehler endete (AUDIT-005, 08.10.2026)."""
     akte, rev = store.lese_akte(fall)
     dokument = (dokument or '').strip().upper()
     if dokument and dokument not in akte['dokumente']:
-        bestand.abgleichen(store.fall_ordner(fall), weg='Abgleich vor Änderung')
+        bestand.abgleichen(store.fall_ordner(fall), weg='Abgleich vor Änderung', nur=set())
         _, ergaenzt, _ = dokumente.katalog(fall, akte)
         if ergaenzt: rev = store.speichere_akte(fall, akte, rev, ohne_sicherung=True)
     return akte, rev
@@ -751,6 +761,7 @@ def _abgleichen(fall, nur=None):
           {'fall': {'type': 'string'}, 'dokument': {'type': 'string'}, 'felder': {'type': 'object', 'description': 'nur die zu ändernden Felder'}},
           schreibend=True, pflicht=['fall', 'dokument', 'felder'])
 def dokument_ordnen(fall, dokument, felder):
+    dokument = str(dokument).strip().upper()   # wie bei den übrigen Werkzeugen (AUDIT-006)
     akte, rev = _akte_mit_dokument(fall, dokument)
     d = akte['dokumente'].get(dokument)
     if not d: raise ValueError('Unbekannte Dokumentkennung.')
@@ -765,16 +776,18 @@ def dokument_ordnen(fall, dokument, felder):
            'unterordner': {'type': 'string', 'description': 'optional, z. B. An Vorstand'}},
           schreibend=True, pflicht=['fall', 'dokument', 'bereich'])
 def dokument_verschieben(fall, dokument, bereich, unterordner=''):
+    dokument = str(dokument).strip().upper()   # wie bei den übrigen Werkzeugen (AUDIT-006)
     ordner = store.fall_ordner(fall)
-    neu = bestand.verschieben(ordner, dokument, bereich, unterordner)
+    neu = bestand.verschieben(ordner, dokument, bereich, unterordner, weg=AUFRUF_WEG.get())
     akte, rev = _akte_mit_dokument(fall, dokument)
     if dokument in akte['dokumente']:
         akte['dokumente'][dokument]['pfad'] = neu; rev = store.speichere_akte(fall, akte, rev, ohne_sicherung=True)
     return {'dokument': dokument, 'pfad': neu, 'revision': rev}
 
 ABLAGE_BEREICHE = ['01 Eingang', '06 Entwürfe', '07 Recherche']   # Originalbereiche (02 bis 05, 08) bleiben gesperrt
+EIGENE_ABLAGE = 'Über datei_ablegen angelegt: eigene Ablage, kein eingegangenes Original.'
 
-@werkzeug('datei_ablegen', 'Textdatei in einem Fall anlegen: Notiz, Vermerk oder Entwurf. Erlaubt sind nur 01 Eingang, 06 Entwürfe und 07 Recherche; die Originalbereiche 02 bis 05 und 08 bleiben gesperrt. Überschreibt nie eine vorhandene Datei und registriert die neue Datei anschließend im Bestand, sodass sie eine D-Kennung bekommt.',
+@werkzeug('datei_ablegen', 'Textdatei in einem Fall anlegen: Notiz, Vermerk oder Entwurf. Erlaubt sind nur 01 Eingang, 06 Entwürfe und 07 Recherche; die Originalbereiche 02 bis 05 und 08 bleiben gesperrt. Überschreibt nie eine vorhandene Datei und registriert die neue Datei anschließend im Bestand, sodass sie eine D-Kennung bekommt. Stand: Entwurf in 06, sonst Vermerk, nie Original.',
           {'fall': {'type': 'string'}, 'bereich': {'type': 'string', 'enum': ABLAGE_BEREICHE},
            'name': {'type': 'string', 'description': 'Dateiname mit Endung .md oder .txt, ohne Pfad'},
            'text': {'type': 'string', 'description': 'Inhalt der Datei'},
@@ -808,7 +821,14 @@ def datei_ablegen(fall, bereich, name, text, unterordner=''):
         raise ValueError(f'„{rel}“ gibt es schon. Vorhandene Dateien werden nie überschrieben; anderen Namen wählen.')
     abgleich = _abgleichen(fall, nur={rel})   # nur die eigene Datei registrieren
     kennung = next((e['id'] for e in abgleich.get('neu', []) if _nfc(e.get('pfad', '')) == _nfc(rel)), '')
-    return {'pfad': rel, 'zeichen': len(text), 'kennung': kennung, 'abgleich': abgleich}
+    # Selbst geschriebener Text ist nie „Original“, auch nicht im Eingang: Stand nach Bereich, im Eingang mit Notiz,
+    # damit niemand ihn für eingegangene Post hält; das Übergabepaket nimmt ihn nicht als Original mit (AUDIT-002, 08.10.2026)
+    akte, rev = store.lese_akte(fall); d = akte['dokumente'].get(kennung) if kennung else None
+    if d:
+        d['stand'] = 'Entwurf' if bereich == '06 Entwürfe' else 'Vermerk'
+        if bereich == '01 Eingang': d['notiz'] = ' '.join(x for x in (d.get('notiz', ''), EIGENE_ABLAGE) if x)
+        abgleich['revision'] = store.speichere_akte(fall, akte, rev, ohne_sicherung=True)
+    return {'pfad': rel, 'zeichen': len(text), 'kennung': kennung, 'stand': d['stand'] if d else '', 'abgleich': abgleich}
 
 @werkzeug('journal_schreiben', 'Eintrag an das Journal eines Falls anhängen.',
           {'fall': {'type': 'string'}, 'art': {'type': 'string', 'enum': store.JOURNAL_ARTEN}, 'titel': {'type': 'string'}, 'text': {'type': 'string'}},

@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """Stop-Hook: prüft am Ende einer Antwort, ob erzeugte Dateien zu ihren Quellen passen, und nennt
 konkret, was nachzuziehen ist. Blockiert nicht (Exit 0).
+Ausgabe (seit 08.10.2026, App-Prüfung AUDIT-017): Klartext auf stdout erreicht bei Stop-Hooks nur das
+Debug-Protokoll, weder Claude noch den Nutzer (Claude-Code-Doku, Hooks, „Exit code output“). Abweichende
+Ansichten und Kopien gehen deshalb als hookSpecificOutput.additionalContext an Claude, das danach einmal
+weiterarbeitet; ist stop_hook_active gesetzt, schweigt der Hook (keine Schleife). Der schwache Zeithinweis (3.)
+geht nur als systemMessage an den Nutzer, damit er nicht jede Antwort verlängert.
 Seit 17.09.2026 (Prüfbericht F26) inhaltlich statt nach Zeitstempel:
 1. Jede HTML-Ansicht in DOKU/ wird aus ihrer md-Quelle neu erzeugt (im Speicher, mit ansicht_bauen.py)
    und mit der gespeicherten Datei verglichen; jede abweichende oder fehlende Ansicht wird einzeln genannt.
@@ -15,7 +20,7 @@ import sys
 for _strom in (sys.stdin, sys.stdout, sys.stderr):
     if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
-import importlib.util, os, subprocess
+import importlib.util, json, os, subprocess
 from pathlib import Path
 
 
@@ -62,6 +67,9 @@ def juengere_als_doku(root):
 
 
 def main():
+    try: eingabe = json.load(sys.stdin)
+    except Exception: eingabe = {}
+    if isinstance(eingabe, dict) and eingabe.get('stop_hook_active'): return 0   # schon einmal weitergeleitet: nicht erneut
     root = Path(os.environ.get('CLAUDE_PROJECT_DIR') or Path(__file__).resolve().parents[3]).resolve()
     hinweise = []
     try: a = ansichten_pruefen(root)
@@ -70,8 +78,11 @@ def main():
     v = verteilung_pruefen(root)
     if v: hinweise.append('Erzeugte Kopien für andere Assistenten sind nicht aktuell: ' + '; '.join(v) + '. python3 "06 Werkzeuge/verteilen.py" ausführen.')
     j = juengere_als_doku(root)
-    if j: hinweise.append('Jünger als DOKU/md/Live-Dokumentation.md: ' + ', '.join(j[:8]) + (f' und {len(j) - 8} weitere' if len(j) > 8 else '') + '. Live-Dokumentation.md und TODO.md prüfen.')
-    if hinweise: print('AKA Recht, Doku-Abgleich: ' + ' '.join(hinweise))
+    zeit = ('Jünger als DOKU/md/Live-Dokumentation.md: ' + ', '.join(j[:8]) + (f' und {len(j) - 8} weitere' if len(j) > 8 else '') + '. Live-Dokumentation.md und TODO.md prüfen.') if j else ''
+    aus = {}
+    if hinweise: aus['hookSpecificOutput'] = {'hookEventName': 'Stop', 'additionalContext': 'AKA Recht, Doku-Abgleich: ' + ' '.join(hinweise + ([zeit] if zeit else []))}
+    elif zeit: aus['systemMessage'] = 'AKA Recht, Doku-Abgleich: ' + zeit
+    if aus: print(json.dumps(aus, ensure_ascii=False))
     return 0
 
 

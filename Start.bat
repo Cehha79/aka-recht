@@ -12,3 +12,5 @@ rem KI-Konfigurationen (.mcp.json, .claude\settings.json, .codex\config.toml) au
 python "%~dp0\06 Werkzeuge\einrichten_windows.py"
 if errorlevel 1 echo Hinweis: KI-Konfiguration nicht vollstaendig angepasst, siehe Meldung oben. Die Oberflaeche startet trotzdem.
 python "%~dp0\06 Werkzeuge\dienst\server.py" %*
+rem Bei Fehler (etwa Python aelter als 3.12) das Fenster offen lassen, damit die Meldung lesbar bleibt.
+if errorlevel 1 pause

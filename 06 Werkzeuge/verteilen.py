@@ -52,7 +52,7 @@ ERSETZUNGEN = [
     ('3. Der SessionStart-Hook meldet Eingang und Fristen der Fälle.',
      '3. Zum Sitzungsstart `python3 "06 Werkzeuge/dienst/cli.py" faelle_auflisten`\n'
      '   aufrufen: Eingang, Fristen und offene Aufgaben je Fall.'),
-    ('08 Archiv nie ändern. Ein Hook sperrt das. Neue Texte nach 06 Entwürfe,',
+    ('08 Archiv nie ändern. Ein Hook sperrt dort Write und Edit; Shell-Befehle\n  deckt er nicht ab, für sie gilt die Regel ohne Sperre. Neue Texte nach 06 Entwürfe,',
      '08 Archiv nie ändern, auch nicht umbenennen. Neue Texte nach 06 Entwürfe,'),
     ('## Prüfabläufe (Plugin `.claude/recht`)',
      '## Prüfabläufe (Skills unter `.agents/skills/`)'),

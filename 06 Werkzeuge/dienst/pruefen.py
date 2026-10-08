@@ -87,7 +87,11 @@ def pdf_gemischt(zeilen, ppm):
 def run(behalten=False):
     base = Path(tempfile.mkdtemp(prefix='aka-recht-pruefung-', dir='/private/tmp' if Path('/private/tmp').is_dir() else None)).resolve(); root = vorbereiten(base)
     instanz = hashlib.sha256(str(root).encode()).hexdigest()[:14]
-    laufzeit = Path(tempfile.gettempdir()) / f'aka-recht-dienst-{instanz}.json'
+    # Laufzeitordner wie store.laufzeit_ordner (AUDIT-007); store hier nicht importieren, sonst zeigten spätere Importe
+    # der Testkopie auf das Modul des echten Projekts
+    xdg = os.environ.get('XDG_RUNTIME_DIR')
+    laufzeit_ordner = (Path(xdg) if xdg and Path(xdg).is_dir() else Path(tempfile.gettempdir())) / (f'aka-recht-{os.getuid()}' if hasattr(os, 'getuid') else 'aka-recht')
+    laufzeit = laufzeit_ordner / f'dienst-{instanz}.json'
     if laufzeit.exists(): laufzeit.unlink()
     bestanden = []; server = None; fertig = False
     def ok(name): bestanden.append(name); print('ok ', name)
@@ -604,7 +608,7 @@ def run(behalten=False):
         # F36: nur bekannte Dokumentformate werden direkt geöffnet, alles andere nur gezeigt (ohne den Systemöffner zu rufen)
         import werkzeuge as _wz
         assert all(_wz.oeffnen_art(n)[0] for n in ('Bescheid.PDF', 'Brief.docx', 'Foto.jpg', 'Mail.eml', 'Notiz.md'))
-        for n in ('Start.command', 'setup.exe', 'skript.sh', 'werkzeug.py', 'seite.html', 'makro.docm', 'archiv.zip', 'ohne_endung', 'link.webloc', 'neu.xyz'):
+        for n in ('Start.command', 'setup.exe', 'skript.sh', 'werkzeug.py', 'seite.html', 'makro.docm', 'alt.doc', 'Tabelle.XLS', 'folien.ppt', 'archiv.zip', 'ohne_endung', 'link.webloc', 'neu.xyz'):   # .doc, .xls, .ppt seit AUDIT-010
             direkt, hinweis = _wz.oeffnen_art(n); assert not direkt and 'nur im Dateimanager' in hinweis, n
         z = anfrage('/api/zentrale'); assert any(f['id'] == 'R-0001' and f['fristen'] and f['fristen'][0]['id'] == 'F01' for f in z['faelle'])
         ok('Quellenkatalog, Öffnen mit unbekanntem Ort abgewiesen, nur Dokumentformate direkt geöffnet (Skripte, Programme, Makros, Unbekanntes nur gezeigt), Fristen in der Fallübersicht')
@@ -1120,6 +1124,91 @@ def run(behalten=False):
         text_s2 = start_lauf(); assert 'Gemeinsamer Eingang: leer.' in text_s2 and 'Brief vom Amt' not in text_s2, text_s2
         ok('Start-Hook: meldet Dateien im Eingang des Falls und im gemeinsamen Eingang mit Uhrzeit, eine Verknüpfung auf eine Datei außerhalb zählt nicht als Post, nach dem Wegräumen meldet er sie nicht mehr')
 
+        # App-Prüfung vom 08.10.2026: Python-Code gegen die Testkopie in einem eigenen Prozess, wie cli.py oder der MCP-Server
+        def py(code, **kw):
+            vorspann = f'import sys; sys.dont_write_bytecode = True; sys.path.insert(0, {str(root / "06 Werkzeuge/dienst")!r}); import store; store.konfigurieren({str(root)!r})\n'
+            return subprocess.run([sys.executable, '-c', vorspann + code], capture_output=True, text=True, encoding='utf-8', timeout=60, **kw)
+
+        # AUDIT-001: Während zentrale_aendern die Sperre hält, legt ein zweiter Prozess einen Fall an. Er muss warten und danach auf
+        # dem neuen Stand aufsetzen; vorher schrieb der ältere Stand den neuen Fall wieder heraus. Dazu verwaiste Fallordner melden.
+        r = py('import subprocess, time\n'
+               'def aendern(z):\n'
+               f'    p = subprocess.Popen([sys.executable, "-c", "import sys; sys.dont_write_bytecode = True; sys.path.insert(0, {str(root / "06 Werkzeuge/dienst")!r}); import store; store.konfigurieren({str(root)!r}); print(store.neuer_fall(\'Probe Wettlauf\')[\'id\'])"], stdout=subprocess.PIPE, text=True)\n'
+               '    time.sleep(1.5); assert p.poll() is None, "zweiter Prozess lief trotz Sperre durch"\n'
+               '    z["einstellungen"]["feiertagsland"] = "BY"; return p\n'
+               'p = store.zentrale_aendern(aendern); kennung = p.communicate(timeout=30)[0].strip()\n'
+               'z = store.lade_zentrale(); assert z["einstellungen"]["feiertagsland"] == "BY" and kennung in [f["id"] for f in z["faelle"]], (kennung, z["faelle"])\n'
+               'print(kennung)')
+        assert r.returncode == 0, r.stderr; kennung_w = r.stdout.strip()
+        anfrage('/api/einstellungen', {'einstellungen': {'feiertagsland': 'BW'}}); anfrage('/api/sicherung', {})
+        assert kennung_w in [f['id'] for f in anfrage('/api/zentrale')['faelle']], kennung_w   # Einstellungen und Sicherung schreiben den Fall nicht wieder heraus
+        verwaist = root / '02 Fälle' / 'R-0090 Verwaist'; verwaist.mkdir(); (verwaist / 'akte.json').write_text('{}', encoding='utf-8')
+        assert 'R-0090 Verwaist' in start_lauf()
+        r = subprocess.run([sys.executable, str(root / '06 Werkzeuge/dienst/server.py'), '--root', str(root), '--check'], capture_output=True, text=True, encoding='utf-8', timeout=60)
+        assert r.returncode == 1 and json.loads(r.stdout)['verwaist'] == ['R-0090 Verwaist'], (r.returncode, r.stdout[-300:])
+        shutil.rmtree(verwaist); assert 'Verwaist' not in start_lauf()
+        ok('zentrale.json (AUDIT-001): ein zweiter Prozess wartet auf die Sperre und setzt auf dem neuen Stand auf, Einstellungen und Sicherung behalten einen neuen Fall; verwaiste Fallordner meldet der Start-Hook und --check')
+
+        # AUDIT-002: Selbst geschriebener Text ist nie „Original“; das Übergabepaket nimmt ihn nicht als Original mit
+        staende = {}
+        for bereich_a in ('01 Eingang', '06 Entwürfe', '07 Recherche'):
+            a_ = anfrage('/api/werkzeug', {'name': 'datei_ablegen', 'parameter': {'fall': 'R-0002', 'bereich': bereich_a, 'name': 'Eigene Ablage.md', 'text': 'Notiz der KI\n'}, 'bestaetigt': True})
+            staende[bereich_a] = a_['stand']
+        assert staende == {'01 Eingang': 'Vermerk', '06 Entwürfe': 'Entwurf', '07 Recherche': 'Vermerk'}, staende
+        dok_a = json.loads((fall_n / 'akte.json').read_text('utf-8'))['dokumente']
+        eingang_a = next(k for k, x in dok_a.items() if x['pfad'] == '01 Eingang/Eigene Ablage.md'); assert 'eigene Ablage' in dok_a[eingang_a]['notiz'], dok_a[eingang_a]
+        (fall_n / '07 Recherche' / 'Von Hand.md').write_text('im Finder abgelegt\n', encoding='utf-8')
+        neu_a = anfrage('/api/werkzeug', {'name': 'bestand_abgleichen', 'parameter': {'fall': 'R-0002'}, 'bestaetigt': True})['neu'][0]['id']
+        assert json.loads((fall_n / 'akte.json').read_text('utf-8'))['dokumente'][neu_a]['stand'] == 'Vermerk'
+        paket = QUELLE / '.claude/recht/werkzeuge/uebergabe_paket.py'
+        if paket.is_file():
+            r = subprocess.run([sys.executable, str(paket), 'R-0002', '--empfaenger', 'anwalt', '--vorschau'], capture_output=True, text=True, encoding='utf-8', env={**os.environ, 'CLAUDE_PROJECT_DIR': str(root)}, timeout=60)
+            assert r.returncode == 0 and f'nicht im Paket' in r.stdout and not re.search(rf'^  {eingang_a} ', r.stdout, re.M), r.stdout + r.stderr
+            titel_d1 = 'INTERN-TITEL-PROBE'; anfrage('/api/werkzeug', {'name': 'dokument_ordnen', 'parameter': {'fall': 'R-0002', 'dokument': 'D0001', 'felder': {'titel': titel_d1}}, 'bestaetigt': True})
+            falltitel = json.loads((fall_n / 'akte.json').read_text('utf-8'))['fall']['titel']
+            r = subprocess.run([sys.executable, str(paket), 'R-0002', '--empfaenger', 'gegenseite', '--nur', 'D0001', '--ziel', str(base / 'gs.zip')], capture_output=True, text=True, encoding='utf-8', env={**os.environ, 'CLAUDE_PROJECT_DIR': str(root)}, timeout=60)
+            assert r.returncode == 0, r.stdout + r.stderr
+            with zipfile.ZipFile(base / 'gs.zip') as zf:
+                inhalt = zf.read('00 Inhaltsverzeichnis.md').decode() + zf.read('00 Manifest.json').decode(); assert titel_d1 not in inhalt and falltitel not in inhalt and 'D0001' in inhalt, inhalt   # AUDIT-016
+        ok('Stand selbst abgelegter Dateien (AUDIT-002): datei_ablegen setzt Vermerk im Eingang (mit Notiz) und in 07, Entwurf in 06; eine Datei von Hand in 07 wird Vermerk; das Übergabepaket nimmt den Vermerk aus dem Eingang nicht als Original mit')
+
+        # AUDIT-003 und AUDIT-004: kein Cloud-Ziel ab Werk; zu alte Python-Fassung wird an jedem Einstieg gemeldet, nicht still übergangen
+        r = py('assert store.zentrale_standard()["sicherung"]["zweites_ziel"] == ""; assert store.python_hinweis() == ""'); assert r.returncode == 0, r.stderr
+        for einstieg in ('server.py', 'cli.py', 'mcp_server.py'):
+            p_e = str(root / '06 Werkzeuge/dienst' / einstieg)
+            r = subprocess.run([sys.executable, '-c', f'import sys, runpy; sys.dont_write_bytecode = True; sys.version_info = (3, 9, 6, "final", 0); sys.argv = [{p_e!r}, "--root", {str(root)!r}]; runpy.run_path({p_e!r}, run_name="__main__")'],
+                               capture_output=True, text=True, encoding='utf-8', timeout=30, stdin=subprocess.DEVNULL)
+            assert r.returncode == 1 and 'braucht Python 3.12 oder neuer' in r.stderr, (einstieg, r.returncode, r.stderr[-300:])
+        stop_hook = QUELLE / '.claude/recht/hooks/doku_abgleich.py'
+        if stop_hook.is_file():   # AUDIT-017: Ausgabe als JSON für Claude; im zweiten Durchlauf (stop_hook_active) still, keine Schleife
+            lauf_s = lambda eingabe: subprocess.run([sys.executable, str(stop_hook)], input=eingabe, capture_output=True, text=True, encoding='utf-8', timeout=60, env=dict(os.environ, CLAUDE_PROJECT_DIR=str(root)))
+            r = lauf_s('{"stop_hook_active": true}'); assert r.returncode == 0 and r.stdout == '', r.stdout
+            r = lauf_s('{}'); assert r.returncode == 0 and (r.stdout == '' or set(json.loads(r.stdout)) <= {'hookSpecificOutput', 'systemMessage'}), r.stdout
+        ok('Ab Werk kein zweites Sicherungsziel (AUDIT-003); Dienst, cli.py und MCP-Server melden eine Python-Fassung vor 3.12 und brechen mit Exit 1 ab (AUDIT-004); Stop-Hook antwortet als JSON und schweigt im zweiten Durchlauf (AUDIT-017)')
+
+        # AUDIT-005, 006, 019: Tippfehler in der Kennung registriert nichts, Kleinschreibung wird erkannt, der Verlauf nennt den Zugang
+        (fall_n / '02 Grundlagen' / 'Im Finder abgelegt.pdf').write_bytes(b'%PDF-1.4 Probe')
+        anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': 'R-0002', 'titel': 'Probe', 'quelle': 'D0999'}, 'bestaetigt': True}, erwartet=400)
+        bestand_n = lambda: json.loads((fall_n / 'bestand.json').read_text('utf-8'))
+        assert not any(e['pfad'] == '02 Grundlagen/Im Finder abgelegt.pdf' for e in bestand_n()['dateien'].values()), 'Fehlaufruf hat registriert'
+        anfrage('/api/werkzeug', {'name': 'dokument_ordnen', 'parameter': {'fall': 'R-0002', 'dokument': eingang_a.lower(), 'felder': {'titel': 'Klein geschrieben'}}, 'bestaetigt': True})
+        r = subprocess.run([sys.executable, str(root / '06 Werkzeuge/dienst/cli.py'), 'dokument_verschieben', 'fall=R-0002', f'dokument={eingang_a.lower()}', 'bereich=07 Recherche', 'unterordner=Aus dem Eingang'], capture_output=True, text=True, encoding='utf-8', timeout=60)
+        assert r.returncode == 0, r.stdout + r.stderr
+        letzte_n = bestand_n()['verschiebungen'][-1]; assert letzte_n['id'] == eingang_a and letzte_n['weg'] == 'cli.py', letzte_n
+        (fall_n / '02 Grundlagen' / 'Im Finder abgelegt.pdf').unlink()
+        ok('Kennungen (AUDIT-005, 006, 019): unbekannte Kennung endet mit Fehler, ohne neue Dateien zu registrieren; Kleinschreibung bei dokument_ordnen und dokument_verschieben erkannt; Verschiebung über cli.py als „cli.py“ im Verlauf')
+
+        # AUDIT-009: Word-Erzeuger überschreibt nur mit --ersetzen, schreibt nie in Originalbereiche oder Fassungen, entfernt Steuerzeichen
+        if docx.is_file():
+            q = fall_n / '06 Entwürfe' / 'Wortprobe.md'; q.write_text('intern\n---\nVon: A\nAn: B\nDatum: 1.1.2026\nBetreff: x\n\nText mit\x0cSeitenvorschub.\n', encoding='utf-8')
+            lauf = lambda *a: subprocess.run([sys.executable, str(docx), *a], capture_output=True, text=True, encoding='utf-8', timeout=30)
+            assert lauf(str(q)).returncode == 0 and (fall_n / '06 Entwürfe' / 'Wortprobe.docx').is_file()
+            r = lauf(str(q)); assert r.returncode == 1 and 'gibt es schon' in r.stderr, r.stderr
+            assert lauf('--ersetzen', str(q)).returncode == 0
+            r = lauf(str(q), str(fall_n / '02 Grundlagen' / 'Wortprobe.docx')); assert r.returncode == 1 and 'Originalbereich' in r.stderr and not (fall_n / '02 Grundlagen' / 'Wortprobe.docx').exists(), r.stderr
+            with zipfile.ZipFile(fall_n / '06 Entwürfe' / 'Wortprobe.docx') as zf: assert 'Text mitSeitenvorschub.' in zf.read('word/document.xml').decode()
+            ok('Word-Erzeuger (AUDIT-009): vorhandene Datei nur mit --ersetzen, nie in einen Originalbereich, Steuerzeichen entfernt')
+
         ergebnis = {'bestanden': len(bestanden), 'punkte': bestanden, 'ordner': str(base) if behalten else ''}
         (base / 'Ergebnis.json').write_text(json.dumps(ergebnis, ensure_ascii=False, indent=2), encoding='utf-8')
         fertig = True
@@ -1133,7 +1222,7 @@ def run(behalten=False):
         if laufzeit.exists(): laufzeit.unlink()
         # Aufräumen (02.10.2026): Jeder Lauf ließ seinen Ordner und die Sperrdatei seiner Instanz liegen. Nach einem
         # bestandenen Lauf ist beides entbehrlich; nach einem Abbruch bleibt der Ordner, damit man nachsehen kann.
-        sperre = Path(tempfile.gettempdir()) / f'aka-recht-{instanz}.lock'
+        sperre = laufzeit_ordner / f'{instanz}.lock'
         if fertig and not behalten:
             def _schreibbar(funktion, pfad, _fehler):   # eingefrorene Kopien sind nur lesbar; unter Windows lassen sie sich sonst nicht entfernen
                 os.chmod(pfad, 0o700); funktion(pfad)

@@ -388,7 +388,7 @@ const FALL = {
     const nat = s => String(s).replace(/\d+/g, m => m.padStart(5, '0'));
     const anl = dokListe().filter(d => d.anlage).sort((a, b) => nat(a.anlage).localeCompare(nat(b.anlage)));
     const bew = dokListe().filter(d => d.gruppe === '05 Beweise');
-    const inhalt = `<section class="tafel"><h2>${esc(t('anl.verzeichnis'))}</h2><p class="untertitel u-mb10">${esc(t('anl.verzeichnis_text'))}</p>${anl.length ? `<table class="tabelle"><thead><tr><th>${esc(t('anl.sp_anlage'))}</th><th>${esc(t('anl.sp_dokument'))}</th><th>${esc(t('anl.sp_datum'))}</th><th>${esc(t('anl.sp_stand'))}</th></tr></thead><tbody>${anl.map(d => `<tr class="klick" data-dok-link="${esc(d.id)}"><td><b>${esc(d.anlage)}</b></td><td>${esc(d.titel)}<br><small>${esc(d.id)} · ${esc(d.pfad)}</small></td><td>${esc(datum(d.datum))}</td><td>${badge(d.stand, statusTon(d.stand))}</td></tr>`).join('')}</tbody></table>` : `<p class="untertitel u-m0">${esc(t('anl.keine'))}</p>`}</section>
+    const inhalt = `<section class="tafel"><h2>${esc(t('anl.verzeichnis'))}</h2><p class="untertitel u-mb10">${esc(t('anl.verzeichnis_text'))}</p>${anl.length ? `<table class="tabelle"><thead><tr><th>${esc(t('anl.sp_anlage'))}</th><th>${esc(t('anl.sp_dokument'))}</th><th>${esc(t('anl.sp_datum'))}</th><th>${esc(t('anl.sp_stand'))}</th></tr></thead><tbody>${anl.map(d => `<tr class="klick" data-dok-link="${esc(d.id)}" tabindex="0"><td><b>${esc(d.anlage)}</b></td><td>${esc(d.titel)}<br><small>${esc(d.id)} · ${esc(d.pfad)}</small></td><td>${esc(datum(d.datum))}</td><td>${badge(d.stand, statusTon(d.stand))}</td></tr>`).join('')}</tbody></table>` : `<p class="untertitel u-m0">${esc(t('anl.keine'))}</p>`}</section>
       <section class="tafel"><h2>${esc(t('anl.beweise'))}</h2>${bew.length ? `<div class="raster drei">${bew.map(d => `<article class="karte"><span class="kennung">${esc(d.id)}</span><h2 class="u-fs95"><a href="${fallLink(fallId(), 'dokumente', d.id)}">${esc(d.titel)}</a></h2><p>${esc(d.pfad)}</p></article>`).join('')}</div>` : `<p class="untertitel u-m0">${esc(t('anl.keine_beweise'))}</p>`}</section>`;
     return [t('anl.titel'), '', inhalt, ''];
   },
@@ -669,7 +669,7 @@ document.addEventListener('click', async e => {
     else toast(t('allg.unbekannte_aktion', {aktion: a}), true);   // still nichts tun war F01 aus dem Prüfbericht
   } catch (err) { toast(err.message, true); }
 });
-document.addEventListener('keydown', e => { if (e.target.id === 'personen-suche' && e.key === 'Enter') { e.preventDefault(); return; } const z = e.target.closest && e.target.closest('[data-dok]'); if (z && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); z.click(); } if ((e.metaKey || e.ctrlKey) && e.key === 'k' && $('#dok-suche')) { e.preventDefault(); $('#dok-suche').focus(); } });
+document.addEventListener('keydown', e => { if (e.target.id === 'personen-suche' && e.key === 'Enter') { e.preventDefault(); return; } const z = e.target.closest && e.target.closest('[data-dok], [data-dok-link]');   /* Anlagenzeilen auch per Tastatur (AUDIT-013) */ if (z && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); z.click(); } if ((e.metaKey || e.ctrlKey) && e.key === 'k' && $('#dok-suche')) { e.preventDefault(); $('#dok-suche').focus(); } });
 let suchTimer;
 document.addEventListener('input', e => {
   if (e.target.closest('#formular') && e.target.id !== 'personen-suche') dialogVeraendert = true;

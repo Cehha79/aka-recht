@@ -75,17 +75,20 @@ AKA Recht does not replace legal advice.
 
 <div align="justify">
 
-Product version 0.4 of 18.09.2026, latest state of 04.10.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · tested with Python 3.14.7 on macOS 26.7.1, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz
+Product version 0.4 of 18.09.2026, latest state of 08.10.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · tested with Python 3.14.7 on macOS 26.7.1, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz
 
 ## New since version 0.4
 
-These points are in the latest state of 04.10.2026, not yet in the fixed version 0.4. If you download the fixed version from the release page, you get them with the next version. Tested with the test suite (77 checks) and in the UI on macOS, Linux and Windows.
+These points are in the latest state of 08.10.2026, not yet in the fixed version 0.4. If you download the fixed version from the release page, you get them with the next version. Up to the state of 4 Oct 2026 tested with the test suite (77 checks) and in the UI on macOS, Linux and Windows; the changes of 8 Oct 2026 (test suite with 82 checks) so far only on macOS.
 
 - **Timeline as a time path:** other parties on the left, your own steps on the right, time in the middle; key events, a colour per group, "reply to" with the interval, your own event type next to the usual list.
 - **Parties with role and function:** The role assigns the group and decides side and colour in the timeline; the function says in your own words who someone is, such as "lawyer of the opposing party".
 - **Drafts:** The version number follows the text: unchanged text keeps its number when the status changes, changed text gets a new one. A draft can be renamed (`entwurf_setzen`).
 - **Inventory:** Tools that create a file themselves give an id only to that file; other new files stay unregistered until you call `bestand_abgleichen`.
-- **Backup:** The restore test reports separately whether the archive is complete and whether every case file meets all rules of the data model.
+- **Backup:** The restore test reports separately whether the archive is complete and whether every case file meets all rules of the data model. A second target is empty out of the box: whether a backup goes to a cloud folder is your choice in the settings.
+- **Your own texts are not originals:** What an AI creates with `datei_ablegen` gets the status draft or memo, also in the inbox. The handover package does not take such texts as originals; for the opposing party it contains neither the case title nor your own document titles.
+- **More reliable when used in parallel:** UI, command line and AI can create cases and save settings at the same time without a case dropping out of the list; a case folder without an entry is reported at session start. A typo in a document id no longer registers other files.
+- **Protection:** A Python version before 3.12 is reported clearly at start instead of parts failing silently. The Word generator does not overwrite an existing file (`--ersetzen` for a deliberate new version) and never writes into the original areas. Old Office files (`.doc`, `.xls`, `.ppt`) are only shown in the file manager. Lock and runtime files live in a folder of their own for the user.
 - **Session start:** The hook message states its time; symbolic links in the inbox do not count as mail.
 - **Legal content:** A check makes sure that every reference in the fact sheets, the source catalogue and the templates points to an official source.
 
@@ -154,8 +157,9 @@ no outside access.
 ## Requirements
 
 - Python 3.12 or newer (`python3 --version`). Tested with 3.12.3 on Ubuntu and
-  3.14.7 on macOS and Windows; older versions are untested. No other
-  packages.
+  3.14.7 on macOS and Windows; AKA Recht reports an older version at
+  start. No other packages.
+- Tested on 8 Oct 2026 on macOS only: test suite with 82 checks.
 - Tested on 2 Oct 2026 on macOS, Linux and Windows: test suite with 77 checks
   and the UI.
 - Tested on 18 Sep 2026 on macOS 26.7, on Ubuntu 24.04 (Python 3.12) and on
@@ -441,8 +445,10 @@ restart Claude Desktop.
 
 <div align="justify">
 
-Writing tools only run when you confirm the call. There are no tools for
-sending, deleting or changing originals.
+Writing tools only run with confirmation. In the end the AI sets that
+confirmation itself; the real lock is the approval in your assistant. So do
+not approve AKA Recht's writing tools permanently ("always allow"); look at
+each call. There are no tools for sending, deleting or changing originals.
 
 ### What actually works in which assistant
 
@@ -738,8 +744,9 @@ Every case gets the same folders so that references stay stable:
 └─ 08 Archiv/         old overviews, unchanged
 ```
 
-Originals in 02 to 05 and 08 are never changed, renamed or deleted; a hook
-blocks that for the AI. New texts go to 06, memos to 07.
+Originals in 02 to 05 and 08 are never changed, renamed or deleted; in Claude
+Code a hook blocks the AI's file-writing tools there, shell commands are not
+covered. New texts go to 06, memos to 07.
 
 ## Tools
 
@@ -794,7 +801,7 @@ change to `akte.json` is validated against the data model and saved with a revis
 | `bestand_abgleichen` | writes | Sync the inventory of a case with its files: new files get an id, moved files are found by checksum; the only way new files are registered |
 | `dokument_ordnen` | writes | Change metadata of a document (title, date, kind, state, topics, exhibit, persons, references, note, reading quality); the file stays untouched |
 | `dokument_verschieben` | writes | File a document into another section; id and content stay, nothing is overwritten |
-| `datei_ablegen` | writes | Create a text file in a case (note, memo or draft), only in 01 Eingang, 06 Entwürfe or 07 Recherche; never overwrites and registers the file with a D id |
+| `datei_ablegen` | writes | Create a text file in a case (note, memo or draft), only in 01 Eingang, 06 Entwürfe or 07 Recherche; never overwrites and registers the file with a D id; status draft in 06, otherwise memo, never original |
 | `journal_schreiben` | writes | Append an entry to the case journal |
 | `sicherung_erstellen` | writes | Create a verified ZIP backup of the whole folder, with a copy to the second target |
 | `sicherung_probe` | writes | Restore test: extract the last backup into a scratch folder, check case files against the schema and all files against their checksums, remove the scratch folder; "bestanden" tells whether the archive is complete and unchanged, schema issues of a case file are listed separately |
@@ -982,7 +989,8 @@ Without the UI: `--check` verifies the inventory, `--backup` backs up,
 
 Three levels that are not the same: the folder lives on your computer. If a
 backup target is in iCloud Drive or another cloud folder, the operating
-system uploads the unencrypted ZIP there. And whatever your AI reads is
+system uploads the unencrypted ZIP there. A second target is empty out of
+the box; whether one goes to the cloud is your choice in the settings. And whatever your AI reads is
 processed by its provider under its terms; a local MCP server does not change that.
 
 ## Scope

@@ -52,10 +52,11 @@ def main(argv):
             args[k] = v
     if not store.eingerichtet(): print('Hinweis: zentrale.json fehlt, die Mappe ist noch nicht eingerichtet (Start.command einmal ausführen).', file=sys.stderr)
     try:
-        erg = werkzeuge.ausfuehren(name, args, bestaetigt=True)
+        erg = werkzeuge.ausfuehren(name, args, bestaetigt=True, weg='cli.py')
     except Exception as e:
         print(json.dumps({'fehler': str(e)}, ensure_ascii=False)); return 1
     print(json.dumps(erg, ensure_ascii=False, indent=2)); return 0
 
 if __name__ == '__main__':
+    if store.python_hinweis(): print(store.python_hinweis(), file=sys.stderr); sys.exit(1)
     sys.exit(main(sys.argv))

@@ -15,10 +15,14 @@ from pathlib import Path
 import store
 
 HASH_CACHE = {}
+HASH_CACHE_GRENZE = 20000   # Einträge; alte Stände (andere Zeit oder Größe) sammelten sich im Dauerdienst sonst ohne Ende an
 
 def sha_datei(p):
+    """Prüfsumme in Blöcken gelesen, nicht die ganze Datei im Speicher (AUDIT-011, 08.10.2026)."""
     s = p.stat(); k = (str(p), s.st_mtime_ns, s.st_size)
-    if k not in HASH_CACHE: HASH_CACHE[k] = hashlib.sha256(p.read_bytes()).hexdigest()
+    if k not in HASH_CACHE:
+        if len(HASH_CACHE) >= HASH_CACHE_GRENZE: HASH_CACHE.clear()
+        with open(p, 'rb') as f: HASH_CACHE[k] = hashlib.file_digest(f, 'sha256').hexdigest()
     return HASH_CACHE[k]
 
 def lese(ordner):
@@ -124,7 +128,7 @@ def pruefen(ordner):
     return {'geprueft': geprueft, 'veraendert': veraendert, 'fehlend': fehlend,
             'hinweis': 'Eine Prüfsumme belegt Gleichheit mit dem registrierten Stand, nicht Echtheit oder Beweiskraft.'}
 
-def verschieben(ordner, kennung, zielgruppe, unterordner=''):
+def verschieben(ordner, kennung, zielgruppe, unterordner='', weg='Oberfläche'):
     """Verschiebt eine Datei innerhalb der Fallordner. Kennung bleibt, nichts wird überschrieben."""
     ordner = Path(ordner)
     if zielgruppe not in store.GRUPPEN: raise ValueError('Ziel muss einer der Aktenbereiche 01 bis 08 sein.')
@@ -142,7 +146,7 @@ def verschieben(ordner, kennung, zielgruppe, unterordner=''):
         if ziel.exists(): raise ValueError('Am Ziel liegt schon eine gleichnamige Datei. Es wird nichts überschrieben.')
         zielordner.mkdir(parents=True, exist_ok=True)
         quelle.rename(ziel); neu = ziel.relative_to(ordner).as_posix()
-        daten['verschiebungen'].append({'id': kennung, 'von': e['pfad'], 'nach': neu, 'zeit': datetime.now().isoformat(timespec='seconds'), 'weg': 'Oberfläche'})
+        daten['verschiebungen'].append({'id': kennung, 'von': e['pfad'], 'nach': neu, 'zeit': datetime.now().isoformat(timespec='seconds'), 'weg': weg})   # weg: Zugang des Aufrufs (AUDIT-019)
         e['pfad'] = neu
         store.atomar(ordner / 'bestand.json', json.dumps(daten, ensure_ascii=False, indent=2) + '\n')
         return neu

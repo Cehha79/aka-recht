@@ -32,7 +32,7 @@ CSP = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' d
 CSP_ROH = "sandbox allow-scripts; default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; script-src 'unsafe-inline'; frame-ancestors 'self'"
 PLATZHALTER = '<!doctype html><html lang="de"><meta charset="utf-8"><title>AKA Recht</title><body style="font-family:-apple-system,sans-serif;padding:40px"><h1>AKA Recht, Dienst läuft</h1><p>Die Oberfläche (Stufe 4) ist noch nicht gebaut. Die Schnittstelle ist unter /api/… erreichbar, der Werkzeugkatalog unter /api/werkzeuge.</p></body></html>'
 
-def laufzeitdatei(): return Path(tempfile.gettempdir()) / f'aka-recht-dienst-{store.instanz()}.json'
+def laufzeitdatei(): return store.laufzeit_ordner() / f'dienst-{store.instanz()}.json'   # eigener Ordner, 0700 (AUDIT-007)
 def cookie_name(): return 'aka_' + store.instanz()
 
 class Handler(BaseHTTPRequestHandler):
@@ -150,22 +150,22 @@ class Handler(BaseHTTPRequestHandler):
             if pfad == '/api/sicherung': self.antwort(200, sicherung.erstellen()); return
             if pfad == '/api/sicherung/probe': self.antwort(200, sicherung.probe(daten.get('archiv') or None)); return
             if pfad == '/api/einstellungen':
-                z = store.lade_zentrale()
-                for k in ('ziel', 'zweites_ziel'):
-                    if k in daten.get('sicherung', {}): z['sicherung'][k] = daten['sicherung'][k]
+                # Erst alles prüfen, dann in einem Zug unter Sperre auf den frischen Stand anwenden (AUDIT-001)
+                sicherung_neu = {k: daten['sicherung'][k] for k in ('ziel', 'zweites_ziel') if k in daten.get('sicherung', {})}
+                einstellungen_neu = {}
                 land = str(daten.get('einstellungen', {}).get('feiertagsland', '') or '').upper()
                 if land:
                     if land not in fristen.LAENDER: self.antwort(400, {'fehler': 'Unbekanntes Bundesland.'}); return
-                    z['einstellungen']['feiertagsland'] = land
+                    einstellungen_neu['feiertagsland'] = land
                 sprache = str(daten.get('einstellungen', {}).get('sprache', '') or '').lower()
                 if sprache:
                     if sprache not in store.sprachen(): self.antwort(400, {'fehler': 'Unbekannte Sprache: ' + sprache + '. Vorhanden: ' + ', '.join(store.sprachen())}); return
-                    z['einstellungen']['sprache'] = sprache
+                    einstellungen_neu['sprache'] = sprache
                 ab = daten.get('einstellungen', {}).get('absender')
-                if isinstance(ab, dict):   # Absender: nur Text je Feld, einzeilig, bleibt in zentrale.json auf diesem Rechner
-                    for k in store.ABSENDER_FELDER:
-                        if k in ab: z['einstellungen']['absender'][k] = ' '.join(str(ab[k] or '').split())[:200]
-                store.speichere_zentrale(z)
+                absender_neu = {k: ' '.join(str(ab[k] or '').split())[:200] for k in store.ABSENDER_FELDER if k in ab} if isinstance(ab, dict) else {}   # nur Text je Feld, einzeilig, bleibt auf diesem Rechner
+                def anwenden(z):
+                    z['sicherung'].update(sicherung_neu); z['einstellungen'].update(einstellungen_neu); z['einstellungen']['absender'].update(absender_neu)
+                store.zentrale_aendern(anwenden)
                 self.antwort(200, {'ok': True}); return
             self.antwort(404, {'fehler': 'Nicht gefunden.'})
         except RuntimeError as e: self.antwort(409, {'fehler': str(e)})
@@ -213,7 +213,7 @@ def starten(oeffnen=True, fall=None):
     with store.sperre():
         d = laeuft()
         if not d:
-            protokoll = Path(tempfile.gettempdir()) / f'aka-recht-dienst-{store.instanz()}.log'
+            protokoll = store.laufzeit_ordner() / f'dienst-{store.instanz()}.log'
             befehl = [sys.executable, str(Path(__file__).resolve()), '--root', str(store.ROOT), '--serve']
             with protokoll.open('ab') as f: subprocess.Popen(befehl, stdin=subprocess.DEVNULL, stdout=f, stderr=f, start_new_session=True)
             for _ in range(80):
@@ -228,6 +228,7 @@ def starten(oeffnen=True, fall=None):
     print('AKA Recht läuft lokal. Dieses Fenster kann geschlossen werden.\nOrdner: ' + str(store.ROOT)); return d
 
 if __name__ == '__main__':
+    if store.python_hinweis(): print(store.python_hinweis(), file=sys.stderr); sys.exit(1)
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--root', type=Path, default=store.ROOT)
     p.add_argument('--serve', action='store_true'); p.add_argument('--port', type=int, default=0)
@@ -241,7 +242,7 @@ if __name__ == '__main__':
     elif a.restore:
         b = sicherung.wiederherstellen(a.restore[0], a.restore[1]); print(json.dumps(b, ensure_ascii=False, indent=2)); sys.exit(0 if b.get('bestanden') else 1)
     elif a.check:
-        erg = {'faelle': [werkzeuge.bestand_pruefen(f['id']) for f in store.faelle()]}
-        print(json.dumps(erg, ensure_ascii=False, indent=2)); sys.exit(0 if all(not f['veraendert'] and not f['fehlend'] for f in erg['faelle']) else 1)
+        erg = {'faelle': [werkzeuge.bestand_pruefen(f['id']) for f in store.faelle()], 'verwaist': store.verwaiste_faelle()}
+        print(json.dumps(erg, ensure_ascii=False, indent=2)); sys.exit(0 if all(not f['veraendert'] and not f['fehlend'] for f in erg['faelle']) and not erg['verwaist'] else 1)
     elif a.backup: print(json.dumps(sicherung.erstellen(), ensure_ascii=False, indent=2))
     else: starten(not a.no_open, a.fall)

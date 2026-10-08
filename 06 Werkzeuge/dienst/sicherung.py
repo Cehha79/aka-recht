@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Geprüfte ZIP-Sicherung des ganzen Projekts an ein Ziel außerhalb, optional
-mit Kopie an ein zweites Ziel (zum Beispiel iCloud Drive).
+mit Kopie an ein zweites Ziel (ab Werk leer, in den Einstellungen wählbar).
 
 Ablauf: ZIP schreiben (Endung .unvollstaendig), ZIP lesen und jede Datei mit
 dem Arbeitsstand vergleichen, umbenennen, SHA-256-Datei daneben schreiben,
@@ -17,13 +17,26 @@ räumt ihn wieder ab. Nur Standardbibliothek.
 import hashlib, json, shutil, sys, tempfile, uuid, zipfile
 from datetime import datetime
 from pathlib import Path
-import store
+import bestand, store
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import akte_schema
 
 AUSGESCHLOSSEN = {'__pycache__', '.DS_Store', '.git'}
 
 def sha(daten): return hashlib.sha256(daten).hexdigest()
+
+_SHA_PFAD = {}
+def sha_pfad(p):
+    """Prüfsumme einer Datei in Blöcken gelesen; derselbe Stand (Zeit, Größe) wird nicht erneut gerechnet. Vorher las die
+    Sicherung jede Datei ganz in den Speicher, der Status bei jedem Laden der Oberfläche das ganze Archiv (AUDIT-011)."""
+    p = Path(p); s = p.stat(); k = (str(p), s.st_mtime_ns, s.st_size)
+    if k not in _SHA_PFAD:
+        if len(_SHA_PFAD) > 100: _SHA_PFAD.clear()
+        with open(p, 'rb') as f: _SHA_PFAD[k] = hashlib.file_digest(f, 'sha256').hexdigest()
+    return _SHA_PFAD[k]
+
+def sha_eintrag(zf, name):
+    with zf.open(name) as f: return hashlib.file_digest(f, 'sha256').hexdigest()
 
 def _dateien(root):
     return [p for p in sorted(root.rglob('*')) if p.is_file() and not p.is_symlink()
@@ -40,14 +53,19 @@ def erstellen(root=None, ziel=None, zweites_ziel=None):
     name = datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '_' + uuid.uuid4().hex[:6] + '_Recht.zip'
     fertig = ziel / name; vorlaeufig = ziel / (name + '.unvollstaendig')
     eintraege = _dateien(root)
-    with zipfile.ZipFile(vorlaeufig, 'x', zipfile.ZIP_DEFLATED) as zf:
-        for p in eintraege: zf.write(p, p.relative_to(root).as_posix())   # immer Schrägstrich, auch unter Windows
-    vorlaeufig.chmod(0o600)
-    with zipfile.ZipFile(vorlaeufig) as zf:
-        if zf.testzip(): raise RuntimeError('ZIP-Prüfung fehlgeschlagen; keine fertige Sicherung gemeldet.')
-        for p in eintraege:
-            if sha(zf.read(p.relative_to(root).as_posix())) != sha(p.read_bytes()): raise RuntimeError('Datei während der Sicherung verändert: ' + p.relative_to(root).as_posix())
-    vorlaeufig.rename(fertig); pruefsumme = sha(fertig.read_bytes())
+    try:
+        with zipfile.ZipFile(vorlaeufig, 'x', zipfile.ZIP_DEFLATED) as zf:
+            for p in eintraege: zf.write(p, p.relative_to(root).as_posix())   # immer Schrägstrich, auch unter Windows
+        vorlaeufig.chmod(0o600)
+        with zipfile.ZipFile(vorlaeufig) as zf:
+            if zf.testzip(): raise RuntimeError('ZIP-Prüfung fehlgeschlagen; keine fertige Sicherung gemeldet.')
+            for p in eintraege:
+                if sha_eintrag(zf, p.relative_to(root).as_posix()) != bestand.sha_datei(p): raise RuntimeError('Datei während der Sicherung verändert: ' + p.relative_to(root).as_posix())
+    except BaseException:
+        # Die vorläufige ZIP enthält alle Akten, ungeprüft; sie bleibt nicht am Ziel liegen (AUDIT-012, 08.10.2026)
+        if vorlaeufig.exists(): vorlaeufig.unlink()
+        raise
+    vorlaeufig.rename(fertig); pruefsumme = sha_pfad(fertig)
     (fertig.with_suffix('.zip.sha256')).write_text(pruefsumme + '  ' + fertig.name + '\n', encoding='utf-8')
     ergebnis = {'pfad': str(fertig), 'sha256': pruefsumme, 'dateien': len(eintraege), 'groesse': fertig.stat().st_size,
                 'zeit': datetime.now().isoformat(timespec='seconds'), 'zweites_ziel': None, 'zweites_ziel_hinweis': ''}
@@ -56,11 +74,11 @@ def erstellen(root=None, ziel=None, zweites_ziel=None):
             zweites.mkdir(parents=True, exist_ok=True); kopie = zweites / fertig.name
             shutil.copyfile(fertig, kopie); shutil.copyfile(fertig.with_suffix('.zip.sha256'), kopie.with_suffix('.zip.sha256'))
             kopie.chmod(0o600); kopie.with_suffix('.zip.sha256').chmod(0o600)   # copyfile überträgt keine Rechte (F20)
-            if sha(kopie.read_bytes()) != pruefsumme: raise RuntimeError('Kopie am zweiten Ziel weicht ab: ' + str(kopie))
+            if sha_pfad(kopie) != pruefsumme: raise RuntimeError('Kopie am zweiten Ziel weicht ab: ' + str(kopie))
             ergebnis['zweites_ziel'] = str(kopie)
         else:
-            ergebnis['zweites_ziel_hinweis'] = f'Zweites Ziel nicht erreichbar: {zweites.parent} fehlt (iCloud Drive nicht eingerichtet?).'
-    z = store.lade_zentrale(); z['sicherung']['letzte'] = ergebnis; store.speichere_zentrale(z)
+            ergebnis['zweites_ziel_hinweis'] = f'Zweites Ziel nicht erreichbar: {zweites.parent} fehlt (Laufwerk nicht angeschlossen oder Cloud-Ordner nicht eingerichtet?).'
+    store.zentrale_aendern(lambda z: z['sicherung'].__setitem__('letzte', ergebnis))   # unter Sperre, frischer Stand (AUDIT-001)
     return ergebnis
 
 def rechte_zurueck(zf, ziel):
@@ -102,10 +120,10 @@ def status():
              'ziel_hinweis': _cloud_hinweis(z['sicherung'].get('ziel', '')), 'zweites_ziel_hinweis_cloud': _cloud_hinweis(z['sicherung'].get('zweites_ziel', ''))}
     if not l: return {'vorhanden': False, **ziele}
     p = Path(l['pfad']); vorhanden = p.is_file()
-    erg = {**l, **ziele, 'vorhanden': vorhanden, 'unveraendert': vorhanden and p.stat().st_size == l['groesse'] and sha(p.read_bytes()) == l['sha256']}
+    erg = {**l, **ziele, 'vorhanden': vorhanden, 'unveraendert': vorhanden and p.stat().st_size == l['groesse'] and sha_pfad(p) == l['sha256']}
     if l.get('zweites_ziel'):
         k = Path(l['zweites_ziel']); erg['zweites_ziel_vorhanden'] = k.is_file()
-        erg['zweites_ziel_unveraendert'] = k.is_file() and k.stat().st_size == l['groesse'] and sha(k.read_bytes()) == l['sha256']
+        erg['zweites_ziel_unveraendert'] = k.is_file() and k.stat().st_size == l['groesse'] and sha_pfad(k) == l['sha256']
     return erg
 
 def wiederherstellen(archiv, zielordner, erwartete_pruefsumme=None):
@@ -116,7 +134,7 @@ def wiederherstellen(archiv, zielordner, erwartete_pruefsumme=None):
     if ziel == root or root in ziel.parents or ziel in root.parents: raise ValueError('Der Prüfordner muss außerhalb des Projekts liegen.')
     if ziel.exists() and any(ziel.iterdir()): raise ValueError(f'Der Prüfordner ist nicht leer: {ziel}. Nichts wird überschrieben.')
     bericht = {'archiv': str(archiv), 'ordner': str(ziel), 'pruefsummendatei': None, 'dateien': 0, 'faelle': [], 'fehler': [], 'aktenfehler': []}
-    inhalt = archiv.read_bytes(); pruefsumme = sha(inhalt)
+    pruefsumme = sha_pfad(archiv)
     sha_datei = archiv.with_suffix('.zip.sha256')
     if sha_datei.is_file():
         bericht['pruefsummendatei'] = sha_datei.read_text('utf-8').split()[0] == pruefsumme
@@ -142,7 +160,7 @@ def wiederherstellen(archiv, zielordner, erwartete_pruefsumme=None):
         for k, e in bestand.get('dateien', {}).items():
             p = ordner / e['pfad']
             if not p.is_file(): fall['fehlend'].append(k)
-            elif sha(p.read_bytes()) != e.get('sha256'): fall['veraendert'].append(k)   # sha256 = zuletzt gesehener Stand vor der Sicherung
+            elif sha_pfad(p) != e.get('sha256'): fall['veraendert'].append(k)   # sha256 = zuletzt gesehener Stand vor der Sicherung
             else: fall['geprueft'] += 1
         bericht['faelle'].append(fall)
         # Die Probe trennt beides (02.10.2026): Nach einem Update meldete sie „nicht bestanden“, obwohl das Archiv vollständig

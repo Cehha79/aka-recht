@@ -75,17 +75,20 @@ AKA Recht ersetzt keine Rechtsberatung.
 
 <div align="justify">
 
-Produkt Version 0.4 vom 18.09.2026, neuester Stand vom 04.10.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · geprüft mit Python 3.14.7 auf macOS 26.7.1, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
+Produkt Version 0.4 vom 18.09.2026, neuester Stand vom 08.10.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · geprüft mit Python 3.14.7 auf macOS 26.7.1, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
 
 ## Neu seit Version 0.4
 
-Diese Punkte stehen im neuesten Stand vom 04.10.2026, noch nicht in der festen Version 0.4. Wer die feste Version von der Release-Seite lädt, bekommt sie mit der nächsten Version. Geprüft mit dem Funktionstest (77 Prüfpunkte) und in der Oberfläche auf macOS, Linux und Windows.
+Diese Punkte stehen im neuesten Stand vom 08.10.2026, noch nicht in der festen Version 0.4. Wer die feste Version von der Release-Seite lädt, bekommt sie mit der nächsten Version. Bis zum Stand vom 04.10.2026 geprüft mit dem Funktionstest (77 Prüfpunkte) und in der Oberfläche auf macOS, Linux und Windows; die Änderungen vom 08.10.2026 (Funktionstest mit 82 Prüfpunkten) bisher nur auf macOS.
 
 - **Chronologie als Zeitpfad:** links die anderen Stellen, rechts die eigenen Schritte, die Zeit in der Mitte; Kernereignisse, Farbe je Gruppe, Bezug „Antwort auf“ mit Abstand, eigene Art eines Ereignisses neben der Liste der üblichen.
 - **Beteiligte mit Rolle und Funktion:** Die Rolle ordnet der Gruppe zu und bestimmt Seite und Farbe in der Chronologie; die Funktion sagt in freien Worten, wer jemand ist, etwa „Rechtsanwalt der Gegenseite“.
 - **Entwürfe:** Die Fassungsnummer folgt dem Text: Unveränderter Text behält die Nummer, wenn sein Status wechselt, geänderter bekommt eine neue. Ein Entwurf lässt sich umbenennen (`entwurf_setzen`).
 - **Bestand:** Werkzeuge, die selbst eine Datei anlegen, geben nur dieser eine Kennung; andere neue Dateien bleiben unerfasst, bis du `bestand_abgleichen` aufrufst.
-- **Sicherung:** Die Wiederherstellungsprobe meldet getrennt, ob das Archiv vollständig ist und ob jede Akte alle Regeln des Datenmodells erfüllt.
+- **Sicherung:** Die Wiederherstellungsprobe meldet getrennt, ob das Archiv vollständig ist und ob jede Akte alle Regeln des Datenmodells erfüllt. Ein zweites Ziel ist ab Werk leer: Ob eine Sicherung in einen Cloud-Ordner geht, entscheidest du in den Einstellungen.
+- **Eigene Texte sind kein Original:** Was eine KI über `datei_ablegen` anlegt, bekommt den Stand Entwurf oder Vermerk, auch im Eingang. Das Übergabepaket nimmt solche Texte nicht als Original mit; für die Gegenseite stehen darin weder Falltitel noch eigene Dokumenttitel.
+- **Verlässlicher bei gleichzeitiger Arbeit:** Oberfläche, Befehlszeile und KI können gleichzeitig Fälle anlegen und Einstellungen speichern, ohne dass ein Fall aus dem Verzeichnis fällt; ein Fallordner ohne Eintrag wird beim Sitzungsstart gemeldet. Ein Tippfehler in einer Dokumentkennung registriert keine fremden Dateien mehr.
+- **Schutz:** Eine Python-Fassung vor 3.12 wird beim Start deutlich gemeldet, statt dass einzelne Teile still ausfallen. Der Word-Erzeuger überschreibt keine vorhandene Datei (`--ersetzen` für eine bewusste Neufassung) und schreibt nie in die Originalbereiche. Alte Office-Dateien (`.doc`, `.xls`, `.ppt`) werden nur im Dateimanager gezeigt. Sperr- und Laufzeitdateien liegen in einem eigenen Ordner des Benutzers.
 - **Sitzungsstart:** Die Meldung des Hooks nennt ihre Uhrzeit; Verknüpfungen im Eingang zählen nicht als Post.
 - **Rechtsinhalte:** Ein Prüflauf stellt sicher, dass alle Verweise der Merkblätter, des Quellenkatalogs und der Vorlagen auf amtliche Stellen zeigen.
 
@@ -154,8 +157,9 @@ Framework und braucht keinen Zugang nach außen.
 ## Voraussetzungen
 
 - Python 3.12 oder neuer (`python3 --version`). Geprüft mit 3.12.3 unter
-  Ubuntu und 3.14.7 unter macOS und Windows; ältere Fassungen sind
-  ungeprüft. Keine weiteren Pakete.
+  Ubuntu und 3.14.7 unter macOS und Windows; eine ältere Fassung meldet
+  AKA Recht beim Start. Keine weiteren Pakete.
+- Geprüft am 08.10.2026 nur auf macOS: Funktionstest mit 82 Prüfpunkten.
 - Geprüft am 02.10.2026 auf macOS, Linux und Windows: Funktionstest mit 77
   Prüfpunkten und die Oberfläche.
 - Geprüft am 18.09.2026 auf macOS 26.7, auf Ubuntu 24.04 (Python 3.12) und
@@ -446,7 +450,10 @@ Einstellungen, Entwickler, Konfiguration bearbeiten: Eintrag `aka-recht` mit
 
 <div align="justify">
 
-Schreibende Werkzeuge laufen nur, wenn du den Aufruf bestätigst. Werkzeuge
+Schreibende Werkzeuge laufen nur mit Bestätigung. Diese Bestätigung setzt
+am Ende die KI selbst; die eigentliche Sperre ist die Freigabe in deinem
+Assistenten. Schreibende Werkzeuge von AKA Recht dort deshalb nicht dauerhaft
+freigeben („immer erlauben“), sondern jeden Aufruf ansehen. Werkzeuge
 für Versand, Löschen oder Ändern von Originalen gibt es nicht.
 
 ### Was in welchem Assistenten wirklich läuft
@@ -751,7 +758,8 @@ Jeder Fall bekommt dieselben Ordner, damit Verweise stabil bleiben:
 ```
 
 Originale in 02 bis 05 und 08 werden nie verändert, umbenannt oder gelöscht;
-ein Hook sperrt das für die KI. Neue Texte entstehen in 06, Vermerke in 07.
+in Claude Code sperrt ein Hook die Schreibwerkzeuge der KI dort, Shell-Befehle
+deckt er nicht ab. Neue Texte entstehen in 06, Vermerke in 07.
 
 ## Werkzeuge
 
@@ -808,7 +816,7 @@ und mit Revision gespeichert.
 | `bestand_abgleichen` | schreibend | Bestand eines Falls mit den Dateien abgleichen: neue Dateien in 01 bis 08 bekommen eine Kennung, im Finder verschobene werden über die Prüfsumme wiedergefunden, fehlende Ordnungsangaben werden in der Akte ergänzt. Der einzige Weg, auf dem neue Dateien registriert werden. |
 | `dokument_ordnen` | schreibend | Ordnungsangaben eines Dokuments ändern (Titel, Datum, Art, Stand, Themen, Anlage, Personen, Verweise, Notiz, Textstand: direkt ausgelesen, OCR-erkannt, visuell geprüft, teilweise lesbar, nicht lesbar). Die Datei selbst bleibt unverändert. |
 | `dokument_verschieben` | schreibend | Datei in einen anderen Aktenbereich einsortieren. Kennung und Inhalt bleiben, nichts wird überschrieben. |
-| `datei_ablegen` | schreibend | Textdatei in einem Fall anlegen: Notiz, Vermerk oder Entwurf. Erlaubt sind nur 01 Eingang, 06 Entwürfe und 07 Recherche; die Originalbereiche 02 bis 05 und 08 bleiben gesperrt. Überschreibt nie eine vorhandene Datei und registriert die neue Datei anschließend im Bestand, sodass sie eine D-Kennung bekommt. |
+| `datei_ablegen` | schreibend | Textdatei in einem Fall anlegen: Notiz, Vermerk oder Entwurf. Erlaubt sind nur 01 Eingang, 06 Entwürfe und 07 Recherche; die Originalbereiche 02 bis 05 und 08 bleiben gesperrt. Überschreibt nie eine vorhandene Datei und registriert die neue Datei anschließend im Bestand, sodass sie eine D-Kennung bekommt. Stand: Entwurf in 06, sonst Vermerk, nie Original. |
 | `journal_schreiben` | schreibend | Eintrag an das Journal eines Falls anhängen. |
 | `sicherung_erstellen` | schreibend | Geprüfte ZIP-Sicherung des ganzen Projekts erstellen, mit Kopie an das zweite Ziel. |
 | `sicherung_probe` | schreibend | Wiederherstellungsprobe: die letzte Sicherung in einem Zwischenordner entpacken, Akten gegen das Schema und alle Dateien gegen die Prüfsummen prüfen, Zwischenordner wieder entfernen. „bestanden“ sagt, ob das Archiv vollständig und unverändert ist; erfüllt eine Akte eine Regel des Datenmodells nicht, steht das getrennt unter „aktenfehler“. Die Mappe bleibt unberührt. |
@@ -1000,7 +1008,9 @@ prüft die letzte Sicherung.
 
 Drei Ebenen, die nicht dasselbe sind: Die Mappe liegt auf deinem Rechner.
 Liegt ein Sicherungsziel in iCloud Drive oder einem anderen Cloud-Ordner,
-lädt das Betriebssystem die unverschlüsselte ZIP dorthin hoch. Und was deine
+lädt das Betriebssystem die unverschlüsselte ZIP dorthin hoch. Ein zweites
+Ziel ist ab Werk leer; ob eines in die Cloud geht, entscheidest du in den
+Einstellungen. Und was deine
 KI liest, verarbeitet deren Anbieter nach seinen Bedingungen; ein lokaler
 MCP-Server ändert daran nichts.
 

@@ -11,6 +11,9 @@ Empfänger und Umfang werden vorher festgelegt (Prüfbericht 16.09.2026, F08):
                            keine Fristen, keine Aufgaben, kein Journal, keine internen Angaben.
   --umfang voll|dokumente  überschreibt die Vorgabe des Empfängers
   --mit-journal, --mit-chronologie   einzelne Teile zum Umfang „dokumente“ dazunehmen
+  --titel-neutral          im Verzeichnis und Manifest ohne Falltitel und statt der eigenen
+                           Anzeigetitel nur Kennung, Anlage und Datum; für die Gegenseite immer
+                           (AUDIT-016, 08.10.2026)
 
 Vollständigkeit und Abschluss (F27): Jede mit --nur genannte Kennung muss existieren und ihre
 Datei vorhanden sein, sonst Abbruch ohne Paket. Das Paket wird zuerst als vorläufige Datei
@@ -36,6 +39,12 @@ from pathlib import Path
 
 EMPFAENGER = {'anwalt': 'voll', 'beratung': 'dokumente', 'behoerde': 'dokumente', 'gericht': 'dokumente', 'gegenseite': 'dokumente'}
 ORIGINALE = ['01 Eingang', '02 Grundlagen', '03 Schriftverkehr', '04 Verfahren', '05 Beweise']   # neue Post im Eingang ist Original
+EIGENE_STAENDE = ('Vermerk', 'Entwurf')
+
+def titel(d, args):
+    """Anzeigetitel sind freie Ordnungsangaben des Nutzers und können interne Wertungen tragen (AUDIT-016)."""
+    if not args.titel_neutral: return d['titel']
+    return f'Anlage {d["anlage"]}' if d.get('anlage') else 'Dokument'
 
 def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
@@ -51,12 +60,17 @@ def auswahl(daten, args):
         return [alle[k] for k in gewuenscht], []
     if args.umfang == 'dokumente': sys.exit('Abbruch: Umfang „dokumente“ braucht --nur mit den Kennungen, die der Empfänger bekommen soll.')
     gruppen = ORIGINALE + (['06 Entwürfe'] if args.mit_entwuerfen else [])
-    docs = [d for d in daten['dokumente'] if d['gruppe'] in gruppen]
+    # Eigene Texte (Stand Vermerk oder Entwurf) in den Originalbereichen, etwa über datei_ablegen im Eingang, sind keine
+    # Originale und kommen nur über --nur oder --mit-entwuerfen ins Paket (AUDIT-002, 08.10.2026)
+    eigene = [d for d in daten['dokumente'] if d['gruppe'] in ORIGINALE and d.get('stand') in EIGENE_STAENDE]
+    if eigene: print('Hinweis: eigene Texte in den Originalbereichen nicht im Paket (Stand Vermerk oder Entwurf, Aufnahme nur über --nur): ' + ', '.join(d['id'] for d in eigene))
+    docs = [d for d in daten['dokumente'] if d['gruppe'] in gruppen and (d not in eigene or (args.mit_entwuerfen and d.get('stand') == 'Entwurf'))]
     return [d for d in docs if not d['fehlt']], [d for d in docs if d['fehlt']]
 
 def verzeichnis(ak, docs, fehlend, args):
     f = ak['fall']; pers = {b['id']: b for b in ak['beteiligte']}
-    z = [f'# Übergabe {f["id"]} · {f["titel"]}', f'Stand: {date.today():%d.%m.%Y} · Empfänger: {args.empfaenger} · Umfang: {args.umfang}', '']
+    # auch der Falltitel ist eine eigene Bezeichnung des Nutzers (AUDIT-016)
+    z = [f'# Übergabe {f["id"]}' + ('' if args.titel_neutral else f' · {f["titel"]}'), f'Stand: {date.today():%d.%m.%Y} · Empfänger: {args.empfaenger} · Umfang: {args.umfang}', '']
     if args.umfang == 'voll':
         z += [f'Bereich: {f["bereich"]} · Rolle: {f["rolle"]} · Status: {f["status"]}', '', f'Ziel: {f["ziel"]}', '', '## Beteiligte']
         # Felder über .get: Akten, die die Oberfläche oder ältere Fassungen geschrieben haben, führen nicht jedes Feld
@@ -83,8 +97,8 @@ def verzeichnis(ak, docs, fehlend, args):
     if args.umfang == 'voll':
         z += ['', '## Fristen und Termine'] + [f'- {x["datum"]} {x["titel"]} · {x["art"]} · Prüfstatus {x["pruefstatus"]} · Auslöser: {x.get("ausloeser", "")} · Grundlage: {x.get("rechtsgrundlage", "")}' for x in sorted(ak['fristen'], key=lambda x: x['datum'])]
         z += ['', '## Offene Aufgaben'] + [f'- {x["titel"]}{" (fällig " + x["faellig"] + ")" if x.get("faellig") else ""}: {x.get("detail", "")}' for x in ak['aufgaben'] if not x.get('erledigt')]
-    z += ['', '## Anlagenverzeichnis'] + [f'- {d["anlage"]}: {d["titel"]} ({d["id"]})' for d in sorted((d for d in docs if d['anlage']), key=lambda d: d['anlage'])]
-    z += ['', '## Enthaltene Dokumente'] + [f'- {d["id"]} · {d["titel"]} · {d["datum"] or "ohne Datum"} · {d["stand"]}' for d in docs]
+    z += ['', '## Anlagenverzeichnis'] + [f'- {d["anlage"]}: {titel(d, args)} ({d["id"]})' for d in sorted((d for d in docs if d['anlage']), key=lambda d: d['anlage'])]
+    z += ['', '## Enthaltene Dokumente'] + [f'- {d["id"]} · {titel(d, args)} · {d["datum"] or "ohne Datum"}' + ('' if args.titel_neutral else f' · {d["stand"]}') for d in docs]
     if fehlend: z += ['', '## Nicht enthalten (Datei fehlt am registrierten Ort)'] + [f'- {d["id"]} · {d["titel"]} · {d["pfad"]}' for d in fehlend]
     z += ['', 'Hinweis: Zusammenstellung aus der lokalen Akte. Ordnungsangaben sind kein Nachweis von Zugang oder Einreichung. Entwürfe sind keine versandten Schreiben. Prüfsummen aller Dateien stehen in 00 Manifest.json.']
     return '\n'.join(z)
@@ -95,7 +109,9 @@ def main():
     a.add_argument('--nur', help='Dokumentkennungen, durch Komma getrennt'); a.add_argument('--ziel')
     a.add_argument('--mit-entwuerfen', action='store_true'); a.add_argument('--mit-journal', action='store_true'); a.add_argument('--mit-chronologie', action='store_true')
     a.add_argument('--vorschau', action='store_true', help='nur anzeigen, nichts schreiben')
+    a.add_argument('--titel-neutral', action='store_true', help='statt Anzeigetitel nur Kennung, Anlage und Datum')
     args = a.parse_args(); args.umfang = args.umfang or EMPFAENGER[args.empfaenger]
+    if args.empfaenger == 'gegenseite': args.titel_neutral = True
     root = Path(os.environ.get('CLAUDE_PROJECT_DIR') or Path(__file__).resolve().parents[3])
     sys.path.insert(0, str(root / '06 Werkzeuge/dienst')); import store, werkzeuge
     store.konfigurieren(root)
@@ -104,14 +120,17 @@ def main():
     docs, fehlend = auswahl(daten, args)
     if not docs: sys.exit('Abbruch: kein Dokument ausgewählt.')
     einzeln = args.umfang == 'dokumente' or bool(args.nur)
-    eintraege = [{'name': f'{d["id"]} {Path(d["pfad"]).name}' if einzeln else d['pfad'], 'dokument': d['id'], 'titel': d['titel'], 'stand': d['stand'],
+    eintraege = [{'name': f'{d["id"]} {Path(d["pfad"]).name}' if einzeln else d['pfad'], 'dokument': d['id'], 'titel': titel(d, args), 'stand': '' if args.titel_neutral else d['stand'],
                   'groesse': (ordner / d['pfad']).stat().st_size, 'sha256': sha(ordner / d['pfad'])} for d in docs]
     mit_journal = args.umfang == 'voll' or args.mit_journal
-    manifest = {'fall': f['id'], 'titel': f['titel'], 'empfaenger': args.empfaenger, 'umfang': args.umfang, 'erstellt': datetime.now().isoformat(timespec='seconds'),
+    manifest = {'fall': f['id'], 'titel': '' if args.titel_neutral else f['titel'], 'empfaenger': args.empfaenger, 'umfang': args.umfang, 'erstellt': datetime.now().isoformat(timespec='seconds'),
                 'journal': mit_journal and (ordner / 'JOURNAL.md').exists(), 'chronologie': args.umfang == 'voll' or args.mit_chronologie,
                 'dokumente': eintraege, 'nicht_enthalten_fehlend': [d['id'] for d in fehlend]}
     print(f'Paket für {args.empfaenger} ({args.umfang}): {len(eintraege)} Dokument(e)' + (', Journal' if manifest['journal'] else ', ohne Journal') + (', Chronologie' if manifest['chronologie'] else ', ohne Chronologie'))
     for e in eintraege: print(f'  {e["dokument"]} · {e["titel"]} · {e["stand"]} · {e["groesse"]} Bytes · {e["name"]}')
+    if args.umfang == 'dokumente' and not args.titel_neutral and args.empfaenger != 'anwalt':
+        print('Hinweis: Anzeigetitel und Stand stehen so im Paket. Enthalten sie eigene Wertungen, mit --titel-neutral nur Kennung, Anlage und Datum ausgeben.')
+    print('Dateinamen im Paket sind die Namen der Originaldateien.')
     if fehlend: print('  nicht enthalten, Datei fehlt: ' + ', '.join(d['id'] for d in fehlend))
     if args.vorschau: print('Vorschau, nichts geschrieben.'); return 0
     ziel = Path(args.ziel).expanduser() if args.ziel else Path.home() / 'Desktop' / f'AKA Recht Übergabe {f["id"]} {args.empfaenger} {date.today().isoformat()}.zip'

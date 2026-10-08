@@ -2,8 +2,12 @@
 """Erzeugt aus einem Entwurf (.md oder .txt) eine Word-Datei (.docx), ohne Fremdpaket.
 
 Aufruf:  python3 docx_erzeugen.py <Entwurf.md|.txt> [Ziel.docx]
+         python3 docx_erzeugen.py --ersetzen <Entwurf.md|.txt> [Ziel.docx]   vorhandene Word-Datei bewusst neu erzeugen
          python3 docx_erzeugen.py --pruefen <Entwurf.md|.txt>   nur der Vorabbericht, keine Datei (Exit 1 bei Befunden)
 Regeln:
+  - Ziel (seit 08.10.2026, App-Prüfung AUDIT-009): nie in die Originalbereiche 02 bis 05
+    und 08 eines Falls, nie unter Fassungen/; eine vorhandene Datei nur mit --ersetzen.
+    Steuerzeichen außer Zeilenumbruch und Tab werden entfernt.
   - Alles VOR der ersten Trennlinie (Zeile aus mindestens drei „---“ oder 20 „-“)
     sind interne Hinweise und werden nicht übernommen. Fehlt die Trennlinie,
     wird der ganze Text übernommen.
@@ -25,7 +29,7 @@ import sys
 for _strom in (sys.stdin, sys.stdout, sys.stderr):
     if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
-import re, zipfile
+import re, unicodedata, zipfile
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -42,7 +46,8 @@ def laeufe(text):
     return xml
 
 def absatz(text, art='', fett=False, nach=120):
-    ppr = f'<w:pPr>{f"<w:pStyle w:val=\"{art}\"/>" if art else ""}<w:spacing w:after="{nach}"/></w:pPr>'
+    stil = f'<w:pStyle w:val="{art}"/>' if art else ''   # außerhalb des f-Strings: Rückstrich dort erst ab Python 3.12 (AUDIT-004)
+    ppr = f'<w:pPr>{stil}<w:spacing w:after="{nach}"/></w:pPr>'
     if fett: text = f'**{text}**'
     return f'<w:p>{ppr}{laeufe(text)}</w:p>'
 
@@ -126,10 +131,26 @@ DOC_RELS = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationshi
             '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
             '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/></Relationships>')
 
-def erzeugen(quelle, ziel=None):
+STEUERZEICHEN = re.compile(r'[\x00-\x08\x0b\x0c\x0e-\x1f]')   # in XML 1.0 ungültig (etwa Seitenvorschub aus einer PDF)
+
+def zielfehler(ziel, ersetzen):
+    """Grund, warum nicht geschrieben wird, oder None (AUDIT-009, 08.10.2026). Nie in die Originalbereiche
+    02 bis 05 und 08 eines Falls, nie in eingefrorene Fassungen; eine vorhandene Datei nur mit --ersetzen."""
+    teile = [unicodedata.normalize('NFC', t) for t in ziel.resolve().parts]
+    for i, t in enumerate(teile):
+        if t in ('02 Fälle', '02 Faelle') and i + 3 < len(teile):
+            if re.match(r'^0[2-58] ', teile[i + 2]): return f'Ziel liegt im Originalbereich „{teile[i + 2]}“. Word-Dateien gehören nach 06 Entwürfe.'
+            if 'Fassungen' in teile[i + 3:-1]: return 'Ziel liegt unter Fassungen/: eingefrorene Fassungen werden nie überschrieben.'
+    if ziel.suffix.lower() != '.docx': return 'Ziel muss auf .docx enden.'
+    if ziel.exists() and not ersetzen: return f'{ziel.name} gibt es schon. Anderen Namen wählen oder mit --ersetzen bewusst neu erzeugen.'
+    return None
+
+def erzeugen(quelle, ziel=None, ersetzen=False):
     quelle = Path(quelle); ziel = Path(ziel) if ziel else quelle.with_suffix('.docx')
-    text = sendetext(quelle)
-    with zipfile.ZipFile(ziel, 'w', zipfile.ZIP_DEFLATED) as z:
+    grund = zielfehler(ziel, ersetzen)
+    if grund: raise ValueError(grund)
+    text = STEUERZEICHEN.sub('', sendetext(quelle))
+    with zipfile.ZipFile(ziel, 'w' if ersetzen else 'x', zipfile.ZIP_DEFLATED) as z:
         z.writestr('[Content_Types].xml', CONTENT_TYPES); z.writestr('_rels/.rels', RELS)
         z.writestr('word/_rels/document.xml.rels', DOC_RELS); z.writestr('word/document.xml', dokument_xml(text))
         z.writestr('word/styles.xml', STYLES); z.writestr('word/numbering.xml', NUMBERING)
@@ -140,9 +161,10 @@ def bericht(befunde):
     return 'Vorabbericht, vor Versand klären:\n' + '\n'.join(f'  - {b}' for b in befunde)
 
 if __name__ == '__main__':
-    args = [a for a in sys.argv[1:] if a != '--pruefen']
+    args = [a for a in sys.argv[1:] if a not in ('--pruefen', '--ersetzen')]
     if not args: sys.exit(__doc__)
     if '--pruefen' in sys.argv:
         befunde = vorpruefung(Path(args[0]).read_text('utf-8')); print(bericht(befunde)); sys.exit(1 if befunde else 0)
-    ziel, befunde = erzeugen(args[0], args[1] if len(args) > 1 else None)
+    try: ziel, befunde = erzeugen(args[0], args[1] if len(args) > 1 else None, '--ersetzen' in sys.argv)
+    except (ValueError, FileExistsError) as e: sys.exit(f'Keine Word-Datei geschrieben: {e}')
     print('Word-Datei:', ziel); print(bericht(befunde))

@@ -49,6 +49,9 @@ Akte, nicht vorausgesetzt.
    interne Notizen im Sendetext, fehlende Kopfzeilen Von, An, Datum, Betreff,
    Aktenzeichen, Anlagenliste, Antragssatz, fehlende Trennlinie); mit
    `--pruefen` nur der Bericht ohne Datei. Jeden Befund dem Nutzer nennen.
+   Eine vorhandene Word-Datei überschreibt das Skript nicht; nach einer
+   Überarbeitung des Entwurfs mit `--ersetzen` neu erzeugen. Ziele in den
+   Originalbereichen und unter `Fassungen/` lehnt es immer ab.
    Eine erzeugte Datei ist kein Nachweis der Versandfertigkeit; die Freigabe
    trifft der Nutzer (Schritt 4, `status=geprüft`).
 6. Setzt der Entwurf selbst eine Frist (Nacherfüllung, Antwort, Zahlung):

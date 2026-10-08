@@ -18,7 +18,10 @@ Lies `CLAUDE.md` und die Akte (`cli.py fall_lesen fall=$fall`).
    gewählten Dokumente und deren Verzeichnis, keine Chronologie, keine
    Fristen, kein Journal, keine internen Angaben (`--mit-journal`,
    `--mit-chronologie` nur auf ausdrücklichen Wunsch). Notizen und interne
-   Bewertungen sind nie im Paket.
+   Bewertungen sind nie im Paket. Eigene Texte mit Stand Vermerk oder Entwurf
+   in den Originalbereichen kommen nur über `--nur` hinein. Für die Gegenseite
+   stehen statt der Anzeigetitel nur Kennung, Anlage und Datum; für Behörde
+   und Gericht auf Wunsch mit `--titel-neutral`.
 2. Bestand prüfen: `cli.py bestand_pruefen fall=$fall` (liest nur). Fehlende,
    veränderte oder nicht erfasste Dateien dem Nutzer nennen, bevor etwas
    verschickt wird; nicht erfasste erst nach Freigabe mit
