@@ -105,7 +105,10 @@ const dokOptionen = (wert_, leer = t('allg.kein_dokument')) => opt(dokListe().ma
 const personOptionen = (wert_, leer = t('allg.keine_angabe')) => opt(akte().beteiligte.map(b => [b.id, `${b.id} · ${b.name}`]), wert_, leer);
 const personName = id => (akte().beteiligte.find(b => b.id === id) || {}).name || id;
 
+let seitenAnfrage = 0;
 async function render() {
+  const anfrage = ++seitenAnfrage;
+  ++vorschauAnfrage;   // Laufende Textantworten schon vor dem Laden einer anderen Seite verwerfen.
   S.route = routeLesen();
   try {
     if (!S.zentrale) await ladeZentrale();
@@ -119,6 +122,7 @@ async function render() {
   const fn = seiten[seite] || (S.fall ? FALL.uebersicht : ZENTRALE.home);
   $('#brotkrumen').textContent = S.fall ? `${fallId()} · ${wert(akte().fall.bereich)}`.toUpperCase() : t('app.brotkrumen');
   const [titel, untertitel, inhalt, aktionen] = await fn();
+  if (anfrage !== seitenAnfrage) return;   // Während einer langsamen Archivprüfung kann die Seite gewechselt werden.
   $('#seitentitel').textContent = titel;
   $('#kopf-aktionen').innerHTML = aktionen || '';
   $('#content').innerHTML = `<div class="seite">${untertitel ? `<p class="untertitel">${esc(untertitel)}</p>` : ''}${inhalt}</div>`;
@@ -197,7 +201,8 @@ const ZENTRALE = {
     return [t('quellen.titel'), t('quellen.untertitel'), inhalt, `<button class="knopf" data-aktion="finder" data-ort="quellen">${esc(t('quellen.katalog_dm', {dm: dm()}))}</button>`];
   },
   async bestand() {
-    const s = S.zentrale.sicherung;
+    const s = await api.get('/api/sicherung/status');   // Bewusst geöffnete Prüfseite: Archive frisch lesen.
+    S.zentrale.sicherung = s;
     const inhalt = `<section class="tafel"><div class="tafel-kopf"><h2>${esc(t('bestand.pruefen'))}</h2>${badge(t('bestand.manuell'))}</div><p class="untertitel u-mb10">${esc(t('bestand.pruefen_text'))}</p><button class="knopf primaer" data-aktion="bestand-pruefen">${esc(t('bestand.pruefung_starten'))}</button><div id="bestand-ergebnis"></div></section>
       <section class="tafel"><h2>${esc(t('bestand.sicherung'))}</h2><p class="untertitel">${esc(t('bestand.ziel', {ziel: s.ziel || '–'}))}${s.ziel_hinweis ? ' (' + esc(s.ziel_hinweis) + ')' : ''}<br>${esc(t('bestand.zweites_ziel', {ziel: s.zweites_ziel_eingestellt || t('bestand.keins')}))}${s.zweites_ziel_hinweis_cloud ? ' (' + esc(s.zweites_ziel_hinweis_cloud) + ')' : ''}<br>${esc(t('bestand.ebenen'))}</p>
       ${s.vorhanden ? `<p class="pfad">${esc(s.pfad)}</p><p class="untertitel">${esc(t('bestand.erstellt', {datum: datum(s.zeit), dateien: s.dateien, groesse: groesse(s.groesse)}))} · ${badge(t(s.unveraendert ? 'bestand.unveraendert' : 'bestand.veraendert'), s.unveraendert ? 'gruen' : 'rot')}${s.zweites_ziel ? `<br>${esc(t('bestand.kopie', {pfad: s.zweites_ziel}))} ${badge(t(s.zweites_ziel_unveraendert ? 'bestand.kopie_unveraendert' : 'bestand.kopie_veraendert'), s.zweites_ziel_unveraendert ? 'gruen' : 'rot')}` : ''}${s.zweites_ziel_hinweis ? `<br>${esc(s.zweites_ziel_hinweis)}` : ''}</p>` : `<div class="hinweis gelb">${esc(t('bestand.keine_sicherung'))}</div>`}
@@ -400,9 +405,11 @@ const FALL = {
 };
 
 // ---------------------------------------------------------------- Vorschau
+let vorschauAnfrage = 0;
 async function vorschau(zeigen) {
+  const anfrage = ++vorschauAnfrage, route = location.hash;
   const v = $('#vorschau'), b = $('#bereich');
-  if (!zeigen || !dok(S.auswahl)) { v.hidden = true; b.classList.remove('hat-vorschau', 'breit'); S.breit = false; return; }
+  if (!zeigen || !S.fall || !dok(S.auswahl)) { v.hidden = true; b.classList.remove('hat-vorschau', 'breit'); S.breit = false; return; }
   const d = dok(S.auswahl); v.hidden = false; b.classList.add('hat-vorschau'); b.classList.toggle('breit', S.breit);
   const tab = S.tab, id = fallId();
   const kopf = `<div class="vorschau-kopf"><div class="tafel-kopf"><span class="kennung">${esc(d.id)}${d.anlage ? ' · ' + esc(d.anlage) : ''}</span><button class="symbol" data-aktion="vorschau-zu" aria-label="${esc(t('vorschau.schliessen'))}">×</button></div><h2>${esc(d.titel)}</h2>
@@ -423,6 +430,9 @@ async function vorschau(zeigen) {
     const felder = [['pfad', d.pfad], ['datum', datum(d.datum) + ' ' + t('vorschau.f_datum_zusatz')], ['art', wert(d.art)], ['stand', wert(d.stand)], ['themen', d.themen.join(', ')], ['anlage', d.anlage], ['personen', d.personen.map(personName).join('; ')], ['verweise', d.verweise.join(', ')], ['notiz', d.notiz], ['groesse', groesse(d.groesse)]];
     inhalt = felder.map(([k, w]) => `<div class="feld-anzeige"><b>${esc(t('vorschau.f_' + k))}</b><span>${esc(w || '–')}</span></div>`).join('') + (d.verweise.length ? `<div class="feld-anzeige"><b>${esc(t('vorschau.verknuepft'))}</b>${d.verweise.map(x => dok(x) ? `<span><a href="${fallLink(id, 'dokumente', x)}">${esc(x)} · ${esc(dok(x).titel)}</a></span><br>` : '').join('')}</div>` : '');
   }
+  // AUDIT-20261008-005: Auch Fehler und A→B→A-Wechsel dürfen keine neuere Vorschau überschreiben.
+  if (anfrage !== vorschauAnfrage || route !== location.hash || !S.fall ||
+      fallId() !== id || S.auswahl !== d.id || S.tab !== tab) return;
   v.innerHTML = kopf + `<div class="${klasse}">${inhalt}</div>`;
 }
 

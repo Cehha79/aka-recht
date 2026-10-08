@@ -36,6 +36,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import store, werkzeuge
+from akte_schema import json_laden
 
 SERVER_INFO = {'name': 'aka-recht', 'title': 'AKA Recht Aktenmappe', 'version': '1.0'}
 LEGACY_VERSIONEN = ['2025-11-25', '2025-06-18', '2025-03-26', '2024-11-05']
@@ -79,14 +80,15 @@ def werkzeug_aufrufen(params):
     bestaetigt = args.pop('bestaetigt', False)   # nur der JSON-Wahrheitswert true zählt; ausfuehren() weist andere Typen ab (F05)
     try:
         ergebnis = werkzeuge.ausfuehren(name, args, bestaetigt=bestaetigt, weg='MCP')
+        ergebnis_text = json.dumps(ergebnis, ensure_ascii=False, indent=2, allow_nan=False)
     except Exception as e:
         return {'content': [{'type': 'text', 'text': f'Fehler: {e}'}], 'isError': True}
     if isinstance(ergebnis, dict) and ergebnis.get('bestaetigung_noetig'):
         text = ('Rückfrage: Dieses Werkzeug schreibt in die Akte. Bitte dem Nutzer den Aufruf zeigen und um Zustimmung bitten; '
-                'danach denselben Aufruf mit bestaetigt=true wiederholen.\n' + json.dumps(ergebnis, ensure_ascii=False, indent=2))
+                'danach denselben Aufruf mit bestaetigt=true wiederholen.\n' + ergebnis_text)
         return {'content': [{'type': 'text', 'text': text}], 'structuredContent': ergebnis, 'isError': False}
     strukturiert = ergebnis if isinstance(ergebnis, dict) else {'ergebnis': ergebnis}
-    return {'content': [{'type': 'text', 'text': json.dumps(ergebnis, ensure_ascii=False, indent=2)}], 'structuredContent': strukturiert, 'isError': False}
+    return {'content': [{'type': 'text', 'text': ergebnis_text}], 'structuredContent': strukturiert, 'isError': False}
 
 # ---------------------------------------------------------------- Protokoll
 class Protokollfehler(Exception):
@@ -143,16 +145,16 @@ def antwort_auf(nachricht):
         return {'jsonrpc': '2.0', 'id': kennung, 'error': {'code': -32603, 'message': f'Interner Fehler: {e}'}}
 
 def senden(obj):
-    sys.stdout.write(json.dumps(obj, ensure_ascii=False) + '\n'); sys.stdout.flush()
+    sys.stdout.write(json.dumps(obj, ensure_ascii=False, allow_nan=False) + '\n'); sys.stdout.flush()
 
 def schleife(eingabe=sys.stdin):
     """Liest Zeilen bis zum Ende der Eingabe (das ist das Beenden-Signal des Clients)."""
     for zeile in eingabe:
         zeile = zeile.strip()
         if not zeile: continue
-        try: nachricht = json.loads(zeile)
-        except json.JSONDecodeError:
-            senden({'jsonrpc': '2.0', 'id': None, 'error': {'code': -32700, 'message': 'Ungültiges JSON.'}}); continue
+        try: nachricht = json_laden(zeile)
+        except ValueError as e:
+            senden({'jsonrpc': '2.0', 'id': None, 'error': {'code': -32700, 'message': f'Ungültiges JSON: {e}'}}); continue
         if isinstance(nachricht, list):  # Stapel (bis Fassung 2025-03-26 erlaubt)
             antworten = [a for a in (antwort_auf(n) for n in nachricht) if a is not None]
             if antworten: senden(antworten)

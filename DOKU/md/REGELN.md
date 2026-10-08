@@ -1,6 +1,6 @@
 # REGELN
 
-*Stand: 16.09.2026*
+*Stand: 08.10.2026*
 
 ## Aufgabe dieser Datei
 
@@ -13,7 +13,9 @@ Fallakten gelten. Keine Struktur, keine Aufgabenliste.
    Fremdpakete, auch nicht in Hilfsskripten. Das alte `entwurf2docx.py`
    (python-docx) wird deshalb ersetzt, nicht übernommen.
 2. Der Dienst bindet nur an 127.0.0.1 und ruft keine fremden Adressen auf.
-   Die App enthält keine KI und keine Schlüssel. Jede KI-Arbeit läuft in der
+   Die App enthält keine KI und benötigt keinen API-Schlüssel eines Anbieters.
+   Lokale Start- und Sitzungsschlüssel schützen den Zugriff auf den Dienst.
+   Jede KI-Arbeit läuft in der
    KI des Nutzers (Claude Code, Codex, andere), die über Skills, cli.py oder
    den MCP-Server auf die Mappe zugreift.
 3. Oberfläche ohne Framework, ohne fremde Schriften, ohne Analysedienste.
@@ -65,7 +67,7 @@ Fallakten gelten. Keine Struktur, keine Aufgabenliste.
     bekannten Mustern; er ersetzt die eigene Prüfung nicht.
 18. Öffentliche Suchanfragen möglichst ohne Namen, Anschriften und
     Aktenzeichen des eigenen Falls.
-19. Claude ist kein zugelassener Rechtsanwalt. Bei Weichenstellungen
+19. Ein KI-Assistent ist kein zugelassener Rechtsanwalt. Bei Weichenstellungen
     fachanwaltliche Prüfung empfehlen und die Vorarbeit so aufbereiten, dass
     ein Anwalt sie direkt nutzen kann.
 

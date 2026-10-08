@@ -8,7 +8,9 @@ ein Beitrag abläuft.
 
 - Fehler melden: Was hast du getan, was ist passiert, was hast du erwartet.
   Bitte mit Version (README) und Betriebssystem, ohne echte Akten.
-- Feiertage anderer Bundesländer im Fristenrechner (`06 Werkzeuge/dienst/fristen.py`).
+- Aktualisierung und Tests der Feiertage im Fristenrechner
+  (`06 Werkzeuge/dienst/fristen.py`); landesweite Feiertage aller 16 Länder
+  sind bereits enthalten, regionale Besonderheiten brauchen eine eigene Prüfung.
 - Schreibvorlagen für weitere Rechtsgebiete (`05 Vorlagen/Schreiben/`), mit
   Quelle je Rechtsaussage.
 - Übersetzungen von Oberfläche, Anleitung und Skills.
@@ -41,7 +43,9 @@ ein Beitrag abläuft.
    Punkte müssen bestehen). Nach Änderungen an `CLAUDE.md` oder einem Skill
    `python3 "06 Werkzeuge/verteilen.py"` laufen lassen. Nach Änderungen an
    CSS oder JS die Versionsnummer im HTML-Link erhöhen.
-3. Pull Request mit kurzer Beschreibung: was, warum, wie geprüft.
+3. Pull Request mit kurzer Beschreibung: was, warum, wie geprüft. System und
+   Python-Fassung nennen; ein Test auf macOS belegt keinen Lauf auf Linux oder
+   Windows. Den aktuellen Prüfstand und bekannte Grenzen nennt das README.
 
 ## Lizenz deiner Beiträge
 

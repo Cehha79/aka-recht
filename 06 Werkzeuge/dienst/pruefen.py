@@ -16,11 +16,81 @@ import sys
 for _strom in (sys.stdin, sys.stdout, sys.stderr):
     if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
-import base64, hashlib, json, os, re, shutil, subprocess, sys, tempfile, time, unicodedata, urllib.error, urllib.request, zipfile, zlib
+import base64, hashlib, json, os, re, shutil, signal, subprocess, sys, tempfile, time, unicodedata, urllib.error, urllib.request, zipfile, zlib
 from datetime import date
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 QUELLE = Path(__file__).resolve().parents[2]
+
+def ohne_umleitung(url, kopf=None, daten=None):
+    class KeineUmleitung(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, *args): return None
+    req = urllib.request.Request(url, data=json.dumps(daten).encode() if daten is not None else None,
+                                 headers=kopf or {})
+    try:
+        with urllib.request.build_opener(KeineUmleitung).open(req, timeout=10) as r:
+            return r.status, dict(r.headers), r.read()
+    except urllib.error.HTTPError as e: return e.code, dict(e.headers), e.read()
+
+def test_startlink(url, d, fall=''):
+    if not d.get('startlink_einmalig'):   # Altstand: nur für die Gegenprobe vor der Korrektur.
+        return url + '/?key=' + d['key'] + ('&fall=' + fall if fall else '')
+    code, _, roh = ohne_umleitung(url + '/api/start', {'X-AKA-Start': d['key'], 'X-AKA-CSRF': d['csrf'],
+                                  'Origin': url, 'Content-Type': 'application/json'}, {'fall': fall})
+    assert code == 200, 'Neuer Startlink konnte nicht angefordert werden'
+    return url + json.loads(roh)['pfad']
+
+def startschluessel_pruefen(root, url, d, cookie, ok):
+    """AUDIT-20261008-009: Startberechtigung, Browseranmeldung und lokale Steuerung trennen."""
+    from concurrent.futures import ThreadPoolExecutor
+    link = test_startlink(url, d, 'R-0001'); key = parse_qs(urlparse(link).query)['key'][0]
+    name = cookie.split('=', 1)[0]
+    assert ohne_umleitung(url + '/api/zentrale', {'Cookie': name + '=' + key})[0] == 403, 'Startschlüssel wird als Sitzungscookie akzeptiert'
+    assert ohne_umleitung(url + '/api/zentrale', {'Cookie': name + '=' + d['key']})[0] == 403, 'Lokaler Steuerschlüssel wird als Sitzung akzeptiert'
+    assert ohne_umleitung(link, {'Host': 'fremd.invalid'})[0] == 403
+    assert ohne_umleitung(link + '&key=' + key)[0] == 403
+    code, kopf, _ = ohne_umleitung(link + '&fall=R-9999')
+    assert code == 303 and kopf['Location'] == '/#fall=R-0001', 'Startziel muss an die Berechtigung gebunden sein'
+    sitzung = kopf['Set-Cookie'].split(';')[0]
+    assert sitzung == cookie and sitzung.split('=', 1)[1] not in (key, d['key'])
+    assert all(x in kopf['Set-Cookie'] for x in ('HttpOnly', 'SameSite=Strict', 'Path=/'))
+    assert kopf['Cache-Control'] == 'no-store' and kopf['Referrer-Policy'] == 'no-referrer'
+    for hdr in ({}, {'Cookie': cookie}):
+        code, kopf, _ = ohne_umleitung(link, hdr)
+        assert code == 403 and 'Set-Cookie' not in kopf, 'Startlink erneut eingelöst'
+    assert ohne_umleitung(url + '/api/zentrale', {'Cookie': sitzung})[0] == 200
+    zweiter, dritter = test_startlink(url, d), test_startlink(url, d)
+    assert len({link, zweiter, dritter}) == 3
+    assert ohne_umleitung(zweiter)[0] == 303   # Neuer Link entwertet einen noch offenen Link nicht.
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        codes = list(pool.map(lambda _: ohne_umleitung(dritter)[0], range(2)))
+    assert sorted(codes) == [303, 403], 'Gleichzeitige Einlösungen nicht auf genau eine begrenzt'
+    for hdr in ({'Cookie': cookie, 'X-AKA-CSRF': d['csrf']},
+                {'X-AKA-Start': d['key']},
+                {'X-AKA-Start': d['key'], 'X-AKA-CSRF': d['csrf'], 'Origin': 'https://fremd.invalid'},
+                {'X-AKA-Start': d['key'], 'X-AKA-CSRF': d['csrf'], 'Host': 'fremd.invalid'}):
+        assert ohne_umleitung(url + '/api/start', hdr, {})[0] == 403
+    assert ohne_umleitung(url + '/?key=unbekannt', {'Cookie': cookie})[0] == 403
+    ok('Startschlüssel (AUDIT-20261008-009): Startlink, Steuerschlüssel und Cookie getrennt; genau eine Einlösung auch bei zwei gleichzeitigen Anfragen, gebundenes Fallziel, frische Links ohne Sitzungsabbruch, Host/Origin/CSRF und Cookie-Eigenschaften geprüft')
+
+    # Ablaufzeit ohne minutenlanges Warten: nur die monotone Uhr des importierten Testmoduls ersetzen.
+    import importlib.util
+    from unittest.mock import patch
+    spec = importlib.util.spec_from_file_location('start_server_probe', root / '06 Werkzeuge/dienst/server.py')
+    modul = importlib.util.module_from_spec(spec); spec.loader.exec_module(modul)
+    assert modul.STARTLINK_GUELTIG == 120
+    links = modul.Startberechtigungen()
+    with patch.object(modul.time, 'monotonic', return_value=100):
+        frueh = links.anlegen('/'); ablauf = links.anlegen('/#fall=R-0001')
+    with patch.object(modul.time, 'monotonic', return_value=219.999):
+        assert links.einloesen(frueh) == '/' and links.einloesen(frueh) is None
+    with patch.object(modul.time, 'monotonic', return_value=220):
+        assert links.einloesen(ablauf) is None
+        neu = links.anlegen('/')
+    with patch.object(modul.time, 'monotonic', return_value=341):
+        assert links.einloesen(neu) is None and links.einloesen('unbekannt') is None
+    ok('Startschlüssel (AUDIT-20261008-009): zwei Minuten Gültigkeit mit monotoner Uhr, unmittelbar vor Ablauf gültig, ab Ablauf und nach Einlösung ungültig; keine Wartezeit im Test')
 
 def vorbereiten(base):
     root = base / 'Recht'; root.mkdir()
@@ -36,6 +106,93 @@ def vorbereiten(base):
          'verbindungen': {}}
     (root / 'zentrale.json').write_text(json.dumps(z, ensure_ascii=False, indent=2), encoding='utf-8')
     return root
+
+def start_pruefen(base, root, ok):
+    """Den wirklichen Einstieg statt --serve prüfen; alle gestarteten Kindprozesse erfassen und beenden."""
+    skript = root / '06 Werkzeuge/dienst/server.py'
+    for parallel in (False, True):
+        for eingerichtet in (False, True):
+            probe = base / f'Start-{int(parallel)}-{int(eingerichtet)}'; probe.mkdir()
+            runtime = probe / 'Laufzeit'; runtime.mkdir()
+            if eingerichtet:
+                (probe / 'zentrale.json').write_bytes((root / 'zentrale.json').read_bytes())
+            instanz = hashlib.sha256(str(probe).encode()).hexdigest()[:14]
+            laufzeit = runtime / (f'aka-recht-{os.getuid()}' if hasattr(os, 'getuid') else 'aka-recht')
+            statusdatei = laufzeit / f'dienst-{instanz}.json'
+            # Nur die Prozessanlage protokollieren; Argumente, Sperren und Startablauf bleiben echt.
+            code = (f'import runpy, subprocess, sys\nfrom pathlib import Path\n'
+                    f'sys.argv = [{str(skript)!r}, "--root", {str(probe)!r}, "--no-open"]\n'
+                    'popen = subprocess.Popen\n'
+                    'def erfassen(*a, **kw):\n'
+                    '    p = popen(*a, **kw)\n'
+                    f'    (Path({str(probe)!r}) / ("kind-" + str(p.pid))).write_text(str(p.pid))\n'
+                    '    return p\n'
+                    'subprocess.Popen = erfassen\nrunpy.run_path(sys.argv[0], run_name="__main__")\n')
+            env = dict(os.environ, XDG_RUNTIME_DIR=str(runtime), PYTHONDONTWRITEBYTECODE='1')
+            starter = []; d = None
+            def ping():
+                req = urllib.request.Request(f'http://127.0.0.1:{d["port"]}/api/ping',
+                                             headers={'X-AKA-Start': d['key']})
+                with urllib.request.urlopen(req, timeout=2) as r: return json.load(r)
+            try:
+                for _ in range(2 if parallel else 1):
+                    starter.append(subprocess.Popen([sys.executable, '-B', '-c', code], stdout=subprocess.PIPE,
+                                                    stderr=subprocess.PIPE, text=True, encoding='utf-8', env=env))
+                for p in starter:
+                    aus, fehler = p.communicate(timeout=30)
+                    assert p.returncode == 0, f'Start (parallel={parallel}, eingerichtet={eingerichtet}): {aus}\n{fehler}'
+                d = json.loads(statusdatei.read_text('utf-8'))
+                assert ping() == {'instanz': instanz, 'pid': d['pid']}
+                assert (probe / 'zentrale.json').is_file()
+                assert len(list(probe.glob('kind-*'))) == 1, 'Mehr als ein Dienst gestartet'
+                r = subprocess.run([sys.executable, '-B', '-c', code], capture_output=True, text=True, encoding='utf-8', env=env, timeout=30)
+                assert r.returncode == 0, r.stdout + r.stderr
+                assert json.loads(statusdatei.read_text('utf-8')) == d and len(list(probe.glob('kind-*'))) == 1, 'Wiederholung hat einen neuen Dienst gestartet'
+                # Wirklichen Browserstart ausführen, nur das Öffnen durch Erfassen der Adresse ersetzen.
+                links = []; cookies = []
+                for i in range(2):
+                    linkdatei = probe / f'Startlink-{i}.txt'
+                    browser_code = code.replace(', "--no-open"', '').replace('subprocess.Popen = erfassen\n',
+                        'subprocess.Popen = erfassen\nimport webbrowser\n'
+                        f'webbrowser.open = lambda url: bool(Path({str(linkdatei)!r}).write_text(url))\n')
+                    r = subprocess.run([sys.executable, '-B', '-c', browser_code], capture_output=True, text=True, encoding='utf-8', env=env, timeout=30)
+                    assert r.returncode == 0, r.stdout + r.stderr
+                    link = linkdatei.read_text(); links.append(link)
+                    code_http, kopf, _ = ohne_umleitung(link); assert code_http == 303
+                    cookies.append(kopf['Set-Cookie'].split(';')[0])
+                assert links[0] != links[1] and cookies[0] == cookies[1]
+                assert json.loads(statusdatei.read_text('utf-8')) == d and len(list(probe.glob('kind-*'))) == 1
+                alter_link = test_startlink(f'http://127.0.0.1:{d["port"]}', d)
+                alt = dict(d)
+                stop_befehl = [sys.executable, '-B', str(skript), '--root', str(probe), '--stop']
+                for _ in range(2):   # Wiederholung darf keinen Dienst anlegen oder eine andere Mappe beenden.
+                    r = subprocess.run(stop_befehl, capture_output=True, text=True, encoding='utf-8', env=env, timeout=15)
+                    assert r.returncode == 0, r.stdout + r.stderr
+                try: ping()
+                except (OSError, urllib.error.URLError): pass
+                else: raise AssertionError('--stop hat den Dienst nicht beendet')
+                r = subprocess.run([sys.executable, '-B', '-c', code], capture_output=True, text=True, encoding='utf-8', env=env, timeout=30)
+                assert r.returncode == 0, r.stdout + r.stderr
+                d = json.loads(statusdatei.read_text('utf-8'))
+                assert d['key'] != alt['key'] and len(list(probe.glob('kind-*'))) == 2
+                assert ping() == {'instanz': instanz, 'pid': d['pid']}
+                basis = f'http://127.0.0.1:{d["port"]}'
+                assert ohne_umleitung(basis + '/api/zentrale', {'Cookie': cookies[0]})[0] == 403
+                assert ohne_umleitung(basis + '/?' + urlparse(alter_link).query)[0] == 403
+                assert ohne_umleitung(test_startlink(basis, d))[0] == 303
+            finally:
+                for p in starter:
+                    if p.poll() is None: p.terminate(); p.wait(timeout=10)
+                for datei in probe.glob('kind-*'):
+                    try: os.kill(int(datei.read_text()), signal.SIGTERM)
+                    except ProcessLookupError: pass
+                if d:
+                    for _ in range(50):
+                        try: ping()
+                        except (OSError, urllib.error.URLError): break
+                        time.sleep(.1)
+                    else: raise AssertionError('Eigener Start-Testdienst wurde nicht beendet')
+        ok('Start (AUDIT-20261008-001/009): ' + ('zwei gleichzeitige Starter teilen genau einen Dienst' if parallel else 'erster Start und Wiederholung gelingen') + ', jeweils mit und ohne zentrale.json; Browserstart liefert neue Einmallinks, --stop wiederholbar, Neustart verwirft alte Links und Cookies')
 
 def _pdf(objekte):
     """Kleinste gültige PDF aus Objektrümpfen (Nummer = Position ab 1)."""
@@ -84,6 +241,281 @@ def pdf_gemischt(zeilen, ppm):
     objekte[1] = b'<< /Type /Pages /Kids [' + b' '.join(b'%d 0 R' % k for k in kinder) + b'] /Count %d >>' % len(kinder)
     return _pdf(objekte)
 
+def entwurfsstatus_pruefen(root, fall, anfrage):
+    """AUDIT-20261008-003: aktuellen Status und historische Fassung getrennt prüfen."""
+    ordner = root / fall['ordner']; datei = ordner / '06 Entwürfe/Statusprobe.md'
+    datei.write_text('Erfundener Entwurf für die wiederholte Statusprüfung.\n', encoding='utf-8')
+    parameter = {'fall': fall['id'], 'titel': 'Statusprobe', 'datei': '06 Entwürfe/Statusprobe.md', 'fassung_nach_text': True}
+    route = '/api/fall/' + fall['id']
+    def erfassen(status, erwartet=200, **zusatz):
+        return anfrage('/api/werkzeug', {'name': 'entwurf_erfassen',
+                       'parameter': {**parameter, 'status': status, **zusatz}, 'bestaetigt': True}, erwartet=erwartet)
+    def kopien():
+        return {p.relative_to(ordner).as_posix(): (hashlib.sha256(p.read_bytes()).hexdigest(), p.stat().st_mode & 0o777, p.stat().st_mtime_ns)
+                for p in (ordner / '06 Entwürfe/Fassungen').rglob('*') if p.is_file()}
+    entwurf = erfassen('geprüft')['entwurf']; kennung = entwurf['id']
+    assert entwurf['status'] == 'geprüft' and entwurf['fassung'] == 1
+    for status in ('geprüft', 'versandt'):
+        zusatz = {'versandt_als': 'D0001'} if status == 'versandt' else {}
+        if status == 'versandt': entwurf = erfassen(status, **zusatz)['entwurf']
+        fassungen = entwurf['fassungen']; eingefroren = kopien()
+        for zwischenstatus in ('in Arbeit', 'verworfen'):
+            # Derselbe Weg wie beim Bearbeiten in der Oberfläche: ganze Akte mit ihrer Revision speichern.
+            gelesen = anfrage(route); akte = gelesen['akte']
+            next(e for e in akte['entwuerfe'] if e['id'] == kennung)['status'] = zwischenstatus
+            anfrage(route, {'akte': akte, 'revision': gelesen['revision']})
+            if status == 'versandt':
+                vorher = (ordner / 'akte.json').read_bytes()
+                erfassen(status, erwartet=400, versandt_als='')   # Versandstatus verlangt weiterhin einen Beleg.
+                assert (ordner / 'akte.json').read_bytes() == vorher
+            for _ in range(2):   # Rückwechsel und anschließendes unverändertes Speichern.
+                antwort = erfassen(status, **zusatz); aktuell = antwort['entwurf']
+                assert aktuell['status'] == status, f'{zwischenstatus} → {status}: gespeichert ist {aktuell["status"]}'
+                assert antwort.get('unveraendert') and aktuell['id'] == kennung and aktuell['fassung'] == 1
+                assert aktuell['fassungen'] == fassungen, 'Historische Fassung wurde verändert oder doppelt angelegt'
+                gespeichert = anfrage(route)
+                assert next(e for e in gespeichert['akte']['entwuerfe'] if e['id'] == kennung) == aktuell
+                assert gespeichert['revision'] == antwort['revision']
+                assert gespeichert['akte']['dokumente'] == akte['dokumente'], 'Dokumentkennung oder Metadaten wurden verändert'
+                assert len(gespeichert['akte']['entwuerfe']) == len(akte['entwuerfe'])
+                assert aktuell['versandt_als'] == zusatz.get('versandt_als', '')
+                assert kopien() == eingefroren, 'Eingefrorene Kopien wurden neu angelegt oder verändert'
+    # Gegenprobe: Bei geändertem Text muss weiterhin eine neue Fassung entstehen.
+    datei.write_text('Erfundener Entwurf mit geändertem Text für die nächste Fassung.\n', encoding='utf-8')
+    antwort = erfassen('geprüft'); neu = antwort['entwurf']
+    assert not antwort.get('unveraendert') and neu['id'] == kennung and neu['fassung'] == 2 and neu['status'] == 'geprüft'
+    assert neu['fassungen'][:-1] == fassungen and len(neu['fassungen']) == len(fassungen) + 1
+    kopien_neu = kopien()
+    assert all(kopien_neu.get(pfad) == stand for pfad, stand in eingefroren.items())
+
+def pruefsummen_pruefen(root, anfrage, ok):
+    """AUDIT-20261008-004: Änderungen trotz gleicher Größe und wiederhergestellter mtime erkennen."""
+    fall = anfrage('/api/fall', {'titel': 'Prüfsummenprobe', 'bereich': 'Allgemein'})
+    ordner = root / fall['ordner']; quelle = ordner / '06 Entwürfe/Hashprobe.md'
+    original = b'AAAA\n'; quelle.write_bytes(original); zeit = quelle.stat()
+    def werkzeug(name, **parameter):
+        return anfrage('/api/werkzeug', {'name': name, 'parameter': {'fall': fall['id'], **parameter}, 'bestaetigt': True})
+    def gleiche_metadaten(p, daten, vorher):
+        assert len(daten) == vorher.st_size
+        p.write_bytes(daten); os.utime(p, ns=(vorher.st_atime_ns, vorher.st_mtime_ns))
+        assert (p.stat().st_size, p.stat().st_mtime_ns) == (vorher.st_size, vorher.st_mtime_ns)
+    def ordnungsdaten():
+        return {str(p): p.read_bytes() for p in (root / 'zentrale.json', ordner / 'akte.json', ordner / 'bestand.json', ordner / 'JOURNAL.md')}
+    werkzeug('bestand_abgleichen')
+    dok_id = next(k for k, d in json.loads((ordner / 'bestand.json').read_text('utf-8'))['dateien'].items() if d['pfad'] == '06 Entwürfe/Hashprobe.md')
+    assert not werkzeug('bestand_pruefen')['veraendert']   # Zwischenspeicher im weiterlaufenden Dienst füllen.
+    daten_vorher = ordnungsdaten()
+    for daten in (b'BBBB\n', original, b'CCCC\n', original):
+        gleiche_metadaten(quelle, daten, zeit)
+        erwartet = daten != original
+        assert (hashlib.sha256(quelle.read_bytes()).hexdigest() != hashlib.sha256(original).hexdigest()) == erwartet
+        bericht = werkzeug('bestand_pruefen')
+        assert any(d['id'] == dok_id for d in bericht['veraendert']) == erwartet, 'Bestandsprüfung verwendet eine veraltete Prüfsumme'
+        gesamt = anfrage('/api/bestand')
+        bericht = next(f for f in gesamt['faelle'] if f['fall'] == fall['id'])
+        assert any(d['id'] == dok_id for d in bericht['veraendert']) == erwartet
+        assert ordnungsdaten() == daten_vorher, 'Lesende Prüfung hat Ordnungsdaten geändert'
+    ok('Prüfsummen (AUDIT-20261008-004): Werkzeug und Gesamtprüfung erkennen geänderte Bytes bei gleicher Größe und mtime im selben Dienst; Original nach Rücksetzen wieder erkannt, Ordnungsdaten unverändert')
+
+    parameter = {'titel': 'Hashprobe', 'datei': '06 Entwürfe/Hashprobe.md', 'status': 'geprüft', 'fassung_nach_text': True}
+    erste = werkzeug('entwurf_erfassen', **parameter)['entwurf']
+    kopie = ordner / erste['fassungen'][0]['kopien']['md']; kopie_vorher = kopie.read_bytes()
+    gleiche_metadaten(quelle, b'BBBB\n', zeit)
+    zweite = werkzeug('entwurf_erfassen', **parameter)['entwurf']
+    assert zweite['fassung'] == erste['fassung'] + 1, 'Geänderter Entwurf als unveränderte Fassung behandelt'
+    assert zweite['fassungen'][:-1] == erste['fassungen'] and kopie.read_bytes() == kopie_vorher
+    assert zweite['fassungen'][-1]['sha256'] == hashlib.sha256(quelle.read_bytes()).hexdigest()
+    assert (ordner / zweite['fassungen'][-1]['kopien']['md']).read_bytes() == quelle.read_bytes()
+    ok('Prüfsummen (AUDIT-20261008-004): Entwurf mit gleichem Umfang und gleicher mtime bekommt bei geändertem Inhalt eine neue Fassung; ältere Kopie und Historie bleiben erhalten')
+
+    # Ein echter ZIP-Header wird minimal geändert: Inhalt und CRC bleiben lesbar, nur die Archiv-Prüfsumme weicht ab.
+    sicherung = anfrage('/api/sicherung', {})
+    primaer, zweit = Path(sicherung['pfad']), Path(sicherung['zweites_ziel'])
+    status = anfrage('/api/sicherung/status')
+    assert status['unveraendert'] and status['zweites_ziel_unveraendert']
+    daten_vorher = ordnungsdaten()
+    for p, feld, anderes in ((primaer, 'unveraendert', 'zweites_ziel_unveraendert'), (zweit, 'zweites_ziel_unveraendert', 'unveraendert')):
+        roh, zeit_zip = p.read_bytes(), p.stat(); veraendert = bytearray(roh)
+        pos = roh.index(b'PK\x01\x02'); veraendert[pos + 38] ^= 1   # DOS-Dateiattribut im Zentralverzeichnis.
+        for weg in ('status', 'probe'):   # Jeder Prüfweg beginnt mit dem alten Wert im Zwischenspeicher.
+            try:
+                gleiche_metadaten(p, bytes(veraendert), zeit_zip)
+                with zipfile.ZipFile(p) as zf: assert zf.testzip() is None
+                assert hashlib.sha256(p.read_bytes()).hexdigest() != sicherung['sha256']
+                schnell = anfrage('/api/zentrale')['sicherung']
+                assert schnell['unveraendert'] and schnell['zweites_ziel_unveraendert'], 'Schnelle Übersicht nutzt ihren Zwischenspeicher nicht'
+                if weg == 'status':
+                    status = anfrage('/api/sicherung/status')
+                    assert not status[feld] and status[anderes], 'Archivstatus verwendet eine veraltete Prüfsumme'
+                else:
+                    probe = anfrage('/api/sicherung/probe', {'archiv': str(p)})
+                    assert not probe['bestanden'] and probe['pruefsummendatei'] is False
+                    assert any('Prüfsumme' in f for f in probe['fehler'])
+                assert ordnungsdaten() == daten_vorher
+            finally: gleiche_metadaten(p, roh, zeit_zip)
+            status = anfrage('/api/sicherung/status')
+            assert status['unveraendert'] and status['zweites_ziel_unveraendert']
+    probe = anfrage('/api/sicherung/probe', {})
+    assert probe['bestanden'] and probe['pruefsummendatei'] is True, probe
+    ok('Prüfsummen (AUDIT-20261008-004): Status und Wiederherstellungsprobe erkennen gleich große gültige ZIPs mit zurückgesetzter mtime an beiden Zielen; Originalarchive bestehen wieder, Ordnungsdaten unverändert')
+
+def kennungszaehler_pruefen(root, anfrage, ok):
+    """AUDIT-20261008-006: Vollständiges Speichern darf vergebene Nummern nicht vergessen."""
+    import copy
+    import akte_schema
+    muster = {
+        'beteiligte': {'name': 'Prüfperson'}, 'verfahren': {'art': 'Prüfverfahren'},
+        'ereignisse': {'titel': 'Prüfereignis', 'datum': '2026-10-08'},
+        'fristen': {'titel': 'Prüffrist', 'datum': '2026-10-08', 'art': 'Termin', 'pruefstatus': 'offen'},
+        'aufgaben': {'titel': 'Prüfaufgabe'}, 'entwuerfe': {'titel': 'Prüfentwurf', 'status': 'in Arbeit'},
+        'notizen': {'text': 'Prüfnotiz'},
+    }
+    fall = anfrage('/api/fall', {'titel': 'Kennungszählerprobe'})
+    pfad = '/api/fall/' + fall['id']; ordner = root / fall['ordner']
+    def lesen(): return anfrage(pfad)
+    def speichern(akte, revision, weg='fall', erwartet=200):
+        if weg == 'fall': return anfrage(pfad, {'akte': akte, 'revision': revision}, erwartet=erwartet)
+        return anfrage('/api/werkzeug', {'name': 'akte_speichern', 'parameter': {
+            'fall': fall['id'], 'akte': akte, 'revision': revision}, 'bestaetigt': True}, erwartet=erwartet)
+    def zustand():
+        dateien = [p for p in ordner.rglob('*') if p.is_file()]
+        dateien += [root / 'zentrale.json']
+        dateien += list((root.parent / 'Sicherungen/Ordnungsstände' / fall['id']).glob('*'))
+        return {str(p): (p.read_bytes(), p.stat().st_mtime_ns) for p in dateien}
+    def eintraege(akte, nummer=None):
+        for block, b in akte_schema.ZAEHLER_BUCHSTABEN.items():
+            kennung = f'{b}{nummer:02d}' if nummer is not None else akte_schema.naechste_kennung(akte, block)
+            akte[block] = [{'id': kennung, **muster[block]}]
+    stand = lesen(); akte = stand['akte']; eintraege(akte, 7)
+    akte['zaehler'] = {b: 41 for b in akte_schema.ZAEHLER_BUCHSTABEN.values()}
+    speichern(akte, stand['revision'])
+    vorher = zustand()
+    for weg in ('fall', 'werkzeug'):
+        for block, b in akte_schema.ZAEHLER_BUCHSTABEN.items():
+            for wert in (0, 40):
+                stand = lesen(); akte = stand['akte']; akte[block] = []; akte['zaehler'][b] = wert
+                fehler = speichern(akte, stand['revision'], weg, erwartet=400)
+                assert f'zaehler.{b}' in str(fehler) and '41' in str(fehler), fehler
+                assert zustand() == vorher, 'Abgewiesener Zähler hat Akte, Journal oder Sicherung geändert'
+    ok('Kennungszähler (AUDIT-20261008-006): Rücksetzen unter den gespeicherten Höchststand bei gleichzeitig entferntem Eintrag für P, V, E, F, A, W und N abgewiesen; Fall- und Werkzeugzugang, keine Dateiänderung und keine Sicherung bei Fehler')
+
+    # Alte Clients lassen den ganzen Block, einzelne Schlüssel oder einen leeren Wert weg.
+    for form in ('fehlt', 'leer', 'einzeln', 'null'):
+        stand = lesen(); akte = stand['akte']; erwartet = dict(akte['zaehler'])
+        for block in muster: akte[block] = []
+        if form == 'fehlt': akte.pop('zaehler')
+        elif form == 'leer': akte['zaehler'] = {}
+        elif form == 'einzeln': akte['zaehler'] = {'A': erwartet['A']}
+        else: akte['zaehler'] = dict.fromkeys(erwartet)
+        speichern(akte, stand['revision'], 'werkzeug')
+        stand = lesen(); akte = stand['akte']; assert akte['zaehler'] == erwartet, form
+        eintraege(akte)
+        for block, b in akte_schema.ZAEHLER_BUCHSTABEN.items():
+            assert akte[block][0]['id'] == f'{b}{erwartet[b] + 1:02d}', form
+        speichern(akte, stand['revision'])
+    stand = lesen(); akte = stand['akte']; akte['aufgaben'] = []; akte['zaehler']['A'] = 500
+    speichern(akte, stand['revision'])
+    r = anfrage('/api/werkzeug', {'name': 'aufgabe_anlegen', 'parameter': {'fall': fall['id'], 'titel': 'Nach Lücke'}, 'bestaetigt': True})
+    assert r['aufgabe']['id'] == 'A501', r
+    vorher = zustand(); akte.pop('zaehler')
+    speichern(akte, stand['revision'], erwartet=409)
+    assert zustand() == vorher, 'Veraltete Revision hat Dateien geändert'
+    ok('Kennungszähler (AUDIT-20261008-006): fehlende, teilweise fehlende und leere Zähler erhalten alle sieben Höchststände über wiederholtes Entfernen und Neuanlegen; höhere Zähler bleiben, nächste Aufgabe A501, alte Revision ohne Dateiänderung abgewiesen')
+
+    # Nur die künstliche Altakte wird direkt geschrieben: Vor Einführung der Zähler gab es den Block nicht.
+    altfall = anfrage('/api/fall', {'titel': 'Altakte ohne Zähler'})
+    altpfad = root / altfall['ordner'] / 'akte.json'
+    altakte = json.loads(altpfad.read_text('utf-8')); eintraege(altakte, 73); altakte.pop('zaehler')
+    assert not akte_schema.validate(altakte)[0]
+    altpfad.write_text(json.dumps(altakte, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    stand = anfrage('/api/fall/' + altfall['id']); akte = copy.deepcopy(stand['akte'])
+    for block in muster: akte[block] = []
+    anfrage('/api/fall/' + altfall['id'], {'akte': akte, 'revision': stand['revision']})
+    stand = anfrage('/api/fall/' + altfall['id']); akte = stand['akte']
+    assert akte['zaehler'] == {b: 73 for b in akte_schema.ZAEHLER_BUCHSTABEN.values()}
+    eintraege(akte)
+    assert all(akte[block][0]['id'] == b + '74' for block, b in akte_schema.ZAEHLER_BUCHSTABEN.items())
+    # Auch neue, manuell vergebene höhere Kennungen ohne mitgelieferten Zähler werden festgehalten.
+    akte.pop('zaehler'); eintraege(akte, 80)
+    anfrage('/api/fall/' + altfall['id'], {'akte': akte, 'revision': stand['revision']})
+    assert anfrage('/api/fall/' + altfall['id'])['akte']['zaehler'] == {b: 80 for b in akte_schema.ZAEHLER_BUCHSTABEN.values()}
+    ok('Kennungszähler (AUDIT-20261008-006): Altakte ohne Zähler bewahrt Nummer 73 aus allen sieben gespeicherten Blöcken trotz gleichzeitigen Entfernens; nächste Nummer 74 und neue höhere Kennungen ohne Zähler werden festgehalten')
+
+def sicherungsziele_pruefen(root, anfrage, ok):
+    """AUDIT-20261008-008: Ungültige Einstellungen vor dem Speichern zurückweisen."""
+    fall = anfrage('/api/fall', {'titel': 'Sicherungszielprobe'})
+    ordner = root / fall['ordner']; zentrale = root / 'zentrale.json'
+    ursprung = anfrage('/api/einstellungen')['sicherung']
+    datei = root.parent / 'Kein Ordner.txt'; datei.write_text('Nur künstliche Prüfdaten.\n', encoding='utf-8')
+    verknuepfung = root.parent / 'Projektverknüpfung'
+    if os.name != 'nt': verknuepfung.symlink_to(root, target_is_directory=True)
+    def zustand():
+        dateien = [zentrale, ordner / 'akte.json', ordner / 'JOURNAL.md', datei]
+        for ziel in (root.parent / 'Sicherungen', root.parent / 'iCloud'):
+            dateien += [p for p in ziel.rglob('*') if p.is_file()]
+        return {str(p): (p.read_bytes(), p.stat().st_mtime_ns) for p in dateien}
+    def speichern(werte, erwartet=200):
+        return anfrage('/api/einstellungen', {'sicherung': werte, 'einstellungen': {
+            'absender': {'name': 'Sicherungszielprobe'}}}, erwartet=erwartet)
+    try:
+        vorher = zustand()
+        falsch = [123, 0, 1.5, True, False, None, [], {},
+                  'relativer/Ordner', '.', str(datei), str(datei / 'Unterordner'),
+                  str(root), str(root / 'Sicherungen'), str(root / '..' / root.name / 'Sicherungen'),
+                  str(root.parent / 'Ordner\x00'), str(root.parent / 'Ordner\nZeile'), str(root.parent / 'Ordner\x7f')]
+        if os.name != 'nt': falsch.append(str(verknuepfung / 'Sicherungen'))
+        for feld in ('ziel', 'zweites_ziel'):
+            for wert in falsch + (['', '   '] if feld == 'ziel' else []):
+                fehler = speichern({feld: wert}, erwartet=400)
+                assert 'Sicherungsziel' in fehler['fehler'], fehler
+                assert zustand() == vorher, f'Ungültiges {feld} hat Dateien geändert'
+        for wert in (123, True, None, [], 'ziel', ['ziel']):
+            fehler = speichern(wert, erwartet=400)
+            assert 'Sicherungseinstellungen' in fehler['fehler'], fehler
+            assert zustand() == vorher
+        neu = root.parent / 'Darf nicht angelegt werden'
+        for werte in ({'ziel': str(neu), 'zweites_ziel': 123}, {'ziel': 123, 'zweites_ziel': str(neu)}):
+            speichern(werte, erwartet=400)
+            assert zustand() == vorher and not neu.exists(), 'Einstellungen nur teilweise übernommen'
+        # Ein wirklicher Sicherungs- und Aktenzugriff nach den Fehlanfragen darf weiterhin gelingen.
+        archiv = anfrage('/api/sicherung', {}); assert Path(archiv['pfad']).parent == Path(ursprung['ziel'])
+        stand = anfrage('/api/fall/' + fall['id']); stand['akte']['fall']['ziel'] = 'Nach Fehlanfragen speicherbar'
+        anfrage('/api/fall/' + fall['id'], {'akte': stand['akte'], 'revision': stand['revision']})
+        ok('Sicherungsziele (AUDIT-20261008-008): falsche Typen, leeres Hauptziel, relative Pfade, Dateien, Dateivorfahren, Steuerzeichen und Ziele im Projekt vor dem Speichern abgewiesen; keine Teiländerung, danach Sicherung und Aktenänderung erfolgreich')
+
+        # Die ~-Schreibweise darf gespeichert werden, ohne im echten Benutzerordner etwas anzulegen.
+        name = 'AKA-Recht-Prüfziel-' + root.parent.name
+        zuhause = Path.home() / name; assert not zuhause.exists()
+        speichern({'ziel': '~/' + name, 'zweites_ziel': ''})
+        assert anfrage('/api/einstellungen')['sicherung']['ziel'] == '~/' + name and not zuhause.exists()
+        ziel = root.parent / 'Neue Sicherungen ü' / 'Archiv'
+        zweites = root.parent / 'iCloud' / 'Neue Kopie ü'
+        speichern({'ziel': '  ' + str(ziel) + '  ', 'zweites_ziel': str(zweites)})
+        e = anfrage('/api/einstellungen')
+        assert e['sicherung']['ziel'] == str(ziel) and e['sicherung']['zweites_ziel'] == str(zweites)
+        assert e['einstellungen']['absender']['name'] == 'Sicherungszielprobe'
+        assert not ziel.exists() and not zweites.exists(), 'Prüfen hat schon Zielordner angelegt'
+        stand = anfrage('/api/fall/' + fall['id']); stand['akte']['fall']['ziel'] = 'Neues Sicherungsziel'
+        original = (ordner / 'akte.json').read_bytes()
+        anfrage('/api/fall/' + fall['id'], {'akte': stand['akte'], 'revision': stand['revision']})
+        kopien = list((ziel / 'Ordnungsstände' / fall['id']).glob('*_akte.json'))
+        assert len(kopien) == 1 and kopien[0].read_bytes() == original
+        archiv = anfrage('/api/sicherung', {})
+        assert Path(archiv['pfad']).parent == ziel and Path(archiv['zweites_ziel']).parent == zweites
+        status = anfrage('/api/sicherung/status'); assert status['unveraendert'] and status['zweites_ziel_unveraendert']
+        letzte = anfrage('/api/einstellungen')['sicherung']['ziel']
+        speichern({'zweites_ziel': '   '})
+        assert anfrage('/api/einstellungen')['sicherung'] == {'ziel': letzte, 'zweites_ziel': ''}
+        assert not anfrage('/api/sicherung', {})['zweites_ziel']
+        fehlt = root.parent / 'Nicht angeschlossen' / 'Kopie'
+        speichern({'zweites_ziel': str(fehlt)})
+        archiv = anfrage('/api/sicherung', {})
+        assert Path(archiv['pfad']).is_file() and not archiv['zweites_ziel'] and archiv['zweites_ziel_hinweis']
+        assert not fehlt.parent.exists()
+        ok('Sicherungsziele (AUDIT-20261008-008): absolute Pfade, ~, Leerzeichen und Umlaute erlaubt; fehlende Ordner erst beim Schreiben angelegt, Teiländerungen erhalten das andere Ziel, leeres oder getrenntes zweites Ziel erlaubt; Ordnungsstand und beide ZIPs geprüft')
+    finally:
+        anfrage('/api/einstellungen', {'sicherung': ursprung})
+
 def run(behalten=False):
     base = Path(tempfile.mkdtemp(prefix='aka-recht-pruefung-', dir='/private/tmp' if Path('/private/tmp').is_dir() else None)).resolve(); root = vorbereiten(base)
     instanz = hashlib.sha256(str(root).encode()).hexdigest()[:14]
@@ -102,11 +534,14 @@ def run(behalten=False):
             if laufzeit.exists(): break
             if server.poll() is not None: raise RuntimeError((base / 'server.log').read_text('utf-8'))
             time.sleep(.1)
-        d = json.loads(laufzeit.read_text('utf-8')); url = f'http://127.0.0.1:{d["port"]}'; cookie = f'aka_{instanz}={d["key"]}'; csrf = d['csrf']
+        d = json.loads(laufzeit.read_text('utf-8')); url = f'http://127.0.0.1:{d["port"]}'; csrf = d['csrf']
+        code, kopf, _ = ohne_umleitung(test_startlink(url, d)); assert code == 303
+        cookie = kopf['Set-Cookie'].split(';')[0]
         def anfrage(pfad, daten=None, erwartet=200, kopf=None, roh=False, mit_kopf=False):
             k = {'Cookie': cookie, **(kopf or {})}
             if daten is not None: k = {'Content-Type': 'application/json', 'X-AKA-CSRF': csrf, 'Origin': url, **k}
-            r = urllib.request.Request(url + pfad, data=json.dumps(daten).encode() if daten is not None else None, headers=k, method='POST' if daten is not None else 'GET')
+            body = daten if isinstance(daten, bytes) else json.dumps(daten).encode() if daten is not None else None
+            r = urllib.request.Request(url + pfad, data=body, headers=k, method='POST' if daten is not None else 'GET')
             try:
                 with urllib.request.urlopen(r, timeout=60) as a: code, body, kopfzeilen = a.status, a.read(), dict(a.headers)
             except urllib.error.HTTPError as e: code, body, kopfzeilen = e.code, e.read(), dict(e.headers)
@@ -881,9 +1316,34 @@ def run(behalten=False):
             shutil.copy2(QUELLE / 'DOKU/ansicht_bauen.py', root / 'DOKU/ansicht_bauen.py'); (root / 'DOKU/md').mkdir()
             quellen = sorted(p for p in (QUELLE / 'DOKU/md').glob('*.md'))[:3]; assert len(quellen) >= 2
             for q in quellen: shutil.copy2(q, root / 'DOKU/md' / q.name)
+            # AUDIT-20261008-007: Unterordner, interne Navigation und eigenständige HTML-Ausgaben.
+            archiv_md = root / 'DOKU/Archiv/2026-Probe.md'
+            bericht_md = root / 'DOKU/Pruefberichte/Unterordner/Prüfbericht ü.md'
+            for q in (archiv_md, bericht_md):
+                q.parent.mkdir(parents=True, exist_ok=True)
+                q.write_text('# Künstliche Dokumentation\n\n*Stand: 17.09.2026*\n\n## Nachweis\n\nNur eine Probe.\n', encoding='utf-8')
+            einzeln = root / 'DOKU/Eigenstaendige-Ausgabe.html'
+            einzeln.write_text('<html>Eigenständige Ausgabe ohne Markdown-Quelle</html>', encoding='utf-8')
+            (root / '.gitignore').write_text(f'DOKU/{quellen[0].stem}.html\nDOKU/Archiv/\nDOKU/Pruefberichte/\n', encoding='utf-8')
             shutil.copy2(QUELLE / '06 Werkzeuge/verteilen.py', root / '06 Werkzeuge/verteilen.py'); shutil.copy2(QUELLE / 'CLAUDE.md', root / 'CLAUDE.md')
             shutil.copytree(QUELLE / '.claude/skills', root / '.claude/skills', ignore=shutil.ignore_patterns('.DS_Store'))
             subprocess.run([sys.executable, str(root / 'DOKU/ansicht_bauen.py')], check=True, capture_output=True, timeout=30)
+            archiv_html, bericht_html = archiv_md.with_suffix('.html'), bericht_md.with_suffix('.html')
+            assert archiv_html.is_file() and bericht_html.is_file(), 'HTML-Ansichten in Unterordnern fehlen'
+            archiv = archiv_html.read_text('utf-8'); bericht = bericht_html.read_text('utf-8')
+            assert 'Historischer Stand' in archiv and 'aus Archiv/2026-Probe.md' in archiv
+            assert f'href="../{quellen[0].stem}.html"' in archiv
+            assert 'href="../Pruefberichte/Unterordner/Pr%C3%BCfbericht%20%C3%BC.html"' in archiv
+            assert 'href="../../Archiv/2026-Probe.html"' in bericht
+            assert 'Archiv/2026-Probe.html' in (root / 'DOKU' / (quellen[0].stem + '.html')).read_text('utf-8')
+            for q in quellen[1:]:
+                public = (root / 'DOKU' / (q.stem + '.html')).read_text('utf-8')
+                assert 'href="Archiv/' not in public and 'href="Pruefberichte/' not in public and f'href="{quellen[0].stem}.html"' not in public
+            def doku_zustand():
+                return {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in (root / 'DOKU').rglob('*') if p.is_file()}
+            vorher_doku = doku_zustand()
+            subprocess.run([sys.executable, str(root / 'DOKU/ansicht_bauen.py')], check=True, capture_output=True, timeout=30)
+            assert doku_zustand() == vorher_doku, 'Unveränderte Doku beim erneuten Bau überschrieben'
             subprocess.run([sys.executable, str(root / '06 Werkzeuge/verteilen.py')], check=True, capture_output=True, timeout=30, cwd=root)
             def abgleich_lauf():
                 r = subprocess.run([sys.executable, str(abgleich)], input='{}', capture_output=True, text=True, encoding='utf-8', timeout=60, env=dict(os.environ, CLAUDE_PROJECT_DIR=str(root)))
@@ -893,18 +1353,31 @@ def run(behalten=False):
                 assert 'weichen' not in abgleich_lauf() and 'nicht aktuell' not in abgleich_lauf()
                 alt_md = quellen[0].name; alt_html = 'DOKU/' + quellen[0].stem + '.html'
                 with open(root / 'DOKU/md' / alt_md, 'a', encoding='utf-8') as fh: fh.write('\n\nNeuer Absatz für den Abgleich.\n')
+                archiv_html.rename(base / 'Archivansicht-vorher.html')
+                with bericht_md.open('a', encoding='utf-8') as fh: fh.write('\nNeuer künstlicher Prüfvermerk.\n')
                 os.utime(root / 'DOKU' / (quellen[1].stem + '.html'), None)   # eine andere Ansicht ist jetzt jünger, darf nichts verdecken
                 skill = root / '.claude/skills/fristencheck/SKILL.md'
                 with open(skill, 'a', encoding='utf-8') as fh: fh.write('\nZusatz für den Abgleich.\n')
                 os.utime(root / '.agents/skills/entwurf/SKILL.md', None)      # eine andere Kopie ist jünger
-                aus = abgleich_lauf()
+                vorher_doku = doku_zustand(); aus = abgleich_lauf()
+                assert doku_zustand() == vorher_doku, 'Lesender Doku-Abgleich hat Dateien geändert'
                 assert alt_html in aus and ('DOKU/' + quellen[1].stem + '.html') not in aus, aus
+                assert 'DOKU/Archiv/2026-Probe.html (fehlt)' in aus and 'DOKU/Pruefberichte/Unterordner/Prüfbericht ü.html' in aus, aus
                 assert 'veraltet' in aus and '.agents/skills/fristencheck/SKILL.md' in aus and 'entwurf' not in aus.split('nicht aktuell')[1].split('.')[0], aus
                 subprocess.run([sys.executable, str(root / 'DOKU/ansicht_bauen.py')], check=True, capture_output=True, timeout=30)
                 subprocess.run([sys.executable, str(root / '06 Werkzeuge/verteilen.py')], check=True, capture_output=True, timeout=30, cwd=root)
                 aus = abgleich_lauf(); assert 'weichen' not in aus and 'nicht aktuell' not in aus, aus
+                assert einzeln.read_text('utf-8') == '<html>Eigenständige Ausgabe ohne Markdown-Quelle</html>'
+                assert archiv_md.read_text('utf-8') == '# Künstliche Dokumentation\n\n*Stand: 17.09.2026*\n\n## Nachweis\n\nNur eine Probe.\n'
+                doppelt = root / 'DOKU' / quellen[0].name
+                doppelt.write_text('# Künstliche zweite Quelle für dasselbe HTML-Ziel\n', encoding='utf-8')
+                vorher_doku = doku_zustand()
+                r = subprocess.run([sys.executable, str(root / 'DOKU/ansicht_bauen.py')], capture_output=True, text=True, encoding='utf-8', timeout=30)
+                assert r.returncode != 0 and 'Zwei Markdown-Quellen' in r.stderr
+                assert doku_zustand() == vorher_doku, 'Mehrdeutige Quelle hat Ansichten überschrieben'
+                doppelt.rename(base / 'Doppelte-Quelle-Probe.md')
             finally: (root / 'zentrale.weg').rename(root / 'zentrale.json')
-            ok('Doku-Abgleich: genau die veraltete HTML-Ansicht und genau die veraltete Skill-Kopie werden inhaltlich erkannt, auch ohne zentrale.json und obwohl andere Dateien jünger sind; nach dem Neubau still')
+            ok('Doku-Abgleich (F26, AUDIT-20261008-007): aktive, fehlende archivierte und verschachtelte veraltete Ansichten sowie Skill-Kopie erkannt; relative Links mit Umlauten korrekt, interne Seiten nicht öffentlich verlinkt, Quellen und eigenständiges HTML unverändert, Neubau wiederholbar und doppelte Zielzuordnung abgewiesen')
         # Word-Erzeuger, Vorabbericht (Prüfbericht F29): jeden Markertyp offen lassen, interne Notiz, fehlender Empfänger, Platzhalter, keine Trennlinie
         docx = QUELLE / '.claude/recht/werkzeuge/docx_erzeugen.py'
         if docx.is_file():
@@ -1208,6 +1681,108 @@ def run(behalten=False):
             r = lauf(str(q), str(fall_n / '02 Grundlagen' / 'Wortprobe.docx')); assert r.returncode == 1 and 'Originalbereich' in r.stderr and not (fall_n / '02 Grundlagen' / 'Wortprobe.docx').exists(), r.stderr
             with zipfile.ZipFile(fall_n / '06 Entwürfe' / 'Wortprobe.docx') as zf: assert 'Text mitSeitenvorschub.' in zf.read('word/document.xml').decode()
             ok('Word-Erzeuger (AUDIT-009): vorhandene Datei nur mit --ersetzen, nie in einen Originalbereich, Steuerzeichen entfernt')
+
+        # Codex-Audit am Stand 1d015b4: datierte Kennungen unterscheiden diese Befunde vom früheren Audit.
+        start_pruefen(base, root, ok)
+
+        # AUDIT-20261008-002: Schema und Speicherung direkt, ohne den Schutz der HTTP-Eingabe.
+        def zahlen_zustand():
+            return {str(p.relative_to(base)): (p.stat().st_mtime_ns, hashlib.sha256(p.read_bytes()).hexdigest())
+                    for ordner in (root, base / 'Sicherungen') for p in ordner.rglob('*') if p.is_file()}
+        vorher_z = zahlen_zustand()
+        r = py('import copy, json, akte_schema, werkzeuge\n'
+               'akte, rev = store.lese_akte("R-0001")\n'
+               'for wert in (float("nan"), float("inf"), float("-inf")):\n'
+               '    for feld in ("reihenfolge", "betrag", "zusatz"):\n'
+               '        probe = copy.deepcopy(akte)\n'
+               '        if feld == "reihenfolge": probe["ereignisse"][0][feld] = wert\n'
+               '        elif feld == "betrag": probe["kosten"] = [{"datum": "2026-10-08", "posten": "Probe", "betrag": wert}]\n'
+               '        else: probe["fall"][feld] = {"liste": [wert]}\n'
+               '        assert any("endliche" in f for f in akte_schema.validate(probe)[0]), feld\n'
+               '        try: store.speichere_akte("R-0001", probe, rev)\n'
+               '        except ValueError as e: assert "endliche" in str(e)\n'
+               '        else: raise AssertionError("Sonderzahl gespeichert")\n'
+               '    try: werkzeuge.ausfuehren("ereignis_eintragen", {"fall": "R-0001", "datum": "2026-10-08", "titel": "Probe", "reihenfolge": wert}, bestaetigt=True)\n'
+               '    except ValueError as e: assert "endliche" in str(e)\n'
+               '    else: raise AssertionError("Werkzeug akzeptiert Sonderzahl")\n'
+               '    try: store.zentrale_aendern(lambda z: z["einstellungen"].update({"zahlprobe": wert}))\n'
+               '    except ValueError: pass\n'
+               '    else: raise AssertionError("Zentrale akzeptiert Sonderzahl")\n')
+        assert r.returncode == 0, r.stdout + r.stderr
+        assert zahlen_zustand() == vorher_z, 'Ungültige Zahlen haben Akte, Journal oder Sicherungsstände geändert'
+        ok('Zahlen (AUDIT-20261008-002): Schema, Werkzeuge und Speicherung weisen NaN und beide Unendlichkeiten auch in Zusatzfeldern ab, ohne Dateiänderung')
+
+        # HTTP: ungültige JSON-Zahlen, numerische Texte und Exponentenüberlauf. Ganze Akte und Werkzeugwege.
+        fall_z = anfrage('/api/fall/R-0001'); ereignis_z = fall_z['akte']['ereignisse'][0]['id']
+        for wert in ('NaN', 'Infinity', '-Infinity', '1e999', '-1e999', float('nan'), float('inf'), float('-inf')):
+            for name in ('ereignis_eintragen', 'ereignis_setzen'):
+                par = {'fall': 'R-0001', 'reihenfolge': wert}
+                par.update({'datum': '2026-10-08', 'titel': 'Zahlprobe'} if name == 'ereignis_eintragen' else {'ereignis': ereignis_z})
+                antwort = anfrage('/api/werkzeug', {'name': name, 'parameter': par, 'bestaetigt': True}, erwartet=400)
+                assert 'endliche' in antwort['fehler'], antwort
+        for literal in ('NaN', 'Infinity', '-Infinity', '1e999', '-1e999'):
+            roh = ('{"name":"ereignis_eintragen","parameter":{"fall":"R-0001","datum":"2026-10-08","titel":"Probe","reihenfolge":' + literal + '},"bestaetigt":true}').encode()
+            assert 'endliche' in anfrage('/api/werkzeug', roh, erwartet=400)['fehler']
+        for wert in (float('nan'), float('inf'), float('-inf')):
+            ak = json.loads(json.dumps(fall_z['akte'])); ak['kosten'] = [{'betrag': wert}]
+            assert 'endliche' in anfrage('/api/fall/R-0001', {'akte': ak, 'revision': fall_z['revision']}, erwartet=400)['fehler']
+        assert zahlen_zustand() == vorher_z
+        # Bestehende extern beschädigte Akte: gültige JSON-Fehlermeldung statt HTTP 200 mit unlesbarem NaN.
+        aktenpfad = root / f1['ordner'] / 'akte.json'; original_z = aktenpfad.read_bytes()
+        try:
+            ak = json.loads(original_z); ak['ereignisse'][0]['reihenfolge'] = float('nan')
+            aktenpfad.write_text(json.dumps(ak), encoding='utf-8')
+            assert 'endliche' in anfrage('/api/fall/R-0001', erwartet=400)['fehler']
+        finally: aktenpfad.write_bytes(original_z)
+        ok('Zahlen (AUDIT-20261008-002): HTTP weist Sonderzahlen, Zahlentexte und Exponentenüberlauf vor dem Schreiben ab; beschädigte Altakte liefert eine lesbare Fehlermeldung')
+
+        # CLI: Schlüssel=Wert, ganzes JSON und verschachtelte JSON-Parameter; gute Dezimalwerte bleiben erlaubt.
+        vorher_z = zahlen_zustand(); cli_z = root / '06 Werkzeuge/dienst/cli.py'
+        for wert in ('NaN', 'Infinity', '-Infinity', '1e999', '-1e999'):
+            for args in ([f'fall=R-0001', 'datum=2026-10-08', 'titel=Probe', f'reihenfolge={wert}'],
+                         ['{"fall":"R-0001","datum":"2026-10-08","titel":"Probe","reihenfolge":' + wert + '}']):
+                r = subprocess.run([sys.executable, str(cli_z), 'ereignis_eintragen', *args], capture_output=True, text=True, encoding='utf-8', timeout=30)
+                assert r.returncode == 1 and 'endliche' in json.loads(r.stdout)['fehler'], r.stdout + r.stderr
+        r = subprocess.run([sys.executable, str(cli_z), 'dokument_ordnen', 'fall=R-0001', 'dokument=D0001', 'felder={"zusatz":[NaN]}'], capture_output=True, text=True, encoding='utf-8', timeout=30)
+        assert r.returncode == 1 and 'endliche' in json.loads(r.stdout)['fehler'], r.stdout + r.stderr
+        assert zahlen_zustand() == vorher_z
+        r = subprocess.run([sys.executable, str(cli_z), 'ereignis_eintragen', 'fall=R-0001', 'datum=2026-10-08', 'titel=NaN', 'reihenfolge=1,5'], capture_output=True, text=True, encoding='utf-8', timeout=30)
+        assert r.returncode == 0, r.stdout + r.stderr
+        neu_z = json.loads(r.stdout)['ereignis']; assert neu_z['reihenfolge'] == 1.5 and neu_z['titel'] == 'NaN'
+        ok('Zahlen (AUDIT-20261008-002): CLI weist Sonderzahlen in allen Parameterformen ab; 1,5 als Zahl und NaN als gewöhnlicher Titel bleiben erlaubt')
+
+        # MCP: nach jedem ungültigen Aufruf muss derselbe Prozess noch auf ping antworten.
+        vorher_z = zahlen_zustand(); nachrichten = []; erwartungen = []
+        for wert in ('NaN', 'Infinity', '-Infinity', '1e999', '-1e999'):
+            for als_text in (False, True):
+                zahl_json = json.dumps(wert) if als_text else wert
+                nachrichten.append('{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"ereignis_setzen","arguments":{"fall":"R-0001","ereignis":' + json.dumps(neu_z['id']) + ',"reihenfolge":' + zahl_json + ',"bestaetigt":true}}}')
+                nachrichten.append('{"jsonrpc":"2.0","id":2,"method":"ping"}')
+                erwartungen.append(als_text)
+        r = subprocess.run([sys.executable, str(root / '06 Werkzeuge/dienst/mcp_server.py'), '--root', str(root)],
+                           input='\n'.join(nachrichten) + '\n', capture_output=True, text=True, encoding='utf-8', timeout=30)
+        assert r.returncode == 0, r.stderr
+        antworten = [json.loads(z) for z in r.stdout.splitlines()]; assert len(antworten) == len(nachrichten)
+        for i, als_text in enumerate(erwartungen):
+            a, ping_z = antworten[2 * i:2 * i + 2]
+            if als_text: assert a['result']['isError'] and 'endliche' in a['result']['content'][0]['text'], a
+            else: assert a['error']['code'] == -32700 and a['id'] is None, a
+            assert ping_z['id'] == 2 and ping_z['result'] == {}, ping_z
+        assert zahlen_zustand() == vorher_z
+        # Unabhängiger strenger JSON-Leser: Antwort und gespeicherte Akte bleiben browserlesbar.
+        def sonderzahl_verboten(wert): raise AssertionError('Ungültiges JSON: ' + wert)
+        for roh in (anfrage('/api/fall/R-0001', roh=True), aktenpfad.read_bytes()):
+            ak = json.loads(roh, parse_constant=sonderzahl_verboten)
+            assert (ak.get('akte') or ak)['ereignisse'][-1]['reihenfolge'] == 1.5
+        ok('Zahlen (AUDIT-20261008-002): MCP weist Sonderzahlen und Zahlentexte ab, bleibt ansprechbar und verändert keine Dateien; HTTP-Antwort und Akte sind gültiges JSON')
+
+        entwurfsstatus_pruefen(root, f2, anfrage)
+        ok('Entwurfsstatus (AUDIT-20261008-003): geprüft und versandt nach in Arbeit oder verworfen erneut gesetzt; Fassung, Historie, Dokumentkennungen und Kopien bleiben, Versand braucht Beleg, geänderter Text bekommt eine neue Fassung')
+
+        pruefsummen_pruefen(root, anfrage, ok)
+        kennungszaehler_pruefen(root, anfrage, ok)
+        sicherungsziele_pruefen(root, anfrage, ok)
+        startschluessel_pruefen(root, url, json.loads(laufzeit.read_text('utf-8')), cookie, ok)
 
         ergebnis = {'bestanden': len(bestanden), 'punkte': bestanden, 'ordner': str(base) if behalten else ''}
         (base / 'Ergebnis.json').write_text(json.dumps(ergebnis, ensure_ascii=False, indent=2), encoding='utf-8')

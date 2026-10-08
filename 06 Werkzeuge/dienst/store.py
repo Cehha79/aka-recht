@@ -80,8 +80,9 @@ def laufzeit_ordner():
     return ordner
 
 @contextmanager
-def sperre():
-    datei = laufzeit_ordner() / f'{instanz()}.lock'
+def sperre(*, start=False):
+    """Startversuche getrennt von Datenänderungen sperren: der Kinddienst braucht die Datensperre."""
+    datei = laufzeit_ordner() / f'{"start-" if start else ""}{instanz()}.lock'
     with datei.open('a+') as f:
         if fcntl: fcntl.flock(f, fcntl.LOCK_EX)
         else: f.seek(0); msvcrt.locking(f.fileno(), msvcrt.LK_LOCK, 1)   # Windows: ein Byte sperren, wartet bis frei
@@ -126,12 +127,12 @@ def einrichten():
     p = zentrale_pfad()
     with sperre():
         if p.exists(): return False
-        atomar(p, json.dumps(zentrale_standard(), ensure_ascii=False, indent=2) + '\n'); return True
+        atomar(p, json.dumps(zentrale_standard(), ensure_ascii=False, indent=2, allow_nan=False) + '\n'); return True
 
 def lade_zentrale():
     """Liest zentrale.json; fehlt sie, den Standard nur im Speicher (schreibt nichts, Prüfbericht F03)."""
     p = zentrale_pfad()
-    z = json.loads(p.read_text('utf-8')) if p.exists() else zentrale_standard()
+    z = akte_schema.json_laden(p.read_text('utf-8')) if p.exists() else zentrale_standard()
     z.setdefault('einstellungen', {}).setdefault('feiertagsland', 'BW')   # ältere zentrale.json
     z['einstellungen'].setdefault('sprache', 'de')
     a = z['einstellungen'].setdefault('absender', {})
@@ -157,7 +158,7 @@ def feiertagsland(): return lade_zentrale()['einstellungen'].get('feiertagsland'
 
 def speichere_zentrale(z):
     """Nur unter sperre() mit frisch gelesenem Stand aufrufen; von außen über zentrale_aendern."""
-    atomar(zentrale_pfad(), json.dumps(z, ensure_ascii=False, indent=2) + '\n')
+    atomar(zentrale_pfad(), json.dumps(z, ensure_ascii=False, indent=2, allow_nan=False) + '\n')
 
 def zentrale_aendern(aendern):
     """Einziger Weg, zentrale.json von außerhalb dieses Moduls zu ändern: unter Sperre frisch lesen,
@@ -179,6 +180,34 @@ def verwaiste_faelle():
 
 def sicherungsziel(): return Path(lade_zentrale()['sicherung']['ziel']).expanduser()
 
+def sicherungsziele_pruefen(werte):
+    """Übergebene Ziele prüfen, ohne Ordner anzulegen oder Einstellungen zu ändern (AUDIT-20261008-008)."""
+    if not isinstance(werte, dict): raise ValueError('Sicherungseinstellungen müssen ein Objekt sein.')
+    geprueft = {}
+    for feld in ('ziel', 'zweites_ziel'):
+        if feld not in werte: continue
+        wert = werte[feld]
+        name = 'Sicherungsziel' if feld == 'ziel' else 'Zweites Sicherungsziel'
+        if not isinstance(wert, str): raise ValueError(f'{name}: Bitte einen Ordnerpfad als Text angeben.')
+        if any(ord(c) < 32 or ord(c) == 127 for c in wert):
+            raise ValueError(f'{name}: Der Pfad darf keine Steuerzeichen enthalten.')
+        wert = wert.strip()
+        if not wert:
+            if feld == 'ziel': raise ValueError('Sicherungsziel darf nicht leer sein.')
+            geprueft[feld] = ''; continue
+        try:
+            pfad = Path(wert).expanduser()
+            if not pfad.is_absolute(): raise ValueError(f'{name}: Bitte einen vollständigen Ordnerpfad oder ~/… angeben.')
+            pfad = pfad.resolve()
+            if pfad == ROOT or ROOT in pfad.parents:
+                raise ValueError(f'{name} muss außerhalb des Projekts liegen.')
+            if any(p.exists() and not p.is_dir() for p in (pfad, *pfad.parents)):
+                raise ValueError(f'{name}: Der Pfad führt zu einer Datei statt zu einem Ordner.')
+        except (OSError, RuntimeError):
+            raise ValueError(f'{name}: Der Ordnerpfad konnte nicht geprüft werden. Bitte Pfad und Zugriff prüfen.') from None
+        geprueft[feld] = wert
+    return geprueft
+
 def faelle(): return lade_zentrale()['faelle']
 
 def fall_eintrag(fall_id):
@@ -193,7 +222,7 @@ def fall_ordner(fall_id): return sicher(fall_eintrag(fall_id)['ordner'])
 # ---------------------------------------------------------------- akte
 def lese_akte(fall_id):
     roh = (fall_ordner(fall_id) / 'akte.json').read_bytes()
-    return json.loads(roh.decode('utf-8')), sha(roh)
+    return akte_schema.json_laden(roh.decode('utf-8')), sha(roh)
 
 def speichere_akte(fall_id, akte, revision, ohne_sicherung=False, hinfaellig=None):
     """Schreibt akte.json nur, wenn revision zum aktuellen Stand passt. Liefert neue Revision.
@@ -209,13 +238,16 @@ def speichere_akte(fall_id, akte, revision, ohne_sicherung=False, hinfaellig=Non
     with sperre():
         alt = pfad.read_bytes()
         if sha(alt) != revision: raise RuntimeError('Die Akte wurde inzwischen an anderer Stelle geändert. Bitte neu laden.')
+        # Derselbe gesperrte Stand liefert Revision und historische Kennungszähler.
+        # Vor Sicherung und Schreiben prüfen; ältere Clients dürfen Zähler weglassen.
+        akte_schema.zaehler_bewahren(akte, akte_schema.json_laden(alt.decode('utf-8')))
+        neu = json.dumps(akte, ensure_ascii=False, indent=2, allow_nan=False) + '\n'
         if not ohne_sicherung:
             ablage = sicherungsziel() / 'Ordnungsstände' / fall_id
             ablage.mkdir(parents=True, exist_ok=True)
             kopie = ablage / (datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '_' + uuid.uuid4().hex[:8] + '_akte.json')
             with kopie.open('xb') as f: f.write(alt)
             kopie.chmod(0o600)
-        neu = json.dumps(akte, ensure_ascii=False, indent=2) + '\n'
         atomar(pfad, neu)
         revision_neu = sha(neu.encode('utf-8'))
     if zurueckgesetzt:   # außerhalb der Sperre: journal_anhaengen sperrt selbst (sonst wartet der Prozess auf sich)
@@ -246,7 +278,7 @@ def neuer_fall(titel, bereich='Allgemein', rolle='', ziel=''):
         akte = akte_schema.leer()
         akte['fall'].update({'id': kennung, 'titel': titel, 'bereich': bereich or 'Allgemein', 'rolle': rolle or '',
                              'ziel': ziel or '', 'angelegt': datetime.now().date().isoformat()})
-        atomar(ziel_ordner / 'akte.json', json.dumps(akte, ensure_ascii=False, indent=2) + '\n')
+        atomar(ziel_ordner / 'akte.json', json.dumps(akte, ensure_ascii=False, indent=2, allow_nan=False) + '\n')
         if not (ziel_ordner / 'bestand.json').exists():
             atomar(ziel_ordner / 'bestand.json', json.dumps({'schema': 1, 'dateien': {}, 'verschiebungen': []}, ensure_ascii=False, indent=2) + '\n')
         if not (ziel_ordner / 'JOURNAL.md').exists():
@@ -267,7 +299,7 @@ def beispiel_laden():
         ordner_faelle = sicher('02 Fälle'); ordner_faelle.mkdir(exist_ok=True)
         nummern += [int(m[1]) for p in ordner_faelle.iterdir() if (m := re.match(r'R-(\d+)', p.name))]
         kennung = 'R-' + str(max(nummern, default=0) + 1).zfill(4)
-        akte = json.loads((quelle / 'akte.json').read_text('utf-8'))
+        akte = akte_schema.json_laden((quelle / 'akte.json').read_text('utf-8'))
         titel = akte['fall'].get('titel') or 'Beispielfall'
         name = re.sub(r'[^\w äöüÄÖÜß.-]', '', titel).strip(' .')[:65] or 'Beispiel'
         rel = f'02 Fälle/{kennung} {name}'; ziel_ordner = sicher(rel)
@@ -276,7 +308,7 @@ def beispiel_laden():
         if fehler: raise ValueError('Beispielakte fehlerhaft: ' + '; '.join(fehler[:3]))
         shutil.copytree(quelle, ziel_ordner, ignore=shutil.ignore_patterns('.DS_Store'))
         for g in GRUPPEN: (ziel_ordner / g).mkdir(exist_ok=True)
-        atomar(ziel_ordner / 'akte.json', json.dumps(akte, ensure_ascii=False, indent=2) + '\n')
+        atomar(ziel_ordner / 'akte.json', json.dumps(akte, ensure_ascii=False, indent=2, allow_nan=False) + '\n')
         if not (ziel_ordner / 'JOURNAL.md').exists(): atomar(ziel_ordner / 'JOURNAL.md', '# Journal\n\n')
         z['faelle'].append({'id': kennung, 'ordner': rel}); speichere_zentrale(z)
     journal_anhaengen(kennung, 'Arbeit', 'Beispielfall geladen', f'Beispielakte als {kennung} übernommen. Erfundener Fall zum Ausprobieren.')
@@ -311,4 +343,3 @@ def journal_lesen(fall_id):
         m = re.match(r'## (\d{4}-\d{2}-\d{2}) · ([^·\n]+) · (.+)\n?([\s\S]*)', block)
         if m: eintraege.append({'datum': m[1], 'art': m[2].strip(), 'titel': m[3].strip(), 'text': m[4].strip()})
     return eintraege
-

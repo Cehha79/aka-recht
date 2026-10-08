@@ -62,7 +62,7 @@ AKA Recht ersetzt keine Rechtsberatung.
   die MCP (Model Context Protocol) oder Befehle ausführen kann. 7 Anleitungen
   führen sie von der Fallaufnahme bis zum geprüften Entwurf, 36 Werkzeuge
   lassen sie in der Akte lesen und, nach deiner Bestätigung, schreiben.
-- **Alles bleibt bei dir:** keine KI in der App, kein Konto, kein Schlüssel,
+- **Alles bleibt bei dir:** keine KI in der App, kein Konto, kein API-Schlüssel,
   kein Netz. Der Dienst läuft nur auf deinem Rechner.
 
 </div>
@@ -75,22 +75,56 @@ AKA Recht ersetzt keine Rechtsberatung.
 
 <div align="justify">
 
-Produkt Version 0.4 vom 18.09.2026, neuester Stand vom 08.10.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · geprüft mit Python 3.14.7 auf macOS 26.7.1, Ubuntu 24.04 (Python 3.12) und Windows 11 (Python 3.14) · Autor: Hasan Tepegöz
+Feste Version 0.4 vom 18.09.2026 · neuester Quellstand vom 08.10.2026 · Datenformat `akte.json` Schema 1 · MCP-Protokoll 2026-07-28 und 2025-11-25 · Autor: Hasan Tepegöz
 
 ## Neu seit Version 0.4
 
-Diese Punkte stehen im neuesten Stand vom 08.10.2026, noch nicht in der festen Version 0.4. Wer die feste Version von der Release-Seite lädt, bekommt sie mit der nächsten Version. Bis zum Stand vom 04.10.2026 geprüft mit dem Funktionstest (77 Prüfpunkte) und in der Oberfläche auf macOS, Linux und Windows; die Änderungen vom 08.10.2026 (Funktionstest mit 82 Prüfpunkten) bisher nur auf macOS.
+Diese Punkte stehen im neuesten Stand vom 08.10.2026, noch nicht in der festen Version 0.4. Für diese Änderungen den neuesten Stand über „Code → Download ZIP“ oder git laden. Die feste Version auf der Release-Seite bleibt 0.4. Der aktuelle Prüfstand und die offenen Grenzen stehen direkt unter den Neuerungen.
 
+- **Einmalige Startlinks:** Jeder Start öffnet einen neuen Link, der zwei Minuten und nur einmal gilt. Die Browseranmeldung bleibt davon getrennt; erneutes Öffnen lässt vorhandene Fenster angemeldet. Mit `server.py --stop` lässt sich gezielt der Dienst dieser Mappe beenden.
+- **Vollständige Dokumentationsansichten:** Der Generator und die automatische Doku-Prüfung erfassen Markdown-Quellen auch in Unterordnern. Die HTML-Ansichten haben passende relative Links; interne Arbeitsstände bleiben aus der öffentlichen Navigation ausgeschlossen.
+- **Stabile Kennungen:** Auch beim vollständigen Speichern bleiben bekannte frühere Nummern erhalten. Niedrigere Zähler werden abgewiesen, fehlende aus dem gespeicherten Stand ergänzt; entfernte Einträge geben ihre Nummer dadurch nicht wieder frei.
+- **Frische Prüfsummen:** Ausdrückliche Bestands- und Sicherungsprüfungen lesen den aktuellen Dateiinhalt neu, auch bei gleicher Größe und gleichem Änderungsdatum. Die Seite „Bestand und Sicherung“ prüft beide Archive beim Öffnen frisch; die schnelle Übersicht behält ihren Zwischenspeicher.
+- **Dokumentvorschau beim Wechsel:** Verspätete Textantworten und Fehlermeldungen überschreiben nach einem Wechsel des Dokuments, Reiters oder Falls nicht mehr die aktuelle Vorschau. Auch Schließen und Zurückwechseln sind abgesichert. Mit 13 Browserprüfungen auf macOS geprüft; Linux und Windows stehen noch aus.
+- **Erster Start und Zahlenprüfung:** Der erste Start blockiert die Einrichtung nicht mehr; gleichzeitige Starter verwenden einen Dienst. Ungültige Zahlen wie NaN oder Unendlich werden über Oberfläche, Befehlszeile und KI-Schnittstelle vor dem Speichern abgewiesen. Geprüft mit künstlichen Akten auf macOS; Linux und Windows stehen für diese Änderungen noch aus.
 - **Chronologie als Zeitpfad:** links die anderen Stellen, rechts die eigenen Schritte, die Zeit in der Mitte; Kernereignisse, Farbe je Gruppe, Bezug „Antwort auf“ mit Abstand, eigene Art eines Ereignisses neben der Liste der üblichen.
 - **Beteiligte mit Rolle und Funktion:** Die Rolle ordnet der Gruppe zu und bestimmt Seite und Farbe in der Chronologie; die Funktion sagt in freien Worten, wer jemand ist, etwa „Rechtsanwalt der Gegenseite“.
-- **Entwürfe:** Die Fassungsnummer folgt dem Text: Unveränderter Text behält die Nummer, wenn sein Status wechselt, geänderter bekommt eine neue. Ein Entwurf lässt sich umbenennen (`entwurf_setzen`).
+- **Entwürfe:** Die Fassungsnummer folgt dem Text: Unveränderter Text behält die Nummer, wenn sein Status wechselt, geänderter bekommt eine neue. Auch bei erneutem Erfassen einer bereits festgehaltenen Fassung wird der aktuelle Status gesetzt; Historie und Kopien bleiben erhalten. Ein Entwurf lässt sich umbenennen (`entwurf_setzen`).
 - **Bestand:** Werkzeuge, die selbst eine Datei anlegen, geben nur dieser eine Kennung; andere neue Dateien bleiben unerfasst, bis du `bestand_abgleichen` aufrufst.
-- **Sicherung:** Die Wiederherstellungsprobe meldet getrennt, ob das Archiv vollständig ist und ob jede Akte alle Regeln des Datenmodells erfüllt. Ein zweites Ziel ist ab Werk leer: Ob eine Sicherung in einen Cloud-Ordner geht, entscheidest du in den Einstellungen.
+- **Sicherung:** Die Wiederherstellungsprobe meldet getrennt, ob das Archiv vollständig ist und ob jede Akte alle Regeln des Datenmodells erfüllt. Sicherungsziele werden vor dem Speichern auf gültige Ordnerpfade außerhalb des Projekts geprüft; fehlerhafte Eingaben ändern keine Einstellungen. Ein zweites Ziel ist ab Werk leer: Ob eine Sicherung in einen Cloud-Ordner geht, entscheidest du in den Einstellungen.
 - **Eigene Texte sind kein Original:** Was eine KI über `datei_ablegen` anlegt, bekommt den Stand Entwurf oder Vermerk, auch im Eingang. Das Übergabepaket nimmt solche Texte nicht als Original mit; für die Gegenseite stehen darin weder Falltitel noch eigene Dokumenttitel.
 - **Verlässlicher bei gleichzeitiger Arbeit:** Oberfläche, Befehlszeile und KI können gleichzeitig Fälle anlegen und Einstellungen speichern, ohne dass ein Fall aus dem Verzeichnis fällt; ein Fallordner ohne Eintrag wird beim Sitzungsstart gemeldet. Ein Tippfehler in einer Dokumentkennung registriert keine fremden Dateien mehr.
 - **Schutz:** Eine Python-Fassung vor 3.12 wird beim Start deutlich gemeldet, statt dass einzelne Teile still ausfallen. Der Word-Erzeuger überschreibt keine vorhandene Datei (`--ersetzen` für eine bewusste Neufassung) und schreibt nie in die Originalbereiche. Alte Office-Dateien (`.doc`, `.xls`, `.ppt`) werden nur im Dateimanager gezeigt. Sperr- und Laufzeitdateien liegen in einem eigenen Ordner des Benutzers.
 - **Sitzungsstart:** Die Meldung des Hooks nennt ihre Uhrzeit; Verknüpfungen im Eingang zählen nicht als Post.
 - **Rechtsinhalte:** Ein Prüflauf stellt sicher, dass alle Verweise der Merkblätter, des Quellenkatalogs und der Vorlagen auf amtliche Stellen zeigen.
+
+## Prüfstand und bekannte Grenzen
+
+Am 08.10.2026 sind **99 von 99 automatischen Prüfpunkten** mit künstlichen
+Akten auf macOS 26.7.1 und Python 3.14.7 bestanden. Hinzu kommen
+gezielte Browserprüfungen der Dokumentvorschau, Sicherungsanzeige,
+Dokumentationsnavigation und einmaligen Startlinks. Neun der zehn Befunde
+des Nachaudits vom selben Tag sind behoben.
+
+Für Linux und Windows ist der letzte gemeldete Stand **77 Prüfpunkte und
+Bedienprüfung vom 02.10.2026**. Die 22 später hinzugekommenen Punkte und
+erweiterte bestehende Prüfungen stehen dort noch aus. Eine vollständige
+Abnahme des aktuellen Stands auf allen drei Systemen ist damit offen.
+
+- **Windows-Start (offener Auditpunkt 10):** `Start.bat` verändert weiterhin
+  drei mitgelieferte KI-Konfigurationen. In einer git-Arbeitskopie kann das
+  Aktualisieren blockieren. Die Korrektur steht noch aus; eigene Änderungen
+  vor dem Aktualisieren prüfen und erhalten, siehe [Aktualisieren](#aktualisieren).
+- **Fallverwaltung:** Ganze Fälle lassen sich noch nicht archivieren oder
+  entfernen. Das ist geplant; ein Fallordner sollte nicht von Hand entfernt werden.
+- **Dateiformate:** CSV wird bereits als Text gelesen. Für Excel (`.xlsx`)
+  und Kalender (`.ics`) fehlt die Textvorschau noch.
+- **KI-Schnittstelle:** Die kompakte Fallübersicht liefert bei Ereignissen
+  noch keine vollständigen Einzelheiten, Anmerkungen und Originalnotizen.
+  Ein eigenes Lese-Werkzeug dafür fehlt.
+- **Ausstehende Abnahme:** Weitere Bedien-, Assistenten-, Texterkennungs-
+  und Wiederherstellungsprüfungen bleiben offen. Technische Tests bestätigen
+  keine rechtliche Richtigkeit; offene Quellenhinweise bleiben zu prüfen.
 
 ## Herunterladen
 
@@ -159,7 +193,7 @@ Framework und braucht keinen Zugang nach außen.
 - Python 3.12 oder neuer (`python3 --version`). Geprüft mit 3.12.3 unter
   Ubuntu und 3.14.7 unter macOS und Windows; eine ältere Fassung meldet
   AKA Recht beim Start. Keine weiteren Pakete.
-- Geprüft am 08.10.2026 nur auf macOS: Funktionstest mit 82 Prüfpunkten.
+- Geprüft am 08.10.2026 nur auf macOS: Funktionstest mit 99 Prüfpunkten.
 - Geprüft am 02.10.2026 auf macOS, Linux und Windows: Funktionstest mit 77
   Prüfpunkten und die Oberfläche.
 - Geprüft am 18.09.2026 auf macOS 26.7, auf Ubuntu 24.04 (Python 3.12) und
@@ -190,9 +224,11 @@ Internet. Wenn der Doppelklick nichts tut: Rechtsklick auf die Datei,
 
 *Geklappt, wenn:* Ein schwarzes Fenster erscheint und der Browser die Mappe
 zeigt. Das Fenster kannst du danach schließen — der Dienst läuft in einer
-eigenen Sitzung weiter. Einen Knopf zum Beenden gibt es nicht: Der Dienst
-endet, wenn du den Rechner neu startest oder im Terminal
-`pkill -f "06 Werkzeuge/dienst/server.py"` eingibst.
+eigenen Sitzung weiter. Zum Beenden zuerst offene Änderungen speichern, dann
+im Terminal in diesem Ordner `python3 "06 Werkzeuge/dienst/server.py" --stop`
+ausführen. Der Befehl beendet nur den Dienst dieser Mappe und seine Anmeldungen.
+Beim nächsten Doppelklick entsteht ein neuer Startlink. Er gilt zwei Minuten
+und nur einmal; bei einem alten Link die Startdatei erneut öffnen.
 
 **2. Texterkennung einrichten — freiwillig**
 
@@ -309,7 +345,8 @@ Doppelklick auf `Start.bat`.
 > gefunden" und die Hooks laufen nicht.
 
 *Geklappt, wenn:* Der Browser zeigt die Mappe. Wer mit git arbeitet, sieht die
-drei Dateien danach als geändert — das ist richtig so.
+drei Dateien danach als geändert. Das ist eine bekannte Einschränkung des
+Starters (Auditpunkt 10, noch offen), kein Grund zum pauschalen Zurücksetzen.
 
 **2. Texterkennung einrichten — freiwillig**
 
@@ -462,6 +499,10 @@ Drei Dinge sind zu unterscheiden: **vorbereitet** heißt, die Mappe bringt die
 Konfiguration mit; **hier geprüft** heißt, wir haben es am eigenen Rechner
 durchgespielt; **offen** heißt, wir wissen es nicht.
 
+Die direkten Client-Prüfungen unten stammen vom 16. bis 18.09.2026. Der
+aktuelle Funktionstest prüft die MCP-Schnittstelle automatisch, ersetzt
+aber keinen erneuten Bedienlauf in den inzwischen installierten Assistenten.
+
 | | Claude Code | Codex | Claude Desktop | Andere (Cursor, Gemini CLI …) |
 |---|---|---|---|---|
 | Werkzeuge über MCP | vorbereitet (`.mcp.json`), hier geprüft | vorbereitet (`.codex/config.toml`), hier geprüft | vorbereitet (Eintrag von Hand), hier geprüft | Weg beschrieben, nicht geprüft |
@@ -499,12 +540,21 @@ eine Sicherung anlegen („Geprüfte Sicherung erstellen“ in der Oberfläche).
 
 <div align="justify">
 
-Im Ordner der Mappe `git pull`. Die vier Orte mit deinen Daten stehen in der
-mitgelieferten `.gitignore`; git lässt sie unberührt. Unter Windows hat
-`Start.bat` drei Konfigurationsdateien geändert; bricht `git pull` deshalb ab,
-vorher `git checkout -- .mcp.json .claude/settings.json .codex/config.toml`
-ausführen (verwirft nur diese Umstellung, `Start.bat` setzt sie beim nächsten
-Start wieder).
+Offene Änderungen in der Oberfläche speichern. Im Ordner der Mappe zuerst
+`git status` prüfen: Der Befehl zeigt lokale Änderungen. Sind keine vorhanden,
+mit `git pull --ff-only` aktualisieren; dabei wird kein abweichender Verlauf
+automatisch zusammengeführt. Anschließend den bisherigen Dienst mit
+`python3 "06 Werkzeuge/dienst/server.py" --stop` beenden (unter Windows
+`python` statt `python3`) und über die Startdatei neu öffnen. Erst dann läuft
+der neue Programmstand. Die vier Orte mit deinen Daten stehen in der
+mitgelieferten `.gitignore` und werden durch git nicht verwaltet; die vorherige
+Sicherung bleibt erforderlich.
+
+Unter Windows verändert `Start.bat` `.mcp.json`, `.claude/settings.json` und
+`.codex/config.toml`. Das kann `git pull` blockieren (offener Auditpunkt 10).
+Mit `git diff` prüfen, was geändert wurde, und eigene Anpassungen vor dem
+Aktualisieren erhalten. Kein pauschales Zurücksetzen dieser Dateien: Darin
+können neben der Python-Umstellung auch eigene Einstellungen stehen.
 
 </div>
 
@@ -516,10 +566,11 @@ Start wieder).
 <div align="justify">
 
 1. Neue Version in einen neuen Ordner entpacken.
-2. Den laufenden Dienst beenden. Einen Knopf dafür gibt es nicht: den Rechner
-   neu starten, oder unter macOS und Linux im Terminal
-   `pkill -f "06 Werkzeuge/dienst/server.py"` (beendet jeden laufenden Dienst
-   einer Mappe auf diesem Rechner).
+2. Offene Änderungen speichern, dann den bisherigen Dienst beenden. Im neuen
+   Ordner im Terminal `python3 "06 Werkzeuge/dienst/server.py" --root "<alter Ordner>" --stop`
+   ausführen (`<alter Ordner>` durch den vollständigen Pfad ersetzen;
+   unter Windows `python` statt `python3`). Das neue Skript kann auch einen
+   älteren Dienst gezielt beenden; andere Mappen bleiben geöffnet.
 3. Aus dem alten Ordner `01 Eingang`, `02 Fälle`, `03 Verträge und Vorsorge`
    und `zentrale.json` in den neuen Ordner verschieben; die leeren Ordner des
    neuen Ordners vorher entfernen.
@@ -724,7 +775,7 @@ nichts bei. Andere Assistenten halten die Regeln aus `AGENTS.md` selbst ein.
 | `SessionStart` | meldet beim Start mit Uhrzeit Eingang, nahe Fristen und offene Aufgaben je Fall, dazu fällige Rechtsinhalte; Verknüpfungen im Eingang zählen nicht als Post |
 | `PreToolUse` | Originalschutz: Schreiben in 02 Grundlagen, 03 Schriftverkehr, 04 Verfahren, 05 Beweise, 08 Archiv und in bestand.json wird abgewiesen, geprüft am aufgelösten Pfad |
 | `PostToolUse` | Fremdtext-Wächter: warnt mit Herkunft, wenn gelesener Text (Datei, Befehl, Web oder MCP-Werkzeug) Sätze enthält, die wie Anweisungen an die KI klingen |
-| `Stop` | Doku-Abgleich: prüft HTML-Ansichten gegen ihre md-Quellen und die Kopien für andere Assistenten gegen CLAUDE.md und Skills, nennt jede Abweichung |
+| `Stop` | Doku-Abgleich: prüft alle HTML-Ansichten mit md-Quelle unter DOKU, auch in Archiv- und Prüfberichtordnern, und die Kopien für andere Assistenten gegen CLAUDE.md und Skills, nennt jede Abweichung |
 
 </div>
 
@@ -790,7 +841,7 @@ und mit Revision gespeichert.
 | `dokumente_suchen` | lesend | Volltextsuche in Titeln, Ordnungsangaben und Dokumentinhalten eines Falls. |
 | `frist_berechnen` | lesend | Fristende nach §§ 187, 188, 193 BGB mit den landesweiten Feiertagen eines Bundeslands berechnen (Standard: Einstellung der Mappe). Liefert die Rechnung als Text. Entscheidet nicht, welche Frist gilt. |
 | `beispiel_laden` | schreibend | Die mitgelieferte Beispielakte (erfundener Fall) als neuen Fall anlegen, zum Ausprobieren. Der Fall bekommt die nächste freie Kennung. |
-| `bestand_pruefen` | lesend | Prüfsummen aller registrierten Dateien eines Falls mit dem ersten Stand vergleichen; meldet auch nicht erfasste und verschobene Dateien. Schreibt nichts. |
+| `bestand_pruefen` | lesend | Dateien frisch lesen und ihre Prüfsummen mit dem ersten registrierten Stand vergleichen; meldet auch nicht erfasste und verschobene Dateien. Schreibt nichts. |
 | `journal_lesen` | lesend | Verlauf eines Falls aus JOURNAL.md, neueste Einträge zuletzt. |
 | `quellen_katalog` | lesend | Gemeinsamer Zugangskatalog amtlicher Rechtsquellen aus 04 Rechtsquellen/Quellen.md. |
 | `rechtsinhalte_pruefen` | lesend | Meldet, welche mitgelieferten Rechtsinhalte wieder am amtlichen Volltext zu prüfen sind: Merkblätter (zwölf Monate nach „Letzte vollständige Prüfung“), Feiertagstabelle (ab 1. Dezember fürs Folgejahr), Quellenkatalog (sechs Monate). Status je Eintrag: fällig, bald fällig (30 Tage), unbekannt, in Ordnung. Schreibt nichts, ohne Netz. |
@@ -920,6 +971,7 @@ den Pflichtinhalt dagegen.
 | `Start.command`, `Start.sh`, `Start.bat` | Dienst starten und Oberfläche öffnen (macOS, Linux, Windows) |
 | `python "06 Werkzeuge/einrichten_windows.py"` | nur Windows: `python3` in `.mcp.json`, `.claude/settings.json`, `.codex/config.toml` durch `python` ersetzen (macht `Start.bat` selbst); `--pruefen` nur melden |
 | `python3 "06 Werkzeuge/dienst/server.py" --no-open` | Dienst ohne Browser starten; `--check` Bestand aller Fälle prüfen; `--backup` geprüfte Sicherung; `--probe` Wiederherstellungsprobe der letzten Sicherung; `--restore <ZIP> <neuer Ordner>` Sicherung in einen neuen Ordner entpacken und prüfen |
+| `python3 "06 Werkzeuge/dienst/server.py" --stop` | Dienst dieser Mappe und seine Anmeldungen beenden; vorher offene Änderungen speichern |
 | `python3 "06 Werkzeuge/dienst/cli.py" liste` | alle Werkzeuge mit Parametern; danach `cli.py <werkzeug> feld=wert` |
 | `python3 "06 Werkzeuge/dienst/cli.py" frist_berechnen start=2026-09-11 menge=1 einheit=monate land=BW` | Frist rechnen, mit Rechenweg |
 | `python3 "06 Werkzeuge/dienst/cli.py" rechtsinhalte_pruefen` | welche Merkblätter, Feiertage und Quellen wieder am Volltext zu prüfen sind |

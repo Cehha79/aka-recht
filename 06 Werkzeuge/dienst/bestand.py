@@ -17,10 +17,11 @@ import store
 HASH_CACHE = {}
 HASH_CACHE_GRENZE = 20000   # Einträge; alte Stände (andere Zeit oder Größe) sammelten sich im Dauerdienst sonst ohne Ende an
 
-def sha_datei(p):
-    """Prüfsumme in Blöcken gelesen, nicht die ganze Datei im Speicher (AUDIT-011, 08.10.2026)."""
+def sha_datei(p, *, zwischenspeicher=False):
+    """Prüfsumme frisch in Blöcken lesen. Nur schnelle Übersichten dürfen den Zwischenspeicher nutzen:
+    gleiche Größe und mtime garantieren keinen gleichen Inhalt (AUDIT-20261008-004)."""
     s = p.stat(); k = (str(p), s.st_mtime_ns, s.st_size)
-    if k not in HASH_CACHE:
+    if not zwischenspeicher or k not in HASH_CACHE:
         if len(HASH_CACHE) >= HASH_CACHE_GRENZE: HASH_CACHE.clear()
         with open(p, 'rb') as f: HASH_CACHE[k] = hashlib.file_digest(f, 'sha256').hexdigest()
     return HASH_CACHE[k]
@@ -42,7 +43,7 @@ def dateien(ordner):
                 liste.append(p.relative_to(ordner).as_posix())
     return liste
 
-def _rechnen(ordner, weg, kennungen_vergeben, nur=None):
+def _rechnen(ordner, weg, kennungen_vergeben, nur=None, *, zwischenspeicher=False):
     """Vergleicht bestand.json mit den Dateien der Gruppen 01 bis 08, ohne zu schreiben.
 
     Liefert (daten, alt, ergebnis, bericht): daten ist der abgeglichene Stand (Kopie), alt der gelesene,
@@ -69,7 +70,7 @@ def _rechnen(ordner, weg, kennungen_vergeben, nur=None):
     naechste = max([int(k[1:]) for k in list(daten['dateien']) + list(akte_pfade.values()) if re.fullmatch(r'D\d+', k)], default=0) + 1
     ergebnis = {}; heute = datetime.now().date().isoformat()
     for rel in vorhanden:
-        p = ordner / rel; h = sha_datei(p); kennung = pfad_zu_id.get(rel)
+        p = ordner / rel; h = sha_datei(p, zwischenspeicher=zwischenspeicher); kennung = pfad_zu_id.get(rel)
         if not kennung:
             treffer = [k for k, e in daten['dateien'].items() if e['pfad'] not in vorhanden_set and e['sha256'] == h]
             if len(treffer) == 1:
@@ -92,11 +93,12 @@ def _rechnen(ordner, weg, kennungen_vergeben, nur=None):
     bericht['fehlend'] = [{'id': k, 'pfad': e['pfad']} for k, e in daten['dateien'].items() if k not in ergebnis]
     return daten, alt, ergebnis, bericht
 
-def abgleich(ordner):
+def abgleich(ordner, *, zwischenspeicher=True):
     """Nur lesen: registrierte Dateien und Abweichungen, ohne bestand.json anzufassen.
     Liefert (ergebnis, bericht). Verschobene Dateien stehen mit ihrem neuen Pfad im Ergebnis,
-    neue Dateien nur in bericht['nicht_erfasst']; Kennungen vergibt erst abgleichen()."""
-    _, _, ergebnis, bericht = _rechnen(ordner, 'Lesen', kennungen_vergeben=False)
+    neue Dateien nur in bericht['nicht_erfasst']; Kennungen vergibt erst abgleichen().
+    Für eine ausdrückliche Prüfung zwischenspeicher=False setzen."""
+    _, _, ergebnis, bericht = _rechnen(ordner, 'Lesen', kennungen_vergeben=False, zwischenspeicher=zwischenspeicher)
     return ergebnis, bericht
 
 def abgleichen(ordner, weg='Abgleich', nur=None):

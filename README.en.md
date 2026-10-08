@@ -62,7 +62,7 @@ AKA Recht does not replace legal advice.
   that speaks MCP (Model Context Protocol) or can run commands. 7 guides
   take it from case intake to a reviewed draft, 36 tools let it read
   the case and, after your confirmation, write to it.
-- **Everything stays with you:** no AI inside the app, no account, no key, no
+- **Everything stays with you:** no AI inside the app, no account, no API key, no
   network. The service runs only on your machine.
 
 </div>
@@ -75,22 +75,55 @@ AKA Recht does not replace legal advice.
 
 <div align="justify">
 
-Product version 0.4 of 18.09.2026, latest state of 08.10.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · tested with Python 3.14.7 on macOS 26.7.1, Ubuntu 24.04 (Python 3.12) and Windows 11 (Python 3.14) · Author: Hasan Tepegöz
+Fixed version 0.4 of 18.09.2026 · latest source state of 08.10.2026 · data format `akte.json` schema 1 · MCP protocol 2026-07-28 and 2025-11-25 · Author: Hasan Tepegöz
 
 ## New since version 0.4
 
-These points are in the latest state of 08.10.2026, not yet in the fixed version 0.4. If you download the fixed version from the release page, you get them with the next version. Up to the state of 4 Oct 2026 tested with the test suite (77 checks) and in the UI on macOS, Linux and Windows; the changes of 8 Oct 2026 (test suite with 82 checks) so far only on macOS.
+These points are in the latest state of 08.10.2026, not yet in the fixed version 0.4. For these changes, get the latest state using “Code → Download ZIP” or git. The fixed version on the release page remains 0.4. Current test coverage and known limitations follow the changes below.
 
+- **Single-use startup links:** Each start opens a new link that is valid for two minutes and can be used only once. Browser authentication is separate; opening again keeps existing windows signed in. Use `server.py --stop` to stop this folder’s service.
+- **Complete documentation views:** The generator and automatic documentation check also cover Markdown sources in subfolders. HTML views use matching relative links; internal working notes stay out of public navigation.
+- **Stable identifiers:** Full case-file saves also preserve previously known numbers. Lower counters are rejected and missing ones are filled from the saved state, so removing an entry does not release its number for reuse.
+- **Fresh checksums:** Explicit inventory and backup checks read the current file contents again, even when size and modification time match. Opening Inventory and backup checks both archives afresh; the quick overview keeps its cache.
+- **Document preview when switching:** Delayed text responses and errors no longer overwrite the current preview after switching documents, tabs or cases. Closing the preview and switching back are covered too. Verified with 13 browser checks on macOS; Linux and Windows still need testing.
+- **First start and number validation:** The first start no longer blocks setup; simultaneous starters share one service. Invalid numbers such as NaN or infinity are rejected before saving through the UI, command line and AI interface. Tested with synthetic cases on macOS; Linux and Windows still need testing for these changes.
 - **Timeline as a time path:** other parties on the left, your own steps on the right, time in the middle; key events, a colour per group, "reply to" with the interval, your own event type next to the usual list.
 - **Parties with role and function:** The role assigns the group and decides side and colour in the timeline; the function says in your own words who someone is, such as "lawyer of the opposing party".
-- **Drafts:** The version number follows the text: unchanged text keeps its number when the status changes, changed text gets a new one. A draft can be renamed (`entwurf_setzen`).
+- **Drafts:** The version number follows the text: unchanged text keeps its number when the status changes, changed text gets a new one. Recording an already preserved version again also sets the current status; its history and copies remain intact. A draft can be renamed (`entwurf_setzen`).
 - **Inventory:** Tools that create a file themselves give an id only to that file; other new files stay unregistered until you call `bestand_abgleichen`.
-- **Backup:** The restore test reports separately whether the archive is complete and whether every case file meets all rules of the data model. A second target is empty out of the box: whether a backup goes to a cloud folder is your choice in the settings.
+- **Backup:** The restore test reports separately whether the archive is complete and whether every case file meets all rules of the data model. Backup targets are checked for valid folder paths outside the project before saving; invalid input leaves settings unchanged. A second target is empty out of the box: whether a backup goes to a cloud folder is your choice in the settings.
 - **Your own texts are not originals:** What an AI creates with `datei_ablegen` gets the status draft or memo, also in the inbox. The handover package does not take such texts as originals; for the opposing party it contains neither the case title nor your own document titles.
 - **More reliable when used in parallel:** UI, command line and AI can create cases and save settings at the same time without a case dropping out of the list; a case folder without an entry is reported at session start. A typo in a document id no longer registers other files.
 - **Protection:** A Python version before 3.12 is reported clearly at start instead of parts failing silently. The Word generator does not overwrite an existing file (`--ersetzen` for a deliberate new version) and never writes into the original areas. Old Office files (`.doc`, `.xls`, `.ppt`) are only shown in the file manager. Lock and runtime files live in a folder of their own for the user.
 - **Session start:** The hook message states its time; symbolic links in the inbox do not count as mail.
 - **Legal content:** A check makes sure that every reference in the fact sheets, the source catalogue and the templates points to an official source.
+
+## Test coverage and known limitations
+
+On 8 Oct 2026, **99 out of 99 automated checks** passed with synthetic case
+files on macOS 26.7.1 and Python 3.14.7. Targeted browser checks
+also covered document previews, backup status, documentation navigation
+and single-use startup links. Nine of the ten findings from that day’s
+follow-up audit have been fixed.
+
+For Linux and Windows, the last reported result is **77 checks and UI testing
+on 2 Oct 2026**. The 22 later checks and extensions to existing checks still
+need to run there. Full acceptance of the current state on all three systems
+remains outstanding.
+
+- **Windows startup (open audit item 10):** `Start.bat` still changes three
+  supplied AI configuration files. This can block updating a git working
+  copy. The fix is pending; inspect and preserve your own changes before
+  updating, see [Updating](#updating).
+- **Case management:** Entire cases cannot yet be archived or removed.
+  This is planned; do not remove a case folder manually.
+- **File formats:** CSV is already read as text. Text previews for Excel
+  (`.xlsx`) and calendars (`.ics`) are not implemented yet.
+- **AI interface:** The compact case overview does not yet return full event
+  details, annotations or original notes. A dedicated reading tool is missing.
+- **Pending acceptance:** Further UI, assistant, text-recognition and restore
+  checks remain open. Technical tests do not establish legal correctness;
+  unresolved source markers still require verification.
 
 ## Download
 
@@ -159,7 +192,7 @@ no outside access.
 - Python 3.12 or newer (`python3 --version`). Tested with 3.12.3 on Ubuntu and
   3.14.7 on macOS and Windows; AKA Recht reports an older version at
   start. No other packages.
-- Tested on 8 Oct 2026 on macOS only: test suite with 82 checks.
+- Tested on 8 Oct 2026 on macOS only: test suite with 99 checks.
 - Tested on 2 Oct 2026 on macOS, Linux and Windows: test suite with 77 checks
   and the UI.
 - Tested on 18 Sep 2026 on macOS 26.7, on Ubuntu 24.04 (Python 3.12) and on
@@ -190,8 +223,11 @@ again in the dialog.
 
 *It worked if:* a black window appears and the browser shows the folder. You
 can close that window afterwards — the service keeps running in its own
-session. There is no button to stop it: the service ends when you restart the
-computer or run `pkill -f "06 Werkzeuge/dienst/server.py"` in the terminal.
+session. To stop it, save pending changes first, then run
+`python3 "06 Werkzeuge/dienst/server.py" --stop` in a terminal inside this
+folder. The command stops only this folder’s service and its signed-in sessions.
+The next double-click creates a new startup link. It is valid for two minutes
+and can be used only once; open the start file again if a link is no longer valid.
 
 **2. Set up text recognition — optional**
 
@@ -306,7 +342,8 @@ Double-click `Start.bat`.
 > first and you get "Python was not found" and the hooks do not run.
 
 *It worked if:* the browser shows the folder. If you use git, those three
-files then show as modified — that is correct.
+files then show as modified. This is a known startup limitation (audit item
+10, still open), not a reason to reset the files indiscriminately.
 
 **2. Set up text recognition — optional**
 
@@ -456,6 +493,10 @@ Three things to keep apart: **shipped** means the folder brings the
 configuration along; **tested here** means we ran it on our own machine;
 **open** means we do not know.
 
+The direct client checks below date from 16–18 Sep 2026. The current test
+suite checks the MCP interface automatically, but does not replace another
+UI run in the currently installed assistants.
+
 | | Claude Code | Codex | Claude Desktop | Others (Cursor, Gemini CLI …) |
 |---|---|---|---|---|
 | Tools over MCP | shipped (`.mcp.json`), tested here | shipped (`.codex/config.toml`), tested here | shipped (manual entry), tested here | path described, not tested |
@@ -491,11 +532,19 @@ erstellen" in the UI).
 
 <div align="justify">
 
-Inside the folder run `git pull`. The four places holding your data are listed
-in the bundled `.gitignore`; git leaves them alone. On Windows `Start.bat` has
-changed three configuration files; if `git pull` stops because of them, first
-run `git checkout -- .mcp.json .claude/settings.json .codex/config.toml`
-(this only discards that switch; `Start.bat` sets it again on the next start).
+Save pending changes in the UI. Inside the folder, first run `git status`
+to inspect local changes. If there are none, update with `git pull --ff-only`;
+this does not automatically merge diverging histories. Then stop the old
+service with `python3 "06 Werkzeuge/dienst/server.py" --stop` (use `python`
+on Windows) and reopen the start file. Only then is the updated code running.
+The four places holding your data are listed in the bundled `.gitignore`
+and are not managed by git; the backup is still necessary.
+
+On Windows, `Start.bat` changes `.mcp.json`, `.claude/settings.json` and
+`.codex/config.toml`. This can block `git pull` (open audit item 10). Use
+`git diff` to inspect the changes and preserve your own settings before
+updating. Do not reset these files indiscriminately: they may contain your
+own settings in addition to the Python command change.
 
 </div>
 
@@ -507,9 +556,11 @@ run `git checkout -- .mcp.json .claude/settings.json .codex/config.toml`
 <div align="justify">
 
 1. Extract the new version into a new folder.
-2. Stop the running service. There is no button for it: restart the computer,
-   or on macOS and Linux run `pkill -f "06 Werkzeuge/dienst/server.py"` in a terminal
-   (this stops every running folder service on this computer).
+2. Save pending changes, then stop the old service. In a terminal inside the
+   new folder, run `python3 "06 Werkzeuge/dienst/server.py" --root "<old folder>" --stop`
+   (replace `<old folder>` with its full path; use `python` instead of `python3`
+   on Windows). The new script can also stop an older service; other folders
+   remain open.
 3. Move `01 Eingang`, `02 Fälle`, `03 Verträge und Vorsorge` and
    `zentrale.json` from the old folder into the new one; remove the empty
    folders of the new one first.
@@ -711,7 +762,7 @@ rules in `AGENTS.md` themselves.
 | `SessionStart` | reports new mail, near deadlines and open tasks per case at session start, with the time of the snapshot, plus legal content due for a check; symbolic links in the inbox do not count as mail |
 | `PreToolUse` | original protection: writing into 02 to 05, 08 and bestand.json is refused, checked on the resolved path |
 | `PostToolUse` | foreign-text guard: warns with the source when read text (file, command, web or MCP tool) contains sentences that look like instructions to the AI |
-| `Stop` | doc check: compares the HTML views with their md sources and the copies for other assistants with CLAUDE.md and the skills, names every mismatch |
+| `Stop` | doc check: compares every HTML view with a Markdown source under DOKU, including archive and report folders, and the copies for other assistants with CLAUDE.md and the skills, names every mismatch |
 
 </div>
 
@@ -775,7 +826,7 @@ change to `akte.json` is validated against the data model and saved with a revis
 | `dokumente_suchen` | reads | Full-text search in titles, metadata and document contents of a case |
 | `frist_berechnen` | reads | Deadline end under §§ 187, 188, 193 BGB with the public holidays of a federal state; shows the calculation, does not decide which deadline applies |
 | `beispiel_laden` | writes | Create the bundled sample case (fictional) as a new case |
-| `bestand_pruefen` | reads | Compare checksums of all registered files of a case with their first state; also reports unregistered and moved files; writes nothing |
+| `bestand_pruefen` | reads | Read files afresh and compare their checksums with their first registered state; also reports unregistered and moved files; writes nothing |
 | `journal_lesen` | reads | Read the case journal, newest entries last |
 | `quellen_katalog` | reads | Catalogue of official legal sources from 04 Rechtsquellen/Quellen.md |
 | `rechtsinhalte_pruefen` | reads | Reports which bundled legal content is due for a new check against the official full text: fact sheets, holiday table, source catalogue; writes nothing, no network |
@@ -905,6 +956,7 @@ from them, `/entwurf` checks the mandatory content against them.
 | `Start.command`, `Start.sh`, `Start.bat` | start the service and open the UI (macOS, Linux, Windows) |
 | `python "06 Werkzeuge/einrichten_windows.py"` | Windows only: replace `python3` with `python` in `.mcp.json`, `.claude/settings.json`, `.codex/config.toml` (`Start.bat` does this itself); `--pruefen` report only |
 | `python3 "06 Werkzeuge/dienst/server.py" --no-open` | start without a browser; `--check` verify all cases; `--backup` verified backup; `--probe` restore test of the last backup; `--restore <ZIP> <new folder>` extract a backup into a new folder and verify it |
+| `python3 "06 Werkzeuge/dienst/server.py" --stop` | stop this folder’s service and its signed-in sessions; save pending changes first |
 | `python3 "06 Werkzeuge/dienst/cli.py" liste` | list all tools with parameters; then `cli.py <tool> field=value` |
 | `python3 "06 Werkzeuge/dienst/cli.py" frist_berechnen start=2026-09-11 menge=1 einheit=monate land=BW` | calculate a deadline, with the calculation shown |
 | `python3 "06 Werkzeuge/dienst/cli.py" rechtsinhalte_pruefen` | which fact sheets, holidays and sources are due for a new check against the full text |

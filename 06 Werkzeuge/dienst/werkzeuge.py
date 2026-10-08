@@ -38,6 +38,7 @@ def finde(name):
 
 def _pruefe_parameter(w, args):
     if not isinstance(args, dict): raise ValueError('Parameter müssen ein Objekt sein.')
+    akte_schema.json_zahlen_pruefen(args, 'Parameter')
     erlaubt = w['parameter']['properties']
     fremd = set(args) - set(erlaubt)
     if fremd: raise ValueError('Unbekannte Parameter: ' + ', '.join(sorted(fremd)))
@@ -52,7 +53,7 @@ def _pruefe_parameter(w, args):
         if typ == 'number' and isinstance(wert, str):   # die Befehlszeile liefert 1.5 als Text
             try: args[p] = wert = float(wert.strip().replace(',', '.'))
             except ValueError: pass
-        if typ == 'number' and (isinstance(wert, bool) or not isinstance(wert, (int, float))): raise ValueError(f'„{p}“ muss eine Zahl sein.')
+        if typ == 'number' and not akte_schema.endliche_zahl(wert): raise ValueError(f'„{p}“ muss eine endliche Zahl sein; NaN und Unendlichkeitswerte sind ungültig.')
         if typ == 'string' and not isinstance(wert, str): raise ValueError(f'„{p}“ muss Text sein.')
         if typ == 'integer' and not (isinstance(wert, int) and not isinstance(wert, bool)): raise ValueError(f'„{p}“ muss eine ganze Zahl sein.')
         if typ == 'boolean' and not isinstance(wert, bool): raise ValueError(f'„{p}“ muss true oder false sein.')
@@ -173,10 +174,10 @@ def frist_berechnen(start, menge, einheit, ereignisfrist=True, werktagsregel=Tru
 def beispiel_laden():
     return store.beispiel_laden()
 
-@werkzeug('bestand_pruefen', 'Prüfsummen aller registrierten Dateien eines Falls mit dem ersten Stand vergleichen; meldet auch nicht erfasste und verschobene Dateien. Schreibt nichts.',
+@werkzeug('bestand_pruefen', 'Dateien frisch lesen und ihre Prüfsummen mit dem ersten registrierten Stand vergleichen; meldet auch nicht erfasste und verschobene Dateien. Schreibt nichts.',
           {'fall': {'type': 'string'}}, pflicht=['fall'])
 def bestand_pruefen(fall):
-    ordner = store.fall_ordner(fall); _, abweichungen = bestand.abgleich(ordner)
+    ordner = store.fall_ordner(fall); _, abweichungen = bestand.abgleich(ordner, zwischenspeicher=False)
     return {'fall': fall, **bestand.pruefen(ordner), 'nicht_erfasst': abweichungen['nicht_erfasst'], 'verschoben_erkannt': abweichungen['verschoben']}
 
 @werkzeug('journal_lesen', 'Verlauf eines Falls aus JOURNAL.md, neueste Einträge zuletzt.',
@@ -605,7 +606,7 @@ def notiz_anlegen(fall, titel, text):
           {'fall': {'type': 'string'}, 'titel': {'type': 'string'}, 'datei': {'type': 'string', 'description': 'Pfad im Fallordner, z. B. 06 Entwürfe/Einspruch_ENTWURF.md'},
            'status': {'type': 'string', 'enum': akte_schema.ENTWURF_STATUS}, 'versandt_als': {'type': 'string', 'description': 'D-Kennung des Versandbelegs bei Status versandt'},
            'fassung_behalten': {'type': 'boolean', 'description': 'true: die Fassungsnummer bleibt, nur der Status wechselt (etwa von geprüft zu versandt, oder um die eingefrorene Kopie nachzutragen). Geht nur, wenn die Datei seit dieser Fassung unverändert ist.'},
-           'fassung_nach_text': {'type': 'boolean', 'description': 'true: das Werkzeug entscheidet an der Prüfsumme. Unveränderter Text behält die Fassungsnummer, geänderter Text bekommt eine neue; ist die Fassung mit diesem Status schon festgehalten, entsteht nichts Neues. So ruft die Oberfläche das Werkzeug auf.'}},
+           'fassung_nach_text': {'type': 'boolean', 'description': 'true: das Werkzeug entscheidet an der Prüfsumme. Unveränderter Text behält die Fassungsnummer, geänderter Text bekommt eine neue; ist die Fassung mit diesem Status schon festgehalten, entsteht keine neue Fassung oder Kopie, der aktuelle Status wird trotzdem gesetzt. So ruft die Oberfläche das Werkzeug auf.'}},
           schreibend=True, pflicht=['fall', 'titel', 'datei'])
 def entwurf_erfassen(fall, titel, datei, status='in Arbeit', versandt_als='', fassung_behalten=False, fassung_nach_text=False):
     from datetime import datetime
@@ -620,7 +621,8 @@ def entwurf_erfassen(fall, titel, datei, status='in Arbeit', versandt_als='', fa
         nr = e.get('fassung', 1); frueher = [x for x in (e.get('fassungen') or []) if isinstance(x, dict) and x.get('fassung') == nr]
         if frueher and all(x.get('sha256') == sha for x in frueher):
             if any(x.get('status') == status and (x.get('kopien') or status not in ('geprüft', 'versandt')) for x in frueher):
-                e.update({'datei': datei, 'versandt_als': versandt_als}); rev = store.speichere_akte(fall, akte, rev)
+                # AUDIT-20261008-003: Der historische Nachweis ersetzt nicht den aktuellen Arbeitsstatus.
+                e.update({'datei': datei, 'status': status, 'versandt_als': versandt_als}); rev = store.speichere_akte(fall, akte, rev)
                 return {'entwurf': e, 'revision': rev, 'unveraendert': True, 'hinweise': [f'Fassung {nr} ist mit Status „{status}“ schon festgehalten; es ist keine neue Fassung entstanden.']}
             fassung_behalten = True
     if fassung_behalten:

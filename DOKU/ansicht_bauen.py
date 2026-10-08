@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""Erzeugt aus DOKU/md/*.md die HTML-Ansichten in DOKU/.
+"""Erzeugt für jede Markdown-Datei unter DOKU eine HTML-Ansicht.
+Quellen direkt in DOKU/md erhalten ihre Ansicht in DOKU, alle anderen daneben.
 
 Aufruf:  python3 DOKU/ansicht_bauen.py
 Nur Standardbibliothek. Die .md ist die Quelle, die .html wird überschrieben.
 Jede Seite: Seitenleiste links (alle Seiten, Abschnitte der Seite),
 Inhalt rechts, beide Bereiche scrollen für sich.
 """
-import html, re, sys
+import html, os, re, sys
+from urllib.parse import quote
 
 # Ein- und Ausgabe immer UTF-8, auch unter Windows (Konsole dort cp1252); Ausgaben für Assistenten und Tests müssen UTF-8 sein (Stufe 9, 17.09.2026).
 for _strom in (sys.stdin, sys.stdout, sys.stderr):
@@ -118,8 +120,9 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}
 @media print{html,body{overflow:visible;display:block}aside{display:none}main{overflow:visible;padding:0}article{border:0;box-shadow:none}}
 '''
 
-def seite(name, inhalt, abschnitte, alle, stand):
-    nav = ''.join(f'<a href="{n}.html" class="{"aktiv" if n == name else ""}">{html.escape(n)}</a>' for n in alle)
+def seite(name, inhalt, abschnitte, alle, stand, *, quelle=None, links=None, hinweis=''):
+    links = links or {n: quote(n + '.html', safe='/') for n in alle}
+    nav = ''.join(f'<a href="{html.escape(links[n], quote=True)}" class="{"aktiv" if n == name else ""}">{html.escape(n)}</a>' for n in alle)
     abs_nav = ''.join(f'<a class="abschnitt" href="#{a}">{html.escape(t)}</a>' for a, t in abschnitte)
     return f'''<!DOCTYPE html>
 <html lang="de">
@@ -139,7 +142,7 @@ def seite(name, inhalt, abschnitte, alle, stand):
 </aside>
 <main>
 <article>
-<div class="stamp">aus md/{html.escape(name)}.md, Stand {stand}</div>
+<div class="stamp">aus {html.escape(quelle or 'md/' + name + '.md')}, Stand {html.escape(stand)}{(' · ' + html.escape(hinweis)) if hinweis else ''}</div>
 {inhalt}
 </article>
 </main>
@@ -154,6 +157,18 @@ def stand(text):
     m = re.search(r'^\*Stand:\s*([^*\n]+)\*\s*$', text, re.M)
     return m.group(1).strip() if m else 'ohne Stand-Zeile'
 
+def quellen():
+    """Quelle und Ziel je Seitenkennung; Unterordner behalten ihren Ort (AUDIT-20261008-007)."""
+    gefunden = {}
+    for quelle in sorted(DOKU.rglob('*.md')):
+        ziel = DOKU / (quelle.stem + '.html') if quelle.parent == MD else quelle.with_suffix('.html')
+        name = ziel.relative_to(DOKU).with_suffix('').as_posix()
+        if name in gefunden: raise ValueError(f'Zwei Markdown-Quellen für dieselbe Ansicht: {ziel.relative_to(DOKU)}')
+        gefunden[name] = (quelle, ziel)
+    namen = [n for n in REIHENFOLGE if n in gefunden]
+    namen += sorted(n for n in gefunden if n not in namen)
+    return {n: gefunden[n] for n in namen}
+
 def nur_lokal():
     """Seiten, die .gitignore vom Repository ausschließt (Prüfbericht N09, 18.09.2026).
 
@@ -163,20 +178,33 @@ def nur_lokal():
     aus .gitignore, damit sie nicht getrennt gepflegt werden muss und nie auseinanderläuft."""
     p = DOKU.parent / '.gitignore'
     if not p.exists(): return set()
-    return {m.group(1) for z in p.read_text('utf-8').splitlines()
-            if (m := re.fullmatch(r'DOKU/(.+)\.html', z.strip()))}
+    zeilen = p.read_text('utf-8').splitlines()
+    lokal = {m.group(1) for z in zeilen if (m := re.fullmatch(r'DOKU/(.+)\.html', z.strip()))}
+    ordner = [m.group(1) + '/' for z in zeilen if (m := re.fullmatch(r'DOKU/(.+)/', z.strip()))]
+    lokal.update(n for n in quellen() if any(n.startswith(o) for o in ordner))
+    return lokal
 
-def main():
-    vorhanden = [n for n in REIHENFOLGE if (MD / f'{n}.md').exists()]
-    vorhanden += sorted(p.stem for p in MD.glob('*.md') if p.stem not in vorhanden)
+def ansichten():
+    """Soll-Ansichten im Speicher erzeugen; dieselbe Quelle für Bau und automatischen Vergleich."""
+    vorhanden = quellen()
     lokal = nur_lokal()
     oeffentlich = [n for n in vorhanden if n not in lokal]
-    for n in vorhanden:
-        text = (MD / f'{n}.md').read_text('utf-8')
+    for n, (quelle, ziel) in vorhanden.items():
+        text = quelle.read_text('utf-8')
         inhalt, abschnitte = render(text)
         # Eine veröffentlichte Seite verlinkt nur veröffentlichte Seiten; eine interne Seite alle.
-        (DOKU / f'{n}.html').write_text(seite(n, inhalt, abschnitte, vorhanden if n in lokal else oeffentlich, stand(text)), 'utf-8')
-        print('erzeugt:', f'DOKU/{n}.html')
+        sichtbar = list(vorhanden) if n in lokal else oeffentlich
+        links = {k: quote(Path(os.path.relpath(vorhanden[k][1], ziel.parent)).as_posix(), safe='/') for k in sichtbar}
+        rel = quelle.relative_to(DOKU).as_posix()
+        hinweis = 'Historischer Stand; unverändert aus der Markdown-Quelle' if rel.startswith(('Archiv/', 'Pruefberichte/')) else ''
+        yield ziel, seite(n, inhalt, abschnitte, sichtbar, stand(text), quelle=rel, links=links, hinweis=hinweis)
+
+def main():
+    for ziel, soll in ansichten():
+        if not ziel.is_file() or ziel.read_text('utf-8') != soll:
+            ziel.write_text(soll, 'utf-8')
+            print('erzeugt:', 'DOKU/' + ziel.relative_to(DOKU).as_posix())
+    lokal = nur_lokal()
     if lokal: print(f'nur lokal (nicht im Repository, deshalb in den öffentlichen Seiten nicht verlinkt): {", ".join(sorted(lokal))}')
     return 0
 

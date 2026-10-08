@@ -26,11 +26,11 @@ AUSGESCHLOSSEN = {'__pycache__', '.DS_Store', '.git'}
 def sha(daten): return hashlib.sha256(daten).hexdigest()
 
 _SHA_PFAD = {}
-def sha_pfad(p):
-    """Prüfsumme einer Datei in Blöcken gelesen; derselbe Stand (Zeit, Größe) wird nicht erneut gerechnet. Vorher las die
-    Sicherung jede Datei ganz in den Speicher, der Status bei jedem Laden der Oberfläche das ganze Archiv (AUDIT-011)."""
+def sha_pfad(p, *, zwischenspeicher=False):
+    """Prüfsumme frisch in Blöcken lesen; nur die schnelle Übersicht nutzt optional einen gemerkten Wert.
+    Erstellen und Wiederherstellen müssen aktuelle Bytes prüfen (AUDIT-20261008-004)."""
     p = Path(p); s = p.stat(); k = (str(p), s.st_mtime_ns, s.st_size)
-    if k not in _SHA_PFAD:
+    if not zwischenspeicher or k not in _SHA_PFAD:
         if len(_SHA_PFAD) > 100: _SHA_PFAD.clear()
         with open(p, 'rb') as f: _SHA_PFAD[k] = hashlib.file_digest(f, 'sha256').hexdigest()
     return _SHA_PFAD[k]
@@ -113,17 +113,18 @@ def _cloud_hinweis(pfad):
     if any(t in p for t in ('Dropbox', 'OneDrive', 'Google Drive', 'GoogleDrive', 'Nextcloud')): return 'Synchronisierter Ordner: der Dienst des Anbieters lädt die Kopie hoch.'
     return ''
 
-def status():
-    """Letzte Sicherung mit Prüfung beider Archive, dazu die eingestellten Ziele mit Cloud-Hinweis (F19, F20)."""
+def status(*, zwischenspeicher=False):
+    """Letzte Sicherung mit frischer Prüfung beider Archive und den eingestellten Zielen (F19, F20).
+    Nur die schnelle Zentrale darf zwischenspeicher=True verwenden."""
     z = store.lade_zentrale(); l = z['sicherung'].get('letzte')
     ziele = {'ziel': z['sicherung'].get('ziel', ''), 'zweites_ziel_eingestellt': z['sicherung'].get('zweites_ziel', ''),
              'ziel_hinweis': _cloud_hinweis(z['sicherung'].get('ziel', '')), 'zweites_ziel_hinweis_cloud': _cloud_hinweis(z['sicherung'].get('zweites_ziel', ''))}
     if not l: return {'vorhanden': False, **ziele}
     p = Path(l['pfad']); vorhanden = p.is_file()
-    erg = {**l, **ziele, 'vorhanden': vorhanden, 'unveraendert': vorhanden and p.stat().st_size == l['groesse'] and sha_pfad(p) == l['sha256']}
+    erg = {**l, **ziele, 'vorhanden': vorhanden, 'unveraendert': vorhanden and p.stat().st_size == l['groesse'] and sha_pfad(p, zwischenspeicher=zwischenspeicher) == l['sha256']}
     if l.get('zweites_ziel'):
         k = Path(l['zweites_ziel']); erg['zweites_ziel_vorhanden'] = k.is_file()
-        erg['zweites_ziel_unveraendert'] = k.is_file() and k.stat().st_size == l['groesse'] and sha_pfad(k) == l['sha256']
+        erg['zweites_ziel_unveraendert'] = k.is_file() and k.stat().st_size == l['groesse'] and sha_pfad(k, zwischenspeicher=zwischenspeicher) == l['sha256']
     return erg
 
 def wiederherstellen(archiv, zielordner, erwartete_pruefsumme=None):

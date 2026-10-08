@@ -1,6 +1,6 @@
 # Datenmodell
 
-*Stand: 02.10.2026*
+*Stand: 08.10.2026*
 
 ## Aufgabe dieser Datei
 
@@ -11,6 +11,16 @@ Prüfbar mit `python3 "06 Werkzeuge/akte_schema.py" <akte.json>`.
 ## Grundsätze
 
 - Eine `akte.json` je Fall, UTF-8, eingerückt, lesbar im Editor.
+- Zahlen müssen endlich sein: `NaN`, positive und negative Unendlichkeit
+  sowie überlaufende Kommazahlen wie `1e999` werden abgewiesen, auch in
+  verschachtelten Zusatzfeldern (AUDIT-20261008-002). HTTP, Befehlszeile und
+  MCP prüfen eingehendes JSON; die Werkzeuge prüfen zusätzlich Zahlen, die
+  als Text geliefert werden. Schema und Speicherung sichern diese Regel
+  auch bei direktem Aufruf ab. Ungültige Werte ändern weder die Akte noch
+  ihre Sicherungsstände. Text wie „NaN“ in einem Titel bleibt erlaubt.
+- Speicherung und JSON-Ausgabe erlauben keine Sonderzahlen. Bereits extern
+  beschädigte Akten werden mit einer lesbaren Fehlermeldung zurückgewiesen,
+  nicht automatisch korrigiert.
 - Datumsfelder immer `JJJJ-MM-TT` und ein echter Kalendertag (31.02. ist ein
   Fehler, 29.02.2028 gilt). Die Oberfläche zeigt `TT.MM.JJJJ`.
 - Jeder Block wird auf seinen Typ geprüft, bevor Felder gelesen werden; eine
@@ -125,7 +135,7 @@ Anlass und Reaktion.
 | betrag_einordnung | Ausgangslage, Angebot, abgelehntes Angebot, Zusage, vereinbart, gezahlt, ungeklärt | fest, leer erlaubt |
 | belegstand | Unterlage vorhanden, Versand belegt, Zugang belegt, eigene Aufzeichnung, eigene Erinnerung, Zeuge benannt, ungeklärt | vorgeschlagen; die letzten vier gelten als eigene Angabe ohne Unterlage (`BELEGSTAND_EIGENE_ANGABE`) |
 | terminstatus | vereinbart, geplant, wahrgenommen, abgesagt, verschoben | vorgeschlagen |
-| reihenfolge | Ordnung bei gleichem Zeitpunkt | Zahl, auch mit Komma (1.5 sortiert zwischen 1 und 2) |
+| reihenfolge | Ordnung bei gleichem Zeitpunkt | endliche Zahl, auch mit Komma (1.5 sortiert zwischen 1 und 2) |
 
 Ein Monat ohne Tag ist kein eigenes Datumsformat: Er wird als `zeitpunkt`
 „zeitraum“ vom Ersten bis zum Letzten des Monats gespeichert; die Oberfläche
@@ -233,6 +243,13 @@ Mit `fassung_behalten` wechselt derselbe Text den Status ohne neue Nummer
 abgewiesen und eine neue Fassung ist nötig. Mit `fassung_nach_text` entscheidet das
 Werkzeug an der Prüfsumme selbst: unveränderter Text behält die Nummer,
 geänderter bekommt eine neue; so ruft die Oberfläche es auf.
+Ist derselbe Status für diese Fassung schon festgehalten, wird dennoch der
+aktuelle Arbeitsstatus gesetzt (seit 08.10.2026, `AUDIT-20261008-003`). So
+funktioniert auch „geprüft → in Arbeit → geprüft“ bei unverändertem Text.
+Historische Einträge, ihre Zeitangaben, Dokumentkennungen und eingefrorene
+Kopien bleiben dabei erhalten; es entsteht keine doppelte Fassung.
+Die Werkzeugantwort `unveraendert: true` bezeichnet in diesem Zweig die
+beibehaltene Fassung, nicht einen unveränderten aktuellen Status.
 Die Arbeitsdatei darf danach weiter geändert werden, die Kopie nie; eine
 vorhandene Kopie mit anderem Inhalt wird nicht überschrieben. Weicht der
 Sendetext beim Status „versandt“ von der zuletzt geprüften Fassung ab,
@@ -252,8 +269,23 @@ Einlieferungsbeleg); der Zugang ist ein eigenes Ereignis.
 (seit 17.09.2026, Prüfbericht F11): Werkzeuge und Oberfläche bilden die
 nächste Kennung aus dem Größeren von Zähler und höchster vorhandener Nummer
 plus eins und schreiben den Zähler fort. Das Schema weist eine Akte ab,
-deren Zähler kleiner ist als eine vorhandene Kennung. Journal-Verweise wie
-„A02“ meinen damit immer denselben Eintrag, auch wenn er entfernt wurde.
+deren Zähler kleiner ist als eine vorhandene Kennung.
+
+Seit 08.10.2026 (`AUDIT-20261008-006`) vergleicht `store.speichere_akte`
+zusätzlich mit dem zuvor gespeicherten Höchststand: unter derselben Sperre
+wie Revisionsprüfung und Schreiben, vor Sicherung und Dateiänderung.
+Ausdrücklich kleinere Zähler werden auch dann abgewiesen, wenn zugleich
+alle Einträge der Art entfernt werden. Fehlende Zähler oder einzelne
+`null`-Werte älterer Clients übernehmen den bekannten Höchststand; neue
+höhere Kennungen werden dabei ebenfalls festgehalten. Noch unbenutzte Arten
+brauchen keinen zusätzlichen Null-Zähler.
+
+Bei Altakten ohne Zähler dienen die vor dem Speichern vorhandenen Kennungen
+als Mindeststand, auch wenn der neue Stand diese Einträge entfernt.
+Bereits früher gelöschte Kennungen ohne erhaltenen Zähler lassen sich daraus
+nicht nachträglich rekonstruieren. Die automatische Vergabe verwendet
+bekannte frühere Nummern nicht erneut; Journal-Verweise wie „A02“ werden
+dadurch nicht einer neuen Aufgabe zugewiesen.
 D-Kennungen führt `bestand.json`, dort wird nie ein Eintrag entfernt.
 
 `quellen` sind fallbezogene Rechtsquellen mit Abrufdatum. Der gemeinsame
@@ -271,6 +303,15 @@ Seit 17.09.2026 (Stufe 11) dazu `einstellungen.sprache` (Kürzel wie `de`,
 Standard `de`; nur Kürzel, für die eine Datei `oberflaeche/sprachen/<kürzel>.json`
 vorliegt). Die Sprache betrifft nur die Oberfläche; alle Werte in akte.json
 (Stand, Art, Status, Bereich, Rolle, Zeitpunkt) bleiben deutsch.
+
+`sicherung.ziel` und `sicherung.zweites_ziel` sind Ordnerpfade als Text.
+Die Einstellungsroute prüft übergebene Werte vor jeder Änderung: Hauptziel
+nicht leer, vollständiger Pfad oder `~/…`, außerhalb der Mappe auch nach
+Auflösen von Verknüpfungen, keine Steuerzeichen oder Datei als Ordner.
+Fehlende Ordner sind erlaubt, ein leeres zweites Ziel ebenfalls. Ein Fehler
+verhindert sämtliche Einstellungsänderungen dieser Anfrage. Neue Mappen
+haben kein zweites Ziel; vorhandene Werte werden nicht automatisch ersetzt.
+Einzelheiten in STRUKTUR.md, Abschnitt „Dienst“ (AUDIT-20261008-008).
 
 ## bestand.json
 
@@ -300,8 +341,17 @@ Bestand diese Kennungen für die passenden Pfade, statt neue zu vergeben.
 
 `sha256_erst` ist die Prüfsumme beim ersten Einlesen und bleibt. `sha256` ist
 der zuletzt gesehene Stand. Weichen beide ab, meldet die Bestandsprüfung eine
-Änderung. Beim Umzug werden Dateien über `sha256_erst` wiedergefunden, auch
-wenn ihr Pfad sich geändert hat.
+Änderung. Beim Umzug werden Dateien über den zuletzt registrierten Wert
+`sha256` wiedergefunden, wenn ihr alter Pfad fehlt und die Zuordnung eindeutig ist.
+
+Seit 08.10.2026 (`AUDIT-20261008-004`) lesen ausdrückliche Bestandsprüfungen
+die Dateien vollständig und blockweise neu, auch bei unveränderter Größe
+und unverändertem Änderungsdatum. Das gilt auch beim schreibenden Abgleich,
+beim Ermitteln einer Entwurfsfassung und beim Erstellen oder Wiederherstellen
+einer Sicherung. Nur die schnelle Bestandsübersicht beim normalen Lesen
+darf einen gemerkten Wert nach Pfad, Größe und Änderungszeit wiederverwenden;
+sie ersetzt keine vollständige Integritätsprüfung. Die frische Prüfung
+aktualisiert diesen Zwischenspeicher, ohne Ordnungsdaten zu schreiben.
 
 ## JOURNAL.md
 
@@ -327,4 +377,3 @@ Die Oberfläche liest die Überschriftzeile und kann danach filtern.
 | `06 Werkzeuge/akte_schema.py` | leere Akte erzeugen, Akte prüfen (Fehler, Warnungen); der Dienst ruft `validate()` vor jedem Speichern |
 | `05 Vorlagen/Fallvorlage/` | Ordner 01 bis 08, leere akte.json, bestand.json, JOURNAL.md |
 | `05 Vorlagen/Beispielakte/` | vollständiger erfundener Fall „Kündigung durch den Arbeitgeber“ (R-9001): akte.json mit allen Blöcken (seit 02.10.2026 fünf Ereignisse mit den Feldern der Chronologie, auf beiden Seiten des Zeitpfads), bestand.json mit Prüfsummen, JOURNAL.md, vier Textdokumente; über „Beispielfall laden“ (Werkzeug `beispiel_laden`) als neuer Fall kopierbar; Prüfung ohne Fehler |
-

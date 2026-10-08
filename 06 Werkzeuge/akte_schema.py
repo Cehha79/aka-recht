@@ -12,7 +12,7 @@ import sys
 for _strom in (sys.stdin, sys.stdout, sys.stderr):
     if hasattr(_strom, 'reconfigure'): _strom.reconfigure(encoding='utf-8', errors='replace')
 sys.dont_write_bytecode = True
-import hashlib, json, re, sys
+import hashlib, json, math, re, sys
 from datetime import date
 from pathlib import Path
 
@@ -56,6 +56,25 @@ KENNUNG = {
 }
 DATUM = re.compile(r'^\d{4}-\d{2}-\d{2}$')
 MARKER = re.compile(r'\[(PRÜFEN|QUELLE|BELEG)\b[^\]]*\]?')   # offene Marker in Texten (REGELN Nr. 14)
+
+def endliche_zahl(wert):
+    """Ganze Zahlen und endliche Kommazahlen; Wahrheitswerte sind keine Zahlen."""
+    return type(wert) is int or (type(wert) is float and math.isfinite(wert))
+
+def json_zahlen_pruefen(wert, wo='JSON'):
+    """Auch in verschachtelten Zusatzfeldern keine NaN-/Unendlichkeitswerte zulassen."""
+    if isinstance(wert, float) and not math.isfinite(wert):
+        raise ValueError(f'{wo}: Nur endliche Zahlen sind erlaubt; NaN und Unendlichkeitswerte sind ungültig.')
+    if isinstance(wert, dict):
+        for k, v in wert.items(): json_zahlen_pruefen(v, f'{wo}.{k}')
+    elif isinstance(wert, (list, tuple)):
+        for i, v in enumerate(wert): json_zahlen_pruefen(v, f'{wo}[{i}]')
+
+def json_laden(roh):
+    """JSON lesen und Sonderzahlen sowie überlaufende Exponenten (etwa 1e999) abweisen."""
+    wert = json.loads(roh)
+    json_zahlen_pruefen(wert)
+    return wert
 
 def ereignis_sicher(e):
     """Wahr, wenn der Zeitpunkt des Ereignisses genau ist (kein zeitpunkt oder „genau“)."""
@@ -150,6 +169,27 @@ def naechste_kennung(akte, block):
     n = max(int(z.get(b, 0) or 0), hoechste) + 1; z[b] = n
     return f'{b}{n:02d}'
 
+def zaehler_bewahren(akte, vorher):
+    """Nach validate, beim Speichern unter der Sperre: bekannte Höchststände erhalten.
+    Fehlende Werte (auch null wie bisher im Schema) übernehmen den bekannten Stand;
+    ausdrücklich kleinere Zahlen werden abgewiesen. Ältere Akten ohne Zähler liefern
+    ihren Mindeststand über die noch vorhandenen Kennungen (AUDIT-20261008-006)."""
+    z = dict(akte.get('zaehler', {}))
+    for block, b in ZAEHLER_BUCHSTABEN.items():
+        alt = vorher.get('zaehler', {}).get(b) or 0
+        if not isinstance(alt, int) or isinstance(alt, bool) or alt < 0:
+            raise ValueError(f'Akte nicht gespeichert: bisheriger zaehler.{b} ist ungültig.')
+        def hoechste(stand):
+            return max([int(e['id'][1:]) for e in stand.get(block, [])
+                        if isinstance(e, dict) and re.fullmatch(KENNUNG[block], str(e.get('id', '')))], default=0)
+        alt = max(alt, hoechste(vorher))
+        wert = z.get(b)
+        if wert is not None and wert < alt:
+            raise ValueError(f'Akte nicht gespeichert: zaehler.{b} darf nicht unter den bisher gespeicherten Höchststand {alt} zurückgehen.')
+        hoechststand = max(wert or 0, alt, hoechste(akte))
+        if hoechststand or b in z: z[b] = hoechststand   # unbenutzte Arten brauchen keinen neuen Null-Zähler
+    akte['zaehler'] = z
+
 def validate(akte):
     """Gibt (fehler, warnungen) als Listen von Sätzen zurück."""
     f, w = [], []
@@ -161,8 +201,9 @@ def validate(akte):
             f.append(f'{wo}: Datum „{wert}“ nicht im Format JJJJ-MM-TT.'); return
         try: date.fromisoformat(wert)   # echter Kalendertag: 2026-02-31 oder Monat 13 fallen hier durch (Prüfbericht F10)
         except ValueError: f.append(f'{wo}: Datum „{wert}“ gibt es im Kalender nicht.')
-    def zahl(wert): return isinstance(wert, (int, float)) and not isinstance(wert, bool)   # true zählt in Python als 1, hier nicht
     if not isinstance(akte, dict): return ['Akte ist kein Objekt.'], []
+    try: json_zahlen_pruefen(akte, 'Akte')
+    except ValueError as e: return [str(e)], []
     if akte.get('schema') != SCHEMA_VERSION:
         f.append(f'schema muss {SCHEMA_VERSION} sein, ist {akte.get("schema")!r}.')
     for block in ['fall', 'beteiligte', 'dokumente', 'verfahren', 'ereignisse',
@@ -276,7 +317,7 @@ def validate(akte):
         if isinstance(e.get('antwort_auf'), str) and e['antwort_auf']:
             if e['antwort_auf'] == e['id']: f.append(f'{e["id"]}: antwort_auf verweist auf sich selbst.')
             else: verweis(e['antwort_auf'], 'ereignisse', f'{e["id"]}.antwort_auf')
-        if 'reihenfolge' in e and not zahl(e['reihenfolge']): f.append(f'{e["id"]}: reihenfolge muss eine Zahl sein.')
+        if 'reihenfolge' in e and not endliche_zahl(e['reihenfolge']): f.append(f'{e["id"]}: reihenfolge muss eine endliche Zahl sein.')
     for fr in akte['fristen']:
         datum(fr.get('datum', ''), fr['id'], pflicht=True)
         if not str(fr.get('titel', '')).strip(): f.append(f'{fr["id"]}: titel fehlt.')
@@ -334,7 +375,7 @@ def validate(akte):
                          'Diesen Statuswechsel macht das Werkzeug entwurf_erfassen; es legt die unveränderliche Kopie unter 06 Entwürfe/Fassungen an.')
     for i, k in enumerate(akte['kosten']):
         datum(k.get('datum', ''), f'kosten[{i}]')
-        if not zahl(k.get('betrag', 0)): f.append(f'kosten[{i}]: betrag muss eine Zahl sein.')
+        if not endliche_zahl(k.get('betrag', 0)): f.append(f'kosten[{i}]: betrag muss eine endliche Zahl sein.')
         verweis(k.get('beleg', ''), 'dokumente', f'kosten[{i}].beleg')
     for n in akte['notizen']:
         if not str(n.get('titel', '')).strip() and not str(n.get('text', '')).strip(): f.append(f'{n["id"]}: leer.')

@@ -9,8 +9,10 @@ Aufruf:
   python3 server.py --probe [ZIP]   Wiederherstellungsprobe der letzten (oder genannten) Sicherung
   python3 server.py --restore ZIP ORDNER   Sicherung in einen neuen, leeren Ordner außerhalb entpacken und prüfen
   python3 server.py --serve         nur der Dienstprozess (intern)
+  python3 server.py --stop          Dienst dieser Mappe und seine Sitzungen beenden
 
-Zugriff braucht das Sitzungscookie aus dem Startlink; Änderungen zusätzlich die
+Ein einmaliger Startlink (zwei Minuten gültig) liefert ein eigenes Sitzungscookie.
+Zugriff braucht dieses Cookie; Änderungen zusätzlich die
 Schreibkennung im Kopf X-AKA-CSRF und einen Ursprung von 127.0.0.1.
 """
 import sys
@@ -27,6 +29,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import bestand, dokumente, fristen, sicherung, store, werkzeuge
+from akte_schema import json_laden
 OBERFLAECHE = Path(__file__).resolve().parent.parent / 'oberflaeche'
 CSP = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-src 'self'; object-src 'none'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'"
 CSP_ROH = "sandbox allow-scripts; default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; script-src 'unsafe-inline'; frame-ancestors 'self'"
@@ -35,13 +38,32 @@ PLATZHALTER = '<!doctype html><html lang="de"><meta charset="utf-8"><title>AKA R
 def laufzeitdatei(): return store.laufzeit_ordner() / f'dienst-{store.instanz()}.json'   # eigener Ordner, 0700 (AUDIT-007)
 def cookie_name(): return 'aka_' + store.instanz()
 
+STARTLINK_GUELTIG = 120   # Sekunden, monotone Uhr; nur die Startberechtigung, nicht die Browsersitzung
+
+class Startberechtigungen:
+    def __init__(self):
+        self.offen = {}; self.sperre = threading.Lock()
+
+    def anlegen(self, ziel):
+        with self.sperre:
+            jetzt = time.monotonic()
+            self.offen = {k: v for k, v in self.offen.items() if v[0] > jetzt}
+            key = secrets.token_urlsafe(32)
+            self.offen[key] = (jetzt + STARTLINK_GUELTIG, ziel)
+            return key
+
+    def einloesen(self, key):
+        with self.sperre:
+            eintrag = self.offen.pop(key, None)
+            return eintrag[1] if eintrag and time.monotonic() < eintrag[0] else None
+
 class Handler(BaseHTTPRequestHandler):
     server_version = 'AKA-Recht/2.0'
     def log_message(self, *a): pass
 
     def antwort(self, code, koerper, art='application/json; charset=utf-8', kopf=None):
         if not isinstance(koerper, bytes):
-            koerper = json.dumps(koerper, ensure_ascii=False).encode() if art.startswith('application/json') else str(koerper).encode()
+            koerper = json.dumps(koerper, ensure_ascii=False, allow_nan=False).encode() if art.startswith('application/json') else str(koerper).encode()
         self.send_response(code); self.send_header('Content-Type', art); self.send_header('Content-Length', str(len(koerper)))
         self.send_header('Cache-Control', 'no-store'); self.send_header('X-Content-Type-Options', 'nosniff'); self.send_header('Referrer-Policy', 'no-referrer')
         if not kopf or 'Content-Security-Policy' not in kopf: self.send_header('Content-Security-Policy', CSP)
@@ -56,16 +78,24 @@ class Handler(BaseHTTPRequestHandler):
         try: c.load(self.headers.get('Cookie', ''))
         except Exception: return False
         t = c.get(cookie_name())
-        return bool(t and secrets.compare_digest(t.value, self.server.key))
+        return bool(t and secrets.compare_digest(t.value.encode(), self.server.sitzung.encode()))
+
+    def starter(self):
+        """Nur der lokale Starter kennt diesen Schlüssel aus der geschützten Laufzeitdatei."""
+        return (self.headers.get('Host') == f'127.0.0.1:{self.server.server_port}'
+                and secrets.compare_digest(self.headers.get('X-AKA-Start', '').encode(), self.server.key.encode()))
 
     def do_GET(self):
-        u = urlparse(self.path); pfad = unquote(u.path); q = parse_qs(u.query)
-        if pfad == '/' and q.get('key') == [self.server.key] and self.headers.get('Host') == f'127.0.0.1:{self.server.server_port}':
-            ziel = '/'
-            if q.get('fall'):
-                try: store.fall_eintrag(q['fall'][0]); ziel = '/#fall=' + q['fall'][0]
-                except ValueError: pass
-            self.antwort(303, b'', kopf={'Location': ziel, 'Set-Cookie': f'{cookie_name()}={self.server.key}; HttpOnly; SameSite=Strict; Path=/'}); return
+        u = urlparse(self.path); pfad = unquote(u.path); q = parse_qs(u.query, keep_blank_values=True)
+        if pfad == '/' and 'key' in q:
+            ziel = None
+            if len(q['key']) == 1 and self.headers.get('Host') == f'127.0.0.1:{self.server.server_port}':
+                ziel = self.server.startlinks.einloesen(q['key'][0])
+            if ziel is None:
+                self.antwort(403, 'Startlink ungültig, abgelaufen oder bereits verwendet. Bitte AKA Recht erneut über die Startdatei öffnen.', 'text/plain; charset=utf-8'); return
+            self.antwort(303, b'', kopf={'Location': ziel, 'Set-Cookie': f'{cookie_name()}={self.server.sitzung}; HttpOnly; SameSite=Strict; Path=/'}); return
+        if pfad == '/api/ping' and self.starter():
+            self.antwort(200, {'instanz': store.instanz(), 'pid': os.getpid()}); return
         if not self.angemeldet(): self.antwort(403, 'Bitte AKA Recht über Start.command öffnen.', 'text/plain; charset=utf-8'); return
         try:
             if pfad == '/api/ping': self.antwort(200, {'instanz': store.instanz(), 'pid': os.getpid()}); return
@@ -74,7 +104,7 @@ class Handler(BaseHTTPRequestHandler):
                 z = store.lade_zentrale()
                 eingang = [{'name': p.name, 'groesse': p.stat().st_size} for p in sorted(store.sicher('01 Eingang').iterdir()) if p.is_file() and not p.name.startswith('.')] if store.sicher('01 Eingang').exists() else []
                 self.antwort(200, {'app': z['app'], 'root': str(store.ROOT), 'csrf': self.server.csrf, 'faelle': werkzeuge.faelle_auflisten(), 'eingang': eingang,
-                                   'sicherung': sicherung.status(), 'gruppen': store.GRUPPEN}); return
+                                   'sicherung': sicherung.status(zwischenspeicher=True), 'gruppen': store.GRUPPEN}); return
             if pfad == '/api/werkzeuge': self.antwort(200, werkzeuge.beschreibung()); return
             if pfad == '/api/quellen': self.antwort(200, werkzeuge.quellen_katalog()); return
             if pfad == '/api/einstellungen':
@@ -120,12 +150,20 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as e: self.antwort(400, {'fehler': str(e)})
 
     def do_POST(self):
-        if not self.angemeldet() or not secrets.compare_digest(self.headers.get('X-AKA-CSRF', ''), self.server.csrf): self.antwort(403, {'fehler': 'Ungültige Sitzung.'}); return
+        pfad = urlparse(self.path).path
+        berechtigt = self.starter() if pfad == '/api/start' else self.angemeldet()
+        if not berechtigt or not secrets.compare_digest(self.headers.get('X-AKA-CSRF', '').encode(), self.server.csrf.encode()): self.antwort(403, {'fehler': 'Ungültige Sitzung.'}); return
         if self.headers.get('Origin') not in (None, f'http://127.0.0.1:{self.server.server_port}'): self.antwort(403, {'fehler': 'Fremder Ursprung.'}); return
         try:
             laenge = int(self.headers.get('Content-Length', '0'))
             if not 0 < laenge <= 40 * 1024 * 1024: raise ValueError('Ungültige Anfragegröße.')
-            daten = json.loads(self.rfile.read(laenge)); pfad = urlparse(self.path).path
+            daten = json_laden(self.rfile.read(laenge)); pfad = urlparse(self.path).path
+            if pfad == '/api/start':
+                fall = daten.get('fall', '')
+                if not isinstance(fall, str): raise ValueError('Fallkennung muss Text sein.')
+                if fall: store.fall_eintrag(fall)
+                key = self.server.startlinks.anlegen('/#fall=' + fall if fall else '/')
+                self.antwort(200, {'pfad': '/?key=' + key}); return
             if pfad == '/api/werkzeug':
                 self.antwort(200, werkzeuge.ausfuehren(daten['name'], daten.get('parameter', {}), bestaetigt=daten.get('bestaetigt', False))); return   # nur JSON true zählt (F05)
             if pfad == '/api/fall': self.antwort(200, werkzeuge.fall_anlegen(**{k: daten.get(k, '') for k in ('titel', 'bereich', 'rolle', 'ziel') if daten.get(k)})); return
@@ -151,7 +189,7 @@ class Handler(BaseHTTPRequestHandler):
             if pfad == '/api/sicherung/probe': self.antwort(200, sicherung.probe(daten.get('archiv') or None)); return
             if pfad == '/api/einstellungen':
                 # Erst alles prüfen, dann in einem Zug unter Sperre auf den frischen Stand anwenden (AUDIT-001)
-                sicherung_neu = {k: daten['sicherung'][k] for k in ('ziel', 'zweites_ziel') if k in daten.get('sicherung', {})}
+                sicherung_neu = store.sicherungsziele_pruefen(daten.get('sicherung', {}))
                 einstellungen_neu = {}
                 land = str(daten.get('einstellungen', {}).get('feiertagsland', '') or '').upper()
                 if land:
@@ -192,16 +230,18 @@ class Handler(BaseHTTPRequestHandler):
 def laeuft():
     try:
         d = json.loads(laufzeitdatei().read_text('utf-8'))
-        anfrage = urllib.request.Request(f'http://127.0.0.1:{d["port"]}/api/ping', headers={'Cookie': f'{cookie_name()}={d["key"]}'})
+        # Cookie nur zur Erkennung älterer laufender Dienste, damit --stop auch diese gezielt erreicht.
+        anfrage = urllib.request.Request(f'http://127.0.0.1:{d["port"]}/api/ping', headers={'X-AKA-Start': d['key'], 'Cookie': f'{cookie_name()}={d["key"]}'})
         with urllib.request.urlopen(anfrage, timeout=1) as r:
-            if json.load(r)['instanz'] == store.instanz(): return d
+            if json.load(r) == {'instanz': store.instanz(), 'pid': d['pid']}: return d
     except Exception: pass
 
 def dienst(port):
     if store.einrichten(): print('zentrale.json angelegt (erste Einrichtung).', flush=True)
     server = ThreadingHTTPServer(('127.0.0.1', port), Handler); server.daemon_threads = True
     server.key = secrets.token_urlsafe(32); server.csrf = secrets.token_urlsafe(32)
-    store.atomar(laufzeitdatei(), json.dumps({'port': server.server_port, 'key': server.key, 'csrf': server.csrf, 'pid': os.getpid(), 'instanz': store.instanz()}))
+    server.sitzung = secrets.token_urlsafe(32); server.startlinks = Startberechtigungen()
+    store.atomar(laufzeitdatei(), json.dumps({'port': server.server_port, 'key': server.key, 'csrf': server.csrf, 'pid': os.getpid(), 'instanz': store.instanz(), 'startlink_einmalig': 1}))
     laufzeitdatei().chmod(0o600)
     print(f'AKA Recht bereit auf 127.0.0.1:{server.server_port}', flush=True)
     def stop(*a): threading.Thread(target=server.shutdown, daemon=True).start()
@@ -210,7 +250,9 @@ def dienst(port):
     finally: server.server_close()
 
 def starten(oeffnen=True, fall=None):
-    with store.sperre():
+    # Der neue Dienst nimmt in einrichten() die Datensperre. Während wir auf ihn
+    # warten, dürfen wir nur andere Starter sperren (AUDIT-20261008-001).
+    with store.sperre(start=True):
         d = laeuft()
         if not d:
             protokoll = store.laufzeit_ordner() / f'dienst-{store.instanz()}.log'
@@ -221,22 +263,41 @@ def starten(oeffnen=True, fall=None):
                 if d: break
             if not d: raise RuntimeError('Dienst startet nicht. Protokoll: ' + str(protokoll))
     if fall: store.fall_eintrag(fall)
-    url = f'http://127.0.0.1:{d["port"]}/?key={d["key"]}' + (f'&fall={fall}' if fall else '')
     if oeffnen:
+        if not d.get('startlink_einmalig'):
+            raise RuntimeError('Es läuft noch ein älterer Dienst. Bitte zuerst server.py --stop für diese Mappe ausführen und danach erneut starten.')
+        basis = f'http://127.0.0.1:{d["port"]}'
+        anfrage = urllib.request.Request(basis + '/api/start', data=json.dumps({'fall': fall or ''}).encode(),
+                  headers={'X-AKA-Start': d['key'], 'X-AKA-CSRF': d['csrf'], 'Origin': basis, 'Content-Type': 'application/json'})
+        with urllib.request.urlopen(anfrage, timeout=5) as r: url = basis + json.load(r)['pfad']
         import webbrowser   # Standardbrowser auf macOS, Linux und Windows
         if not webbrowser.open(url): print('Browser nicht gefunden. Adresse von Hand öffnen: ' + url)
     print('AKA Recht läuft lokal. Dieses Fenster kann geschlossen werden.\nOrdner: ' + str(store.ROOT)); return d
+
+def stoppen():
+    """Nur den authentifizierten Dienst dieser Mappe beenden, keine anderen Mappen."""
+    with store.sperre(start=True):
+        d = laeuft()
+        if not d:
+            print('Für diese Mappe läuft kein erreichbarer Dienst.'); return
+        os.kill(d['pid'], signal.SIGTERM)
+        for _ in range(50):
+            if not laeuft():
+                print('Dienst dieser Mappe beendet; seine Sitzungen und Startlinks sind ungültig.'); return
+            time.sleep(.1)
+        raise RuntimeError('Der Dienst antwortet noch. Er wurde nicht als beendet bestätigt.')
 
 if __name__ == '__main__':
     if store.python_hinweis(): print(store.python_hinweis(), file=sys.stderr); sys.exit(1)
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--root', type=Path, default=store.ROOT)
-    p.add_argument('--serve', action='store_true'); p.add_argument('--port', type=int, default=0)
+    p.add_argument('--serve', action='store_true'); p.add_argument('--port', type=int, default=0); p.add_argument('--stop', action='store_true')
     p.add_argument('--no-open', action='store_true'); p.add_argument('--fall')
     p.add_argument('--check', action='store_true'); p.add_argument('--backup', action='store_true')
     p.add_argument('--probe', nargs='?', const='', metavar='ZIP'); p.add_argument('--restore', nargs=2, metavar=('ZIP', 'ORDNER'))
     a = p.parse_args(); store.konfigurieren(a.root)
-    if a.serve: dienst(a.port)
+    if a.stop: stoppen()
+    elif a.serve: dienst(a.port)
     elif a.probe is not None:
         b = sicherung.probe(a.probe or None); print(json.dumps(b, ensure_ascii=False, indent=2)); sys.exit(0 if b.get('bestanden') else 1)
     elif a.restore:

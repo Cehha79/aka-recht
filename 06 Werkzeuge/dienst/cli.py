@@ -28,6 +28,7 @@ import json
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import store, werkzeuge
+from akte_schema import json_laden
 
 def main(argv):
     if len(argv) < 2 or argv[1] in ('-h', '--help'): print(__doc__); return 2
@@ -38,24 +39,25 @@ def main(argv):
             for p, s in w['parameter']['properties'].items():
                 print(f"    {p}{'*' if p in w['parameter']['required'] else ''}: {s.get('type', '')} {('= ' + '|'.join(map(str, s['enum']))) if 'enum' in s else ''} {s.get('description', '')}".rstrip())
         return 0
-    if len(argv) == 3 and argv[2].strip().startswith('{'): args = json.loads(argv[2])
-    else:
-        args = {}
-        for teil in argv[2:]:
-            if '=' not in teil: print(f'Parameter „{teil}“ braucht die Form schluessel=wert.'); return 2
-            k, v = teil.split('=', 1)
-            if v in ('true', 'false'): v = v == 'true'
-            elif v.isdigit(): v = int(v)
-            elif v.startswith('[') or v.startswith('{'):
-                try: v = json.loads(v)
-                except json.JSONDecodeError: pass
-            args[k] = v
     if not store.eingerichtet(): print('Hinweis: zentrale.json fehlt, die Mappe ist noch nicht eingerichtet (Start.command einmal ausführen).', file=sys.stderr)
     try:
+        if len(argv) == 3 and argv[2].strip().startswith('{'): args = json_laden(argv[2])
+        else:
+            args = {}
+            for teil in argv[2:]:
+                if '=' not in teil: print(f'Parameter „{teil}“ braucht die Form schluessel=wert.'); return 2
+                k, v = teil.split('=', 1)
+                if v in ('true', 'false'): v = v == 'true'
+                elif v.isdigit(): v = int(v)
+                elif v.startswith('[') or v.startswith('{'):
+                    try: v = json_laden(v)
+                    except json.JSONDecodeError: pass
+                args[k] = v
         erg = werkzeuge.ausfuehren(name, args, bestaetigt=True, weg='cli.py')
+        ausgabe = json.dumps(erg, ensure_ascii=False, indent=2, allow_nan=False)
     except Exception as e:
         print(json.dumps({'fehler': str(e)}, ensure_ascii=False)); return 1
-    print(json.dumps(erg, ensure_ascii=False, indent=2)); return 0
+    print(ausgabe); return 0
 
 if __name__ == '__main__':
     if store.python_hinweis(): print(store.python_hinweis(), file=sys.stderr); sys.exit(1)

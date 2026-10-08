@@ -2,6 +2,12 @@
 
 *Stand: 18.09.2026*
 
+**Redaktioneller Abgleich: 08.10.2026.** Der technische Prüfstand steht im
+README; er erneuert keine juristischen Prüfdatumsangaben. Die unten
+genannten Volltextprüfungen und offenen Quellenmarker behalten ihren
+jeweiligen Stand. Vor einer konkreten Verwendung gelten die Pflegeregeln in
+Abschnitt 3 und die Prüfung am Originalvolltext.
+
 ## Aufgabe dieser Datei
 
 Verzeichnis aller Rechtsinhalte, die die Mappe selbst mitbringt: was sie

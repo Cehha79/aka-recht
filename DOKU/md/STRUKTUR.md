@@ -1,6 +1,6 @@
 # STRUKTUR
 
-*Stand: 18.09.2026*
+*Stand: 08.10.2026*
 
 ## Aufgabe dieser Datei
 
@@ -38,6 +38,13 @@ temporären Ordner (AUDIT-007). `zentrale.json` wird nur noch unter dieser
 Sperre geändert, mit frisch gelesenem Stand (`store.zentrale_aendern`,
 AUDIT-001).
 
+Seit dem Nachaudit vom 08.10.2026 sind Start- und Datensperre getrennt
+(`AUDIT-20261008-001`): `start-<instanz>.lock` ordnet gleichzeitige Starter,
+`<instanz>.lock` schützt weiter die Daten. Der Starter wartet auf den Dienst,
+ohne dessen Einrichtung zu blockieren. Kaltstart, Wiederholung und zwei
+gleichzeitige Starter sind auf macOS mit und ohne `zentrale.json` geprüft;
+Linux und Windows stehen im Endtest noch aus.
+
 ## Projektordner
 
 ```text
@@ -66,7 +73,7 @@ Recht/
 │  └─ pruefen.py              Funktionstest mit künstlichen Akten
 ├─ .claude/recht/      Claude-Schicht als Plugin „recht“ (Stufe 5): Skills,
 │                             Hooks, Vorlagen, Werkzeuge; lädt automatisch im Projekt
-└─ DOKU/                      md/ als Quelle, HTML-Ansichten daneben; Rechtsinhalte.md = Stand und Pflege der mitgelieferten Rechtsinhalte
+└─ DOKU/                      md/ als Quelle, aktive HTML-Ansichten direkt unter DOKU; Archive neben ihren Quellen; Rechtsinhalte.md = Stand und Pflege der mitgelieferten Rechtsinhalte
 ```
 
 ## Fallakte: feste Ordnerstruktur
@@ -93,6 +100,25 @@ Ein Verfahren ist alles, was eine eigene Stelle und ein eigenes Aktenzeichen
 hat: Klage beim Arbeitsgericht, Bußgeldbescheid, Widerspruch gegen einen
 Bescheid, Mahnverfahren, Strafanzeige. Mehrere Verfahren in einem Konflikt
 bekommen getrennte Unterordner und getrennte Fristen.
+
+## Dokumentationsansichten
+
+`python3 DOKU/ansicht_bauen.py` erzeugt seit 08.10.2026 für alle Markdown-
+Quellen unter DOKU eine Ansicht (`AUDIT-20261008-007`). Quellen direkt in
+`DOKU/md/` behalten ihre Ansicht direkt unter DOKU; in Unterordnern wie
+Archiv und Prüfberichten liegt die gleichnamige HTML-Datei neben der Quelle.
+Archivierte Texte bleiben unverändert, die Ansicht kennzeichnet sie als
+historischen Stand. Zwei Quellen für dasselbe HTML-Ziel werden abgewiesen.
+Eigenständige HTML-Ausgaben ohne Markdown-Quelle werden nicht verändert.
+
+`ansicht_bauen.ansichten()` erzeugt die Soll-Inhalte im Speicher; Generator
+und Doku-Abgleich-Hook verwenden denselben Ablauf. Der Hook meldet fehlende
+und veraltete Seiten auch in verschachtelten Ordnern. Ein erneuter Bau
+schreibt nur abweichende Ansichten. Relative Navigationslinks berücksichtigen
+die Ordnertiefe, Leerzeichen und Umlaute. Die in `.gitignore` einzeln oder
+als ganzer DOKU-Unterordner ausgeschlossenen Ansichten erscheinen nur in
+internen Seitenleisten. Öffentliche Seiten verlinken sie nicht.
+Seitenleiste links und Inhalt rechts scrollen weiterhin getrennt.
 
 ## Themenbereiche
 
@@ -155,26 +181,83 @@ Versandbeleg. Ein Dokument beweist zunächst nur seinen Inhalt.
 
 Die feldgenaue Beschreibung steht in Datenmodell.md.
 
+Historische Kennungszähler (P, V, E, F, A, W, N) werden seit 08.10.2026
+auch beim vollständigen Speichern bewahrt (`AUDIT-20261008-006`).
+`store.speichere_akte` prüft zuerst die Revision und vergleicht anschließend
+mit dem gespeicherten Stand, beides unter derselben Schreibsperre.
+`akte_schema.zaehler_bewahren` weist Rückgänge ab und ergänzt fehlende Werte
+aus gespeichertem Zähler sowie alten und neuen Kennungen. Erst danach
+folgen Sicherung und Schreiben. Bei Fehler bleibt die Akte unverändert.
+Altakten ohne Zähler liefern nur die noch bekannten Kennungen; bereits
+gelöschte Nummern ohne Zähler können nicht rekonstruiert werden.
+
 `bestand.json` führt je D-Kennung den Pfad, die erste Prüfsumme (SHA-256)
 und jede Verschiebung mit Zeitpunkt. Das schreibt nur der Dienst, und nur
 über schreibende Wege (Import, Zuordnung, Einsortieren, `bestand_abgleichen`).
 Lesende Werkzeuge melden neue oder verschobene Dateien als Abweichung und
 ändern nichts (seit 17.09.2026, Prüfbericht F03).
 
+Prüfsummen werden seit 08.10.2026 (`AUDIT-20261008-004`) standardmäßig frisch
+und blockweise gelesen (`bestand.sha_datei`, `sicherung.sha_pfad`). Nur
+`bestand.abgleich` für normale Leseansichten und der Sicherungsstand in
+`/api/zentrale` nutzen ausdrücklich den begrenzten Zwischenspeicher.
+`bestand_pruefen`, `/api/bestand`, `/api/sicherung/status`, der schreibende
+Abgleich, Entwurfsfassungen, Sicherung und Wiederherstellung lesen aktuelle
+Bytes. Größe und Änderungszeit allein sind kein Inhaltsnachweis.
+Die Seite „Bestand und Sicherung“ holt beim Öffnen den frischen Archivstatus
+über `/api/sicherung/status` (`app.js` v45); die schnelle Zentrale bleibt
+eine Übersicht. Eine laufende Kennung verhindert, dass eine langsame Antwort
+eine inzwischen geöffnete andere Seite überschreibt. Große Archive werden bei dieser ausdrücklichen Prüfung
+vollständig gelesen, ohne sie vollständig im Arbeitsspeicher zu halten.
+
 ## Dienst (Stufe 3)
 
-Python-Standardbibliothek, ein Prozess, nur 127.0.0.1, Sitzungsschlüssel
-über Start.command, Schreibkennung gegen fremde Seiten. Kein Netzzugriff nach
-außen. Systemabhängig sind nur drei Stellen, je mit Weiche: Browser öffnen
+Sicherungsziele werden seit 08.10.2026 beim Speichern der Einstellungen
+geprüft (`AUDIT-20261008-008`, `store.sicherungsziele_pruefen`). Beide Werte
+müssen Text sein: vollständiger Ordnerpfad oder `~/…` für den Benutzerordner,
+ohne Steuerzeichen, außerhalb des Projekts auch nach Auflösen von
+Verknüpfungen. Vorhandene Dateien statt Ziel- oder übergeordnetem Ordner
+werden abgewiesen. Das Hauptziel darf nicht leer sein, das zweite bleibt
+optional. Äußere Leerzeichen werden entfernt; fehlende Ordner sind zulässig.
+Die Prüfung legt nichts an und prüft nur übergebene Felder. Bei einem Fehler
+bleiben sämtliche Einstellungen der Anfrage unverändert. Gültige Werte
+werden weiterhin gemeinsam unter der Schreibsperre gespeichert.
+Die Verfügbarkeit eines Laufwerks beim späteren Sichern ist damit nicht
+garantiert; der bisherige Hinweis bei fehlendem zweitem Laufwerk bleibt.
+Bereits ungültige Einstellungen werden nicht automatisch umgeschrieben.
+
+Python-Standardbibliothek, ein Prozess, nur 127.0.0.1, Anmeldung über die
+Startdatei, Schreibkennung gegen fremde Seiten. Kein Netzzugriff nach
+außen. Systemabhängig sind unter anderem: Browser öffnen
 (`webbrowser`), Datei im Dateimanager zeigen (`open`, `xdg-open`,
 `explorer`), Sperre (`fcntl` oder unter Windows `msvcrt`); das zweite
 Sicherungsziel ist ab Werk leer und wird nur in den Einstellungen gewählt (bis 08.10.2026 wurde iCloud Drive vorgeschlagen, wo es den Ordner gab; AUDIT-003). Textauszug aus PDF über das vorhandene `pdftotext`, wenn installiert.
+
+**Start und Sitzung (AUDIT-20261008-009, 08.10.2026):** Der Starter fordert
+bei jedem Öffnen über `POST /api/start` einen neuen Startlink an. Dafür braucht
+er den lokalen Steuerschlüssel aus der geschützten Laufzeitdatei (0600) und
+die Schreibkennung; Host und gegebenenfalls Origin müssen stimmen. Der
+Steuerschlüssel dient nicht als Browsersitzung. Jeder Startlink gilt höchstens
+120 Sekunden, gemessen mit monotoner Uhr, und wird unter einer Sperre genau
+einmal eingelöst. Ein mitgegebenes Fallziel ist an diesen Link gebunden.
+Die Weiterleitung entfernt den Schlüssel aus der sichtbaren Adresse und setzt
+ein getrenntes Sitzungscookie (`HttpOnly`, `SameSite=Strict`, `Path=/`).
+Der Sitzungsschlüssel bleibt nur im Speicher des Diensts; er steht weder im
+Startlink noch in der Laufzeitdatei. Neue Startlinks lassen bestehende Fenster
+angemeldet. Die zwei Minuten begrenzen den Startlink, nicht die Sitzung.
+
+`server.py --stop` beendet nach Prüfung von Mappe, Schlüssel und Prozesskennung
+nur den zugehörigen Dienst. Damit enden dessen Sitzungen und offenen Startlinks;
+ein Neustart erzeugt neue Schlüssel. Vor dem Beenden Änderungen speichern.
+Ein noch laufender älterer Dienst wird erkannt und muss zunächst mit dem neuen
+Skript beendet werden, bevor der neue Starter ihn ersetzt. Ein Beenden-Knopf
+in der Oberfläche ist nicht enthalten. Auf macOS geprüft, Linux/Windows offen.
 
 | Modul | Aufgabe |
 |---|---|
 | `server.py` | HTTP-Dienst, Sitzungen, Routen, statische Oberfläche |
 | `store.py` | akte.json und zentrale.json lesen und mit Revision schreiben, Sperre |
-| `dokumente.py` | Dateien auflisten, Textauszug (txt, md, html, docx, eml, pdf) mit Herkunft (`befund()`: textquelle, Seiten, Zeichen; Bildscan und Foto gelten als nicht gelesen, seit 17.09.2026, F34), Suche |
+| `dokumente.py` | Dateien auflisten, Textauszug (txt, md, csv, html, docx, eml, pdf) mit Herkunft (`befund()`: textquelle, Seiten, Zeichen; Bildscan und Foto gelten als nicht gelesen, seit 17.09.2026, F34), Suche. CSV wird als Text gelesen; keine Tabellenansicht, noch keine Textvorschau für xlsx oder ics |
 | `fristen.py` | Fristen rechnen nach §§ 187, 188, 193 BGB, landesweite Feiertage aller 16 Bundesländer (Kürzel, Einstellung `feiertagsland` in zentrale.json, Standard BW), Rechnung als Text |
 | `bestand.py` | Prüfsummen, Verschiebungen erkennen, Bestand prüfen |
 | `texterkennung.py` | Texterkennung (OCR, Stufe 13) über das freiwillige Zusatzprogramm `tesseract` (PDF-Seiten vorher mit `pdftoppm` gerastert, HEIC unter macOS mit `sips`); ohne Programm klare Meldung mit Installationsweg. Das Werkzeug `texterkennung` legt das Ergebnis als eigene Textdatei unter `07 Recherche/Texterkennung/D…_Texterkennung_JJJJ-MM-TT.txt` an (Kopf mit Quelle, Prüfsumme, Programm, Sprache, Datum, Warnhinweis; eigene D-Kennung mit Verweis auf das Original; überschreibt nie), setzt beim Original den Textstand „OCR-erkannt“ nur, wenn keiner steht; `dokument_text` zeigt den erkannten Text mit Textquelle `ocr`, die Suche findet Original und Ableitung. Keine Erkennung beim bloßen Lesen |
@@ -187,6 +270,7 @@ Sicherungsziel ist ab Werk leer und wird nur in den Einstellungen gewählt (bis 
 Schnittstelle, Skizze:
 
 ```text
+POST /api/start                       einmaligen Startlink anfordern (nur lokaler Starter)
 GET  /api/zentrale                    Fälle, Eingang, Sicherungsstand
 GET  /api/fall/R-0001                 akte.json plus Dokumentliste
 POST /api/fall/R-0001                 akte.json speichern (mit Revision)
@@ -328,6 +412,13 @@ mit Vorschau (Vorschau, Text, Angaben; Ordnen, Einsortieren, Öffnen, im Dateima
 Beteiligte (Rolle und, seit 02.10.2026, freie Funktion), Verfahren, Chronologie (seit 02.10.2026 als zweiseitiger Zeitpfad: links andere Stellen, rechts die eigenen Schritte, Zeit in der Mitte; Ereignisse desselben Zeitpunkts in einer Zeile, Abstand zwischen den Zeilen, Karten eingeklappt, Farbrand nach Gruppe aus der Rolle der ersten Person, gestrichelter Rand bei eigener Angabe ohne Unterlage, Kernereignisse, Suche, Filter nach Art und Person, Bezug mit Sprung zum Anlass, Kennungen öffnen die Dokumentvorschau; Suche, Filter und aufgeklappte Karten sind Zustand der Ansicht und werden nicht gespeichert; Einfügen über „+“ zwischen zwei Zeilen und über „Im Zeitraum ergänzen“, der Dialog kennt alle Felder des Ereignisses, leere Angaben werden nicht gespeichert, nach dem Speichern steht die Ansicht wieder bei der bearbeiteten Karte), Fristen (mit Rechner im Formular),
 Aufgaben, Entwürfe (mit „Entwurf aus Vorlage“: Dialog ruft `vorlage_fuellen`),
 Beweise und Anlagen, Journal.
+
+Die Textvorschau übernimmt seit 08.10.2026 (`AUDIT-20261008-005`, `app.js`
+v43) nur die jüngste Anfrage. Jeder neue Seitenaufbau und jeder Vorschauaufruf
+entwertet ältere Antworten, auch beim Schließen. Vor dem Anzeigen werden
+zusätzlich Browseradresse, Fall, Dokument und Reiter verglichen. Das gilt
+für Texte und Fehlermeldungen und verhindert auch ein Überschreiben nach
+einem Wechsel von Dokument A nach B und zurück nach A.
 
 Einträge entfernen (seit 02.10.2026, alle Eintragsarten): „Eintrag entfernen“ im
 Bearbeiten-Dialog fragt in einem eigenen Dialog der Oberfläche nach, nicht über
