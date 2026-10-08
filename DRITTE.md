@@ -22,6 +22,5 @@ Kein Quelltext aus diesen Repositories liegt in AKA Recht. Die Rechtsinhalte
 Volltext; sie wurden bewusst **nicht** übernommen, weil die Belegdisziplin dort eine
 andere ist (Einzelheiten in `DOKU/md/TODO.md`).
 
-Weiteres Material dieser Repositories liegt zur späteren Prüfung außerhalb des Projekts
-unter `~/Projekte/Geplant/AKA Recht Material/` mit einer eigenen `HERKUNFT.md`. Wird
-davon etwas übernommen, kommt es hier in die Tabelle.
+Weitere Ideen aus diesen Repositories sind vorgemerkt (Testakten, Prüfmethoden, Rechner).
+Wird davon etwas übernommen, kommt es hier in die Tabelle.
